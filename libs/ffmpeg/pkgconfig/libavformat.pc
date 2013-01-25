@@ -1,0 +1,14 @@
+prefix=/home/jorhy/WorkSpace/ffmpeg/libs
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 54.61.103
+Requires: libavcodec = 54.90.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -lavformat -ldl -lva -ljack -lasound -lSDL -lcrystalhd -lm -pthread -lz -lrt
+Libs.private: 
+Cflags: -I${includedir}

@@ -1,0 +1,45 @@
+#ifndef __HIKPARSER_H_
+#define __HIKPARSER_H_
+#include "j_includes.h"
+#include "x_time.h"
+#include "faac.h"
+#include "HikParserDef.h"
+
+#define DATA_BUFFER_SIZE (1024 * 1024)
+#define HIK_PACK_LENGHT(x) (((*(x + 3) & 0xFF) << 8) + (*(x + 2) & 0xFF))
+#define HIK_PACK_LENGHT2(x) (((*(x + 2) & 0xFF) << 8) + (*(x + 3) & 0xFF) + 4)
+
+class CHikParser : public J_MediaParser
+{
+public:
+	CHikParser();
+	~CHikParser();
+
+public:
+	///J_VideoParser
+	virtual int Init(int nDataType = J_VideoNormal);
+	virtual int Deinit();
+	virtual int InputData(const char *pData, int nLen);
+	virtual int GetOnePacket(char *pData, J_StreamHeader &streamHeader);
+
+private:
+	int GetDataFlag();
+
+private:
+	J_OS::RWLocker_t m_rwLocker;
+	char *m_pDataBuff;
+	int m_nDataSize;
+
+	HikStreamHead m_hikStreamHead;
+	char *m_pOutBuff;
+	bool m_bIsComplate;
+	int m_nDataLen;
+
+	//音频解码
+	unsigned int m_nSamples;
+	short int *m_pAudioCache;
+	faacEncHandle m_aacHandle;
+	unsigned long m_nInputSamples;
+	unsigned long m_nOutputBytes;
+};
+#endif //~__HIKPARSER_H_

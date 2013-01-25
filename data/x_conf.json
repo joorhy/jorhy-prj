@@ -1,0 +1,24 @@
+{
+	"CMSConf":
+	{
+		"id":1,
+		"type":"mc",
+		"ip":"192.168.1.10",
+		"port":8080
+	}
+	"Server":
+	[
+		{
+			"stream_type":"http",
+			"stream_port":6000,
+			"control_type":"mc",
+			"control_port":8000,
+		},
+		{
+			"stream_type":"josp",
+			"stream_port":6002,
+			"control_type":"josp",
+			"control_port":6003,
+		},
+	]
+}

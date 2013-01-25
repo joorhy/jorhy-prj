@@ -1,0 +1,19 @@
+#! /bin/sh
+
+JO_USER=ivs
+JO_BIN=ivs/ss
+
+JO_Dir=/home/$JO_USER/$JO_BIN
+cd $JO_Dir
+
+while :
+do
+  JO_Running=$(ps -ef |grep "$JO_Dir/jo_svr" |grep -v "grep")
+  if [ "$JO_Running" ] ; then
+    : 
+  else
+    $JO_Dir/jo_svr &
+  fi
+
+  sleep 2
+done
