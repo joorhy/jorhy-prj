@@ -27,7 +27,6 @@ int CXBuffer::PushData(const char *pData, int nLen)
 		EraseBuffer();
 	}
 		
-		
 	m_Node.nLen = nLen;
 	m_Node.pData = AddBuffer(m_pWritePoint, J_MEMNODE_LEN);
 	Write((const char *)&m_Node, J_MEMNODE_LEN);

@@ -38,6 +38,7 @@ class CXRender : public wxThread
 		XImage *m_img;
 		Display *m_display;
 		Drawable m_drawable;
+		GC m_gc;
 };
 
 #endif //~__X_RENDER_H_

@@ -19,8 +19,13 @@ CXRender::~CXRender()
 
 int CXRender::Start(GdkWindow *window, int w, int h)
 {
-	m_display = GDK_WINDOW_XDISPLAY(window);
+	m_display = XOpenDisplay(NULL);
 	m_drawable = GDK_WINDOW_XID(window);
+	XGCValues values;
+	unsigned long valuemask = 0;
+	m_gc = XCreateGC(m_display, m_drawable, valuemask, &values);
+	m_img = XGetImage(m_display, m_drawable, 0, 0, w, h, 16, ZPixmap);
+	
 	m_width = w;
 	m_height = h;
 	m_bRun = true;
@@ -64,16 +69,13 @@ void *CXRender::Entry()
 		
 void CXRender::OnExit()
 {
-	Delete();
+	//Delete();
 }
 
 void CXRender::RendRrame(const char *pData)
 {
-	m_img = XGetImage(m_display, m_drawable, 0, 0, m_width, m_height, 0, ZPixmap);
 	m_img->data = (char*)pData;
-	XPutImage(m_display, m_drawable, 
-		XDefaultGC(m_display, 0), m_img,
-              0, 0, 0, 0, m_width, m_height);
+	XPutImage(m_display, m_drawable, m_gc, m_img, 0, 0, 0, 0, m_width, m_height);
     XSync(m_display, false);
-    //XSync(GDK_WINDOW_XDISPLAY(m_window), false);
+    XSync(m_display, false);
 }

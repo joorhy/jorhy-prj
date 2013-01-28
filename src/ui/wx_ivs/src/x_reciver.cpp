@@ -26,7 +26,7 @@ CXReciver::CXReciver(CXDecoder *decoder)
                      wxSOCKET_INPUT_FLAG |
 					 //wxSOCKET_OUTPUT_FLAG |
                      wxSOCKET_LOST_FLAG);
-	m_sock->Notify(true);
+	//m_sock->SetFlags(wxSOCKET_WAITALL);
 }
 
 CXReciver::~CXReciver()
@@ -39,6 +39,7 @@ CXReciver::~CXReciver()
 
 void CXReciver::OnSocketEvent(wxSocketEvent& event)
 {
+	int x = sizeof(J_DataHead);
 	int nDataLen;
 	J_DataHead dataHead;
 	switch(event.GetSocketEvent())
@@ -54,6 +55,10 @@ void CXReciver::OnSocketEvent(wxSocketEvent& event)
 			if (nDataLen > 0)
 			{
 				m_sock->Read(m_pRecvBuff, nDataLen);
+				static FILE *fp = NULL;
+				if (fp == NULL)
+					fp = fopen("test.h264", "wb+");
+				fwrite (m_pRecvBuff, 1, nDataLen, fp);
 				m_pDecoder->InputData(m_pRecvBuff, nDataLen);
 			}
 		}
@@ -100,8 +105,8 @@ int CXReciver::StartView(const char *pResid, int nStreamType)
 	pRealViewData->stream_type = nStreamType;
 	
 	m_sock->Write(write_buff, sizeof(J_CtrlHead) + sizeof(J_RealViewData));
-	if (m_sock->LastError() != wxSOCKET_NOERROR)
-		return J_SOCKET_ERROR;
+	//if (m_sock->LastError() != wxSOCKET_NOERROR)
+	//	return J_SOCKET_ERROR;
 		
 	J_CtrlHead ctrlHead = {0};
 	m_sock->Read(&ctrlHead, sizeof(ctrlHead));
@@ -110,6 +115,8 @@ int CXReciver::StartView(const char *pResid, int nStreamType)
 		int nExLength = ntohs(ctrlHead.ex_length);
 		if (nExLength > 0)
 			m_sock->Read(&write_buff, nExLength);
+			
+		m_sock->Notify(true);
 	}
 	
 	return J_OK;

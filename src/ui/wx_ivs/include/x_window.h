@@ -14,7 +14,7 @@ class CVideoWin : public wxWindow
 
     public:
         int SetWinNum(int nWinNum, int nPos);
-        wxWindow *GetWindow() { return this; }//m_panel; }
+        wxWindow *GetWindow() { return m_panel; }
         void SetResid(const char *pResid);
         const char *GetResid();
 

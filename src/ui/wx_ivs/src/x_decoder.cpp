@@ -117,7 +117,7 @@ int CXDecoder::DecodeRendFrame()
                       352, 288,  PIX_FMT_RGB24, SWS_X, NULL, NULL, NULL);
 
 		sws_scale(m_sws_ctx, m_frame->data, m_frame->linesize,
-              0, 288, m_dst_data, m_dst_linesize);
+              352, 288, m_dst_data, m_dst_linesize);
 		//int nLen = 0;
 		//for(int i=0; i<m_context->height; i++)
 		//{
@@ -134,6 +134,10 @@ int CXDecoder::DecodeRendFrame()
 
 int CXDecoder::InputData(const char *pData, int nLen)
 {
+	/*static FILE *fp = NULL;
+	if (fp == NULL)
+		fp = fopen("test.h264", "wb+");
+	fwrite (pData, 1, nLen, fp);*/
 	m_buffer.PushData(pData, nLen);
 		
 	return J_OK;
@@ -150,6 +154,7 @@ void *CXDecoder::Entry()
 			usleep(1);
 		else 
 		{
+			//fprintf(stderr, "nLen = %d\n", nLen);
 			m_avpkt.data = (uint8_t *)pBuffer;
 			m_avpkt.size = nLen;
 			DecodeRendFrame();
