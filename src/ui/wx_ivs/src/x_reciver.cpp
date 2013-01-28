@@ -4,48 +4,70 @@
 #include "x_decoder.h"
 #include <arpa/inet.h>
 
+enum
+{
+  // id for socket
+  SOCKET_ID = 1001
+};
+
+BEGIN_EVENT_TABLE(CXReciver, wxEvtHandler)
+  EVT_SOCKET(SOCKET_ID, CXReciver::OnSocketEvent)
+END_EVENT_TABLE()
+
 CXReciver::CXReciver(CXDecoder *decoder)
 {
 	m_bRun = false;
 	m_pDecoder = decoder;
 	m_pRecvBuff = new char[1024 * 1024];
+	
+	m_sock = new wxSocketClient();
+	m_sock->SetEventHandler(*this, SOCKET_ID);
+	m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG |
+                     wxSOCKET_INPUT_FLAG |
+					 //wxSOCKET_OUTPUT_FLAG |
+                     wxSOCKET_LOST_FLAG);
+	m_sock->Notify(true);
 }
 
 CXReciver::~CXReciver()
 {
 	if (m_pRecvBuff)
 		delete m_pRecvBuff;
+	
+	delete m_sock;
 }
 
-void *CXReciver::Entry()
+void CXReciver::OnSocketEvent(wxSocketEvent& event)
 {
 	int nDataLen;
 	J_DataHead dataHead;
-	while (m_bRun)
+	switch(event.GetSocketEvent())
 	{
+	case wxSOCKET_INPUT: 
 		memset(&dataHead, 0, sizeof(J_DataHead));
-		m_sock.Read(&dataHead, sizeof(J_DataHead));
+		m_sock->Read(&dataHead, sizeof(J_DataHead));
 		if (memcmp(dataHead.start_code, "JOAV", 4) == 0)
 		{
 			nDataLen = 0;
 			nDataLen = ntohs(dataHead.data_len);
+			//fprintf(stderr, "recive_len = %d\n", nDataLen);
 			if (nDataLen > 0)
 			{
-				m_sock.Read(m_pRecvBuff, nDataLen);
-				if (m_sock.LastError() == wxSOCKET_NOERROR && m_pDecoder != NULL)
-				{
-					m_pDecoder->InputData(m_pRecvBuff, nDataLen);
-				}
+				m_sock->Read(m_pRecvBuff, nDataLen);
+				m_pDecoder->InputData(m_pRecvBuff, nDataLen);
 			}
 		}
+		break;
+	case wxSOCKET_LOST: 
+		fprintf(stderr, ("wxSOCKET_LOST\n"));
+		break;
+	case wxSOCKET_CONNECTION: 
+		fprintf(stderr, ("wxSOCKET_CONNECTION\n"));
+		break;
+	default: 
+		fprintf(stderr, ("Unexpected event !\n"));
+		break;
 	}
-	return NULL;
-}
-
-void CXReciver::OnExit()
-{
-	m_sock.Close();
-	fprintf(stderr, "OnExit()\n");
 }
 
 int CXReciver::Connect(const char *pAddr, int nPort)
@@ -54,8 +76,12 @@ int CXReciver::Connect(const char *pAddr, int nPort)
 	wxIPV4address addr;
     addr.Hostname(wxString::FromUTF8(pAddr));
     addr.Service(nPort);
-	if (!m_sock.Connect(addr))
-		return -1;
+
+	m_sock->Connect(addr, false);
+	m_sock->WaitOnConnect(3);
+	
+	//m_sock.SetTimeout(1);
+	//m_sock.SetFlags(wxSOCKET_NOWAIT);
 		
 	return 0;
 }
@@ -73,17 +99,17 @@ int CXReciver::StartView(const char *pResid, int nStreamType)
 	memcpy(pRealViewData->res_id, pResid, strlen(pResid));
 	pRealViewData->stream_type = nStreamType;
 	
-	m_sock.Write(write_buff, sizeof(J_CtrlHead) + sizeof(J_RealViewData));
-	if (m_sock.LastError() != wxSOCKET_NOERROR)
+	m_sock->Write(write_buff, sizeof(J_CtrlHead) + sizeof(J_RealViewData));
+	if (m_sock->LastError() != wxSOCKET_NOERROR)
 		return J_SOCKET_ERROR;
 		
 	J_CtrlHead ctrlHead = {0};
-	m_sock.Read(&ctrlHead, sizeof(ctrlHead));
+	m_sock->Read(&ctrlHead, sizeof(ctrlHead));
 	if (ctrlHead.ret == 0)
 	{
 		int nExLength = ntohs(ctrlHead.ex_length);
 		if (nExLength > 0)
-			m_sock.Read(&write_buff, nExLength);
+			m_sock->Read(&write_buff, nExLength);
 	}
 	
 	return J_OK;

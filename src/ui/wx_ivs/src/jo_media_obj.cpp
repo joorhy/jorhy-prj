@@ -1,6 +1,6 @@
 #include "jo_media_obj.h"
-
 #include <gtk/gtk.h>
+#include <X11/Xlib.h>
 #include <gdk/gdkx.h>
 
 CMediaObj::CMediaObj(const char *pResid, const char *pSvrAddr)
@@ -19,12 +19,14 @@ int CMediaObj::Invoke(wxWindow *pWindow, int nFlag, time_t start, time_t end)
     PlayerMap::iterator it = m_playerMap.find(pWindow);
     if (nFlag > 0 && pWindow != NULL)
     {
+		
         if (it == m_playerMap.end())
         {
             XWindowInfo info = {0};
-            info.xid = GDK_WINDOW_XID(GTK_WIDGET(pWindow->GetHandle())->window);
+            info.window = GTK_WIDGET(pWindow->GetHandle())->window;
             info.w = pWindow->GetParent()->GetSize().GetWidth();
             info.h = pWindow->GetParent()->GetSize().GetHeight();
+			//XImage *m_img = XGetImage(GDK_WINDOW_XDISPLAY(GTK_WIDGET(pWindow->GetHandle())->window), GDK_WINDOW_XID(GTK_WIDGET(pWindow->GetHandle())->window), 0, 0, info.w, info.h, 0, ZPixmap);
 			info.mode = nFlag;
 			info.start = start;
 			info.end = start + 86400;

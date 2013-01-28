@@ -9,14 +9,12 @@
 
 #define BUFFER_SIZE (1024 * 1024 * 10)
 
-struct J_MEMHEAD
+struct J_MEMNODE
 {
 	int nLen;
 	char *pData;
-	J_MEMHEAD *pPrev;
-	J_MEMHEAD *pNext;
 };
-#define J_MEMHEAD_LEN (sizeof(J_MEMHEAD))
+#define J_MEMNODE_LEN (sizeof(J_MEMNODE))
 
 class CXBuffer
 {
@@ -25,21 +23,27 @@ class CXBuffer
 		~CXBuffer();
 	
 	public:
-		char *LockBuffer(int nLen, bool bFlag = true);
-		void UnlockBuffer(bool bFlag = true);
+		int PushData(const char *pData, int nLen);
+		int PopData(char *pData);
 	
 	private:
-		void AddBusyMem(J_MEMHEAD *pMemHead);
-		void AddIdleMem(J_MEMHEAD *pMemHead);
+		void Read(char *pData, int nLen);
+		void Write(const char *pData, int nLen);
+		int GetIdleLength();
+		void EraseBuffer();
+		char *AddBuffer(char *pBuffer, int nLen);
 		
 	private:
-		wxCriticalSection m_criticalSection;
+		wxMutex m_locker;
 		char *m_pBuffer;
 		char *m_pBegin;
 		char *m_pEnd;
 		
-		J_MEMHEAD *m_pBusyMem;
-		J_MEMHEAD *m_pIdleMem;
+		char *m_pWritePoint;
+		char *m_pReadPoint;
+		int m_nDataLen;
+		
+		J_MEMNODE m_Node;
 };
 
 #endif //~__X_BUFFER_H_

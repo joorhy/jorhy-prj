@@ -12,7 +12,7 @@
 struct XWindowInfo
 {
 	uint32_t mode;
-    uint32_t xid;
+    GdkWindow *window;
     uint32_t w;
     uint32_t h;
 	time_t start;

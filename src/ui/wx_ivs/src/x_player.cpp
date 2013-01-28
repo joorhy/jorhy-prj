@@ -25,7 +25,7 @@ CXPlayer::~CXPlayer()
 {
 	if (m_pDecoder)
 	{
-		m_pDecoder->DeinitDecoder();
+		m_pDecoder->Stop();
 		delete m_pDecoder;
 	}
 		
@@ -44,10 +44,10 @@ int CXPlayer::Start(const char *pResid, const XWindowInfo &winInfo)
 	m_nMode = m_winInfo.mode;
 	if (m_nMode == 1)
 	{
+		m_pRender->Start(winInfo.window, winInfo.w, winInfo.h);
 		m_pReciver->Connect(m_svrAddr.c_str(), 8002);
-		m_pReciver->Create();
+		m_pDecoder->Start();
 		m_pReciver->StartView(pResid, 0);
-		m_pReciver->Run();
 	}
 	else if (m_nMode == 2)
 	{
@@ -61,11 +61,11 @@ int CXPlayer::Start(const char *pResid, const XWindowInfo &winInfo)
 
 int CXPlayer::Stop()
 {
+	m_pRender->Stop();
 	if (m_nMode == 2)
 		m_timer.Stop();
 	
 	m_pReciver->Disconnect();
-	m_pReciver->Delete();
 
     return 0;
 }
@@ -86,8 +86,8 @@ void CXPlayer::RegistCallback(void *func, void *pUser)
 
 int CXPlayer::Init()
 {
+	m_pRender = new CXRender();
 	m_pDecoder = new CXDecoder(m_pRender);
-	m_pDecoder->InitDecoder();
 	m_pReciver = new CXReciver(m_pDecoder);
     return 0;
 }

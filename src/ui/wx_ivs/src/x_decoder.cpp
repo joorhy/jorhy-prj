@@ -1,14 +1,33 @@
 #include "x_decoder.h"
 #include "x_errtype.h"
+#include "x_render.h"
 
 CXDecoder::CXDecoder(CXRender *render)
 {
+	m_bAllocPicture = false;
+	m_sws_ctx = NULL;
 	m_pRender = render;
+	m_bRun = false;
+	m_pBuffer = new char[1024 * 1024 * 5];
 }
 
 CXDecoder::~CXDecoder()
 {
-	
+	delete m_pBuffer;
+}
+
+int CXDecoder::Start()
+{
+	InitDecoder();
+	m_bRun = true;
+	Create();
+	Run();
+	return J_OK;
+}
+
+void CXDecoder::Stop()
+{
+	m_bRun = false;
 }
 
 int CXDecoder::InitDecoder()
@@ -57,14 +76,20 @@ void CXDecoder::DeinitDecoder()
 {
 	m_avpkt.data = NULL;
     m_avpkt.size = 0;
-	decode_write_frame();
+	DecodeRendFrame();
 	
+	if (m_bAllocPicture)
+	{
+		av_freep(&m_dst_data[0]);
+		m_bAllocPicture = false;
+	}
+	sws_freeContext(m_sws_ctx);
     avcodec_close(m_context);
     av_free(m_context);
     avcodec_free_frame(&m_frame);
 }
 
-int CXDecoder::decode_write_frame()
+int CXDecoder::DecodeRendFrame()
 {
     int len, got_frame;
     len = avcodec_decode_video2(m_context, m_frame, &got_frame, &m_avpkt);
@@ -73,33 +98,71 @@ int CXDecoder::decode_write_frame()
     }
     if (got_frame) {
         /* the picture is allocated by the decoder, no need to free it */
-        //pgm_save(m_frame->data[0], m_frame->linesize[0],
-        //         m_context->width, m_context->height, buf);
-    }
-    if (m_avpkt.data) {
-        m_avpkt.size -= len;
-        m_avpkt.data += len;
+		
+		if (!m_bAllocPicture)
+		{
+			m_dataLen = av_image_alloc(m_dst_data, m_dst_linesize,
+                              352, 288, PIX_FMT_YUV420P, 1);
+			m_bAllocPicture = true;
+		}
+		if (m_sws_ctx == NULL)
+		{
+			m_sws_ctx = sws_getContext(m_context->width, m_context->height, PIX_FMT_YUV420P,
+                             352, 288, PIX_FMT_RGB24,
+                             SWS_BILINEAR, NULL, NULL, NULL);
+		}
+		
+		m_sws_ctx = sws_getCachedContext(m_sws_ctx,
+                      m_context->width, m_context->height, PIX_FMT_YUV420P,
+                      352, 288,  PIX_FMT_RGB24, SWS_X, NULL, NULL, NULL);
+
+		sws_scale(m_sws_ctx, m_frame->data, m_frame->linesize,
+              0, 288, m_dst_data, m_dst_linesize);
+		//int nLen = 0;
+		//for(int i=0; i<m_context->height; i++)
+		//{
+		//	memcpy(m_pBuffer + nLen, (const char *)m_frame->data[0] + i * m_frame->linesize[0], m_context->width);
+		//	nLen += m_context->width;
+		//	m_pRender->InputData((const char *)m_frame->data[0] + i * m_frame->linesize[0], m_context->width);
+		//}
+		m_pRender->InputData((const char *)m_dst_data[0], m_dataLen);
+			
+		fprintf(stderr, "w = %d h = %d d_len = %d\n", m_context->width, m_context->height, m_dataLen);
     }
     return 0;
 }
 
 int CXDecoder::InputData(const char *pData, int nLen)
 {
-	m_avpkt.data = (uint8_t *)pData;
-    m_avpkt.size = nLen;
-	if (decode_write_frame() < 0)
-		return J_UNKNOW;
+	m_buffer.PushData(pData, nLen);
 		
 	return J_OK;
 }
 
 void *CXDecoder::Entry()
 {
+	char *pBuffer = new char[1024 * 1024];
+	int nLen = 0;
+	while (m_bRun)
+	{
+		nLen = m_buffer.PopData(pBuffer);
+		if (nLen == 0)
+			usleep(1);
+		else 
+		{
+			m_avpkt.data = (uint8_t *)pBuffer;
+			m_avpkt.size = nLen;
+			DecodeRendFrame();
+		}
+	}
+	delete pBuffer;
+
 	return NULL;
 }
 
 		
 void CXDecoder::OnExit()
 {
-	
+	DeinitDecoder();
+	Delete();
 }
