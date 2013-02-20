@@ -158,7 +158,7 @@ void CBrFrame::ShowRealView()
 	
 	//改变模式操作
 	((CCatalogDlg *)m_pCatalogDlg)->ChangeMode(1, 238);
-	((CVideoDlg *)m_pVideoDlg)->ChangeMode(4);
+	((CVideoDlg *)m_pVideoDlg)->ChangeMode(1);
 }
 
 void CBrFrame::ShowHistoryUI()

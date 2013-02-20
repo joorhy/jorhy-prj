@@ -25,6 +25,8 @@ class CXDecoder : public wxThread
 	public:
 		int Start();
 		void Stop();
+		int AspectRatio(int w, int h);
+		int Resize(int x, int y);
 		int InputData(const char *pData, int nLen);
 		
 		
@@ -35,14 +37,16 @@ class CXDecoder : public wxThread
 	private:
 		int InitDecoder();
 		void DeinitDecoder();
-		int DecodeRendFrame();
+		int DecodeRendFrame(const char *pData, int nLen);
 							  
 	private:
 		CXRender *m_pRender;
-		char *m_pBuffer;
 		uint8_t *m_dst_data[4];
 		int m_dst_linesize[4];
+		uint8_t *m_src_data[4];
+		int m_src_linesize[4];
 		int m_dataLen;
+		int m_srcLen;
 		AVCodec *m_codec;
 		AVCodecContext *m_context;
 		AVFrame *m_frame;
@@ -50,6 +54,9 @@ class CXDecoder : public wxThread
 		struct SwsContext *m_sws_ctx;
 		CXBuffer m_buffer;
 		bool m_bRun;
-		bool m_bAllocPicture;
+		int m_width;
+		int m_height;
+		wxMutex m_locker;
+		wxSemaphore m_sem;
 };
 #endif //~__X_DECODER_H_

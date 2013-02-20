@@ -72,6 +72,7 @@ int CVideoDlg::SetIdleWin(const wxWindow *pWindow)
         if (m_videoWin[i].video_win->GetWindow() == pWindow)
         {
             m_videoWin[i].is_busy = false;
+			m_videoWin[i].video_win->Refresh();
             return 0;
         }
     }

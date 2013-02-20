@@ -32,6 +32,7 @@ private:
 
 	HikStreamHead m_hikStreamHead;
 	char *m_pOutBuff;
+	bool m_bIsPrepared;
 	bool m_bIsComplate;
 	int m_nDataLen;
 

@@ -78,7 +78,7 @@ int CHikAdapter::EnableAlarm()
 	HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead));
-	commHead.protoType = (THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99;
+	commHead.protoType = 90;//(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99;
 	commHead.command = htonl(HIK_CMD_ALARMCHAN);
 	commHead.userId = htonl(m_userId);
 	GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);
@@ -176,11 +176,11 @@ int CHikAdapter::Login()
 	if (loginRetBuf.retHead.retVal != HIK_RET_OK)
 		return J_INVALID_DEV;
 
-	if (loginRetBuf.retHead.len != sizeof(loginRetBuf))
+	/*if (loginRetBuf.retHead.len != sizeof(loginRetBuf))
 	{
 		J_OS::LOGINFO("loginRetBuf.retHead.len != sizeof(loginRetBuf)");
 		return J_DEV_PARAM_ERROR;
-	}
+	}*/
 
 	nReadLen = sizeof(HikLoginRet);
 	if (loginSocket.Read((char*) &loginRetBuf.retData, nReadLen) < 0)
@@ -222,7 +222,7 @@ int CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 	HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead) + nDataLen);
-	commHead.protoType = /*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : */99;
+	commHead.protoType = 90/*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99*/;
 	commHead.command = htonl(nCmd);
 	commHead.userId = htonl(m_userId);
 	GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);

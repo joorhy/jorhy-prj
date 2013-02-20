@@ -34,6 +34,7 @@ int CJosMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char 
 	pDataHead->frame_type = htons(streamHeader.frameType);
 	pDataHead->time_stamp = htonll(streamHeader.timeStamp);
 	pDataHead->frame_seq = htonl(m_nFrameSeq++);
+	pDataHead->b_last_frame = 0;
 	
 	memcpy(pOutputData + sizeof(J_DataHead), pInputData, streamHeader.dataLen);
 	nOutLen = streamHeader.dataLen + sizeof(J_DataHead);

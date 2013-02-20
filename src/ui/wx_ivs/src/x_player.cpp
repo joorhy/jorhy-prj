@@ -23,17 +23,23 @@ CXPlayer::CXPlayer(const char *pSvrAddr)
 
 CXPlayer::~CXPlayer()
 {
+	if (m_pReciver)
+	{
+		m_pReciver->Disconnect();
+		delete m_pReciver;
+	}
+	
 	if (m_pDecoder)
 	{
 		m_pDecoder->Stop();
-		delete m_pDecoder;
+		//delete m_pDecoder;
 	}
 		
 	if (m_pRender)
-		delete m_pRender;
-		
-	if (m_pReciver)
-		delete m_pReciver;
+	{
+		m_pRender->Stop();
+		//delete m_pRender;
+	}
 }
 
 int CXPlayer::Start(const char *pResid, const XWindowInfo &winInfo)
@@ -44,7 +50,7 @@ int CXPlayer::Start(const char *pResid, const XWindowInfo &winInfo)
 	m_nMode = m_winInfo.mode;
 	if (m_nMode == 1)
 	{
-		m_pRender->Start(winInfo.window, winInfo.w, winInfo.h);
+		m_pRender->Start(winInfo.window);
 		m_pReciver->Connect(m_svrAddr.c_str(), 8002);
 		m_pDecoder->Start();
 		m_pReciver->StartView(pResid, 0);
@@ -74,6 +80,8 @@ int CXPlayer::AspectRatio(int w, int h)
 {
     m_winInfo.w = w;
     m_winInfo.h = h;
+	m_pDecoder->AspectRatio(w, h);
+	m_pRender->AspectRatio(w, h);
 
     return 0;
 }

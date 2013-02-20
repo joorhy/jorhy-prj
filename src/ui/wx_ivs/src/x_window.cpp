@@ -5,6 +5,7 @@
 
 BEGIN_EVENT_TABLE(CVideoWin, wxWindow)
     EVT_SIZE(CVideoWin::OnSize)
+	EVT_PAINT(CVideoWin::OnPaint)
     EVT_RIGHT_DOWN(CVideoWin::OnRightDown)
     EVT_MENU(Menu_Window_Close, CVideoWin::OnWindowClose)
     EVT_LEFT_DOWN(CVideoWin::OnMouseLeftDown)
@@ -66,6 +67,11 @@ void CVideoWin::OnSize(wxSizeEvent &event)
             h - 2);
     m_panel->CenterOnParent();
     //fprintf(stderr, "CVideoWin::OnSize %d:%d\n", w, h);
+}
+
+void CVideoWin::OnPaint(wxPaintEvent &event)
+{
+	
 }
 
 void CVideoWin::OnRightDown(wxMouseEvent &event)

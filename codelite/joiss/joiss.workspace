@@ -25,6 +25,7 @@
   <Project Name="JosStream" Path="JosStream.project" Active="No"/>
   <Project Name="JospControl" Path="JospControl.project"/>
   <Project Name="MCControl" Path="MCControl.project"/>
+  <Project Name="OnvifHost" Path="OnvifHost.project"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="joiss" ConfigName="Debug"/>
@@ -66,6 +67,7 @@
       <Project Name="JosStream" ConfigName="Debug"/>
       <Project Name="JospControl" ConfigName="Debug"/>
       <Project Name="MCControl" ConfigName="Debug"/>
+      <Project Name="OnvifHost" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="joiss" ConfigName="Release"/>
@@ -107,6 +109,7 @@
       <Project Name="JosStream" ConfigName="Release"/>
       <Project Name="JospControl" ConfigName="Release"/>
       <Project Name="MCControl" ConfigName="Release"/>
+      <Project Name="OnvifHost" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

@@ -20,6 +20,7 @@ class CVideoWin : public wxWindow
 
 	public:
         void OnSize(wxSizeEvent& event);
+		void OnPaint(wxPaintEvent &event);
         void OnRightDown(wxMouseEvent &event);
         void OnWindowClose(wxCommandEvent& event);
         void OnMouseLeftDown(wxMouseEvent &event);

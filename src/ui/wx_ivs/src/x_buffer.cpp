@@ -12,13 +12,18 @@ CXBuffer::CXBuffer(int nBuffSize)
 
 CXBuffer::~CXBuffer()
 {
-	delete m_pBuffer;
+	m_locker.Lock();
+	if (m_pBuffer)
+	{
+		delete m_pBuffer;
+		m_pBuffer = NULL;
+	}
+	m_locker.Unlock();
 }
 	
 int CXBuffer::PushData(const char *pData, int nLen)
 {
 	m_locker.Lock();
-	//fprintf(stderr, "CXBuffer::Write len = %d\n", nLen);
 	while (GetIdleLength() < (nLen + J_MEMNODE_LEN))
 	{
 		if (m_nDataLen <= 0)
@@ -54,9 +59,9 @@ int CXBuffer::PopData(char *pData)
 
 void CXBuffer::Read(char *pData, int nLen)
 {
-	if (m_pEnd - (char *)m_pReadPoint < nLen)
+	if (m_pEnd - (char *)m_pReadPoint <= nLen)
 	{
-		int nLastLen = m_pEnd - (char *)m_pReadPoint;
+		int nLastLen = m_pEnd - (char *)m_pReadPoint - 1;
 		memcpy(pData, m_pReadPoint, nLastLen);
 		memcpy(pData + nLastLen, m_pBegin, nLen - nLastLen);
 	}
@@ -70,9 +75,9 @@ void CXBuffer::Read(char *pData, int nLen)
 
 void CXBuffer::Write(const char *pData, int nLen)
 {
-	if (m_pEnd - m_pWritePoint < nLen)
+	if (m_pEnd - m_pWritePoint <= nLen)
 	{
-		int nLastLen = m_pEnd - m_pWritePoint;
+		int nLastLen = m_pEnd - m_pWritePoint - 1;
 		memcpy(m_pWritePoint, pData, nLastLen);
 		memcpy(m_pBegin, pData + nLastLen, nLen - nLastLen);
 	}
@@ -102,9 +107,9 @@ void CXBuffer::EraseBuffer()
 char *CXBuffer::AddBuffer(char *pBuffer, int nLen)
 {
 	char *pNextBuff = NULL;
-	if (m_pEnd - pBuffer < nLen)
+	if (m_pEnd - pBuffer <= nLen)
 	{
-		pNextBuff = m_pBegin + (nLen - (m_pEnd - pBuffer));
+		pNextBuff = m_pBegin + (nLen - (m_pEnd - pBuffer - 1));
 	}
 	else
 	{

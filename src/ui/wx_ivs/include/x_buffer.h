@@ -7,7 +7,7 @@
 
 #include <wx/thread.h>
 
-#define BUFFER_SIZE (1024 * 1024 * 10)
+#define BUFFER_SIZE (1024 * 1024 * 50)
 
 struct J_MEMNODE
 {

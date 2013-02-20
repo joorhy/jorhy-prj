@@ -132,7 +132,7 @@ int CHikChannel::EmunFileByTime(time_t beginTime, time_t endTime,
 	HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead) + sizeof(HikFindFile));
-	commHead.protoType = /*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : */99;
+	commHead.protoType = 90;/*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99*/;
 	commHead.command = htonl(HIK_CMD_FIND_FILE_V3);
 	commHead.userId = htonl(m_pAdapter->GetUserId());
 	m_pAdapter->GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);
@@ -351,7 +351,7 @@ int CHikChannel::StartView()
 	HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead) + sizeof(ViewSendData));
-	commHead.protoType = /*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : */99;
+	commHead.protoType = 90;/*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99*/;
 	commHead.command = htonl(HIK_CMD_VIDEO_TCP);
 	commHead.userId = htonl(m_pAdapter->GetUserId());
 	m_pAdapter->GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);
@@ -425,7 +425,7 @@ void CHikChannel::ExchangeData()
 	HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead));
-	commHead.protoType = /*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : */99;
+	commHead.protoType = 90;/*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99*/;
 	commHead.command = htonl(HIK_CMD_DATA_EXCHANGE);
 	commHead.userId = htonl(m_pAdapter->GetUserId());
 	m_pAdapter->GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);
@@ -444,7 +444,7 @@ int CHikChannel::MakeIFrame(int nChannel)
 	HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead) + sizeof(int));
-	commHead.protoType = (THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99;
+	commHead.protoType = 90;//(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99;
 	commHead.command = htonl(HIK_CMD_MAIN_MAKE_IFRAME);
 	commHead.userId = htonl(m_pAdapter->GetUserId());
 	m_pAdapter->GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);
@@ -502,7 +502,7 @@ int CHikChannel::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 	HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead) + nDataLen);
-	commHead.protoType = (THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99;
+	commHead.protoType = 90;//(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99;
 	commHead.command = htonl(nCmd);
 	commHead.userId = htonl(m_pAdapter->GetUserId());
 	m_pAdapter->GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);

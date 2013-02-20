@@ -17,8 +17,9 @@ class CXRender : public wxThread
 		~CXRender();
 		
 	public:
-		int Start(GdkWindow *window, int w, int h);
+		int Start(GdkWindow *window);
 		void Stop();
+		int AspectRatio(int w, int h);
 		int InputData(const char *pData, int nLen);
 		
 	public:
@@ -39,6 +40,8 @@ class CXRender : public wxThread
 		Display *m_display;
 		Drawable m_drawable;
 		GC m_gc;
+		wxMutex m_locker;
+		wxSemaphore m_sem;
 };
 
 #endif //~__X_RENDER_H_

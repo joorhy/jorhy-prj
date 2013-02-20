@@ -7,21 +7,59 @@
 enum
 {
   // id for socket
-  SOCKET_ID = 1001
+  SOCKET_1 = 1001, 
+  SOCKET_2, SOCKET_3, SOCKET_4, SOCKET_5,
+  SOCKET_6, SOCKET_7, SOCKET_8, SOCKET_9,
+  SOCKET_10, SOCKET_11, SOCKET_12, SOCKET_13,
+  SOCKET_14, SOCKET_15, SOCKET_16, SOCKET_17,
+  SOCKET_18, SOCKET_19, SOCKET_20, SOCKET_21,
+  SOCKET_22, SOCKET_23, SOCKET_24, SOCKET_25
 };
 
 BEGIN_EVENT_TABLE(CXReciver, wxEvtHandler)
-  EVT_SOCKET(SOCKET_ID, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_1, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_2, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_3, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_4, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_5, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_6, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_7, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_8, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_9, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_10, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_11, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_12, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_13, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_14, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_15, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_16, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_17, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_18, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_19, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_20, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_21, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_22, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_23, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_24, CXReciver::OnSocketEvent)
+  EVT_SOCKET(SOCKET_25, CXReciver::OnSocketEvent)
 END_EVENT_TABLE()
+
+SocketId_Info CXReciver::m_idInfo[25] = {
+	{SOCKET_1, 1}, {SOCKET_2, 1}, {SOCKET_3, 1}, {SOCKET_4, 1}, {SOCKET_5, 1}, 
+	{SOCKET_6, 1}, {SOCKET_7, 1}, {SOCKET_8, 1}, {SOCKET_9, 1}, {SOCKET_10, 1}, 
+	{SOCKET_11, 1}, {SOCKET_12, 1}, {SOCKET_13, 1}, {SOCKET_14, 1}, {SOCKET_15, 1}, 
+	{SOCKET_16, 1}, {SOCKET_17, 1}, {SOCKET_18, 1}, {SOCKET_19, 1}, {SOCKET_20, 1}, 
+	{SOCKET_21, 1}, {SOCKET_22, 1}, {SOCKET_23, 1}, {SOCKET_24, 1}, {SOCKET_25, 1}
+};
 
 CXReciver::CXReciver(CXDecoder *decoder)
 {
-	m_bRun = false;
 	m_pDecoder = decoder;
 	m_pRecvBuff = new char[1024 * 1024];
-	
-	m_sock = new wxSocketClient();
-	m_sock->SetEventHandler(*this, SOCKET_ID);
+
+	m_nSocketId = CXReciver::GetIdleId();
+	m_sock = new wxSocketClient(m_nSocketId);
+	m_sock->SetEventHandler(*this, m_nSocketId);
 	m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG |
                      wxSOCKET_INPUT_FLAG |
 					 //wxSOCKET_OUTPUT_FLAG |
@@ -35,12 +73,14 @@ CXReciver::~CXReciver()
 		delete m_pRecvBuff;
 	
 	delete m_sock;
+	CXReciver::SetIdleId(m_nSocketId);
 }
 
 void CXReciver::OnSocketEvent(wxSocketEvent& event)
 {
 	int x = sizeof(J_DataHead);
-	int nDataLen;
+	int nDataLen = 0;
+	int nRecvLen = 0;
 	J_DataHead dataHead;
 	switch(event.GetSocketEvent())
 	{
@@ -52,15 +92,13 @@ void CXReciver::OnSocketEvent(wxSocketEvent& event)
 			nDataLen = 0;
 			nDataLen = ntohs(dataHead.data_len);
 			//fprintf(stderr, "recive_len = %d\n", nDataLen);
-			if (nDataLen > 0)
+			while (nRecvLen < nDataLen)
 			{
-				m_sock->Read(m_pRecvBuff, nDataLen);
-				static FILE *fp = NULL;
-				if (fp == NULL)
-					fp = fopen("test.h264", "wb+");
-				fwrite (m_pRecvBuff, 1, nDataLen, fp);
-				m_pDecoder->InputData(m_pRecvBuff, nDataLen);
+				m_sock->Read(m_pRecvBuff + nRecvLen, nDataLen - nRecvLen);
+				nRecvLen += m_sock->LastCount();
+				//fprintf(stderr, "recive_len = %d last_count = %d\n", nDataLen, m_sock->LastCount());
 			}
+			m_pDecoder->InputData(m_pRecvBuff, nDataLen);
 		}
 		break;
 	case wxSOCKET_LOST: 
@@ -77,23 +115,19 @@ void CXReciver::OnSocketEvent(wxSocketEvent& event)
 
 int CXReciver::Connect(const char *pAddr, int nPort)
 {
-	m_bRun = true;
 	wxIPV4address addr;
     addr.Hostname(wxString::FromUTF8(pAddr));
     addr.Service(nPort);
 
 	m_sock->Connect(addr, false);
 	m_sock->WaitOnConnect(3);
-	
-	//m_sock.SetTimeout(1);
-	//m_sock.SetFlags(wxSOCKET_NOWAIT);
 		
 	return 0;
 }
 
 void CXReciver::Disconnect()
 {
-	m_bRun = false;
+	m_sock->Close();
 }
 
 int CXReciver::StartView(const char *pResid, int nStreamType)
@@ -105,8 +139,6 @@ int CXReciver::StartView(const char *pResid, int nStreamType)
 	pRealViewData->stream_type = nStreamType;
 	
 	m_sock->Write(write_buff, sizeof(J_CtrlHead) + sizeof(J_RealViewData));
-	//if (m_sock->LastError() != wxSOCKET_NOERROR)
-	//	return J_SOCKET_ERROR;
 		
 	J_CtrlHead ctrlHead = {0};
 	m_sock->Read(&ctrlHead, sizeof(ctrlHead));

@@ -113,13 +113,13 @@ int CHikParser2::Deinit()
 
 int CHikParser2::InputData(const char *pData, int nLen)
 {
-	/*static FILE *fp = NULL;
-	if (fp == NULL)
-        fp = fopen("test.hik", "wb+");
-    fwrite(pData, 1, nLen, fp);
-	fflush(fp);*/
 	if (m_pDataBuff)
 	{
+		static FILE *fp = NULL;
+		if (fp == NULL)
+			fp = fopen("test.hik", "wb+");
+		fwrite(pData, 1, nLen, fp);
+		
 		memcpy(m_pDataBuff + m_nDataSize, pData, nLen);
 		m_nDataSize += nLen;
 	}
@@ -141,6 +141,7 @@ int CHikParser2::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 	int nAACLen = 0;
 	unsigned char aacOutBuff[2048] = {0};
 
+	m_bIsPrepared = false;
 	m_bIsComplate = false;
 	while (!m_bIsComplate)
 	{
@@ -177,6 +178,7 @@ int CHikParser2::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 				break;
 			case H264_TYPE:
 				{
+					//fprintf(stderr, "len1 = %d\n", i_pack_length);
 					char *p_data_264 = m_pDataBuff + VIDEO_HEAD_LENGTH(m_pDataBuff);
 					if (memcmp(p_data_264, H264_I_HEAD, 5) == 0)
 					{
@@ -187,6 +189,20 @@ int CHikParser2::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 					{
 						m_bIsComplate = true;
 						nFrameType = J_VideoPFrame;
+					}
+					/*if (m_bIsPrepared && memcmp(p_data_264, H264_I_HEAD, 4) == 0)*/
+					else
+					{
+						if (memcmp(p_data_264, H264_I_HEAD, 4) != 0)
+						{
+							//for (int i = 0; i < i_pack_length; i++)
+							//	fprintf(stderr, "%02X ", m_pDataBuff[i] & 0xFF);
+							//fprintf(stderr, "len = %d\n", i_pack_length);
+							//memcpy(m_pOutBuff + m_nDataLen, H264_I_HEAD, 5);
+							//m_nDataLen += 5;
+							//m_bIsComplate = true;
+							//nFrameType = J_VideoPFrame;
+						}
 					}
 					memcpy(m_pOutBuff + m_nDataLen, p_data_264, VIDEO_DATA_LENGTH(m_pDataBuff));
 					m_nDataLen += VIDEO_DATA_LENGTH(m_pDataBuff);
@@ -209,6 +225,8 @@ int CHikParser2::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 		if (nFrameType == J_VideoIFrame || nFrameType == J_VideoPFrame)
 		{
 			memcpy(pData, m_pOutBuff, m_nDataLen);
+			//if (memcmp(pData, H264_I_HEAD, 4) != 0)
+			//	fprintf(stderr, "h264 %02x %02x %02x %02x\n", pData[0], pData[1], pData[2], pData[3]);
 			nLen = m_nDataLen;
 			m_nDataLen = 0;
 		}

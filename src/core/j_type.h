@@ -64,6 +64,10 @@
 #define JO_PTZ_CONTROL_RET  0x0C		//云镜控制返回
 #define JO_RCD_SEARCH		0x0D		//历史文件查询
 #define JO_RCD_SEARCH_RET	0x0E		//历史文件查询返回
+#define JO_OPEN_FILE		0x0F		//打开历史视频
+#define JO_OPEN_FILE_RET	0x10		//打开历史视频返回
+#define JO_REQ_DATA			0x11		//请求数据
+#define JO_REQ_DATA_RET		0x12		//请求数据应答
 
 #define JO_MAX_ASIOSIZE 1024
 
@@ -336,6 +340,7 @@ struct J_DataHead
 	uint16_t frame_type;	//3-I帧,4-B帧,5-P帧,6-音频帧
 	int64_t time_stamp;		//时间戳
 	uint32_t frame_seq;		//帧序列号
+	int b_last_frame;		//数据结束标准
 };
 
 #endif //~__J_TYPE_H_

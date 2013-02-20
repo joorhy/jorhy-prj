@@ -24,9 +24,9 @@
     <File Name="../../src/ui/wx_ivs/include/x_rcd_slider.h"/>
     <File Name="../../src/core/j_type.h"/>
     <File Name="../../src/ui/wx_ivs/include/x_reciver.h"/>
-    <File Name="../../src/ui/wx_ivs/include/x_decoder.h"/>
     <File Name="../../src/ui/wx_ivs/include/x_render.h"/>
     <File Name="../../src/ui/wx_ivs/include/x_buffer.h"/>
+    <File Name="../../src/ui/wx_ivs/include/x_decoder.h"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
