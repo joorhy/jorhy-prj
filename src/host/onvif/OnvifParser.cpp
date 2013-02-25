@@ -1,18 +1,13 @@
 #include "OnvifParser.h"
 
-const char H264_HEAD[5] = { 0x00, 0x00, 0x00, 0x01};
-const int H264_HEAD_LEN = 4;
-#define IS_H264_DATA(x) ((*(x+4) & 0x0F) == 7 || (*(x+4) & 0x0F) == 1)
-#define IS_H264_OTHER(x) ((*(x+4) & 0x0F) == 8 || (*(x+4) & 0x0F) == 5 || (*(x+4) & 0x0F) == 6)
-#define IS_H264_KEY(x)	((*(x+4) & 0x0F) == 7)
-#define RATE 2048
-#define PACKET_SIZE	8000
-
 COnvifParser::COnvifParser()
 {
 	m_pDataBuff = NULL;
+	m_pOutBuff = NULL;
 	m_nDataSize = 0;
-	m_nSeqNum = rand();
+	m_nOffset = 0;
+	m_bStartSlice = true;
+	m_bIsComplate = false;
 }
 
 COnvifParser::~COnvifParser()
@@ -24,6 +19,9 @@ int COnvifParser::Init(int nDataType)
 {
 	if (m_pDataBuff == NULL)
 		m_pDataBuff = new char[1024 * 1024];
+	
+	if (m_pOutBuff == NULL)
+		m_pOutBuff = new char[1024 * 1024];
 
 	return J_OK;
 }
@@ -35,73 +33,92 @@ int COnvifParser::Deinit()
 		delete m_pDataBuff;
 		m_pDataBuff = NULL;
 	}
+	
+	if (m_pOutBuff != NULL)
+	{
+		delete m_pOutBuff;
+		m_pOutBuff = NULL;
+	}
 
 	return J_OK;
 }
 
 int COnvifParser::InputData(const char *pData, int nLen)
 {
-	//WLock(m_rwLocker);
 	memcpy(m_pDataBuff + m_nDataSize, pData, nLen);
 	m_nDataSize += nLen;
-	//RWUnlock(m_rwLocker);
 
 	return J_OK;
 }
 
 int COnvifParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 {
-	//WLock(m_rwLocker);
-	int nOffset = 0;
-	while (memcmp(m_pDataBuff + nOffset, H264_HEAD, H264_HEAD_LEN) != 0 && nOffset < m_nDataSize)
+	if (m_nDataSize < 4)
+		return J_NOT_COMPLATE;
+		
+	int nLength = 0;
+	char *pEsData = NULL;
+	m_bIsComplate = false;
+	//获得时间戳
+	streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+	streamHeader.frameType = J_VideoPFrame;
+	while (!m_bIsComplate)
 	{
-		++nOffset;
-	}
-
-	if (nOffset > 0)
-	{
-	    J_OS::LOGINFO("COnvifParser::GetOnePacket Data Error");
-	    m_nDataSize -= nOffset;
-		memmove(m_pDataBuff, m_pDataBuff + nOffset, m_nDataSize);
-		nOffset = 0;
-	}
-
-	nOffset = 4;
-	while ( nOffset < m_nDataSize)
-	{
-		if (memcmp(m_pDataBuff + nOffset, H264_HEAD, H264_HEAD_LEN) == 0)
+		assert((m_pDataBuff[0] & 0xFF) == 0x24);
+		nLength = ((m_pDataBuff[2] & 0xFF) << 8) + (m_pDataBuff[3] & 0xFF); 
+		if (m_nDataSize < (nLength + 4))
+			return J_NOT_COMPLATE;
+			
+		if ((m_pDataBuff[1] & 0xFF) == 0x00)
 		{
-			if(IS_H264_OTHER(m_pDataBuff + nOffset))
+			if (m_pDataBuff[5] & 0x80)
+				m_bIsComplate = true;
+				
+			if (m_bStartSlice)
 			{
-				++nOffset;
-				continue;
+				m_pOutBuff[m_nOffset] = 0x00;
+				m_pOutBuff[m_nOffset + 1] = 0x00;
+				m_pOutBuff[m_nOffset + 2] = 0x00;
+				m_pOutBuff[m_nOffset + 3] = 0x01;
+				m_nOffset += 4;
+			}
+			pEsData = m_pDataBuff + 16;
+			int nal_unit_type = pEsData[0] & 0x1f;
+			if (nal_unit_type == 28) //FU_A
+			{
+				if (pEsData[1] & 0x80)
+				{
+					int forbidden_bit = pEsData[0] & 0x80;
+					int nal_reference_idc = (pEsData[0] & 0x60);
+					nal_unit_type = pEsData[1] & 0x1f;
+					m_pOutBuff[m_nOffset] = forbidden_bit + nal_reference_idc + nal_unit_type;
+					m_nOffset += 1;
+				}
+				memcpy(m_pOutBuff + m_nOffset, pEsData + 2, nLength - 12 - 2);
+				m_nOffset += nLength - 12 - 2;
+				m_bStartSlice = false;
 			}
 			else
 			{
-				break;
+				if (nal_unit_type == 7)
+					streamHeader.frameType = J_VideoIFrame;
+					
+				memcpy(m_pOutBuff + m_nOffset, pEsData, nLength - 12);
+				m_nOffset += nLength - 12;
+				m_bStartSlice = true;
 			}
 		}
-		++nOffset;
+		m_nDataSize -= nLength + 4;
+		memmove(m_pDataBuff, m_pDataBuff + nLength + 4, m_nDataSize);
 	}
-
-	if (nOffset == m_nDataSize)
-	{
-		return J_NOT_COMPLATE;//不足一包数据
-	}
-
-    streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
-	if (IS_H264_DATA(m_pDataBuff))
-	{
-		memcpy(pData, m_pDataBuff, nOffset);
-		if (IS_H264_KEY(m_pDataBuff))
-            streamHeader.frameType = J_VideoIFrame;
-        else
-            streamHeader.frameType = J_VideoPFrame;
-        streamHeader.dataLen = nOffset;
-	}
-	memmove(m_pDataBuff, m_pDataBuff + nOffset, m_nDataSize - nOffset);
-	m_nDataSize -= nOffset;
-	//RWUnlock(m_rwLocker);
-
+	static FILE *fp = NULL;
+	if (fp == NULL)
+		fp = fopen("test.h264", "wb+");
+	fwrite(m_pOutBuff, 1, m_nOffset, fp);
+	streamHeader.dataLen = m_nOffset;
+	memcpy(pData, m_pOutBuff, m_nOffset);
+	m_nOffset = 0;
+	m_bStartSlice = true;
+	
 	return J_OK;
 }

@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=root
-Date                   :=02/20/2013
+Date                   :=02/25/2013
 CodeLitePath           :="/home/jorhy/.codelite"
 LinkerName             :=g++
 ArchiveTool            :=ar rcus
@@ -48,7 +48,7 @@ LibPath                := "$(LibraryPathSwitch)."
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects=$(IntermediateDirectory)/onvif_OnvifAdapter$(ObjectSuffix) $(IntermediateDirectory)/onvif_OnvifChannel$(ObjectSuffix) $(IntermediateDirectory)/onvif_OnvifParser$(ObjectSuffix) $(IntermediateDirectory)/onvif_OnvifStream$(ObjectSuffix) 
+Objects=$(IntermediateDirectory)/onvif_OnvifAdapter$(ObjectSuffix) $(IntermediateDirectory)/onvif_OnvifChannel$(ObjectSuffix) $(IntermediateDirectory)/onvif_OnvifParser$(ObjectSuffix) $(IntermediateDirectory)/onvif_OnvifStream$(ObjectSuffix) $(IntermediateDirectory)/onvif_RtspHelper$(ObjectSuffix) 
 
 ##
 ## Main Build Targets 
@@ -100,6 +100,14 @@ $(IntermediateDirectory)/onvif_OnvifStream$(DependSuffix): ../../src/host/onvif/
 $(IntermediateDirectory)/onvif_OnvifStream$(PreprocessSuffix): ../../src/host/onvif/OnvifStream.cpp
 	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/onvif_OnvifStream$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/onvif/OnvifStream.cpp"
 
+$(IntermediateDirectory)/onvif_RtspHelper$(ObjectSuffix): ../../src/host/onvif/RtspHelper.cpp $(IntermediateDirectory)/onvif_RtspHelper$(DependSuffix)
+	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/host/onvif/RtspHelper.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/onvif_RtspHelper$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/onvif_RtspHelper$(DependSuffix): ../../src/host/onvif/RtspHelper.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/onvif_RtspHelper$(ObjectSuffix) -MF$(IntermediateDirectory)/onvif_RtspHelper$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/host/onvif/RtspHelper.cpp"
+
+$(IntermediateDirectory)/onvif_RtspHelper$(PreprocessSuffix): ../../src/host/onvif/RtspHelper.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/onvif_RtspHelper$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/onvif/RtspHelper.cpp"
+
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
 ##
@@ -118,6 +126,9 @@ clean:
 	$(RM) $(IntermediateDirectory)/onvif_OnvifStream$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/onvif_OnvifStream$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/onvif_OnvifStream$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/onvif_RtspHelper$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/onvif_RtspHelper$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/onvif_RtspHelper$(PreprocessSuffix)
 	$(RM) $(OutputFile)
 
 

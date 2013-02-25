@@ -3,7 +3,7 @@
 #include "x_socket.h"
 #include "x_time.h"
 
-#define CLIENT_BUFFER_SIZE (1024 * 1024)
+#define CLIENT_BUFFER_SIZE (2 * 1024 * 1024)
 #define MAX_SEND_BUFF	8100
 
 CRealMediaObj::CRealMediaObj(int nSocket, int nStreamType, J_Obj *pObj)

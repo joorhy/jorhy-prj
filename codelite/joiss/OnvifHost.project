@@ -7,12 +7,14 @@
     <File Name="../../src/host/onvif/OnvifChannel.cpp"/>
     <File Name="../../src/host/onvif/OnvifParser.cpp"/>
     <File Name="../../src/host/onvif/OnvifStream.cpp"/>
+    <File Name="../../src/host/onvif/RtspHelper.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/host/onvif/OnvifAdapter.h"/>
     <File Name="../../src/host/onvif/OnvifChannel.h"/>
     <File Name="../../src/host/onvif/OnvifParser.h"/>
     <File Name="../../src/host/onvif/OnvifStream.h"/>
+    <File Name="../../src/host/onvif/RtspHelper.h"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">

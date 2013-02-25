@@ -115,10 +115,10 @@ int CHikParser2::InputData(const char *pData, int nLen)
 {
 	if (m_pDataBuff)
 	{
-		static FILE *fp = NULL;
+		/*static FILE *fp = NULL;
 		if (fp == NULL)
 			fp = fopen("test.hik", "wb+");
-		fwrite(pData, 1, nLen, fp);
+		fwrite(pData, 1, nLen, fp);*/
 		
 		memcpy(m_pDataBuff + m_nDataSize, pData, nLen);
 		m_nDataSize += nLen;

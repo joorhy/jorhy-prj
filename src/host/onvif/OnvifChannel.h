@@ -2,6 +2,7 @@
 #define __ONVIFCHANNEL_H_
 #include "x_socket.h"
 #include "OnvifAdapter.h"
+#include "RtspHelper.h"
 
 class COnvifChannel : public J_ResidTmpl<J_BaseAdapter>
 					, public J_PtzControl
@@ -32,6 +33,7 @@ private:
 
 	J_OS::CTCPSocket *m_recvSocket;
 	bool m_bOpened;
+	CRtspHelper m_rtspHelper;
 };
 
 #endif //~__ONVIFCHANNEL_H_

@@ -169,7 +169,7 @@ int COnvifChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 	int nRet = StartView();
 	if (nRet != J_OK)
 	{
-	    m_pAdapter->Broken();
+	    //m_pAdapter->Broken();
 		return J_STREAM_ERROR;
 	}
 
@@ -219,26 +219,20 @@ int COnvifChannel::StartView()
 	m_recvSocket->Connect(m_pAdapter->GetRemoteIp(),
 			m_pAdapter->GetRemotePort());
 
-	char reqBuff[1024] = {0};
-	sprintf(reqBuff, viewRequest, m_nStreamType + 1, m_pAdapter->GetRemoteIp());
-	if (m_recvSocket->Write((char*)reqBuff, strlen(reqBuff)) < 0)
+	if (m_rtspHelper.OpenStream(m_recvSocket, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemotePort(), m_nChannel) != J_OK)
 	{
-		if (errno == EPIPE)
-		{
-			delete m_recvSocket;
-			m_recvSocket = NULL;
-		}
+		delete m_recvSocket;
+		m_recvSocket = NULL;
+		
 		return J_INVALID_DEV;
 	}
-
-	if (m_recvSocket->Read((char*)reqBuff, sizeof(reqBuff)) < 0)
-		return J_INVALID_DEV;
 
 	return J_OK;
 }
 
 int COnvifChannel::StopView()
 {
+	m_rtspHelper.CloseStream(m_recvSocket, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemotePort(), m_nChannel);
 	if (m_recvSocket != NULL)
 	{
 		delete m_recvSocket;

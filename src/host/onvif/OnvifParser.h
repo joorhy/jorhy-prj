@@ -4,7 +4,7 @@
 #include "x_time.h"
 
 #define DATA_BUFFER_SIZE (1024 * 1024)
-
+	
 class COnvifParser : public J_MediaParser
 {
 public:
@@ -21,7 +21,10 @@ public:
 private:
 	//J_OS::RWLocker_t m_rwLocker;
 	char *m_pDataBuff;
+	char *m_pOutBuff;
 	int m_nDataSize;
-	int m_nSeqNum;
+	int m_nOffset;
+	bool m_bIsComplate;
+	bool m_bStartSlice;
 };
 #endif //~__ONVIFPARSER_H_

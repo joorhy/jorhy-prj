@@ -15,7 +15,7 @@
   <Project Name="StreamManager" Path="StreamManager.project" Active="No"/>
   <Project Name="utils" Path="utils.project" Active="No"/>
   <Project Name="PSStream" Path="PSStream.project" Active="No"/>
-  <Project Name="TSStream" Path="TSStream.project"/>
+  <Project Name="TSStream" Path="TSStream.project" Active="No"/>
   <Project Name="RtpStream" Path="RtpStream.project"/>
   <Project Name="HttpRequest" Path="HttpRequest.project" Active="No"/>
   <Project Name="RtspRequest" Path="RtspRequest.project" Active="No"/>
