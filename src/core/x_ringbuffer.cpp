@@ -5,88 +5,46 @@
 #include "x_log.h"
 
 CRingBuffer::CRingBuffer(int nCacheFrameNum, int nBufferSize)
-: m_nBufferSize(0)
-, m_pBuffer(NULL)
-, m_nFrameNum(0)
 {
-	m_nBufferSize = nBufferSize;
-	m_nCacheFrameNum = nCacheFrameNum;
-
-	if (NULL == m_pBuffer)
-	{
-		m_pBuffer = new char[m_nBufferSize];
-	}
-
+	m_pBuffer = new char[nBufferSize];
 	m_pBegin = m_pBuffer;
-	m_pEnd = (char *)m_pBegin + m_nBufferSize;
-
-	m_pHead = m_pBegin;
-	m_pTail = m_pBegin;
+	m_pEnd = m_pBuffer + nBufferSize;
+	m_pWritePoint = m_pReadPoint = m_pBegin;
+	m_nDataLen = 0;
 }
 CRingBuffer::~CRingBuffer()
 {
-	if (m_pBuffer != NULL)
+	WLock(m_rwLocker);
+	if (m_pBuffer)
 	{
 		delete m_pBuffer;
 		m_pBuffer = NULL;
 	}
+	RWUnlock(m_rwLocker);
 }
 
 int CRingBuffer::ResetBufferSize(int nBufferSize)
 {
-	if (nBufferSize <= m_nBufferSize)
-		return 0;
-
-	if (m_pBuffer != NULL)
-	{
-		delete m_pBuffer;
-		m_pBuffer = NULL;
-	}
-
-	m_pBuffer = new char[nBufferSize];
-	m_nBufferSize = nBufferSize;
-
-	m_pBegin = m_pBuffer;
-	m_pEnd = (char *)m_pBegin + m_nBufferSize;
-
-	m_pHead = m_pBegin;
-	m_pTail = m_pBegin;
-
 	return 0;
 }
 
 int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 {
 	WLock(m_rwLocker);
-	while ((unsigned int)(m_pEnd - m_pTail) <= streamHeader.dataLen + sizeof(J_StreamHeader)
-			|| (m_nFrameNum >= m_nCacheFrameNum
-			&& (m_pTail - m_pHead > 0)))
+	int nLen = streamHeader.dataLen;
+	while (GetIdleLength() < (nLen + J_MEMNODE_LEN))
 	{
-		int nTotleLen = m_pTail - m_pHead;
-		J_StreamHeader tStreamHeader;
-		memcpy(&tStreamHeader, m_pHead, sizeof(J_StreamHeader));
-		m_pHead += tStreamHeader.dataLen + sizeof(J_StreamHeader);
-		memmove(m_pBegin, m_pHead, nTotleLen - (tStreamHeader.dataLen + sizeof(J_StreamHeader)));
-		m_pHead = m_pBegin;
-		m_pTail -= (tStreamHeader.dataLen + sizeof(J_StreamHeader));
-
-		if (tStreamHeader.frameType == J_VideoPFrame || tStreamHeader.frameType == J_VideoIFrame)
-			--m_nFrameNum;
+		if (m_nDataLen <= 0)
+			return J_UNKNOW;
+			
+		EraseBuffer();
 	}
-
-	if (m_pEnd - m_pTail > (long)(streamHeader.dataLen + sizeof(J_StreamHeader)))
-	{
-		if (streamHeader.frameType == J_VideoPFrame || streamHeader.frameType == J_VideoIFrame)
-			++m_nFrameNum;
-
-		memcpy(m_pTail, &streamHeader, sizeof(J_StreamHeader));
-		if (streamHeader.dataLen > 0)
-            memcpy(m_pTail + sizeof(J_StreamHeader), pBuffer, streamHeader.dataLen);
-		m_pTail += (streamHeader.dataLen + sizeof(J_StreamHeader));
-		RWUnlock(m_rwLocker);
-
-		return J_OK;
-	}
+		
+	m_Node.nLen = nLen + sizeof(J_StreamHeader);
+	m_Node.pData = AddBuffer(m_pWritePoint, J_MEMNODE_LEN);
+	Write((const char *)&m_Node, J_MEMNODE_LEN);
+	Write((const char *)&streamHeader, sizeof(J_StreamHeader));
+	Write(pBuffer, nLen);
 	RWUnlock(m_rwLocker);
 
 	return J_UNKNOW;
@@ -95,24 +53,75 @@ int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 {
 	RLock(m_rwLocker);
-	int nTotleLen = m_pTail - m_pHead;
-	if (m_pTail - m_pHead > 0)
+	if (m_nDataLen > 0)
 	{
-		memcpy(&streamHeader, m_pHead, sizeof(J_StreamHeader));
-		memcpy(pBuffer, m_pHead + sizeof(J_StreamHeader), streamHeader.dataLen);
-		m_pHead += streamHeader.dataLen + sizeof(J_StreamHeader);
-		memmove(m_pBegin, m_pHead, nTotleLen - (streamHeader.dataLen + sizeof(J_StreamHeader)));
-		m_pHead = m_pBegin;
-		m_pTail -= (streamHeader.dataLen + sizeof(J_StreamHeader));
-
-		if (streamHeader.frameType == J_VideoPFrame || streamHeader.frameType == J_VideoIFrame)
-			--m_nFrameNum;
-
-		RWUnlock(m_rwLocker);
-
-		return J_OK;
+		Read((char *)&m_Node, J_MEMNODE_LEN);
+		Read((char *)&streamHeader, sizeof(J_StreamHeader));
+		Read(pBuffer, m_Node.nLen - sizeof(J_StreamHeader));
+		//nRetLen = m_Node.nLen;
 	}
 	RWUnlock(m_rwLocker);
 
-	return J_UNKNOW;
+	return J_OK;
+}
+
+void CRingBuffer::Read(char *pData, int nLen)
+{
+	if (m_pEnd - (char *)m_pReadPoint <= nLen)
+	{
+		int nLastLen = m_pEnd - (char *)m_pReadPoint - 1;
+		memcpy(pData, m_pReadPoint, nLastLen);
+		memcpy(pData + nLastLen, m_pBegin, nLen - nLastLen);
+	}
+	else
+	{
+		memcpy(pData, m_pReadPoint, nLen);
+	}
+	m_pReadPoint = AddBuffer(m_pReadPoint, nLen);
+	m_nDataLen -= nLen;
+}
+
+void CRingBuffer::Write(const char *pData, int nLen)
+{
+	if (m_pEnd - m_pWritePoint <= nLen)
+	{
+		int nLastLen = m_pEnd - m_pWritePoint - 1;
+		memcpy(m_pWritePoint, pData, nLastLen);
+		memcpy(m_pBegin, pData + nLastLen, nLen - nLastLen);
+	}
+	else
+	{
+		memcpy(m_pWritePoint, pData, nLen);
+	}
+	m_pWritePoint = AddBuffer(m_pWritePoint, nLen);
+	m_nDataLen += nLen;
+	//fprintf(stderr, "CXBuffer::Write len = %d\n", m_nDataLen);
+}
+
+int CRingBuffer::GetIdleLength()
+{
+	return BUFFER_SIZE - m_nDataLen;
+}
+
+void CRingBuffer::EraseBuffer()
+{
+	J_MEMNODE node = {0};
+	Read((char *)&node, J_MEMNODE_LEN);
+	m_pReadPoint = AddBuffer(m_pReadPoint, node.nLen);
+	m_nDataLen -= node.nLen;
+	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", node.nLen);
+}
+
+char *CRingBuffer::AddBuffer(char *pBuffer, int nLen)
+{
+	char *pNextBuff = NULL;
+	if (m_pEnd - pBuffer <= nLen)
+	{
+		pNextBuff = m_pBegin + (nLen - (m_pEnd - pBuffer - 1));
+	}
+	else
+	{
+		pNextBuff = pBuffer + nLen;
+	}
+	return pNextBuff;
 }

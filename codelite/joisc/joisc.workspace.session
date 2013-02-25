@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/jorhy/WorkSpace/jorhy-prj/codelite/joisc/joisc.workspace">
-  <int Value="0" Name="m_selectedTab"/>
+  <int Value="1" Name="m_selectedTab"/>
   <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/codelite/joisc/joisc.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_decoder.cpp" Name="FileName"/>
-      <int Value="165" Name="FirstVisibleLine"/>
-      <int Value="172" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/include/x_decoder.h" Name="FileName"/>
-      <int Value="40" Name="FirstVisibleLine"/>
-      <int Value="48" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
       <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_buffer.cpp" Name="FileName"/>
       <int Value="90" Name="FirstVisibleLine"/>
-      <int Value="96" Name="CurrentLine"/>
+      <int Value="94" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_render.cpp" Name="FileName"/>
-      <int Value="78" Name="FirstVisibleLine"/>
-      <int Value="69" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/include/x_buffer.h" Name="FileName"/>
+      <int Value="14" Name="FirstVisibleLine"/>
+      <int Value="23" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>
