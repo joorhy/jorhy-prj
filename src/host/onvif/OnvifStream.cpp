@@ -70,36 +70,33 @@ int COnvifStream::OnRead(int nfd)
     }
 
     TLock(m_locker);
-    int	nLen = recv(nfd, m_pRecvBuff, RECV_SIZE, 0);
+    int	nLen = recv(nfd, m_pRecvBuff, 4, MSG_WAITALL);
     if (nLen < 0)
     {
         J_OS::LOGERROR("COnvifStream::OnRead recv data error");
         TUnlock(m_locker);
         return J_SOCKET_ERROR;
     }
-
+	int nLength = ((m_pRecvBuff[2] & 0xFF) << 8) + (m_pRecvBuff[3] & 0xFF);
+	nLen = recv(nfd, m_pRecvBuff + 4, nLength, MSG_WAITALL);
     if (nLen > 0)
     {
-        m_parser.InputData(m_pRecvBuff, nLen);
+        m_parser.InputData(m_pRecvBuff, nLength + 4);
         int nRet = 0;
-        do
-        {
-            J_StreamHeader streamHeader;
-            nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
-            if (nRet == J_OK)
-            {
-                TLock(m_vecLocker);
-                std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-                for (; it != m_vecRingBuffer.end(); it++)
-                {
-                    //J_OS::LOGINFO("begin %lld,%lld", streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
-                    //J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
-                    (*it)->PushBuffer(m_pRecvBuff, streamHeader);
-                }
-                TUnlock(m_vecLocker);
-            }
-        }
-        while (nRet == J_OK);
+		J_StreamHeader streamHeader;
+		nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
+		if (nRet == J_OK)
+		{
+			TLock(m_vecLocker);
+			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+			for (; it != m_vecRingBuffer.end(); it++)
+			{
+				//J_OS::LOGINFO("begin %lld,%lld", streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
+				//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
+				(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+			}
+			TUnlock(m_vecLocker);
+		}
     }
 
     TUnlock(m_locker);

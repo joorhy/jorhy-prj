@@ -69,19 +69,22 @@ int CRealMediaObj::Process(int nIoType)
 			nRet = m_pRingBuffer->PopBuffer(m_pDataBuff/* + sizeof(PackHeader)*/, m_streamHeader);
 			if (nRet == J_OK && m_streamHeader.dataLen > 0)
 			{
-                //J_OS::LOGINFO("end %lld,%lld", m_streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
                 int nDataLen = 0;
-				//m_streamHeader.timeStamp &= 0x1FFFFFF;
 				pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
 				if (nDataLen > 0)
 				{
+					/*static FILE *fp = NULL;
+					if (fp == NULL)
+						fp = fopen("/home/jorhy/share/test2.h264", "wb+");
+					fwrite(m_pConvetBuff, 1, nDataLen, fp);*/
+					//if (nDataLen > 0xFFFF)
+					//	printf("nDataLen = %d\n", nDataLen);
 					int nRet = 0;
 					if ((nRet = m_sendSocket.Write_n(m_pConvetBuff/* + nOffset*/, (uint32_t)nDataLen)) < 0)
 					{
 						J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
 						return J_SOCKET_ERROR;
 					}
-					//J_OS::LOGINFO("%s send_len = %d", m_pConvetBuff, nRet);
 				}
 				else
 				{

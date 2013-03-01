@@ -328,7 +328,10 @@ struct J_RealViewRetData
 {
 	char media_code[4];		//媒体类型 JOMS
 	//视频信息
+	uint8_t i_frame_ival;	//I帧间隔
 	uint8_t fps;			//帧率
+	uint16_t width;			//视频宽度
+	uint16_t height;		//视频高度
 	//音频信息
 };
 
@@ -336,8 +339,8 @@ struct J_RealViewRetData
 struct J_DataHead
 {
 	char start_code[4];		//魔术字段 JOAV
-	uint16_t data_len;		//数据长度(不包括头)
-	uint16_t frame_type;	//3-I帧,4-B帧,5-P帧,6-音频帧
+	uint32_t data_len;		//数据长度(不包括头)
+	uint32_t frame_type;	//3-I帧,4-B帧,5-P帧,6-音频帧
 	int64_t time_stamp;		//时间戳
 	uint32_t frame_seq;		//帧序列号
 	int b_last_frame;		//数据结束标准

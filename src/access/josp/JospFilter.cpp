@@ -44,7 +44,10 @@ int CJospFilter::Parser(int nSocket)
 		MakeHeader(m_pRetBuff, JO_OPEN_STREAM_RET, sizeof(J_RealViewRetData));
 		J_RealViewRetData *pRetData = (J_RealViewRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
 		memcpy(pRetData->media_code, "JOMS", 4);
+		pRetData->i_frame_ival = 30;
 		pRetData->fps = 25;
+		pRetData->width = 1280;
+		pRetData->height = 960;
 		
 		m_nRetLen = sizeof(J_CtrlHead) + sizeof(J_RealViewRetData);
 	}

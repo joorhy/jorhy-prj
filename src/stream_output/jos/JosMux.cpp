@@ -30,8 +30,8 @@ int CJosMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char 
 	nOutLen = 0;
 	J_DataHead *pDataHead = (J_DataHead *)pOutputData;
 	memcpy(pDataHead->start_code, "JOAV", 4);
-	pDataHead->data_len = htons(streamHeader.dataLen);
-	pDataHead->frame_type = htons(streamHeader.frameType);
+	pDataHead->data_len = htonl(streamHeader.dataLen);
+	pDataHead->frame_type = htonl(streamHeader.frameType);
 	pDataHead->time_stamp = htonll(streamHeader.timeStamp);
 	pDataHead->frame_seq = htonl(m_nFrameSeq++);
 	pDataHead->b_last_frame = 0;

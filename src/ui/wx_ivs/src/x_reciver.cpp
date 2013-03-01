@@ -90,7 +90,7 @@ void CXReciver::OnSocketEvent(wxSocketEvent& event)
 		if (memcmp(dataHead.start_code, "JOAV", 4) == 0)
 		{
 			nDataLen = 0;
-			nDataLen = ntohs(dataHead.data_len);
+			nDataLen = ntohl(dataHead.data_len);
 			//fprintf(stderr, "recive_len = %d\n", nDataLen);
 			while (nRecvLen < nDataLen)
 			{

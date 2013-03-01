@@ -19,8 +19,6 @@ public:
 	virtual int GetOnePacket(char *pData, J_StreamHeader &streamHeader);
 
 private:
-	//J_OS::RWLocker_t m_rwLocker;
-	char *m_pDataBuff;
 	char *m_pOutBuff;
 	int m_nDataSize;
 	int m_nOffset;
