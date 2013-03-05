@@ -4,6 +4,11 @@
 #include "x_media_msg.h"
 #include "HikStream.h"
 
+const char PACK_HEAD[5] = { 0x00, 0x00, 0x01, 0xBA };
+const char PSM_HEAD[5] = { 0x00, 0x00, 0x01, 0xBC };
+const char VIDEO_HEAD[5] = { 0x00, 0x00, 0x01, 0xE0 };
+const char AUDIO_HEAD[5] = { 0x00, 0x00, 0x01, 0xC0 };
+
 #define RECV_SIZE (1024 * 1024)
 CHikStream::CHikStream(void *pTCPSocket, std::string resid)
 : m_recvThread(0)
@@ -73,75 +78,55 @@ int CHikStream::OnRead(int nfd)
 	}
 
 	TLock(m_locker);
-	//J_OS::LOGINFO("OnRead socket = %d %d", m_nSocket, &m_vecRingBuffer);
-
-	/*static bool bFirst = true;
-	int nDataLen = 0;
-	if (bFirst)
-	{
-	    nDataLen = ((J_OS::CTCPSocket *)m_pTCPSocket)->Read_n(m_pRecvBuff, 44);
-	    bFirst = false;
-	}
-	else
-	{*/
-    //    int nLen = 0;
-    //    nLen = ((J_OS::CTCPSocket *)m_pTCPSocket)->Read_n(m_pRecvBuff, 16);
-    //    if (nLen < 0)
-    //    {
-    //        J_OS::LOGERROR("CHikStream::OnWork recv data error");
-    //        TUnlock(m_locker);
-    //        return J_SOCKET_ERROR;
-    //    }
-	//
-    //    int nDataLen = 0;
-    //    if ((m_pRecvBuff[0] & 0xFF) == 0x03)
-    //    {
-    //        nDataLen = HIK_PACK_LENGHT(m_pRecvBuff);
-    //    }
-    //    else if ((m_pRecvBuff[0] & 0xFF) == 0x24)
-    //    {
-    //        nDataLen = HIK_PACK_LENGHT2(m_pRecvBuff);
-    //    }
-	//
-    //    nLen = ((J_OS::CTCPSocket *)m_pTCPSocket)->Read_n(m_pRecvBuff + 16, nDataLen - 16);
-    //    if (nLen < 0)
-    //    {
-    //        J_OS::LOGERROR("CHikStream::OnWork recv data error");
-    //        TUnlock(m_locker);
-    //        return J_SOCKET_ERROR;
-    //    }
-	//}
-	
-	int nDataLen = ((J_OS::CTCPSocket *)m_pTCPSocket)->Read(m_pRecvBuff, 8192);
+	int nOffset = 0;
+	int nDataLen = recv(nfd, m_pRecvBuff, 4, MSG_WAITALL);
 	if (nDataLen < 0)
 	{
 		J_OS::LOGERROR("CHikStream::OnWork recv data error");
 		TUnlock(m_locker);
 		return J_SOCKET_ERROR;
 	}
-
-	if (nDataLen > 0)
+	nOffset += 4;
+	
+	int nNextLen = 0;
+	if (memcmp(m_pRecvBuff, PACK_HEAD, 4) == 0)
 	{
-		//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
-		m_parser.InputData(m_pRecvBuff, nDataLen);
+		nDataLen = recv(nfd, m_pRecvBuff + 4, 10, MSG_WAITALL);
+		nOffset += 10;
+		nNextLen = (*(m_pRecvBuff + 13) & 0x07);
+	}
+	else if ((memcmp(m_pRecvBuff, PSM_HEAD, 4) == 0)
+		|| (memcmp(m_pRecvBuff, VIDEO_HEAD, 4) == 0)
+		|| (memcmp(m_pRecvBuff, AUDIO_HEAD, 4) == 0))
+	{
+		nDataLen = recv(nfd, m_pRecvBuff + 4, 2, MSG_WAITALL);
+		nOffset += 2;
+		nNextLen = (((*(m_pRecvBuff + 4) & 0xFF) << 8) + (*(m_pRecvBuff + 5) & 0xFF)); 
+	}
+	
+	if (nNextLen > 0)
+	{
+		nDataLen = recv(nfd, m_pRecvBuff + nOffset, nNextLen, MSG_WAITALL);
+		nOffset += nNextLen;
+	}
 
+	if (nNextLen > 0)
+	{
+		m_parser.InputData(m_pRecvBuff, nOffset);
 		int nRet = 0;
-		do
+		J_StreamHeader streamHeader;
+		nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
+		if (nRet == J_OK)
 		{
-			J_StreamHeader streamHeader;
-			nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
-			if (nRet == J_OK)
+			TLock(m_vecLocker);
+			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+			for (; it != m_vecRingBuffer.end(); it++)
 			{
-				TLock(m_vecLocker);
-				std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-				for (; it != m_vecRingBuffer.end(); it++)
-				{
-					//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
-					(*it)->PushBuffer(m_pRecvBuff, streamHeader);
-				}
-				TUnlock(m_vecLocker);
+				//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
+				(*it)->PushBuffer(m_pRecvBuff, streamHeader);
 			}
-		}while (nRet == J_OK);
+			TUnlock(m_vecLocker);
+		}
 	}
 	TUnlock(m_locker);
 

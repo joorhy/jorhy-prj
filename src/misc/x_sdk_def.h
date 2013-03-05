@@ -139,6 +139,14 @@ struct r_filemove
 	string dist;				/*迁移至的路径*/
 };
 
+/*cmd=105*/
+struct r_rcd_search
+{
+	string resid;
+	time_t begin_time;			/*开始时间*/
+	time_t end_time;			/*结束时间*/				
+};
+
 
 
 /***********************************************************************************************************/

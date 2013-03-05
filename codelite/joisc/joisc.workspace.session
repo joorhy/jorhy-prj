@@ -2,26 +2,7 @@
 <Session Name="/home/jorhy/WorkSpace/jorhy-prj/codelite/joisc/joisc.workspace">
   <int Value="0" Name="m_selectedTab"/>
   <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/codelite/joisc/joisc.workspace" Name="m_workspaceName"/>
-  <TabInfoArray Name="TabInfoArray">
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_reciver.cpp" Name="FileName"/>
-      <int Value="93" Name="FirstVisibleLine"/>
-      <int Value="94" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_player.cpp" Name="FileName"/>
-      <int Value="45" Name="FirstVisibleLine"/>
-      <int Value="55" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/j_type.h" Name="FileName"/>
-      <int Value="320" Name="FirstVisibleLine"/>
-      <int Value="335" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-  </TabInfoArray>
+  <TabInfoArray Name="TabInfoArray"/>
   <SerializedObject Name="m_breakpoints">
     <long Value="0" Name="Count"/>
   </SerializedObject>

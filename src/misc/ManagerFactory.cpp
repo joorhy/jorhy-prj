@@ -25,6 +25,8 @@ J_JoManager *CManagerFactory::GetManager(const char *pManagerType)
 		if (itManager == m_managerRegistMap.end())
 		{
 			J_OS::LOGINFO("CManagerFactory::GetManager Manager not registed, managerType = %s", pManagerType);
+			TUnlock(m_lock);
+			return NULL;
 		}
 		else
 		{

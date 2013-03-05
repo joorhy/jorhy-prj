@@ -4,6 +4,12 @@
 #include "DeviceControl.h"
 #include "ModuleManagerDef.h"
 
+#define RCD_CONTROL		101
+#define RCD_SEARCH_DVR	102
+#define PTZ_CONTROL		103
+#define RCD_MOVE		104
+#define RCD_SEARCH_NVR	105
+
 class CRymcParser : public J_CommandParser
 {
 	public:
@@ -24,6 +30,7 @@ class CRymcParser : public J_CommandParser
 	private:
 		int PtzControl(const char *pResid, int nCmd, int nParam);
 		int RecordControl(const char *pResid, int nCmd, int nStreamType);
+		int RecordSearch(const char *pResid, time_t beginTime, time_t endTime);
 
 	private:
 		CDeviceControl m_deviceControl;

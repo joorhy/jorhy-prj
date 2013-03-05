@@ -19,7 +19,7 @@
   <Project Name="RtpStream" Path="RtpStream.project"/>
   <Project Name="HttpRequest" Path="HttpRequest.project" Active="No"/>
   <Project Name="RtspRequest" Path="RtspRequest.project" Active="No"/>
-  <Project Name="JofsReader" Path="JofsReader.project"/>
+  <Project Name="JofsReader" Path="JofsReader.project" Active="No"/>
   <Project Name="DahuaHost" Path="DahuaHost.project"/>
   <Project Name="JospRequest" Path="JospRequest.project" Active="No"/>
   <Project Name="JosStream" Path="JosStream.project" Active="No"/>

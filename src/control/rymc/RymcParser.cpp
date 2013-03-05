@@ -74,7 +74,7 @@ int CRymcParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
 	json_object *ret_obj = json_object_new_object();
 	switch(cmd)
 	{
-	case 101://录像控制
+	case RCD_CONTROL://录像控制
 	{
 		r_recordcol recordcol;
 		js = json_object_object_get(js, (char *)"parm");
@@ -86,13 +86,13 @@ int CRymcParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
 
 		break;
 	}
-	case 102://DVR历史查询
+	case RCD_SEARCH_DVR://DVR历史查询
 	{
 		json_object_object_add(ret_obj, (char *)"cmd",json_object_new_int(102));
 
 		break;
 	}
-	case 103://云台控制
+	case PTZ_CONTROL://云台控制
 	{
 		r_cameracol ptc_cntl;
 		js = json_object_object_get(js, (char *)"parm");
@@ -103,9 +103,20 @@ int CRymcParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
 		nRet = PtzControl(ptc_cntl.resid.c_str(), ptc_cntl.action, ptc_cntl.value);
 		break;
 	}
-	case 104://录像通知
+	case RCD_MOVE://录像迁移
 	{
 		json_object_object_add(ret_obj, (char *)"cmd", json_object_new_int(104));
+		break;
+	}
+	case RCD_SEARCH_NVR:
+	{
+		r_rcd_search rcd_search;
+		js = json_object_object_get(js, (char *)"parm");
+		rcd_search.resid = json_object_get_string(json_object_object_get(js, (char *)"resid"));
+		rcd_search.begin_time = json_object_get_int(json_object_object_get(js, (char *)"start"));
+		rcd_search.end_time	= json_object_get_int(json_object_object_get(js, (char *)"end"));
+		
+		nRet = RecordSearch(rcd_search.resid.c_str(), rcd_search.begin_time, rcd_search.end_time);
 		break;
 	}
 	default:
@@ -134,54 +145,7 @@ int CRymcParser::DelUser(int nSocket)
 
 int CRymcParser::PtzControl(const char *pResid, int nCmd, int nParam)
 {
-	int nRet = J_OK;
-	switch(nCmd)
-	{
-	case 1:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_UP, nParam);
-		break;
-	case 2:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_DOWN, nParam);
-		break;
-	case 3:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_LEFT, nParam);
-		break;
-	case 4:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_RIGHT, nParam);
-		break;
-	case 5:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_UP_LEFT, nParam);
-		break;
-	case 6:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_UP_RIGHT, nParam);
-		break;
-	case 7:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_DOWN_LEFT, nParam);
-		break;
-	case 8:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_DOWN_RIGHT, nParam);
-		break;
-	case 9:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_PRE_SET, nParam);
-		break;
-	case 10:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_PRE_CLR, nParam);
-		break;
-	case 11:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_GOTO_PRE, nParam);
-		break;
-	case 12:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_ZOOM_IN, nParam);
-		break;
-	case 13:
-		nRet = m_deviceControl.PtzControl(pResid, JO_PTZ_ZOOM_OUT, nParam);
-		break;
-	default:
-		nRet = J_UNKNOW;
-		break;
-	}
-
-	return nRet;
+	return m_deviceControl.PtzControl(pResid, nCmd, nParam);
 }
 
 int CRymcParser::RecordControl(const char *pResid, int nCmd, int nStreamType)
@@ -198,5 +162,10 @@ int CRymcParser::RecordControl(const char *pResid, int nCmd, int nStreamType)
 	}
 
 	return nRet;
+}
+
+int CRymcParser::RecordSearch(const char *pResid, time_t beginTime, time_t endTime)
+{
+	return J_OK;
 }
 

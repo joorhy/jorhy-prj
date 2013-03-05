@@ -27,14 +27,15 @@ private:
 
 private:
 	J_OS::RWLocker_t m_rwLocker;
-	char *m_pDataBuff;
 	int m_nDataSize;
 
 	HikStreamHead m_hikStreamHead;
 	char *m_pOutBuff;
 	bool m_bIsPrepared;
 	bool m_bIsComplate;
+	bool m_bPreComplate;
 	int m_nDataLen;
+	int m_nFrameLen;
 
 	//音频解码
 	unsigned int m_nSamples;

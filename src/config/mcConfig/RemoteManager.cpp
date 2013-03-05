@@ -40,6 +40,10 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
                 strcpy(devInfo.devType, "samsung");
 			else if (itDvr->type == 6)
                 strcpy(devInfo.devType, "dahua");
+			else if (itDvr->type == 7)
+                strcpy(devInfo.devType, "onvif");
+			else
+				J_OS::LOGINFO("CRemoteManager::ListDevices error devType = %d", itDvr->type);
 
 			memcpy(devInfo.userName, itDvr->user.c_str(), strlen(itDvr->user.c_str()));
 			memcpy(devInfo.passWd, itDvr->pass.c_str(), strlen(itDvr->pass.c_str()));
