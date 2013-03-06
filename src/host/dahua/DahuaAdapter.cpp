@@ -1,12 +1,12 @@
 #include "DahuaAdapter.h"
 
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "DahuaChannel.h"
 
 CDahuaAdapter::CDahuaAdapter(int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
 	m_devID = 0;
-	m_status = J_DevBroken;
+	m_status = jo_dev_broken;
 	memset(m_remoteIP, 0, sizeof(m_remoteIP));
 	memset(m_username, 0, sizeof(m_username));
 	memset(m_password, 0, sizeof(m_password));
@@ -25,7 +25,7 @@ CDahuaAdapter::CDahuaAdapter(int nDevId, const char *pAddr, int nPort, const cha
 CDahuaAdapter::~CDahuaAdapter()
 {
 	if (Logout() == J_OK)
-		m_status = J_DevBroken;
+		m_status = jo_dev_broken;
 	
 	CLIENT_Cleanup();
 
@@ -66,7 +66,7 @@ int CDahuaAdapter::Login()
 	m_devID = CLIENT_Login(m_remoteIP, m_remotePort, m_username, m_password, &info, &nError);
 	if (m_devID != 0)
     {
-        m_status = J_DevReady;
+        m_status = jo_dev_ready;
     }
     else
     {
@@ -79,7 +79,7 @@ int CDahuaAdapter::Login()
 int CDahuaAdapter::Logout()
 {
 	if (CLIENT_Logout(m_devID))
-        m_status = J_DevBroken;
+        m_status = jo_dev_broken;
 
 	return J_OK;
 }

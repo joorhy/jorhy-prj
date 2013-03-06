@@ -36,7 +36,7 @@ int CTsMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *
 	int i_offset_out = 0;
 	int i_offset_in = 0;
 	int i_data_len = streamHeader.dataLen;		//总数据长度
-	bool b_isAudio = (streamHeader.frameType == J_AudioFrame);
+	bool b_isAudio = (streamHeader.frameType == jo_audio_frame);
 
 	nOutLen = 0;
 	char c_ts_data[TS_DATA_LEN];

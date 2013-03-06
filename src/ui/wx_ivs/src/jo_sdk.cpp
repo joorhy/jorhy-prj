@@ -20,11 +20,11 @@ CXSdk::~CXSdk()
 
 }
 
-int CXSdk::Login(const char *pAddr, short nPort, const char *pUsername, const char *pPassword)
+int CXSdk::Login(const j_char_t *pAddr, j_int16_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 {
     //int nRet = sizeof(J_CtrlHead);
-    J_CtrlPacket *pCtrlData = (J_CtrlPacket *)new char[sizeof(J_CtrlHead)+sizeof(J_LoginData)];
-    MakeHeader((char *)pCtrlData, NULL, JO_LOGIN, jo_intact_pack, 0, sizeof(J_LoginData));
+    J_CtrlPacket *pCtrlData = (J_CtrlPacket *)new j_char_t[sizeof(J_CtrlHead)+sizeof(J_LoginData)];
+    MakeHeader((j_char_t *)pCtrlData, NULL, jo_login_req, jo_intact_pack, 0, sizeof(J_LoginData));
     J_LoginData *loginData = (J_LoginData *)pCtrlData->data;
     memset(pCtrlData->data, 0, sizeof(J_LoginData));
     memcpy(loginData->user_name, pUsername, strlen(pUsername));
@@ -70,7 +70,7 @@ void CXSdk::Logout(int nUserID)
     if (m_usrMap[nUserID].is_active)
     {
         J_CtrlHead ctrl_head_req = {0};
-        MakeHeader((char *)&ctrl_head_req, m_usrMap[nUserID].id.usr_id, JO_LOGOUT, jo_intact_pack, 0, sizeof(J_LoginData));
+        MakeHeader((char *)&ctrl_head_req, m_usrMap[nUserID].id.usr_id, jo_logout_req, jo_intact_pack, 0, sizeof(J_LoginData));
 
         m_sockMap[nUserID]->Write(&ctrl_head_req, sizeof(J_CtrlHead));
         J_CtrlHead ctrl_head_resp = {0};
@@ -90,7 +90,7 @@ char *CXSdk::GetResList(int nUserID)
 {
     char *xml_data = NULL;
     J_CtrlHead getres_head_req = {0};
-    MakeHeader((char *)&getres_head_req, m_usrMap[nUserID].id.usr_id, JO_GETRES, jo_intact_pack, 0, sizeof(J_LoginData));
+    MakeHeader((char *)&getres_head_req, m_usrMap[nUserID].id.usr_id, jo_list_res_req, jo_intact_pack, 0, sizeof(J_LoginData));
 
     m_sockMap[nUserID]->Write(&getres_head_req, sizeof(J_CtrlHead));
     J_CtrlHead getres_head_resp = {0};
@@ -125,7 +125,7 @@ int CXSdk::PtzControl(int nUserID, const char *pResid, int nCmd, int nParam)
     if (m_usrMap[nUserID].is_active)
     {
         J_CtrlPacket *pCtrlData = (J_CtrlPacket *)new char[sizeof(J_CtrlHead) + sizeof(J_PTZCtlData)];
-        MakeHeader((char *)pCtrlData, m_usrMap[nUserID].id.usr_id, JO_PTZ_CONTROL, jo_intact_pack, 0, sizeof(J_PTZCtlData));
+        MakeHeader((char *)pCtrlData, m_usrMap[nUserID].id.usr_id, jo_ptz_control_req, jo_intact_pack, 0, sizeof(J_PTZCtlData));
         J_PTZCtlData *ptzCtrlData = (J_PTZCtlData *)pCtrlData->data;
         memset(pCtrlData->data, 0, sizeof(J_PTZCtlData));
 
@@ -143,12 +143,12 @@ int CXSdk::PtzControl(int nUserID, const char *pResid, int nCmd, int nParam)
     }
     return 0;
 }
-int CXSdk::SearchRecord(int nUserID, const char *pResid, time_t begin, time_t end, RcdTimeList &timeList)
+j_result_t CXSdk::SearchRecord(j_int32_t nUserID, const j_char_t *pResid, j_time_t begin, j_time_t end, RcdTimeList &timeList)
 {
 	if (m_usrMap[nUserID].is_active)
     {
         J_CtrlPacket *pCtrlData = (J_CtrlPacket *)new char[sizeof(J_CtrlHead) + sizeof(J_RecordData)];
-        MakeHeader((char *)pCtrlData, m_usrMap[nUserID].id.usr_id, JO_RCD_SEARCH, jo_intact_pack, 0, sizeof(J_RecordData));
+        MakeHeader((char *)pCtrlData, m_usrMap[nUserID].id.usr_id, jo_rcd_search_req, jo_intact_pack, 0, sizeof(J_RecordData));
         J_RecordData *rcdCtrlData = (J_RecordData *)pCtrlData->data;
 		memset(pCtrlData->data, 0, sizeof(J_RecordData));
 

@@ -46,18 +46,18 @@ int CHikChannel::PtzControl(int nCmd, int nParam)
 	int ptzCmd = 0;
 	HikPtzData ptzData;
 	ptzData.channelNum = htonl(m_nChannel);
-	if (nCmd == JO_PTZ_PRE_SET || nCmd == JO_PTZ_PRE_CLR || nCmd == JO_PTZ_GOTO_PRE)
+	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		ptzData.param = htonl(nParam);
 		switch (nCmd)
 		{
-		case JO_PTZ_PRE_SET:
+		case jo_ptz_pre_set:
 		ptzCmd = HIK_PTZ_PRESET_SET;
 			break;
-		case JO_PTZ_PRE_CLR:
+		case jo_ptz_pre_clr:
 		ptzCmd = HIK_PTZ_PRESET_CLR;
 			break;
-		case JO_PTZ_GOTO_PRE:
+		case jo_ptz_goto_pre:
 		ptzCmd = HIK_PTZ_PRESET_MOV;
 			break;
 		}
@@ -67,47 +67,47 @@ int CHikChannel::PtzControl(int nCmd, int nParam)
 	{
 		switch (nCmd)
 		{
-		case JO_PTZ_UP:
-		ptzCmd = HIK_PTZ_MOVE_UP;
+		case jo_ptz_up:
+			ptzCmd = HIK_PTZ_MOVE_UP;
 			break;
-		case JO_PTZ_DOWN:
-		ptzCmd = HIK_PTZ_MOVE_DOWN;
+		case jo_ptz_down:
+			ptzCmd = HIK_PTZ_MOVE_DOWN;
 			break;
-		case JO_PTZ_LEFT:
-		ptzCmd = HIK_PTZ_MOVE_LEFT;
+		case jo_ptz_left:
+			ptzCmd = HIK_PTZ_MOVE_LEFT;
 			break;
-		case JO_PTZ_RIGHT:
-		ptzCmd = HIK_PTZ_MOVE_RIGHT;
+		case jo_ptz_right:
+			ptzCmd = HIK_PTZ_MOVE_RIGHT;
 			break;
-		case JO_PTZ_UP_LEFT:
-		ptzCmd = HIK_PTZ_MOVE_UP_LEFT;
+		case jo_ptz_up_left:
+			ptzCmd = HIK_PTZ_MOVE_UP_LEFT;
 			break;
-		case JO_PTZ_UP_RIGHT:
-		ptzCmd = HIK_PTZ_MOVE_UP_RIGHT;
+		case jo_ptz_up_right:
+			ptzCmd = HIK_PTZ_MOVE_UP_RIGHT;
 			break;
-		case JO_PTZ_DOWN_LEFT:
-		ptzCmd = HIK_PTZ_MOVE_DOWN_LEFT;
+		case jo_ptz_down_left:
+			ptzCmd = HIK_PTZ_MOVE_DOWN_LEFT;
 			break;
-		case JO_PTZ_DOWN_RIGHT:
-		ptzCmd = HIK_PTZ_MOVE_DOWN_RIGHT;
+		case jo_ptz_down_right:
+			ptzCmd = HIK_PTZ_MOVE_DOWN_RIGHT;
 			break;
-		case JO_PTZ_ZOOM_IN:
-		ptzCmd = HIK_PTZ_ZOOM_IN;
+		case jo_ptz_zoom_in:
+			ptzCmd = HIK_PTZ_ZOOM_IN;
 			break;
-		case JO_PTZ_ZOOM_OUT:
-		ptzCmd = HIK_PTZ_ZOOM_OUT;
+		case jo_ptz_room_out:
+			ptzCmd = HIK_PTZ_ZOOM_OUT;
 			break;
-		case JO_PTZ_FOCUS_NEAR:
-		ptzCmd = HIK_PTZ_FOCUS_NEAR;
+		case jo_ptz_focus_near:
+			ptzCmd = HIK_PTZ_FOCUS_NEAR;
 			break;
-		case JO_PTZ_FOCUS_FAR:
-		ptzCmd = HIK_PTZ_FOCUS_FAR;
+		case jo_ptz_focus_far:
+			ptzCmd = HIK_PTZ_FOCUS_FAR;
 			break;
-		case JO_PTZ_IRIS_OPEN:
-		ptzCmd = HIK_PTZ_IRIS_OPEN;
+		case jo_ptz_iris_open:
+			ptzCmd = HIK_PTZ_IRIS_OPEN;
 			break;
-		case JO_PTZ_IRIS_CLOSE:
-		ptzCmd = HIK_PTZ_IRIS_CLOSE;
+		case jo_ptz_iris_close:
+			ptzCmd = HIK_PTZ_IRIS_CLOSE;
 			break;
 		}
 		if (nParam == 0)
@@ -234,7 +234,7 @@ int CHikChannel::EmunFileByTime(time_t beginTime, time_t endTime,
 
 int CHikChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 {
-	if (m_pAdapter->GetStatus() != J_DevReady)
+	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
 		m_pAdapter->Broken();
 		m_pAdapter->Relogin();

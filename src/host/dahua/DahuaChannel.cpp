@@ -81,17 +81,17 @@ int CDahuaChannel::PtzControl(int nCmd, int nParam)
 	unsigned char param2;
 	unsigned char param3;
 	BOOL bRet = false;
-	if (nCmd == JO_PTZ_PRE_SET || nCmd == JO_PTZ_PRE_CLR || nCmd == JO_PTZ_GOTO_PRE)
+	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		switch (nCmd)
 		{
-		case JO_PTZ_PRE_SET:
+		case jo_ptz_pre_set:
 			ptzCmd = DH_PTZ_POINT_SET_CONTROL;
 			break;
-		case JO_PTZ_PRE_CLR:
+		case jo_ptz_pre_clr:
 			ptzCmd = DH_PTZ_POINT_DEL_CONTROL;
 			break;
-		case JO_PTZ_GOTO_PRE:
+		case jo_ptz_goto_pre:
 			ptzCmd = DH_PTZ_POINT_MOVE_CONTROL;
 			break;
 		}
@@ -104,63 +104,63 @@ int CDahuaChannel::PtzControl(int nCmd, int nParam)
 		int nSpeed2 = sqrt(nSpeed * nSpeed / 2);
 		switch (nCmd)
 		{
-		case JO_PTZ_UP:
+		case jo_ptz_up:
             ptzCmd = DH_PTZ_UP_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_DOWN:
+		case jo_ptz_down:
             ptzCmd = DH_PTZ_DOWN_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_LEFT:
+		case jo_ptz_left:
             ptzCmd = DH_PTZ_LEFT_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_RIGHT:
+		case jo_ptz_right:
             ptzCmd = DH_PTZ_RIGHT_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_UP_LEFT:
+		case jo_ptz_up_left:
             ptzCmd = DH_EXTPTZ_LEFTTOP;
 			param1 = nSpeed2;
 			param2 = nSpeed2;
 			break;
-		case JO_PTZ_UP_RIGHT:
+		case jo_ptz_up_right:
             ptzCmd = DH_EXTPTZ_RIGHTTOP;
 			param1 = nSpeed2;
 			param2 = nSpeed2;
 			break;
-		case JO_PTZ_DOWN_LEFT:
+		case jo_ptz_down_left:
             ptzCmd = DH_EXTPTZ_LEFTDOWN;
 			param1 = nSpeed2;
 			param2 = nSpeed2;
 			break;
-		case JO_PTZ_DOWN_RIGHT:
+		case jo_ptz_down_right:
             ptzCmd = DH_EXTPTZ_RIGHTDOWN;
 			param1 = nSpeed2;
 			param2 = nSpeed2;
 			break;
-		case JO_PTZ_ZOOM_IN:
+		case jo_ptz_zoom_in:
             ptzCmd = DH_PTZ_ZOOM_ADD_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_ZOOM_OUT:
+		case jo_ptz_room_out:
             ptzCmd = DH_PTZ_ZOOM_DEC_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_FOCUS_NEAR:
+		case jo_ptz_focus_near:
             ptzCmd = DH_PTZ_FOCUS_ADD_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_FOCUS_FAR:
+		case jo_ptz_focus_far:
             ptzCmd = DH_PTZ_FOCUS_DEC_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_IRIS_OPEN:
+		case jo_ptz_iris_open:
             ptzCmd = DH_PTZ_APERTURE_ADD_CONTROL;
 			param2 = nSpeed;
 			break;
-		case JO_PTZ_IRIS_CLOSE:
+		case jo_ptz_iris_close:
             ptzCmd = DH_PTZ_APERTURE_DEC_CONTROL;
 			param2 = nSpeed;
 			break;

@@ -1,7 +1,7 @@
 #ifndef __ONVIFADAPTER_H_
 #define __ONVIFADAPTER_H_
 #include "j_includes.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 
 class COnvifAdapterBase : public J_DevAdapter
 {};

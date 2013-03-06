@@ -12,7 +12,7 @@ COnvifAdapter::COnvifAdapter(int nDvrId, const char *pAddr, int nPort, const cha
 	strcpy(m_username, pUsername);
 	strcpy(m_password, pPassword);
 
-	m_status = J_DevReady;
+	m_status = jo_dev_ready;
 
 	J_OS::LOGINFO("COnvifAdapter::COnvifAdapter(ip = %s, port = %d)", pAddr, nPort);
 }
@@ -29,7 +29,7 @@ J_DevStatus COnvifAdapter::GetStatus() const
 
 int COnvifAdapter::Broken()
 {
-    m_status = J_DevBroken;
+    m_status = jo_dev_broken;
 	return J_OK;
 }
 

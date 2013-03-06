@@ -37,11 +37,11 @@ void CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
 		if (streamInfo->byFrameType == 0)
 		{
-			streamHeader.frameType = (streamInfo->byKeyFrame ? J_VideoIFrame : J_VideoPFrame);
+			streamHeader.frameType = (streamInfo->byKeyFrame ? jo_video_i_frame : jo_video_p_frame);
 		}
 		else if (streamInfo->byFrameType == 1)
 		{
-			streamHeader.frameType =  J_AudioFrame;
+			streamHeader.frameType =  jo_audio_frame;
 			//for (int i=0; i<32; i++)
 			//{
 			//	printf("%02X ", *(unsigned char *)(streamInfo->pBuffer + i));

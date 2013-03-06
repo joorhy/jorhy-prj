@@ -1,7 +1,7 @@
 #ifndef __VODMEDIAOBJ_H_
 #define __VODMEDIAOBJ_H_
 #include "j_includes.h"
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "x_socket.h"
 
 class CVodMediaObj : public J_MediaObj

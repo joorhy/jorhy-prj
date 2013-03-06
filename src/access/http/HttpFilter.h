@@ -1,7 +1,7 @@
 #ifndef __HTTP_H_
 #define __HTTP_H_
 #include "j_includes.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 
 class CHttpFilter : public J_RequestFilter
 				  , public J_VodCommandFilter

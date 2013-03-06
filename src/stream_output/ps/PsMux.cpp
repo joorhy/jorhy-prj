@@ -26,9 +26,9 @@ int CPsMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *
 	int nLen = 0;
 
 	int nTotleLen = streamHeader.dataLen;		//总数据长度
-	int nPackedLen = 0;				//打包数据长度
-	int nPackOffset = 0;				//已经打包的数据的偏移
-	bool isAudio = (streamHeader.frameType == J_AudioFrame);
+	int nPackedLen = 0;							//打包数据长度
+	int nPackOffset = 0;						//已经打包的数据的偏移
+	bool isAudio = (streamHeader.frameType == jo_audio_frame);
 
 	int nRate = *(int *)pExtdata;
 	///构造PS头

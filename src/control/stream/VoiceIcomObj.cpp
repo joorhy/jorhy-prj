@@ -17,16 +17,16 @@ int CVoiceIcomObj::Process(int nIoType)
 	J_CommandFilter *videoCommand = dynamic_cast<J_CommandFilter *>(m_pObj);
 	if (videoCommand != NULL)
 	{
-		if (nIoType == J_IoRead)
+		if (nIoType == jo_io_read)
 		{
 			m_resid = videoCommand->GetResid();
 			switch (videoCommand->GetCommandType())
 			{
-			case J_START_VOICE:
+			case jo_start_voice:
 				nRet = StartVoice();
 				J_OS::LOGINFO("CNVRRealClient::Process StartVoice socket =  %d ret = %d", m_nSocket, nRet);
 				break;
-			case J_STOP_VOICE:
+			case jo_stop_voice:
 			{
 				nRet = StopVoice();
 				J_OS::LOGINFO("CVoiceIcomObj::Process StopVoice socket =  %d ret = %d", m_nSocket, nRet);
@@ -37,7 +37,7 @@ int CVoiceIcomObj::Process(int nIoType)
 				break;
 			}
 		}
-		else if (nIoType == J_IoWrite)
+		else if (nIoType == jo_io_write)
 		{
 			if (!m_bStart)
 				return J_OK;

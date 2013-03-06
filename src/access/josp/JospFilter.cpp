@@ -1,7 +1,7 @@
 #include "JospFilter.h"
 #include "x_string.h"
 #include "x_socket.h"
-#include "MuxFactory.h"
+#include "x_mux_factory.h"
 
 const int RATE = 1024;
 
@@ -30,18 +30,18 @@ int CJospFilter::Parser(int nSocket)
 	if (read_ret < 0)
 		return J_SOCKET_ERROR;
 	
-	if (ctrlHead.cmd == JO_OPEN_STREAM)
+	if (ctrlHead.cmd == jo_open_stream_req)
 	{
 		J_RealViewData realViewData = {0};
 		read_ret = readSocket.Read_n((char *)&realViewData, sizeof(J_RealViewData));
 		if (read_ret < 0)
 			return J_SOCKET_ERROR;
 			
-		m_nCommandType = J_START_REAL;
+		m_nCommandType = jo_start_real;
 		m_nStreamType = realViewData.stream_type;
 		memcpy(m_strResid, realViewData.res_id, strlen(realViewData.res_id));
 		
-		MakeHeader(m_pRetBuff, JO_OPEN_STREAM_RET, sizeof(J_RealViewRetData));
+		MakeHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
 		J_RealViewRetData *pRetData = (J_RealViewRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
 		memcpy(pRetData->media_code, "JOMS", 4);
 		pRetData->i_frame_ival = 30;

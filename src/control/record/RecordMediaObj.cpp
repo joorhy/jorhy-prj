@@ -1,7 +1,7 @@
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "RecordMediaObj.h"
 #include "x_config.h"
-#include "ManagerFactory.h"
+#include "x_manager_factory.h"
 
 #define DATA_BUFF_SIZE (1024 * 1024)
 #define HEAD_BUFF_SIZE (1024 * 1024)
@@ -146,7 +146,7 @@ int CStreamRecord::OnWriteVideo()
     int nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, streamHeader);
     if (nRet == J_OK)
     {
-        if (streamHeader.frameType == J_MediaBroken)
+        if (streamHeader.frameType == jo_media_broken)
         {
             CloseFile();
             //m_fileInfo.etime = streamHeader.timeStamp / 1000;
@@ -184,8 +184,8 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 		CreateFile(NULL);
 	}
 
-	bool bIsKeyFrame = (streamHeader.frameType == J_VideoIFrame);
-	bool bIsVideo = (streamHeader.frameType == J_VideoIFrame || streamHeader.frameType == J_VideoPFrame);
+	bool bIsKeyFrame = (streamHeader.frameType == jo_video_i_frame);
+	bool bIsVideo = (streamHeader.frameType == jo_video_i_frame || streamHeader.frameType == jo_video_p_frame);
 
 	memset(&m_frameHead, 0, sizeof(m_frameHead));
 	if (bIsKeyFrame && !m_bStartRecord)

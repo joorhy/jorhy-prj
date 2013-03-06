@@ -1,7 +1,7 @@
 #ifndef __STREAMMANAGER_H_
 #define __STREAMMANAGER_H_
 #include "j_includes.h"
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "x_service.h"
 #include "x_lock.h"
 #include "x_msg_queue.h"
@@ -10,7 +10,7 @@
 #include <map>
 #include <string>
 
-#define IS_CLOSE_CMD(x)	(J_STOP_REAL == (x) || J_STOP_VOD == (x) || J_STOP_VOICE == (x))
+#define IS_CLOSE_CMD(x)	(jo_stop_real == (x) || jo_stop_vod == (x) || jo_stop_voice == (x))
 
 class CStreamManager : public CXService<CStreamManager>
 {

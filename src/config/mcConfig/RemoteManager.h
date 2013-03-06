@@ -3,7 +3,7 @@
 #include "j_includes.h"
 #include "x_singleton.h"
 #include "x_sdk_def.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 
 class CRemoteManager : public J_JoManager
 {

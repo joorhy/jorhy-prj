@@ -94,9 +94,9 @@ int CSonyParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 	{
 		memcpy(pData, m_pDataBuff, nOffset);
 		if (IS_H264_KEY(m_pDataBuff))
-            streamHeader.frameType = J_VideoIFrame;
+            streamHeader.frameType = jo_video_i_frame;
         else
-            streamHeader.frameType = J_VideoPFrame;
+            streamHeader.frameType = jo_video_p_frame;
         streamHeader.dataLen = nOffset;
 	}
 	memmove(m_pDataBuff, m_pDataBuff + nOffset, m_nDataSize - nOffset);

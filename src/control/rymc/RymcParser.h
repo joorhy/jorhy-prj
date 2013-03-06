@@ -2,7 +2,7 @@
 #define __RYMC_PARSER_H_
 #include "x_http_helper.h"
 #include "DeviceControl.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 
 #define RCD_CONTROL		101
 #define RCD_SEARCH_DVR	102

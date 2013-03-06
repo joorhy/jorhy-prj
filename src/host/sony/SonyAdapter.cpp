@@ -12,7 +12,7 @@ CSonyAdapter::CSonyAdapter(int nDvrId, const char *pAddr, int nPort, const char 
 	strcpy(m_username, pUsername);
 	strcpy(m_password, pPassword);
 
-	m_status = J_DevBroken;
+	m_status = jo_dev_broken;
 	m_ping.SetAddr(m_remoteIP);
 	UserExchange();
     //定时检测设备状态
@@ -33,7 +33,7 @@ J_DevStatus CSonyAdapter::GetStatus() const
 
 int CSonyAdapter::Broken()
 {
-    m_status = J_DevBroken;
+    m_status = jo_dev_broken;
 	return J_OK;
 }
 
@@ -57,5 +57,5 @@ void CSonyAdapter::UserExchange()
         m_status = J_DevBroken;
         return;
     }*/
-    m_status = J_DevReady;
+    m_status = jo_dev_ready;
 }

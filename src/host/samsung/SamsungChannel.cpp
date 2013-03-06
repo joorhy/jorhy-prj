@@ -38,17 +38,17 @@ int CSamsungChannel::PtzControl(int nCmd, int nParam)
     ptz_req.ptz_cmd.channel = 0x01;
     ptz_req.ptz_cmd.rd = 0x00;
 
-    if (nCmd == JO_PTZ_PRE_SET || nCmd == JO_PTZ_PRE_CLR || nCmd == JO_PTZ_GOTO_PRE)
+    if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
     {
     	switch (nCmd)
     	{
-    	case JO_PTZ_PRE_SET:
+    	case jo_ptz_pre_set:
             ptz_req.ptz_cmd.part[0] = 0x3d;
     		break;
-    	case JO_PTZ_GOTO_PRE:
+    	case jo_ptz_goto_pre:
             ptz_req.ptz_cmd.part[0] = 0x0f;
     		break;
-        case JO_PTZ_PRE_CLR:
+        case jo_ptz_pre_clr:
             ptz_req.ptz_cmd.part[0] = 0x65;
     		break;
     	}
@@ -64,93 +64,93 @@ int CSamsungChannel::PtzControl(int nCmd, int nParam)
     	    int nSpeed = nParam / 42;
     		switch (nCmd)
     		{
-    		case JO_PTZ_UP:
+    		case jo_ptz_up:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x00;
                 ptz_req.ptz_cmd.part[2] = 0x08;
                 ptz_req.ptz_cmd.part[3] = 0x00;
                 ptz_req.ptz_cmd.part[4] = PT_SPEED[nSpeed];
     			break;
-    		case JO_PTZ_DOWN:
+    		case jo_ptz_down:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x00;
                 ptz_req.ptz_cmd.part[2] = 0x10;
                 ptz_req.ptz_cmd.part[3] = 0x00;
                 ptz_req.ptz_cmd.part[4] = PT_SPEED[nSpeed];
     			break;
-    		case JO_PTZ_LEFT:
+    		case jo_ptz_left:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x04;
                 ptz_req.ptz_cmd.part[2] = 0x00;
                 ptz_req.ptz_cmd.part[3] = PT_SPEED[nSpeed];
                 ptz_req.ptz_cmd.part[4] = 0x00;
     			break;
-    		case JO_PTZ_RIGHT:
+    		case jo_ptz_right:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x02;
                 ptz_req.ptz_cmd.part[2] = 0x00;
                 ptz_req.ptz_cmd.part[3] = PT_SPEED[nSpeed];
                 ptz_req.ptz_cmd.part[4] = 0x00;
     			break;
-    		case JO_PTZ_UP_LEFT:
+    		case jo_ptz_up_left:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x04;
                 ptz_req.ptz_cmd.part[2] = 0x08;
                 ptz_req.ptz_cmd.part[3] = PT_SPEED[nSpeed];
                 ptz_req.ptz_cmd.part[4] = PT_SPEED[nSpeed];
                 break;
-    		case JO_PTZ_UP_RIGHT:
+    		case jo_ptz_up_right:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x02;
                 ptz_req.ptz_cmd.part[2] = 0x08;
                 ptz_req.ptz_cmd.part[3] = PT_SPEED[nSpeed];
                 ptz_req.ptz_cmd.part[4] = PT_SPEED[nSpeed];
     			break;
-    		case JO_PTZ_DOWN_LEFT:
+    		case jo_ptz_down_left:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x04;
                 ptz_req.ptz_cmd.part[2] = 0x10;
                 ptz_req.ptz_cmd.part[3] = PT_SPEED[nSpeed];
                 ptz_req.ptz_cmd.part[4] = PT_SPEED[nSpeed];
     			break;
-    		case JO_PTZ_DOWN_RIGHT:
+    		case jo_ptz_down_right:
                 ptz_req.ptz_cmd.part[0] = 0x02;
                 ptz_req.ptz_cmd.part[1] = 0x02;
                 ptz_req.ptz_cmd.part[2] = 0x10;
                 ptz_req.ptz_cmd.part[3] = PT_SPEED[nSpeed];
                 ptz_req.ptz_cmd.part[4] = PT_SPEED[nSpeed];
     			break;
-    		case JO_PTZ_ZOOM_IN:
+    		case jo_ptz_zoom_in:
                 ptz_req.ptz_cmd.part[0] = 0x33;
                 ptz_req.ptz_cmd.part[1] = 0x00;
                 ptz_req.ptz_cmd.part[2] = ZF_SPEED[nSpeed];
                 ptz_req.ptz_cmd.part[3] = 0x00;
                 ptz_req.ptz_cmd.part[4] = 0x00;
     			break;
-    		case JO_PTZ_ZOOM_OUT:
+    		case jo_ptz_room_out:
                 ptz_req.ptz_cmd.part[0] = 0x34;
                 ptz_req.ptz_cmd.part[1] = 0x00;
                 ptz_req.ptz_cmd.part[2] = ZF_SPEED[nSpeed];;
                 ptz_req.ptz_cmd.part[3] = 0x00;
                 ptz_req.ptz_cmd.part[4] = 0x00;
     			break;
-    		case JO_PTZ_FOCUS_NEAR:
+    		case jo_ptz_focus_near:
                 ptz_req.ptz_cmd.part[0] = 0x36;
                 ptz_req.ptz_cmd.part[1] = 0x00;
                 ptz_req.ptz_cmd.part[2] = ZF_SPEED[nSpeed];;
                 ptz_req.ptz_cmd.part[3] = 0x00;
                 ptz_req.ptz_cmd.part[4] = 0x00;
     			break;
-    		case JO_PTZ_FOCUS_FAR:
+    		case jo_ptz_focus_far:
                 ptz_req.ptz_cmd.part[0] = 0x35;
                 ptz_req.ptz_cmd.part[1] = 0x00;
                 ptz_req.ptz_cmd.part[2] = ZF_SPEED[nSpeed];;
                 ptz_req.ptz_cmd.part[3] = 0x00;
                 ptz_req.ptz_cmd.part[4] = 0x00;
     			break;
-    		case JO_PTZ_IRIS_OPEN:
+    		case jo_ptz_iris_open:
     			break;
-    		case JO_PTZ_IRIS_CLOSE:
+    		case jo_ptz_iris_close:
     			break;
     		}
     	}
@@ -174,7 +174,7 @@ int CSamsungChannel::PtzControl(int nCmd, int nParam)
 
 int CSamsungChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 {
-    if (m_pAdapter->GetStatus() != J_DevReady)
+    if (m_pAdapter->GetStatus() != jo_dev_ready)
     {
         m_bOpened = false;
         return J_DEV_BROKEN;

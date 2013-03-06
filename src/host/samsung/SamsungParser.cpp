@@ -102,11 +102,11 @@ int CSamsungParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
             nOffset += 40;
             int frameType = GET_FRAME_TYPE(m_pDataBuff);
             if (frameType > 3)
-                m_curFrameType = J_AudioFrame;
+                m_curFrameType = jo_audio_frame;
             else if (frameType == 0)
-                m_curFrameType = J_VideoIFrame;
+                m_curFrameType = jo_video_i_frame;
             else
-                m_curFrameType = J_VideoPFrame;
+                m_curFrameType = jo_video_p_frame;
 
             bIsStart = true;
         }
@@ -123,7 +123,7 @@ int CSamsungParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
             if (bIsStart)
             {
                 ///去掉PES头
-                if (m_curFrameType == J_AudioFrame)
+                if (m_curFrameType == jo_audio_frame)
                     nMedieOffset += 31;
                 else
                     nMedieOffset += 32;
@@ -146,7 +146,7 @@ int CSamsungParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
             {
                 J_OS::LOGINFO("fdsafjdsalkf");
             }
-            if (m_curFrameType == J_AudioFrame)
+            if (m_curFrameType == jo_audio_frame)
             {
                 ///暂时不处理音频数据
                 streamHeader.timeStamp = 0;

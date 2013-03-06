@@ -1,7 +1,7 @@
 #ifndef __AIRONIXADAPTER_H_
 #define __AIRONIXADAPTER_H_
 #include "j_includes.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 //#include "DVR_NET_SDK.h"
 
 class CAironixAdapterBase : public J_DevAdapter

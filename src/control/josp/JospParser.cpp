@@ -32,19 +32,19 @@ int CJospParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
     int nRet = J_OK;
     switch(read_buff[5])
     {
-        case JO_LOGIN:
+        case jo_login_req:
             nRet = OnLogin(nSocket, read_buff, pResponse, nRespLen);
             break;
-        case JO_LOGOUT:
+        case jo_logout_req:
             nRet = OnLogout(read_buff, pResponse, nRespLen);
             break;
-        case JO_GETRES:
+        case jo_list_res_req:
             nRet = OnGetResList(read_buff, pResponse, nRespLen);
             break;
-        case JO_PTZ_CONTROL:
+        case jo_ptz_control_req:
             nRet = OnPtzControl(read_buff, pResponse, nRespLen);
             break;
-		case JO_RCD_SEARCH:
+		case jo_rcd_search_req:
 			nRet = OnRcdSearch(read_buff, pResponse, nRespLen);
 			break;
 		default:
@@ -93,7 +93,7 @@ int CJospParser::OnLogin(int nSocket, const char *pRequest, char *&pResponse, in
         }
         //fprintf(stderr, "CJospHelper::OnLogin %s", userId_md5);
 		pResponse = new char[sizeof(J_CtrlHead)];
-        MakeHeader(pResponse, (char *)userId_md5, JO_LOGIN_RET, jo_intact_pack, 0, 0, J_OK);
+        MakeHeader(pResponse, (char *)userId_md5, jo_login_rep, jo_intact_pack, 0, 0, J_OK);
 
 		J_NetWorkInfo netInfo = m_networkMap[nSocket];
         J_UserInfo info = {0};
@@ -107,7 +107,7 @@ int CJospParser::OnLogin(int nSocket, const char *pRequest, char *&pResponse, in
     }
     else
     {
-        MakeHeader(pResponse, NULL, JO_LOGIN_RET, jo_intact_pack, 0, 0, 1);
+        MakeHeader(pResponse, NULL, jo_login_rep, jo_intact_pack, 0, 0, 1);
     }
     nRespLen = sizeof(J_CtrlHead);
 
@@ -120,12 +120,12 @@ int CJospParser::OnLogout(const char *pRequest, char *&pResponse, int &nRespLen)
 	pResponse = new char[sizeof(J_CtrlHead)];
     if (m_userMap.find((const char *)ctrlHead->user_id) != m_userMap.end())
     {
-        MakeHeader(pResponse, (char *)ctrlHead->user_id, JO_LOGOUT_RET, jo_intact_pack, 0, 0, J_OK);
+        MakeHeader(pResponse, (char *)ctrlHead->user_id, jo_logout_rep, jo_intact_pack, 0, 0, J_OK);
         m_userMap.erase((const char *)ctrlHead->user_id);
     }
     else
     {
-        MakeHeader(pResponse, (char *)ctrlHead->user_id, JO_LOGOUT_RET, jo_intact_pack, 0, 0, 1);
+        MakeHeader(pResponse, (char *)ctrlHead->user_id, jo_logout_rep, jo_intact_pack, 0, 0, 1);
     }
     nRespLen = sizeof(J_CtrlHead);
 
@@ -141,13 +141,13 @@ int CJospParser::OnGetResList(const char *pRequest, char *&pResponse, int &nResp
         const char *pXmlData = m_ivsManager.GetResList();
         nRespLen = strlen(pXmlData);
 		pResponse = new char[sizeof(J_CtrlHead) + nRespLen];
-        MakeHeader(pResponse, (char *)resHead->user_id, JO_GETRES_RET, jo_intact_pack, 0, nRespLen, J_OK);
+        MakeHeader(pResponse, (char *)resHead->user_id, jo_list_res_rep, jo_intact_pack, 0, nRespLen, J_OK);
         memcpy(pResponse + sizeof(J_CtrlHead), pXmlData, nRespLen);
     }
     else
     {
 		pResponse = new char[sizeof(J_CtrlHead)];
-        MakeHeader(pResponse, (char *)resHead->user_id, JO_GETRES_RET, jo_intact_pack, 0, 0, 1);
+        MakeHeader(pResponse, (char *)resHead->user_id, jo_list_res_rep, jo_intact_pack, 0, 0, 1);
     }
     nRespLen += sizeof(J_CtrlHead);
     return J_OK;
@@ -162,11 +162,11 @@ int CJospParser::OnPtzControl(const char *pRequest, char *&pResponse, int &nResp
     if (m_userMap.find((const char *)ctrlHead->head.user_id) != m_userMap.end())
     {
         nRet = m_deviceControl.PtzControl(ptzCtrlData->res_id, ptzCtrlData->command, ptzCtrlData->param);
-        MakeHeader(pResponse, (char *)ctrlHead->head.user_id, JO_PTZ_CONTROL_RET, jo_intact_pack, 0, 0, J_OK);
+        MakeHeader(pResponse, (char *)ctrlHead->head.user_id, jo_ptz_control_rep, jo_intact_pack, 0, 0, J_OK);
     }
     else
     {
-        MakeHeader(pResponse, (char *)ctrlHead->head.user_id, JO_PTZ_CONTROL_RET, jo_intact_pack, 0, 0, 1);
+        MakeHeader(pResponse, (char *)ctrlHead->head.user_id, jo_ptz_control_rep, jo_intact_pack, 0, 0, 1);
     }
     nRespLen = sizeof(J_CtrlHead);
 
@@ -184,11 +184,11 @@ int CJospParser::OnRcdSearch(const char *pRequest, char *&pResponse, int &nRespL
     {
 		nRespLen =  m_ivsManager.GetRcdList(rcdCtrlData->res_id, rcdCtrlData->begin_time,
 			rcdCtrlData->end_time, pResponse + sizeof(J_CtrlHead));
-		MakeHeader(pResponse, (char *)ctrlHead->head.user_id, JO_PTZ_CONTROL_RET, jo_intact_pack, 0, nRespLen, J_OK);
+		MakeHeader(pResponse, (char *)ctrlHead->head.user_id, jo_rcd_search_rep, jo_intact_pack, 0, nRespLen, J_OK);
     }
     else
     {
-        MakeHeader(pResponse, (char *)ctrlHead->head.user_id, JO_PTZ_CONTROL_RET, jo_intact_pack, 0, 0, 1);
+        MakeHeader(pResponse, (char *)ctrlHead->head.user_id, jo_rcd_search_rep, jo_intact_pack, 0, 0, 1);
     }
 	nRespLen += sizeof(J_CtrlHead);
 	

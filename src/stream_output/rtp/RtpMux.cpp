@@ -85,7 +85,7 @@ void CRtpMux::Deinit()
 
 int CRtpMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata)
 {
-	if (streamHeader.frameType == J_AudioFrame)
+	if (streamHeader.frameType == jo_audio_frame)
 	{
 		PrepareAudioData(pInputData, streamHeader.dataLen, streamHeader.timeStamp, pOutputData, nOutLen);
 	}

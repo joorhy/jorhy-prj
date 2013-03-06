@@ -2,36 +2,6 @@
 #include "OnvifStream.h"
 #include "x_base64.h"
 
-const char *viewRequest =
-		"GET /image%d HTTP/1.1\r\n"
-		"Host: %s\r\n"
-		"Connection: Close\r\n\r\n";
-
-const char *ptzfCommand =
-		"GET /command/ptzf.cgi?Move=%s,%s HTTP/1.1\r\n"
-		"Host: %s\r\n"
-		"Connection: Close\r\n"
-		"Pragma: no-cache\r\n"
-		"Cache-Control: no-store, no-cache\r\n"
-		"Expires: Mon, 01 Jan 1990 01:01:01 GMT\r\n\r\n";
-
-const char *presetCommand =
-		"POST /command/presetposition.cgi HTTP/1.1\r\n"
-		"Accept: */*\r\n"
-		"Accept-Language: zh-cn\r\n"
-		"Referer: http://%s/zh_hans/l4/position/preset.html\r\n"
-		"Content-Type: application/x-www-form-urlencoded; charset=UTF-8\r\n"
-		"Accept-Encoding: gzip, deflate\r\n"
-		"User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)\r\n"
-		"Host: %s\r\n"
-		"Content-Length: %d\r\n"
-		"Connection: Keep-Alive\r\n"
-		"Cache-Control: no-cache\r\n"
-		"Authorization: Basic %s\r\n\r\n%s";
-
-const char *presetSet = "PresetSet=%d,%d,on&PresetThumbnailClear=1";
-const char *presetCall = "PresetCall=%d,24";
-
 COnvifChannel::COnvifChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
 : m_pAdapter(NULL)
 , m_nChannel(0)
@@ -53,7 +23,7 @@ COnvifChannel::~COnvifChannel()
 int COnvifChannel::PtzControl(int nCmd, int nParam)
 {
 	char ptzCommand[1024] = {0};
-	if (nCmd == JO_PTZ_PRE_SET || nCmd == JO_PTZ_PRE_CLR || nCmd == JO_PTZ_GOTO_PRE)
+	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		char command[128] = {0};
 		char authorization[32] = {0};
@@ -63,17 +33,9 @@ int COnvifChannel::PtzControl(int nCmd, int nParam)
 
 		switch (nCmd)
 		{
-		case JO_PTZ_PRE_SET:
-			{
-				sprintf(command, presetSet, nParam);
-				sprintf(ptzCommand, presetCommand, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemoteIp()
-						, strlen(command),authorization, command);
-			}
+		case jo_ptz_pre_set:
 			break;
-		case JO_PTZ_GOTO_PRE:
-				sprintf(command, presetCall, nParam, nParam);
-				sprintf(ptzCommand, presetCommand, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemoteIp()
-						, strlen(command),authorization, command);
+		case jo_ptz_goto_pre:
 			break;
 		}
 		//J_OS::LOGINFO(ptzCommand);
@@ -84,43 +46,33 @@ int COnvifChannel::PtzControl(int nCmd, int nParam)
 		{
 			switch (nCmd)
 			{
-			case JO_PTZ_UP:
-				sprintf(ptzCommand, ptzfCommand, "up", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_up:
 				break;
-			case JO_PTZ_DOWN:
-				sprintf(ptzCommand, ptzfCommand, "down", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_down:
 				break;
-			case JO_PTZ_LEFT:
-				sprintf(ptzCommand, ptzfCommand, "left", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_left:
 				break;
-			case JO_PTZ_RIGHT:
-				sprintf(ptzCommand, ptzfCommand, "right", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_right:
 				break;
-			case JO_PTZ_UP_LEFT:
-				sprintf(ptzCommand, ptzfCommand, "up-left", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_up_left:
 				break;
-			case JO_PTZ_UP_RIGHT:
-				sprintf(ptzCommand, ptzfCommand, "up-right", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_up_right:
 				break;
-			case JO_PTZ_DOWN_LEFT:
-				sprintf(ptzCommand, ptzfCommand, "down-left", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_down_left:
 				break;
-			case JO_PTZ_DOWN_RIGHT:
-				sprintf(ptzCommand, ptzfCommand, "down-right", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_down_right:
 				break;
-			case JO_PTZ_ZOOM_IN:
-				sprintf(ptzCommand, ptzfCommand, "tele", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_zoom_in:
 				break;
-			case JO_PTZ_ZOOM_OUT:
-				sprintf(ptzCommand, ptzfCommand, "wide", "0", m_pAdapter->GetRemoteIp());
+			case jo_ptz_room_out:
 				break;
-			case JO_PTZ_FOCUS_NEAR:
+			case jo_ptz_focus_near:
 				break;
-			case JO_PTZ_FOCUS_FAR:
+			case jo_ptz_focus_far:
 				break;
-			case JO_PTZ_IRIS_OPEN:
+			case jo_ptz_iris_open:
 				break;
-			case JO_PTZ_IRIS_CLOSE:
+			case jo_ptz_iris_close:
 				break;
 			}
 		}
@@ -128,19 +80,17 @@ int COnvifChannel::PtzControl(int nCmd, int nParam)
 		{
 			switch (nCmd)
 			{
-			case JO_PTZ_UP:
-			case JO_PTZ_DOWN:
-			case JO_PTZ_LEFT:
-			case JO_PTZ_RIGHT:
-			case JO_PTZ_UP_LEFT:
-			case JO_PTZ_UP_RIGHT:
-			case JO_PTZ_DOWN_LEFT:
-			case JO_PTZ_DOWN_RIGHT:
-				sprintf(ptzCommand, ptzfCommand, "stop", "motor", m_pAdapter->GetRemoteIp());
+			case jo_ptz_up:
+			case jo_ptz_down:
+			case jo_ptz_left:
+			case jo_ptz_right:
+			case jo_ptz_up_left:
+			case jo_ptz_up_right:
+			case jo_ptz_down_left:
+			case jo_ptz_down_right:
 				break;
-			case JO_PTZ_ZOOM_IN:
-			case JO_PTZ_ZOOM_OUT:
-				sprintf(ptzCommand, ptzfCommand, "stop", "zoom", m_pAdapter->GetRemoteIp());
+			case jo_ptz_zoom_in:
+			case jo_ptz_room_out:
 				break;
 			default:
 				break;
@@ -153,7 +103,7 @@ int COnvifChannel::PtzControl(int nCmd, int nParam)
 
 int COnvifChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 {
-	if (m_pAdapter->GetStatus() != J_DevReady)
+	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
 		m_bOpened = false;
 		return J_DEV_BROKEN;

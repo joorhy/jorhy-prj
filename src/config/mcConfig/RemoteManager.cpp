@@ -48,7 +48,7 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 			memcpy(devInfo.userName, itDvr->user.c_str(), strlen(itDvr->user.c_str()));
 			memcpy(devInfo.passWd, itDvr->pass.c_str(), strlen(itDvr->pass.c_str()));
 
-			devInfo.devStatus = J_DevBroken;
+			devInfo.devStatus = jo_dev_broken;
 			devList.push_back(devInfo);
 		}
 

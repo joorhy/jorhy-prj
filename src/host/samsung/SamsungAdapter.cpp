@@ -12,7 +12,7 @@ CSamsungAdapter::CSamsungAdapter(int nDvrId, const char *pAddr, int nPort, const
     strcpy(m_username, pUsername);
     strcpy(m_password, pPassword);
 
-    m_status = J_DevBroken;
+    m_status = jo_dev_broken;
     //定时检测设备状态
     UserExchange();
     m_timer.Create(5 * 1000, CSamsungAdapter::OnTimer, this);
@@ -27,7 +27,7 @@ CSamsungAdapter::~CSamsungAdapter()
 
 J_DevStatus CSamsungAdapter::GetStatus() const
 {
-    return J_DevReady;
+    return jo_dev_ready;
 }
 
 int CSamsungAdapter::Broken()
@@ -64,7 +64,7 @@ int CSamsungAdapter::EventAlarm(int nDvrId, int nChannel, int nAlarmType)
 
 int CSamsungAdapter::Login()
 {
-    if (m_status == J_DevReady)
+    if (m_status == jo_dev_ready)
         return J_OK;
 
     if (m_loginSocket.Connect(m_remoteIP, m_remotePort) != J_OK)
@@ -96,7 +96,7 @@ int CSamsungAdapter::Login()
 
     if (login_res.continue_data.error == 0)
     {
-        m_status = J_DevReady;
+        m_status = jo_dev_ready;
         m_controlId = login_res.continue_data.ctrlId;
     }
 
@@ -124,7 +124,7 @@ void CSamsungAdapter::Logout()
         //return;
     }
     m_loginSocket.Disconnect();
-    m_status = J_DevBroken;
+    m_status = jo_dev_broken;
 }
 
 int CSamsungAdapter::SendCommand(const char *pCommand, int nLen, int nRespLen)
@@ -166,7 +166,7 @@ void CSamsungAdapter::UserExchange()
     if (m_loginSocket.Write((char*) &condition_req, sizeof(SNP_condition_req)) < 0)
     {
         m_loginSocket.Disconnect();
-        m_status = J_DevBroken;
+        m_status = jo_dev_broken;
         J_OS::LOGINFO("CSamsungAdapter::UserExchange() error write");
         return;
     }
@@ -176,7 +176,7 @@ void CSamsungAdapter::UserExchange()
     if (m_loginSocket.Read((char*) &condition_rep, nReadLen) < 0)
     {
         m_loginSocket.Disconnect();
-        m_status = J_DevBroken;
+        m_status = jo_dev_broken;
         J_OS::LOGINFO("CSamsungAdapter::UserExchange() error read");
         return;
     }

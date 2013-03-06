@@ -157,7 +157,7 @@ void CAdapterFactory::OnTimer()
 			sprintf(dev_id, "%d", itDvr->devId);
 			if (m_devMap.find(dev_id) == m_devMap.end())
 			{
-				itDvr->devStatus = J_DevBroken;
+				itDvr->devStatus = jo_dev_broken;
 				m_devMap[dev_id] = *itDvr;
 			}
 		}
@@ -165,7 +165,7 @@ void CAdapterFactory::OnTimer()
 		DeviceMap::iterator itDev = m_devMap.begin();
 		for (; itDev != m_devMap.end(); itDev++)
 		{
-			if (itDev->second.devStatus == J_DevBroken)
+			if (itDev->second.devStatus == jo_dev_broken)
 			{
 				AdapterRegistMap::iterator itRegister = m_adapterRegistMap.find(itDev->second.devType);
 				if (itRegister == m_adapterRegistMap.end())
@@ -182,7 +182,7 @@ void CAdapterFactory::OnTimer()
 					char dev_id[TYPE_OR_ID_SIZE];
 					memset(dev_id, 0, sizeof(dev_id));
 					sprintf(dev_id, "%d", itDev->second.devId);
-					itDev->second.devStatus = J_DevReady;
+					itDev->second.devStatus = jo_dev_ready;
 					m_adapterMap[dev_id] = pObj;
 				}
 			}

@@ -53,7 +53,7 @@ CSonyChannel::~CSonyChannel()
 int CSonyChannel::PtzControl(int nCmd, int nParam)
 {
 	char ptzCommand[1024] = {0};
-	if (nCmd == JO_PTZ_PRE_SET || nCmd == JO_PTZ_PRE_CLR || nCmd == JO_PTZ_GOTO_PRE)
+	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		char command[128] = {0};
 		char authorization[32] = {0};
@@ -63,14 +63,14 @@ int CSonyChannel::PtzControl(int nCmd, int nParam)
 
 		switch (nCmd)
 		{
-		case JO_PTZ_PRE_SET:
+		case jo_ptz_pre_set:
 			{
 				sprintf(command, presetSet, nParam);
 				sprintf(ptzCommand, presetCommand, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemoteIp()
 						, strlen(command),authorization, command);
 			}
 			break;
-		case JO_PTZ_GOTO_PRE:
+		case jo_ptz_goto_pre:
 				sprintf(command, presetCall, nParam, nParam);
 				sprintf(ptzCommand, presetCommand, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemoteIp()
 						, strlen(command),authorization, command);
@@ -84,43 +84,43 @@ int CSonyChannel::PtzControl(int nCmd, int nParam)
 		{
 			switch (nCmd)
 			{
-			case JO_PTZ_UP:
+			case jo_ptz_up:
 				sprintf(ptzCommand, ptzfCommand, "up", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_DOWN:
+			case jo_ptz_down:
 				sprintf(ptzCommand, ptzfCommand, "down", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_LEFT:
+			case jo_ptz_left:
 				sprintf(ptzCommand, ptzfCommand, "left", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_RIGHT:
+			case jo_ptz_right:
 				sprintf(ptzCommand, ptzfCommand, "right", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_UP_LEFT:
+			case jo_ptz_up_left:
 				sprintf(ptzCommand, ptzfCommand, "up-left", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_UP_RIGHT:
+			case jo_ptz_up_right:
 				sprintf(ptzCommand, ptzfCommand, "up-right", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_DOWN_LEFT:
+			case jo_ptz_down_left:
 				sprintf(ptzCommand, ptzfCommand, "down-left", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_DOWN_RIGHT:
+			case jo_ptz_down_right:
 				sprintf(ptzCommand, ptzfCommand, "down-right", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_ZOOM_IN:
+			case jo_ptz_zoom_in:
 				sprintf(ptzCommand, ptzfCommand, "tele", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_ZOOM_OUT:
+			case jo_ptz_room_out:
 				sprintf(ptzCommand, ptzfCommand, "wide", "0", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_FOCUS_NEAR:
+			case jo_ptz_focus_near:
 				break;
-			case JO_PTZ_FOCUS_FAR:
+			case jo_ptz_focus_far:
 				break;
-			case JO_PTZ_IRIS_OPEN:
+			case jo_ptz_iris_open:
 				break;
-			case JO_PTZ_IRIS_CLOSE:
+			case jo_ptz_iris_close:
 				break;
 			}
 		}
@@ -128,18 +128,18 @@ int CSonyChannel::PtzControl(int nCmd, int nParam)
 		{
 			switch (nCmd)
 			{
-			case JO_PTZ_UP:
-			case JO_PTZ_DOWN:
-			case JO_PTZ_LEFT:
-			case JO_PTZ_RIGHT:
-			case JO_PTZ_UP_LEFT:
-			case JO_PTZ_UP_RIGHT:
-			case JO_PTZ_DOWN_LEFT:
-			case JO_PTZ_DOWN_RIGHT:
+			case jo_ptz_up:
+			case jo_ptz_down:
+			case jo_ptz_left:
+			case jo_ptz_right:
+			case jo_ptz_up_left:
+			case jo_ptz_up_right:
+			case jo_ptz_down_left:
+			case jo_ptz_down_right:
 				sprintf(ptzCommand, ptzfCommand, "stop", "motor", m_pAdapter->GetRemoteIp());
 				break;
-			case JO_PTZ_ZOOM_IN:
-			case JO_PTZ_ZOOM_OUT:
+			case jo_ptz_zoom_in:
+			case jo_ptz_room_out:
 				sprintf(ptzCommand, ptzfCommand, "stop", "zoom", m_pAdapter->GetRemoteIp());
 				break;
 			default:
@@ -153,7 +153,7 @@ int CSonyChannel::PtzControl(int nCmd, int nParam)
 
 int CSonyChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 {
-	if (m_pAdapter->GetStatus() != J_DevReady)
+	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
 		m_bOpened = false;
 		return J_DEV_BROKEN;

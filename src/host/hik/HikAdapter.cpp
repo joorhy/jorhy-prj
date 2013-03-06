@@ -3,7 +3,7 @@
 #include "HikIntercom.h"
 #include "HikType.h"
 
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 
 CHikAdapter::CHikAdapter(int nDvrId, const char *pAddr, int nPort,
 		const char *pUsername, const char *pPassword) :
@@ -18,7 +18,7 @@ CHikAdapter::CHikAdapter(int nDvrId, const char *pAddr, int nPort,
 	strcpy(m_username, pUsername);
 	strcpy(m_password, pPassword);
 
-	m_status = J_DevBroken;
+	m_status = jo_dev_broken;
 	Login();
 
 	//定时检测设备状态
@@ -31,7 +31,7 @@ CHikAdapter::CHikAdapter(int nDvrId, const char *pAddr, int nPort,
 CHikAdapter::~CHikAdapter()
 {
 	if (Logout() == J_OK)
-		m_status = J_DevBroken;
+		m_status = jo_dev_broken;
 
 	m_timer.Destroy();
 
@@ -193,7 +193,7 @@ int CHikAdapter::Login()
 		return J_DEV_PARAM_ERROR;
 	}
 	m_userId = loginRetBuf.retData.userID;
-	m_status = J_DevReady;
+	m_status = jo_dev_ready;
 
 	return J_OK;
 }
@@ -201,12 +201,12 @@ int CHikAdapter::Login()
 int CHikAdapter::Logout()
 {
 	int nRet = J_OK;
-	if (m_status == J_DevReady)
+	if (m_status == jo_dev_ready)
 	{
 		//J_OS::LOGINFO("CHikAdapter::Logout() Begin");
 		nRet = SendCommand(HIK_CMD_LOGOUT);
 		m_userId = 0;
-		m_status = J_DevBroken;
+		m_status = jo_dev_broken;
 		//J_OS::LOGINFO("CHikAdapter::Logout() End");
 	}
 
@@ -319,7 +319,7 @@ unsigned short CHikAdapter::CheckSum(unsigned char *addr, int count)
 
 void CHikAdapter::UserExchange()
 {
-	if (m_status == J_DevBroken)
+	if (m_status == jo_dev_broken)
 	{
 		int nRet = Login();
 		J_OS::LOGINFO("CHikAdapter::UserExchange Relogin, ret = %d", nRet);
@@ -368,13 +368,13 @@ void CHikAdapter::OnAlarm()
 			switch (alarmInfo.ulAlarmType)
 			{
 			case 2:
-			EventAlarm(m_drvId, alarmInfo.ulChannel, J_VideoLost);
+				EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_lost);
 				break;
 			case 3:
-			EventAlarm(m_drvId, alarmInfo.ulChannel, J_VideoMotdet);
+				EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_motdet);
 				break;
 			case 6:
-			EventAlarm(m_drvId, alarmInfo.ulChannel, J_VideoHide);
+				EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_hide);
 				break;
 			}
 		}

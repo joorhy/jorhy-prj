@@ -44,7 +44,7 @@ int CLocalManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 				else if (memcmp(dbResult[j], "pass_wd", strlen("pass_wd")) == 0)
 					memcpy(devInfo.passWd, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
 			}
-			devInfo.devStatus = J_DevBroken;
+			devInfo.devStatus = jo_dev_broken;
 			devList.push_back(devInfo);
 		}
 

@@ -1,12 +1,12 @@
 #include "AironixAdapter.h"
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "AironixChannel.h"
 #include "DVR_NET_SDK.h"
 
 CAironixAdapter::CAironixAdapter(int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
 	//m_devHandle = NULL;
-	m_status = J_DevBroken;
+	m_status = jo_dev_broken;
 	memset(m_remoteIP, 0, sizeof(m_remoteIP));
 	memset(m_username, 0, sizeof(m_username));
 	memset(m_password, 0, sizeof(m_password));
@@ -25,7 +25,7 @@ CAironixAdapter::CAironixAdapter(int nDevId, const char *pAddr, int nPort, const
 CAironixAdapter::~CAironixAdapter()
 {
 	if (Logout() == J_OK)
-		m_status = J_DevBroken;
+		m_status = jo_dev_broken;
 
     NET_SDK_Cleanup();
 
@@ -65,7 +65,7 @@ int CAironixAdapter::Login()
     {
         return J_UNKNOW;
     }
-	m_status = J_DevReady;
+	m_status = jo_dev_ready;
 
 	return J_OK;
 }
@@ -76,7 +76,7 @@ int CAironixAdapter::Logout()
     assert(bRet);
     bRet = NET_SDK_Logout(m_userSubId);
     assert(bRet);
-	m_status = J_DevBroken;
+	m_status = jo_dev_broken;
 
 	return J_OK;
 }

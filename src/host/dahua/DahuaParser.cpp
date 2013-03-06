@@ -61,11 +61,11 @@ int CDahuaParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 			streamHeader.dataLen = m_frame->nFrameLength;
 			if (m_frame->nSubType == DH_FRAME_TYPE_VIDEO_I_FRAME)
 			{
-				streamHeader.frameType = J_VideoIFrame;
+				streamHeader.frameType = jo_video_i_frame;
 			}
 			else
 			{
-				streamHeader.frameType = J_VideoPFrame;
+				streamHeader.frameType = jo_video_p_frame;
 			}
 			memcpy(pData, m_frame->pContent, m_frame->nFrameLength);
 		}

@@ -169,7 +169,7 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 		return J_NOT_COMPLATE;
 	}
 
-	int nFrameType = J_MediaUnknow;
+	int nFrameType = jo_media_unknow;
 	int i_data_flag = 0;
 	int nLen = 0;
 
@@ -264,7 +264,7 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 								*(unsigned short *)(p_data_264) == PACKET_B_END)
 						{
 							m_bIsComplate = true;
-							nFrameType = J_VideoPFrame;
+							nFrameType = jo_video_p_frame;
 						}
 
 						memcpy(m_pOutBuff + m_nDataLen, p_data_264 + 2, (i_pack_length - HIK_PACK_LEN - 2));
@@ -277,7 +277,7 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 							m_bIsComplate = true;
 						}
 
-						nFrameType = J_VideoPFrame;
+						nFrameType = jo_video_p_frame;
 						memcpy(m_pOutBuff + m_nDataLen, H264_I_HEAD, 4);
 						m_nDataLen += 4;
 						memcpy(m_pOutBuff + m_nDataLen, p_data_264, i_pack_length - HIK_PACK_LEN);
@@ -317,7 +317,7 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 						if ((nAACLen = faacEncEncode(m_aacHandle, (int32_t *)m_pAudioCache, m_nInputSamples, aacOutBuff + nAACLen, m_nOutputBytes)) > 0)
 						{
 							m_bIsComplate = true;
-							nFrameType = J_AudioFrame;
+							nFrameType = jo_audio_frame;
 
 							m_nSamples -= m_nInputSamples;
 							memmove(m_pAudioCache, m_pAudioCache + m_nInputSamples, m_nInputSamples * 2);
@@ -335,16 +335,16 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 
 	if (m_bIsComplate)
 	{
-		if (nFrameType == J_VideoPFrame)
+		if (nFrameType == jo_video_p_frame)
 		{
 			if (memcmp(m_pOutBuff, H264_SPS_HEAD, 5) == 0)
-				nFrameType = J_VideoIFrame;
+				nFrameType = jo_video_i_frame;
 
 			memcpy(pData, m_pOutBuff, m_nDataLen);
 			nLen = m_nDataLen;
 			m_nDataLen = 0;
 		}
-		else if (nFrameType == J_AudioFrame)
+		else if (nFrameType == jo_audio_frame)
 		{
 			memcpy(pData, aacOutBuff, nAACLen);
 			nLen = nAACLen;

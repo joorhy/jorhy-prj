@@ -1,8 +1,8 @@
 #include "JofsFileReader.h"
 #include "x_sdk.h"
 #include "x_config.h"
-#include "AdapterFactory.h"
-#include "ManagerFactory.h"
+#include "x_adapter_manager.h"
+#include "x_manager_factory.h"
 
 #define RECORD_INTERVAL	(24 * 60 * 60)
 #define TIMER_INTERVAL	128
@@ -46,7 +46,7 @@ int CNvrFileReader::GetContext(J_MediaContext *&mediaContext)
 	while (!bVideoReady || !bAudioReady)
 	{
 		fread(&streamHeader, 1, sizeof(streamHeader), m_pFileId);
-		if (streamHeader.frameType == J_VideoIFrame)
+		if (streamHeader.frameType == jo_video_i_frame)
 		{
 			long pos = ftell(m_pFileId);
 			J_ContextData *contextVideo = (J_ContextData *)pContext->data;
@@ -57,7 +57,7 @@ int CNvrFileReader::GetContext(J_MediaContext *&mediaContext)
 			fseek(m_pFileId, pos, SEEK_SET);
 			bVideoReady = true;
 		}
-		else if(streamHeader.frameType == J_AudioFrame)
+		else if(streamHeader.frameType == jo_audio_frame)
 		{
 			long pos = ftell(m_pFileId);
 			J_ContextData *contextAudio = (J_ContextData *)(pContext->data + sizeof(J_ContextData));
@@ -84,7 +84,7 @@ int CNvrFileReader::GetPacket(char *pBuffer, J_StreamHeader &streamHeader)
 	if (m_bPaused)
 	{
 		streamHeader.dataLen = 0;
-		streamHeader.frameType = J_MediaUnknow;
+		streamHeader.frameType = jo_media_unknow;
 		streamHeader.timeStamp = 0;
 		streamHeader.frameNum = 0;
 	}
@@ -255,7 +255,7 @@ int CNvrFileReader::OpenFile()
 		m_frameMap[frameHeader.timeStamp] = frameHeader;
 
 		//存储关键帧索引
-		if (frameHeader.frameType == J_VideoIFrame)
+		if (frameHeader.frameType == jo_video_i_frame)
 			m_iFrameMap[frameHeader.timeStamp] = frameHeader;
 		nIndexLen -= sizeof(J_FileHeader);
 	}

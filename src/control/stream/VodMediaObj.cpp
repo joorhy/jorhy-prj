@@ -1,6 +1,6 @@
 #include "VodMediaObj.h"
-#include "FilterFactory.h"
-#include "FileReaderFactory.h"
+#include "x_filter_factory.h"
+#include "x_filereader_factory.h"
 #include "x_socket.h"
 
 #define CLIENT_BUFFER_SIZE (1024 * 1024)
@@ -35,23 +35,23 @@ int CVodMediaObj::Process(int nIoType)
 	J_CommandFilter *videoCommand = dynamic_cast<J_CommandFilter *>(m_pObj);
 	if (videoCommand != NULL)
 	{
-		if (nIoType == J_IoRead)
+		if (nIoType == jo_io_read)
 		{
 			m_resid = videoCommand->GetResid();
 			switch(videoCommand->GetCommandType())
 			{
-			case J_START_VOD:
+			case jo_start_vod:
 				nRet = OpenFile();
 				J_OS::LOGINFO("CVodMediaObj::Process OpenFile socket =  %d ret = %d", m_nSocket, nRet);
 				break;
-			case J_PAUSE_VOD:
+			case jo_pause_vod:
 				nRet = PauseFile();
 				break;
-			case J_SETRTIME_VOD:
+			case jo_settime_vod:
 				nRet = SetTime();
 				J_OS::LOGINFO("CVodMediaObj::Process OpenFile socket =  %d ret = %d", m_nSocket, nRet);
 				break;
-			case J_SETSCALE_VOD:
+			case jo_setpos_vod:
 				nRet = SetScale();
 				break;
 			/*case NVR_STOP_FILE:
@@ -65,7 +65,7 @@ int CVodMediaObj::Process(int nIoType)
 				break;
 			}
 		}
-		else if (nIoType == J_IoWrite)
+		else if (nIoType == jo_io_write)
 		{
 			if (!m_bStart)
 				return J_OK;

@@ -1,5 +1,5 @@
 #include "RealMediaObj.h"
-#include "FilterFactory.h"
+#include "x_filter_factory.h"
 #include "x_socket.h"
 #include "x_time.h"
 
@@ -35,16 +35,16 @@ int CRealMediaObj::Process(int nIoType)
 	J_CommandFilter *videoCommand = dynamic_cast<J_CommandFilter *>(m_pObj);
 	if (videoCommand != NULL)
 	{
-		if (nIoType == J_IoRead)
+		if (nIoType == jo_io_read)
 		{
 			m_resid = videoCommand->GetResid();
 			switch (videoCommand->GetCommandType())
 			{
-			case J_START_REAL:
+			case jo_start_real:
 				nRet = StartVideo();
 				J_OS::LOGINFO("CRealMediaObj::Process StartVideo socket =  %d ret = %d", m_nSocket, nRet);
 				break;
-			case J_STOP_REAL:
+			case jo_stop_real:
 			{
 				nRet = StopVideo();
 				J_OS::LOGINFO("CRealMediaObj::Process StopVideo socket =  %d ret = %d", m_nSocket, nRet);
@@ -55,7 +55,7 @@ int CRealMediaObj::Process(int nIoType)
 				break;
 			}
 		}
-		else if (nIoType == J_IoWrite)
+		else if (nIoType == jo_io_write)
 		{
 			if (!m_bStart)
 			{
@@ -92,7 +92,7 @@ int CRealMediaObj::Process(int nIoType)
 					return J_OK;
 				}
 			}
-			else if (m_streamHeader.frameType == J_MediaBroken)
+			else if (m_streamHeader.frameType == jo_media_broken)
 			{
 			    J_OS::LOGERROR("CRealMediaObj::OnWrite Source Broken");
 			    return J_SOCKET_ERROR;

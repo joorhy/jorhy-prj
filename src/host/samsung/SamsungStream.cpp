@@ -115,7 +115,7 @@ int CSamsungStream::OnBroken(int nfd)
     J_OS::LOGINFO("CSamsungStream::OnBroken");
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
-    streamHeader.frameType = J_MediaBroken;
+    streamHeader.frameType = jo_media_broken;
     streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
 
     TLock(m_vecLocker);

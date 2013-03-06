@@ -1,12 +1,12 @@
 #include "AipstarAdapter.h"
 
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "AipstarChannel.h"
 
 CAipstarAdapter::CAipstarAdapter(int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
 	m_devHandle = NULL;
-	m_status = J_DevBroken;
+	m_status = jo_dev_broken;
 	memset(m_remoteIP, 0, sizeof(m_remoteIP));
 	memset(m_username, 0, sizeof(m_username));
 	memset(m_password, 0, sizeof(m_password));
@@ -27,7 +27,7 @@ CAipstarAdapter::CAipstarAdapter(int nDevId, const char *pAddr, int nPort, const
 CAipstarAdapter::~CAipstarAdapter()
 {
 	if (Logout() == J_OK)
-		m_status = J_DevBroken;
+		m_status = jo_dev_broken;
 
 	if (m_devHandle != NULL)
 		TMCC_Done(m_devHandle);
@@ -74,7 +74,7 @@ int CAipstarAdapter::Login()
 	//assert(nRet == TMCC_ERR_SUCCESS);
 	if (nRet == TMCC_ERR_SUCCESS)
     {
-        m_status = J_DevReady;
+        m_status = jo_dev_ready;
     }
     else
     {
@@ -88,7 +88,7 @@ int CAipstarAdapter::Logout()
 {
 	int nRet = TMCC_DisConnect(m_devHandle);
 	if (nRet == TMCC_ERR_SUCCESS)
-        m_status = J_DevBroken;
+        m_status = jo_dev_broken;
 
 	return J_OK;
 }

@@ -83,91 +83,76 @@ int CAipstarChannel::PtzControl(int nCmd, int nParam)
 {
 	int ptzCmd = 0;
 	int nRet = TMCC_ERR_SUCCESS;
-	HANDLE devHandle = TMCC_Init(TMCC_INITTYPE_CONTROL);
-	
-	tmConnectInfo_t conInfo = {0};
-	conInfo.dwSize = sizeof(tmConnectInfo_t);
-	strcpy(conInfo.pIp, m_pAdapter->GetRemoteIp());
-	conInfo.iPort = m_pAdapter->GetRemotePort();
-	strcpy(conInfo.szUser, m_pAdapter->GetRemoteUser());
-	strcpy(conInfo.szPass, m_pAdapter->GetRemotePw());
-
-	nRet = TMCC_Connect(devHandle, &conInfo, true);
-	if (nRet != TMCC_ERR_SUCCESS)
-    {
-        J_OS::LOGINFO("CAipstarChannel::PtzControl Connect Error %d", nRet);
-		return J_UNKNOW;
-    }
-	if (nCmd == JO_PTZ_PRE_SET || nCmd == JO_PTZ_PRE_CLR || nCmd == JO_PTZ_GOTO_PRE)
+	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		switch (nCmd)
 		{
-		case JO_PTZ_PRE_SET:
-		ptzCmd = PTZ_SET_PRESET;
+		case jo_ptz_pre_set:
+			ptzCmd = PTZ_SET_PRESET;
 			break;
-		case JO_PTZ_PRE_CLR:
-		ptzCmd = PTZ_CLE_PRESET;
+		case jo_ptz_pre_clr:
+			ptzCmd = PTZ_CLE_PRESET;
 			break;
-		case JO_PTZ_GOTO_PRE:
-		ptzCmd = PTZ_GOTO_PRESET;
+		case jo_ptz_goto_pre:
+			ptzCmd = PTZ_GOTO_PRESET;
 			break;
 		}
-		nRet = TMCC_PtzPreset(devHandle, ptzCmd, nParam, 5);
+		nRet = TMCC_PtzPreset(m_pAdapter->GetClientHandle(), ptzCmd, nParam, 5);
 	}
 	else
 	{
 		switch (nCmd)
 		{
-		case JO_PTZ_UP:
+		case jo_ptz_up:
             ptzCmd = PTZ_UP;
 			break;
-		case JO_PTZ_DOWN:
+		case jo_ptz_down:
             ptzCmd = PTZ_DOWN;
 			break;
-		case JO_PTZ_LEFT:
+		case jo_ptz_left:
             ptzCmd = PTZ_LEFT;
 			break;
-		case JO_PTZ_RIGHT:
+		case jo_ptz_right:
             ptzCmd = PTZ_RIGHT;
 			break;
-		case JO_PTZ_UP_LEFT:
+		case jo_ptz_up_left:
             ptzCmd = PTZ_LEFTUP;
 			break;
-		case JO_PTZ_UP_RIGHT:
+		case jo_ptz_up_right:
             ptzCmd = PTZ_RIGHTUP;
 			break;
-		case JO_PTZ_DOWN_LEFT:
+		case jo_ptz_down_left:
             ptzCmd = PTZ_LEFTDOWN;
 			break;
-		case JO_PTZ_DOWN_RIGHT:
+		case jo_ptz_down_right:
             ptzCmd = PTZ_RIGHTDOWN;
 			break;
-		case JO_PTZ_ZOOM_IN:
+		case jo_ptz_zoom_in:
             ptzCmd = PTZ_ZOOM_IN;
 			break;
-		case JO_PTZ_ZOOM_OUT:
+		case jo_ptz_room_out:
             ptzCmd = PTZ_ZOOM_OUT;
 			break;
-		case JO_PTZ_FOCUS_NEAR:
+		case jo_ptz_focus_near:
             ptzCmd = PTZ_FOCUS_NEAR;
 			break;
-		case JO_PTZ_FOCUS_FAR:
+		case jo_ptz_focus_far:
             ptzCmd = PTZ_FOCUS_FAR;
 			break;
-		case JO_PTZ_IRIS_OPEN:
+		case jo_ptz_iris_open:
             ptzCmd = PTZ_IRIS_ENLARGE;
 			break;
-		case JO_PTZ_IRIS_CLOSE:
+		case jo_ptz_iris_close:
             ptzCmd = PTZ_IRIS_SHRINK;
 			break;
 		}
 		if (nParam == 0)
 		{
-			nRet = TMCC_PtzControl(devHandle, ptzCmd, 0, nParam);
+			nRet = TMCC_PtzControl(m_pAdapter->GetClientHandle(), ptzCmd, 0, nParam);
 		}
 		else
 		{
-			nRet = TMCC_PtzControl(devHandle, ptzCmd, 1, nParam);
+			nRet = TMCC_PtzControl(m_pAdapter->GetClientHandle(), ptzCmd, 1, nParam);
 		}
 	}
 
@@ -176,7 +161,6 @@ int CAipstarChannel::PtzControl(int nCmd, int nParam)
 	    J_OS::LOGINFO("CAipstarChannel::PtzControl Error %d", nRet);
 	    //m_pAdapter->Relogin();
 	}
-	TMCC_DisConnect(devHandle);
 
 	return (nRet == TMCC_ERR_SUCCESS ? J_OK : J_UNKNOW);
 }

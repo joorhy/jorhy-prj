@@ -3,33 +3,13 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #define JO_MAKE_FORCC(ch0, ch1, ch2, ch3) 	((ch0 & 0xFF) | ((ch1 & 0xFF) << 8) | ((ch2 & 0xFF) << 16) | ((ch3 & 0xFF) << 24))
 
-///NVR 云台控制命令
-#define 	JO_PTZ_UP				1	//向上旋转
-#define 	JO_PTZ_DOWN				2	//向下旋转
-#define 	JO_PTZ_LEFT				3	//向左旋转
-#define 	JO_PTZ_RIGHT			4	//向右旋转
-#define 	JO_PTZ_UP_LEFT			5	//左上旋转
-#define 	JO_PTZ_UP_RIGHT		    6	//右上旋转
-#define 	JO_PTZ_DOWN_LEFT		7	//左下旋转
-#define 	JO_PTZ_DOWN_RIGHT		8	//右下旋转
+#define JO_MAX_ASIOSIZE 1024
 
-#define 	JO_PTZ_PRE_SET			9	//设置预置点
-#define 	JO_PTZ_PRE_CLR			10	//清除预置点
-#define		JO_PTZ_GOTO_PRE	        11	//转至预置点
-
-#define		JO_PTZ_ZOOM_IN			12	//倍率变大
-#define		JO_PTZ_ZOOM_OUT		    13	//倍率变小
-#define		JO_PTZ_FOCUS_NEAR		14	//焦点调近
-#define		JO_PTZ_FOCUS_FAR		15	//焦点调远
-#define 	JO_PTZ_IRIS_OPEN		16	//光圈变大
-#define		JO_PTZ_IRIS_CLOSE		17	//光圈变小
-#define     JO_PTZ_PAN_AUTO         18  //自动扫描
-
-#define     JO_PTZ_AUX_ON           19  //辅助设备打开
-#define     JO_PTZ_AUX_OFF          20  //辅助设备关闭
+#define j_vector_t 			std::vector	
 
 ///协议状态
 #define J_ProUnReady			0
@@ -43,202 +23,247 @@
 #define JO_SDK_VERSION      1
 #define JO_PACKET_LEN       1500
 
-//拆包类型定义
-#define jo_intact_pack      0x00
-#define jo_start_pack       0x01
-#define jo_mid_pack         0x02
-#define jo_end_pack         0x03
-
 //命令定义
-#define JO_LOGIN            0x01		//登录
-#define JO_LOGIN_RET        0x02        //登录返回
-#define JO_LOGOUT           0x03		//退出
-#define JO_LOGOUT_RET       0x04		//退出返回
-#define JO_GETRES           0x05		//获得资源列表
-#define JO_GETRES_RET       0x06		//获得资源列表
-#define JO_OPEN_STREAM      0x07		//开始预览
-#define JO_OPEN_STREAM_RET  0x08		//预览返回
-#define JO_CLOSE_STREM      0x09		//停止预览
-#define JO_CLOSE_STREM_RET  0x0A		//停止返回
-#define JO_PTZ_CONTROL      0x0B		//云镜控制
-#define JO_PTZ_CONTROL_RET  0x0C		//云镜控制返回
-#define JO_RCD_SEARCH		0x0D		//历史文件查询
-#define JO_RCD_SEARCH_RET	0x0E		//历史文件查询返回
-#define JO_OPEN_FILE		0x0F		//打开历史视频
-#define JO_OPEN_FILE_RET	0x10		//打开历史视频返回
-#define JO_REQ_DATA			0x11		//请求数据
-#define JO_REQ_DATA_RET		0x12		//请求数据应答
+enum J_JospCommand
+{
+	jo_login_req = 1,			//登录请求
+	jo_login_rep,				//登录返回
+	jo_logout_req,				//退出请求
+	jo_logout_rep,				//退出返回
+	jo_list_res_req,			//获得资源列表请求
+	jo_list_res_rep,			//获得资源列表返回
+	jo_open_stream_req,			//开始预览
+	jo_open_stream_rep,			//预览返回
+	jo_close_stream_req,		//停止预览
+	jo_close_stream_rep,		//停止返回
+	jo_ptz_control_req,			//云镜控制
+	jo_ptz_control_rep,			//云镜控制返回
+	jo_rcd_search_req,			//历史文件查询
+	jo_rcd_search_rep,			//历史文件查询返回
+	jo_open_file_req,			//打开历史视频
+	jo_open_file_rep,			//打开历史视频返回
+	jo_req_data_req,			//请求数据
+	jo_req_data_rep,			//请求数据应答
+};
 
-#define JO_MAX_ASIOSIZE 1024
+///NVR 云台控制命令
+enum J_PtzCommand
+{
+	jo_ptz_up = 1,			//向上旋转
+	jo_ptz_down,			//向下旋转
+	jo_ptz_left,			//向左旋转
+	jo_ptz_right,			//向右旋转
+	jo_ptz_up_left,			//左上旋转
+	jo_ptz_up_right,		//右上旋转
+	jo_ptz_down_left,		//左下旋转
+	jo_ptz_down_right,		//右下旋转
+
+	jo_ptz_pre_set,			//设置预置点
+	jo_ptz_pre_clr,			//清除预置点
+	jo_ptz_goto_pre,	    //转至预置点
+
+	jo_ptz_zoom_in,			//倍率变大
+	jo_ptz_room_out,		//倍率变小
+	jo_ptz_focus_near,		//焦点调近
+	jo_ptz_focus_far,		//焦点调远
+	jo_ptz_iris_open,		//光圈变大
+	jo_ptz_iris_close,		//光圈变小
+	jo_ptz_pan_auto,        //自动扫描
+
+	jo_ptz_aux_on,          //辅助设备打开
+	jo_ptz_aux_off         	//辅助设备关闭
+};
+
+//拆包类型定义
+enum J_PacketType
+{
+	jo_intact_pack = 0,
+	jo_start_pack,
+	jo_mid_pack,
+	jo_end_pack
+};
 
 ///NVR IO类型
-enum J_IOType
+enum J_IoType
 {
-	J_IoRead = 1,		//读标识
-	J_IoWrite			//写标识
+	jo_io_read = 1,		//读标识
+	jo_io_write			//写标识
 };
 
 ///NVR 告警类型
 enum J_AlarmType
 {
-	J_VideoLost = 1,	//视频丢失
-	J_VideoMotdet,		//移动侦测
-	J_VideoHide			//视频遮挡
+	jo_video_lost = 1,		//视频丢失
+	jo_video_motdet,		//移动侦测
+	jo_video_hide			//视频遮挡
 };
 
 ///NVR命令集合
 enum J_CommandType
 {
-	J_START_REAL = 1,		//启动实时视频
-	J_STOP_REAL,				//关闭实时视频
-	J_START_VOD,				//播放录像文件
-	J_STOP_VOD,				//停止播放
-	J_PAUSE_VOD,				//暂停
-	J_SETRTIME_VOD,			//设置播放时间
-	J_SETPOS_VOD,			//设置播放位置
-	J_SETSCALE_VOD,			//设置播放速度
-	J_START_VOICE,			//启动对讲
-	J_STOP_VOICE				//关闭对讲
+	jo_start_real = 1,		//启动实时视频
+	jo_stop_real,			//关闭实时视频
+	jo_start_vod,			//播放录像文件
+	jo_stop_vod,			//停止播放
+	jo_pause_vod,			//暂停
+	jo_settime_vod,			//设置播放时间
+	jo_setpos_vod,			//设置播放位置
+	jo_setscale_vod,		//设置播放速度
+	jo_start_voice,			//启动对讲
+	jo_stop_voice			//关闭对讲
 };
 
 ///帧类型
 enum J_MediaType
 {
-	J_MediaUnknow = 1,			//未知类型
-	J_MediaHead,				//视频头信息
-	J_VideoIFrame,				//关键帧
-	J_VideoBFrame,				//视频B帧
-	J_VideoPFrame,				//视频P帧
-	J_AudioFrame,				//音频帧
-	J_MediaBroken
+	jo_media_unknow = 1,		//未知类型
+	jo_media_head,				//视频头信息
+	jo_video_i_frame,			//关键帧
+	jo_video_b_frame,			//视频B帧
+	jo_video_p_frame,			//视频P帧
+	jo_audio_frame,				//音频帧
+	jo_media_broken,
+	
+	jo_video_normal = 100,
+	jo_video_yuyv,
+	jo_video_mjpeg,
 };
 
+///设备状态枚举
+enum J_DevStatus
+{
+	jo_dev_ready = 1,
+	jo_dev_broken,
+};
+
+typedef char 				j_boolean_t;
+typedef unsigned int		j_time_t;
+typedef char				j_char_t;
+typedef int					j_result_t;
+typedef void				j_void_t;
+
+typedef char 				j_int8_t;
+typedef unsigned char 		j_uint8_t;
+typedef short 				j_int16_t;
+typedef unsigned short 		j_uint16_t;
+typedef int 				j_int32_t;
+typedef unsigned int 		j_uint32_t;
+typedef long long 			j_int64_t;
+typedef unsigned long long 	j_uint64_t;
+
+typedef std::string			j_string_t;		
 ///帧头结构
 struct J_StreamHeader
 {
-	uint32_t dataLen;			//数据长度
-	uint32_t frameType;			//帧类型
-	uint64_t timeStamp;			//时间戳
-	uint32_t frameNum;
-	//char data[1];				//帧数据
+	j_uint32_t dataLen;			//数据长度
+	j_uint32_t frameType;			//帧类型
+	j_uint64_t timeStamp;			//时间戳
+	j_uint32_t frameNum;
+	//j_char_t data[1];				//帧数据
 };
 
 ///NVR命令头结构
 struct J_CmdHeader
 {
-	uint32_t cmd;
-	uint32_t type;
+	j_uint32_t cmd;
+	j_uint32_t type;
 	union
 	{
-		char resid[16];
-		char fileid[16];
+		j_char_t resid[16];
+		j_char_t fileid[16];
 	};
 };
 
 ///NVR命令回复结构
 struct J_RetHeader
 {
-	uint32_t type;					//设备类型  1-hik
-	uint32_t retCode;				//0-sucess; <0-error
+	j_uint32_t type;				//设备类型  1-hik
+	j_uint32_t retCode;				//0-sucess; <0-error
 };
 
 ///NVR存储文件的帧头
 struct J_FrameHeader
 {
-	uint32_t frameType;		//见MediaType
-	uint32_t length;			//帧数据长度
-	uint32_t offset;			//相对于文件的偏移
-	uint64_t timeStamp;		//相对时间戳
+	j_uint32_t frameType;		//见MediaType
+	j_uint32_t length;			//帧数据长度
+	j_uint32_t offset;			//相对于文件的偏移
+	j_uint64_t timeStamp;		//相对时间戳
 };
 
 ///NVR存储文件的文件格式
 struct J_FileHeader
 {
-	char type[4];				//数据类型, body-音视频数据, head-头数据，存放一系列NVRFrameHeader
-	uint32_t length;			//数据长度,不包含NVRFileHeader
+	j_char_t type[4];			//数据类型, body-音视频数据, head-头数据，存放一系列NVRFrameHeader
+	j_uint32_t length;			//数据长度,不包含NVRFileHeader
 };
 
 ///文件信息
 struct J_FileInfo
 {
-	time_t tStartTime;					/* 文件的开始时间 */
-	time_t tStoptime;					/* 文件的结束时间 */
-};
-
-///设备状态枚举
-enum J_DevStatus
-{
-	J_DevReady = 1,
-	J_DevBroken
+	j_time_t tStartTime;						//文件的开始时间
+	j_time_t tStoptime;						//文件的结束时间
+	j_vector_t<j_string_t> fileNames;
 };
 
 ///媒体上下文信息
 struct J_MediaContext
 {
-	uint32_t forcc;			//媒体类型
-	uint32_t len;				//接下来的数据长度
-	uint16_t num;				//流数量
-	char data[1];				//扩展数据长度
+	j_uint32_t forcc;			//媒体类型
+	j_uint32_t len;				//接下来的数据长度
+	j_uint16_t num;				//流数量
+	j_char_t data[1];			//扩展数据长度
 };
 
 ///媒体上下文数据
 struct J_ContextData
 {
-	uint32_t forcc;			//媒体类型
-	uint32_t len;				//接下来的数据长度
+	j_uint32_t forcc;			//媒体类型
+	j_uint32_t len;				//接下来的数据长度
 	struct
 	{
-		int32_t len;
-		char data[256];
+		j_int32_t len;
+		j_char_t data[256];
 	} cxt;
 };
 
 ///前端设备信息结构
 struct J_DeviceInfo
 {
-	int32_t devId;					//设备ID
-	char devIp[16];			//设备IP地址
-	uint16_t devPort;				//设备端口
-	char devType[16];			//设备类型
-	char userName[16];		//用户名
-	char passWd[32];			//密码
-	int32_t devStatus;				//设备状态
+	j_int32_t devId;			//设备ID
+	j_char_t devIp[16];			//设备IP地址
+	j_uint16_t devPort;			//设备端口
+	j_char_t devType[16];		//设备类型
+	j_char_t userName[16];		//用户名
+	j_char_t passWd[32];		//密码
+	j_int32_t devStatus;		//设备状态
 };
 
 ///通道信息结构
 struct J_ChannelInfo
 {
-	char  devId;					//所属设备ID
-	int32_t channelNum;			//通道编号
+	j_int8_t  devId;				//所属设备ID
+	j_int32_t channelNum;			//通道编号
 };
 
 ///录像信息结构
 struct J_RecordInfo
 {
-	char vodPath[256];				//录像路径
-	uint32_t fileSize;				//文件大小
-	uint32_t timeInterval;			//录像文件间隔  单位(毫秒)
-	uint32_t preRecordTime;			//预录时间 单位(秒)
-};
-
-///解析数据类型
-enum
-{
-	J_VideoNormal = 0,
-	J_VideoYuyv,
-	J_VideoMjpeg
+	j_char_t vodPath[256];				//录像路径
+	j_uint32_t fileSize;				//文件大小
+	j_uint32_t timeInterval;			//录像文件间隔  单位(毫秒)
+	j_uint32_t preRecordTime;			//预录时间 单位(秒)
 };
 
 ///通道ID类型
 class J_ChannelKey
 {
 public:
-	int32_t stream_type;
-	std::string resid;
+	j_int32_t stream_type;
+	j_string_t resid;
 
-	bool operator<(const J_ChannelKey &other) const
+	j_boolean_t operator<(const J_ChannelKey &other) const
 	{
-		bool b_ret = true;
+		j_boolean_t b_ret = true;
 		if (resid != other.resid)
 			b_ret = resid < other.resid;
 		else
@@ -251,99 +276,99 @@ public:
 ///JOSP 控制协议头
 struct J_CtrlHead
 {
-    char start_code[4];		//魔术字段 JOSP
-    uint8_t version:4;		//版本号
-    uint8_t type:2;			//协议类型 0-tcp, 1-udp
-    uint8_t flag:2;			//分包标志 0-未分包, 1-开始, 2-中间, 3-结束包
-    uint8_t cmd;			//命令
-    uint16_t sq_num;		//包序号
-    uint8_t ret;			//返回码头 0-无错误
-    uint8_t reserved;
-    uint16_t ex_length;		//扩展数据长度
-    char user_id[32];		//用户ID
-    uint8_t crc[4];			//校验码(循环冗余校验)
+    j_char_t start_code[4];		//魔术字段 JOSP
+    j_char_t version:4;			//版本号
+    j_char_t type:2;			//协议类型 0-tcp, 1-udp
+    j_char_t flag:2;			//分包标志 0-未分包, 1-开始, 2-中间, 3-结束包
+    j_uint8_t cmd;				//命令
+    j_uint16_t sq_num;			//包序号
+    j_uint8_t ret;				//返回码头 0-无错误
+    j_uint8_t reserved;
+    j_uint16_t ex_length;		//扩展数据长度
+    j_char_t user_id[32];		//用户ID
+    j_char_t crc[4];			//校验码(循环冗余校验)
 };
 
 ///JOSP 控制协议数据包
 struct J_CtrlPacket
 {
     J_CtrlHead head;
-    char data[1];
+    j_char_t data[1];
 };
 
 ///JOSP 用户信息
 struct J_UserInfo
 {
-    char ip_addr[16];
-    int16_t port;
-    bool is_active;
-    char user_name[16];
-    char pass_word[16];
+    j_char_t ip_addr[16];
+    j_int16_t port;
+    j_boolean_t is_active;
+    j_char_t user_name[16];
+    j_char_t pass_word[16];
     union
     {
-        char usr_id[32];
-        char res_id[32];
+        j_char_t usr_id[32];
+        j_char_t res_id[32];
     } id;
 };
 
 ///JOSP 网络信息
 struct J_NetWorkInfo
 {
-    char ip_addr[16];
-    int16_t port;
+    j_char_t ip_addr[16];
+    j_int16_t port;
 };
 
 ///JOSP 登录数据
 struct J_LoginData
 {
-    char user_name[16];
-    char pass_word[16];
+    j_char_t user_name[16];
+    j_char_t pass_word[16];
 };
 
 ///JOSP 云镜控制数据
 struct J_PTZCtlData
 {
-    char res_id[32];
-    int16_t command;
-    int16_t param;
+    j_char_t res_id[32];
+    j_int16_t command;
+    j_int16_t param;
 };
 
 ///JOSP 录像查询数据
 struct J_RecordData
 {
-	char res_id[32];
-	time_t begin_time;
-	time_t end_time;
+	j_char_t res_id[32];
+	j_time_t begin_time;
+	j_time_t end_time;
 };
 
 ///JOSP 实时视频预览
 struct J_RealViewData
 {
-	char res_id[32];		//资源ID
-	int32_t stream_type;		//码流类型 0-主码流,1-子码流
+	j_char_t res_id[32];		//资源ID
+	j_int32_t stream_type;		//码流类型 0-主码流,1-子码流
 };
 
 ///JOSP 实时视频预览返回
 struct J_RealViewRetData
 {
-	char media_code[4];		//媒体类型 JOMS
+	j_char_t media_code[4];		//媒体类型 JOMS
 	//视频信息
-	uint8_t i_frame_ival;	//I帧间隔
-	uint8_t fps;			//帧率
-	uint16_t width;			//视频宽度
-	uint16_t height;		//视频高度
+	j_uint8_t i_frame_ival;		//I帧间隔
+	j_uint8_t fps;				//帧率
+	j_uint16_t width;			//视频宽度
+	j_uint16_t height;			//视频高度
 	//音频信息
 };
 
 ///JOSP 数据头格式
 struct J_DataHead
 {
-	char start_code[4];		//魔术字段 JOAV
-	uint32_t data_len;		//数据长度(不包括头)
-	uint32_t frame_type;	//3-I帧,4-B帧,5-P帧,6-音频帧
-	int64_t time_stamp;		//时间戳
-	uint32_t frame_seq;		//帧序列号
-	int b_last_frame;		//数据结束标准
+	j_char_t start_code[4];		//魔术字段 JOAV
+	j_uint32_t data_len;		//数据长度(不包括头)
+	j_uint32_t frame_type;		//3-I帧,4-B帧,5-P帧,6-音频帧
+	j_int64_t time_stamp;		//时间戳
+	j_uint32_t frame_seq;		//帧序列号
+	j_int32_t b_last_frame;		//数据结束标准
 };
 
 #endif //~__J_TYPE_H_

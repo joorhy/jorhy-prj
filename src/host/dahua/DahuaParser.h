@@ -12,7 +12,7 @@ public:
 
 public:
 	///J_VideoParser
-	virtual int Init(int nDataType = J_VideoNormal);
+	virtual int Init(int nDataType = jo_video_normal);
 	virtual int Deinit();
 	virtual int InputData(const char *pData, int nLen);
 	virtual int GetOnePacket(char *pData, J_StreamHeader &streamHeader);

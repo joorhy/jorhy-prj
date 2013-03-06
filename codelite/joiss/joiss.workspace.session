@@ -1,36 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss/joiss.workspace">
-  <int Value="0" Name="m_selectedTab"/>
+  <int Value="8" Name="m_selectedTab"/>
   <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss/joiss.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/FilterFactory.h" Name="FileName"/>
-      <int Value="3" Name="FirstVisibleLine"/>
-      <int Value="11" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_module_manager_def.h" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="8" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/ManagerFactory.h" Name="FileName"/>
-      <int Value="18" Name="FirstVisibleLine"/>
-      <int Value="24" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/MuxFactory.h" Name="FileName"/>
-      <int Value="15" Name="FirstVisibleLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_adapter_manager.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
       <int Value="0" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/ParserFactory.h" Name="FileName"/>
-      <int Value="15" Name="FirstVisibleLine"/>
-      <int Value="26" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_adapter_factory.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="1" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/Filterfactory.cpp" Name="FileName"/>
-      <int Value="15" Name="FirstVisibleLine"/>
-      <int Value="21" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_adapter_manager.h" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="3" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_filereader_factory.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_filterf_actory.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_manager_factory.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_mux_factory.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_parser_factory.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

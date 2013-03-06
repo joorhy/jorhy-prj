@@ -1,7 +1,7 @@
 #ifndef __VOICEICOMOBJ_H_
 #define __VOICEICOMOBJ_H_
 #include "j_includes.h"
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "x_socket.h"
 
 class CVoiceIcomObj : public J_MediaObj

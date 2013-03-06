@@ -133,7 +133,7 @@ void CXReciver::Disconnect()
 int CXReciver::StartView(const char *pResid, int nStreamType)
 {
 	char write_buff[1024] = {0};
-	MakeHeader(write_buff, NULL, JO_OPEN_STREAM, jo_intact_pack, 0, sizeof(J_RealViewData));
+	MakeHeader(write_buff, NULL, jo_open_stream_req, jo_intact_pack, 0, sizeof(J_RealViewData));
 	J_RealViewData *pRealViewData = (J_RealViewData *)(write_buff + sizeof(J_CtrlHead));
 	memcpy(pRealViewData->res_id, pResid, strlen(pResid));
 	pRealViewData->stream_type = nStreamType;

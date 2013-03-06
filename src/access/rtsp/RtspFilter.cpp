@@ -2,7 +2,7 @@
 #include "x_base64.h"
 #include "x_string.h"
 #include "x_socket.h"
-#include "MuxFactory.h"
+#include "x_mux_factory.h"
 
 const char *rtsp_end = "\r\n\r\n";
 
@@ -176,7 +176,7 @@ int CRtspFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, c
 	nOutLen = 0;
 	if (m_protocolStatus & J_ProPlaying)
 	{
-		if (streamHeader.frameType == J_AudioFrame)
+		if (streamHeader.frameType == jo_audio_frame)
 		{
 			m_muxFilter->Convert(pInputData, streamHeader, pOutputData, nOutLen);
 		}
@@ -391,7 +391,7 @@ int CRtspFilter::ParserUri(const char *request)
 			CXInteger32 i_scale("scale=", "&");
 			x_string >> i_scale;
 			m_scale = i_scale();
-			m_nCommandType = J_SETSCALE_VOD;
+			m_nCommandType = jo_setscale_vod;
 		}
 	}
 
@@ -534,7 +534,7 @@ int CRtspFilter::ParserHeaders(const char *request)
 		m_protocolStatus |= J_ProConnOk;
 		m_protocolStatus &= ~J_ProPaused;
 		
-		return J_START_VOD;
+		return jo_start_vod;
 	}
 	else if (memcmp(methord, "PAUSE", strlen("PAUSE")) == 0)
 	{
@@ -542,7 +542,7 @@ int CRtspFilter::ParserHeaders(const char *request)
 		m_protocolStatus |= J_ProDataUnReady;
 		m_protocolStatus |= J_ProPaused;
 		
-		return J_PAUSE_VOD;
+		return jo_pause_vod;
 	}
 	else if (memcmp(methord, "TEARDOWN", strlen("TEARDOWN")) == 0)
 	{

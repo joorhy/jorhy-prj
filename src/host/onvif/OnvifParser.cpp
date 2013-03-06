@@ -89,13 +89,9 @@ int COnvifParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 {
 	if (m_bIsComplate)
 	{
-		/*static FILE *fp = NULL;
-		if (fp == NULL)
-			fp = fopen("/home/jorhy/share/test.h264", "wb+");
-		fwrite(m_pOutBuff, 1, m_nOffset, fp);*/
-		streamHeader.frameType = J_VideoPFrame;
+		streamHeader.frameType = jo_video_p_frame;
 		if (m_pOutBuff[4] == 0x67)
-			streamHeader.frameType = J_VideoIFrame;
+			streamHeader.frameType = jo_video_i_frame;
 		streamHeader.dataLen = m_nOffset;
 		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
 		memcpy(pData, m_pOutBuff, m_nOffset);

@@ -2,8 +2,8 @@
 #include "json.h"
 #include "x_time.h"
 #include "x_sdk_def.h"
-#include "AdapterManager.h"
-#include "ParserFactory.h"
+#include "x_adapter_manager.h"
+#include "x_parser_factory.h"
 
 #include <uuid.h>
 

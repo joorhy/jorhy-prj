@@ -1,7 +1,7 @@
 #ifndef __AIPSTARADAPTER_H_
 #define __AIPSTARADAPTER_H_
 #include "j_includes.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 #include "config.h"
 #include "tmTransDefine.h"
 #include "tmControlClient.h"

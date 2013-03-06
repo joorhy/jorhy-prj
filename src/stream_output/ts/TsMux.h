@@ -2,7 +2,7 @@
 #define __TS_MUX_H_
 #include "j_includes.h"
 #include "x_time.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 
 #define PAT_INTERVAL			30
 #define PCR_INTERVAL			10

@@ -195,39 +195,39 @@ void CXPtzCtl::CPtz::RefreshBmp(int x, int y, int state)
     {
         case 1:
             SetToolTip(wxString::FromUTF8("自动"));
-            command = JO_PTZ_PAN_AUTO;
+            command = jo_ptz_pan_auto;
             break;
         case 3:
             SetToolTip(wxString::FromUTF8("向上"));
-            command = JO_PTZ_UP;
+            command = jo_ptz_up;
             break;
         case 5:
             SetToolTip(wxString::FromUTF8("右上"));
-            command = JO_PTZ_UP_RIGHT;
+            command = jo_ptz_up_right;
             break;
         case 7:
             SetToolTip(wxString::FromUTF8("向右"));
-            command = JO_PTZ_RIGHT;
+            command = jo_ptz_right;
             break;
         case 9:
             SetToolTip(wxString::FromUTF8("右下"));
-            command = JO_PTZ_DOWN_RIGHT;
+            command = jo_ptz_down_right;
             break;
         case 11:
             SetToolTip(wxString::FromUTF8("向下"));
-            command = JO_PTZ_DOWN;
+            command = jo_ptz_down;
             break;
         case 13:
             SetToolTip(wxString::FromUTF8("左下"));
-            command = JO_PTZ_DOWN_LEFT;
+            command = jo_ptz_down_left;
             break;
         case 15:
             SetToolTip(wxString::FromUTF8("向左"));
-            command = JO_PTZ_LEFT;
+            command = jo_ptz_left;
             break;
         case 17:
             SetToolTip(wxString::FromUTF8("左上"));
-            command = JO_PTZ_UP_LEFT;
+            command = jo_ptz_up_left;
             break;
     }
     if (state == 0)
@@ -428,15 +428,15 @@ void CXPtzCtl::CBtn::RefreshBmp(int x, int y, int state)
         {
             case 1:
                 SetToolTip(wxString::FromUTF8("放大"));
-                nCommand = JO_PTZ_ZOOM_IN;
+                nCommand = jo_ptz_zoom_in;
                 break;
             case 2:
                 SetToolTip(wxString::FromUTF8("拉远"));
-                nCommand = JO_PTZ_FOCUS_FAR;
+                nCommand = jo_ptz_focus_far;
                 break;
             case 3:
                 SetToolTip(wxString::FromUTF8("光圈打开"));
-                nCommand = JO_PTZ_IRIS_OPEN;
+                nCommand = jo_ptz_iris_open;
                 break;
         }
         if (state == 0)
@@ -461,15 +461,15 @@ void CXPtzCtl::CBtn::RefreshBmp(int x, int y, int state)
         {
             case 1:
                 SetToolTip(wxString::FromUTF8("缩小"));
-                nCommand = JO_PTZ_ZOOM_OUT;
+                nCommand = jo_ptz_room_out;
                 break;
             case 2:
                 SetToolTip(wxString::FromUTF8("拉近"));
-                nCommand = JO_PTZ_FOCUS_NEAR;
+                nCommand = jo_ptz_focus_near;
                 break;
             case 3:
                 SetToolTip(wxString::FromUTF8("光圈关闭"));
-                nCommand = JO_PTZ_IRIS_CLOSE;
+                nCommand = jo_ptz_iris_close;
                 break;
         }
         if (state == 0)
@@ -598,11 +598,11 @@ void CXPtzCtl::CBox::RefreshBmp(int x, int y, int state)
         switch (m_flag)
         {
             case 5:
-                nCommand = JO_PTZ_PRE_SET;
+                nCommand = jo_ptz_pre_set;
                 SetToolTip(wxString::FromUTF8("设置预置位"));
                 break;
             case 6:
-                nCommand = JO_PTZ_AUX_ON;
+                nCommand = jo_ptz_aux_on;
                 SetToolTip(wxString::FromUTF8("打开辅助开关"));
                 break;
         }
@@ -622,11 +622,11 @@ void CXPtzCtl::CBox::RefreshBmp(int x, int y, int state)
         switch (m_flag)
         {
             case 5:
-                nCommand = JO_PTZ_GOTO_PRE;
+                nCommand = jo_ptz_goto_pre;
                 SetToolTip(wxString::FromUTF8("调用预置位"));
                 break;
             case 6:
-                nCommand = JO_PTZ_AUX_OFF;
+                nCommand = jo_ptz_aux_off;
                 SetToolTip(wxString::FromUTF8("关闭辅助开关"));
                 break;
         }

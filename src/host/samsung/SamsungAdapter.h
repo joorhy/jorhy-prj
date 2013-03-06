@@ -1,7 +1,7 @@
 #ifndef __SAMSUNGADAPTER_H_
 #define __SAMSUNGADAPTER_H_
 #include "j_includes.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 #include "SansungDef.h"
 #include "x_timer.h"
 #include "x_socket.h"

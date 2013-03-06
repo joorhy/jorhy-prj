@@ -1,4 +1,4 @@
-#include "AdapterManager.h"
+#include "x_adapter_manager.h"
 #include "DeviceControl.h"
 #include "RecoderManager.h"
 

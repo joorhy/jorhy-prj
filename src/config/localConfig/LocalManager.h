@@ -2,7 +2,7 @@
 #define __LOCALMANAGER_H_
 #include "j_includes.h"
 #include "sqlite3.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 
 class CLocalManager : public J_JoManager
 {

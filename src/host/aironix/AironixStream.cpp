@@ -39,11 +39,11 @@ void CAironixStream::OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE
 		//J_OS::LOGINFO("streamId = %d", frameInfo.streamID);
 		if (frameInfo.frameType == 1)
 		{
-			streamHeader.frameType = (frameInfo.keyFrame ? J_VideoIFrame : J_VideoPFrame);
+			streamHeader.frameType = (frameInfo.keyFrame ? jo_video_i_frame : jo_video_p_frame);
 		}
 		else if (frameInfo.frameType == 2)
 		{
-			streamHeader.frameType =  J_AudioFrame;
+			streamHeader.frameType =  jo_audio_frame;
 		}
 		else
 		{

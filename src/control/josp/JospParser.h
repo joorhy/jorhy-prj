@@ -4,7 +4,7 @@
 #include "JoissManager.h"
 #include "MCManager.h"
 #include "DeviceControl.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 
 class CJospParser : public J_CommandParser
 {

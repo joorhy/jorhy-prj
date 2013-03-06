@@ -92,17 +92,17 @@ int CAironixChannel::PtzControl(int nCmd, int nParam)
 {
 	int ptzCmd = 0;
 	BOOL bRet = TRUE;
-	if (nCmd == JO_PTZ_PRE_SET || nCmd == JO_PTZ_PRE_CLR || nCmd == JO_PTZ_GOTO_PRE)
+	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		switch (nCmd)
 		{
-		case JO_PTZ_PRE_SET:
+		case jo_ptz_pre_set:
             ptzCmd = PTZ_CMD_PRESET_SET;
 			break;
-		case JO_PTZ_PRE_CLR:
+		case jo_ptz_pre_clr:
             ptzCmd = PTZ_CMD_PRESET_DEL;
 			break;
-		case JO_PTZ_GOTO_PRE:
+		case jo_ptz_goto_pre:
             ptzCmd = PTZ_CMD_PRESET_GO;
 			break;
 		}
@@ -112,46 +112,46 @@ int CAironixChannel::PtzControl(int nCmd, int nParam)
 	{
 		switch (nCmd)
 		{
-		case JO_PTZ_UP:
+		case jo_ptz_up:
             ptzCmd = PTZ_CMD_UP;
 			break;
-		case JO_PTZ_DOWN:
+		case jo_ptz_down:
             ptzCmd = PTZ_CMD_DOWN;
 			break;
-		case JO_PTZ_LEFT:
+		case jo_ptz_left:
             ptzCmd = PTZ_CMD_LEFT;
 			break;
-		case JO_PTZ_RIGHT:
+		case jo_ptz_right:
             ptzCmd = PTZ_CMD_RIGHT;
 			break;
-		case JO_PTZ_UP_LEFT:
+		case jo_ptz_up_left:
             ptzCmd = PTZ_CMD_LEFT_UP;
 			break;
-		case JO_PTZ_UP_RIGHT:
+		case jo_ptz_up_right:
             ptzCmd = PTZ_CMD_RIGHT_UP;
 			break;
-		case JO_PTZ_DOWN_LEFT:
+		case jo_ptz_down_left:
             ptzCmd = PTZ_CMD_LEFT_DOWN;
 			break;
-		case JO_PTZ_DOWN_RIGHT:
+		case jo_ptz_down_right:
             ptzCmd = PTZ_CMD_RIGHT_DOWN;
 			break;
-		case JO_PTZ_ZOOM_IN:
+		case jo_ptz_zoom_in:
             ptzCmd = PTZ_CMD_ZOOM_IN;
 			break;
-		case JO_PTZ_ZOOM_OUT:
+		case jo_ptz_room_out:
             ptzCmd = PTZ_CMD_ZOOM_OUT;
 			break;
-		case JO_PTZ_FOCUS_NEAR:
+		case jo_ptz_focus_near:
             ptzCmd = PTZ_CMD_NEAR;
 			break;
-		case JO_PTZ_FOCUS_FAR:
+		case jo_ptz_focus_far:
             ptzCmd = PTZ_CMD_FAR;
 			break;
-		case JO_PTZ_IRIS_OPEN:
+		case jo_ptz_iris_open:
             ptzCmd = PTZ_CMD_IRIS_OPEN;
 			break;
-		case JO_PTZ_IRIS_CLOSE:
+		case jo_ptz_iris_close:
             ptzCmd = PTZ_CMD_IRIS_CLOSE;
 			break;
 		}

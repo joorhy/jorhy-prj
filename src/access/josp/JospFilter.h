@@ -1,7 +1,7 @@
 #ifndef __JOSP_H_
 #define __JOSP_H_
 #include "j_includes.h"
-#include "ModuleManagerDef.h"
+#include "x_module_manager_def.h"
 #include "j_type.h"
 
 class CJospFilter : public J_RequestFilter

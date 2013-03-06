@@ -302,7 +302,7 @@ void CHikVodStream::OnWork()
 
 				J_StreamHeader streamHeader;
 				streamHeader.dataLen = playByTimeHead.headLength;
-				streamHeader.frameType = J_MediaHead;
+				streamHeader.frameType = jo_media_head;
 				m_pRingBuffer->PushBuffer(m_pRecvBuff, streamHeader);
 				m_parser.Init();
 			}
@@ -421,7 +421,7 @@ void CHikVodStream::OnParser()
 					//TUnlock(m_fileLock);
 					continue;
 				}
-				if (streamHeader.frameType == J_VideoPFrame && nRet == J_OK)
+				if (streamHeader.frameType == jo_video_p_frame && nRet == J_OK)
 				{
 					bGetOneFrameVideo = true;
 					m_nLastRecvTime = CTime::Instance()->GetLocalTime(0);

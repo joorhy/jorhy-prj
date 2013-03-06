@@ -2,8 +2,8 @@
 #include "RealMediaObj.h"
 #include "VodMediaObj.h"
 #include "VoiceIcomObj.h"
-#include "FilterFactory.h"
-#include "FileReaderFactory.h"
+#include "x_filter_factory.h"
+#include "x_filereader_factory.h"
 
 CStreamManager::CStreamManager()
 {
@@ -68,7 +68,7 @@ int CStreamManager::OnWrite(int nSocket)
 	J_MediaObj *pClient = dynamic_cast<J_MediaObj *>(it->second);
 	if (pClient != NULL)
 	{
-		nRet = pClient->Process(J_IoWrite);
+		nRet = pClient->Process(jo_io_write);
 		if (nRet < 0)
 			J_OS::LOGERROR("CStreamManager::OnWrite Error");
 	}
@@ -149,7 +149,7 @@ int CStreamManager::ProcessCommand(int nSocket, J_Obj *pObj, J_MediaObj *pClient
 	{
 		switch (videoCommand->GetCommandType())
 		{
-			case J_START_REAL:
+			case jo_start_real:
 			{
 				m_clientMap[nSocket] = new CRealMediaObj(nSocket, videoCommand->GetStreamType(), pObj);
 				std::string resid = videoCommand->GetResid();
@@ -166,10 +166,10 @@ int CStreamManager::ProcessCommand(int nSocket, J_Obj *pObj, J_MediaObj *pClient
 				}
 			}
 				break;
-			case J_START_VOD:
+			case jo_start_vod:
 				m_clientMap[nSocket] = new CVodMediaObj(nSocket, pObj);
 				break;
-			case J_START_VOICE:
+			case jo_start_voice:
 				m_clientMap[nSocket] = new CVoiceIcomObj(nSocket, pObj);
 				break;
 			default:
@@ -179,7 +179,7 @@ int CStreamManager::ProcessCommand(int nSocket, J_Obj *pObj, J_MediaObj *pClient
 		pClient = m_clientMap[nSocket];
 	}
 
-	nRet = pClient->Process(J_IoRead);
+	nRet = pClient->Process(jo_io_read);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CStreamManager::ProcessCommand Process Error");
