@@ -32,7 +32,7 @@ void CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 {
 	if (m_bStartup)
 	{
-		J_StreamHeader streamHeader;
+		J_StreamHeader streamHeader = {0};
 		streamHeader.dataLen = streamInfo->iBufferSize - 8;
 		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
 		if (streamInfo->byFrameType == 0)
@@ -42,10 +42,6 @@ void CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 		else if (streamInfo->byFrameType == 1)
 		{
 			streamHeader.frameType =  jo_audio_frame;
-			//for (int i=0; i<32; i++)
-			//{
-			//	printf("%02X ", *(unsigned char *)(streamInfo->pBuffer + i));
-			//}
 		}
 		else
 		{

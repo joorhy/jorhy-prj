@@ -164,6 +164,7 @@ read_begin:
 	}
 
 	return nRecv;
+	//return recv(nSock, pBuff, nLen, MSG_WAITALL);
 }
 
 int CTCPSocket::Write(const char *pBuff, int nLen)
@@ -197,6 +198,7 @@ write_begin:
 	}
 
 	return nSend;
+	//return send(nSock, pBuff, nLen, MSG_WAITALL);
 }
 
 int CTCPSocket::SetNonblocking(int &nSock)

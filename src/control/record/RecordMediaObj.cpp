@@ -142,9 +142,9 @@ int CStreamRecord::StopPreRecord(const char *pResid, int nStreamType, bool isSto
 
 int CStreamRecord::OnWriteVideo()
 {
-    J_StreamHeader streamHeader;
+    J_StreamHeader streamHeader = {0};
     int nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, streamHeader);
-    if (nRet == J_OK)
+    if (nRet == J_OK && streamHeader.dataLen > 0)
     {
         if (streamHeader.frameType == jo_media_broken)
         {
@@ -175,9 +175,7 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
         || m_nHeaderOffset + sizeof(m_frameHead) > HEAD_BUFF_SIZE)
 	{
 	    CloseFile();
-		//m_fileInfo.etime = streamHeader.timeStamp / 1000;
-		m_record.filenum.push_back(m_fileInfo);
-		//J_OS::LOGINFO(m_fileInfo.file.c_str());
+		m_record.filenum.push_back(m_fileInfo);;
 		GetRecordNotice(m_record, CXConfig::GetUrl());
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 		m_record.filenum.clear();
@@ -208,7 +206,8 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 			m_nHeaderOffset += sizeof(m_frameHead);
 			m_nPacketLen = 0;
 		}
-
+		//if (streamHeader.dataLen > 65535)
+		//	printf("dataLen = %d\n", streamHeader.dataLen);
 		//存储数据
 		fwrite(&streamHeader, 1, sizeof(streamHeader), m_fdBody);
 		m_nFileOffset += sizeof(streamHeader);

@@ -26,7 +26,6 @@ const int HEAD_LEN = 4;
 
 CHikParser2::CHikParser2()
 {
-	m_nDataSize = 0;
 	m_pOutBuff = NULL;
 
 	m_bIsComplate = false;
@@ -136,6 +135,7 @@ int CHikParser2::InputData(const char *pData, int nLen)
 
 int CHikParser2::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 {
+	memset(&streamHeader, 0, sizeof(J_StreamHeader));
 	if (m_bIsComplate)
 	{
 		//获得时间戳

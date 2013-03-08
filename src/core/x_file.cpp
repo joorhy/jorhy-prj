@@ -1,6 +1,7 @@
 #include "x_file.h"
 #include "x_log.h"
 #include "x_errtype.h"
+#include "x_time.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -118,7 +119,7 @@ int CXFile::CreateDir(char *pDir)
 	return J_OK;
 }
 
-int CXFile::ListFiles(char *pDir, std::vector<std::string> &fileVec)
+int CXFile::ListFiles(char *pDir, j_vec_str_t &fileVec, const char *pResid)
 {
 	DIR *dirPointer = NULL;
 	struct dirent *entry;
@@ -131,7 +132,15 @@ int CXFile::ListFiles(char *pDir, std::vector<std::string> &fileVec)
 
 	while ((entry = readdir(dirPointer)) != NULL)
 	{
-		fileVec.push_back(entry->d_name);
+		if (pResid == NULL)
+		{
+			fileVec.push_back(entry->d_name);
+		}
+		else
+		{
+			if (memcmp(entry->d_name, pResid, strlen(pResid)) == 0)
+				fileVec.push_back(entry->d_name);
+		}
 	}
 	closedir(dirPointer);
 
@@ -165,9 +174,9 @@ int CXFile::DelFile(const char *filePath, const char *fileName)
 
 int CXFile::DeltmpByResid(const char *pDir, const char *pResid)
 {
-    std::vector<std::string> tmpFileVec;
+    j_vec_str_t tmpFileVec;
     ListFiles((char *)pDir, tmpFileVec);
-    std::vector<std::string>::iterator it = tmpFileVec.begin();
+    j_vec_str_t::iterator it = tmpFileVec.begin();
     for (; it!=tmpFileVec.end(); it++)
     {
         if (memcmp(it->c_str(), pResid, strlen(pResid)) == 0)
@@ -177,4 +186,33 @@ int CXFile::DeltmpByResid(const char *pDir, const char *pResid)
     }
 
     return J_OK;
+}
+
+int CXFile::GetFilesByTime(const char *pDir, const char *pResid, time_t begin_time, time_t end_time, j_vec_file_info_t &vecFileInfo)
+{
+	j_vec_str_t fileVec;
+	ListFiles((char *)pDir, fileVec, pResid);
+	j_vec_str_t::iterator it = fileVec.begin();
+	j_string_t strBeginTime;
+	j_string_t strEndTime;
+	j_int32_t nPos1;
+	j_int32_t nPos2;
+	for (; it!=fileVec.end(); ++it)
+	{
+		nPos1 = it->find_first_of('_');
+		nPos2 = it->find_last_of('_');
+		if (nPos1 != j_string_t::npos && nPos2 != j_string_t::npos)
+		{
+			strBeginTime = it->substr(nPos1 + 1, 17);
+			strEndTime = it->substr(nPos2 + 1, 17);
+			J_FileInfo info = {0};
+			info.tStartTime = CTime::Instance()->ConvertToTime_t(strBeginTime.c_str());
+			info.tStoptime = CTime::Instance()->ConvertToTime_t(strEndTime.c_str());
+			info.fileName = *it;
+			
+			vecFileInfo.push_back(info);
+		}
+		 
+	}
+	return J_OK;
 }

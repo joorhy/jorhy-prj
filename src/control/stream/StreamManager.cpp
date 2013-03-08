@@ -74,7 +74,7 @@ int CStreamManager::OnWrite(int nSocket)
 	}
 	else
 	{
-		usleep(1);
+		//usleep(1);
 		//J_OS::LOGINFO("CStreamManager::OnWrite No Client");
 		//return J_NOT_EXIST;
 		return J_OK;

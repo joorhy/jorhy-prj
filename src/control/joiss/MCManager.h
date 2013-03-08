@@ -13,7 +13,9 @@ public:
     bool CheckUser(const char *pUserName, const char *pPasswd, int nAuthType = 0);
     const char *GetResList();
 	int GetRcdList(const char *pResid, time_t begin_time, time_t end_time, char *pDataBuff);
-
+	int StartRecord() { return 0; }
+	void StopRecord() {}
+	
 private:
     int OpenDB();
 

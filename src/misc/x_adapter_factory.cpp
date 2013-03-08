@@ -8,7 +8,7 @@
 CAdapterFactory::CAdapterFactory(int)
 {
 	m_bRegiste = false;
-	m_timer.Create(6 * 1000, CAdapterFactory::TimerThread, this);
+	m_timer.Create(1 * 1000, CAdapterFactory::TimerThread, this);
 }
 
 CAdapterFactory::~CAdapterFactory()
@@ -188,6 +188,7 @@ void CAdapterFactory::OnTimer()
 			}
 		}
 		m_bRegiste = true;
+		CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->StartRecord();
 	}
 
 }

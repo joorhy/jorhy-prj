@@ -44,6 +44,7 @@
 
 #include <arpa/inet.h>
 
+#include "j_type.h"
 #include "j_module.h"
 
 #endif //~__J_INCLUDES_H_

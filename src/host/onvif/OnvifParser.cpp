@@ -87,6 +87,7 @@ int COnvifParser::InputData(const char *pData, int nLen)
 
 int COnvifParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 {
+	memset(&streamHeader, 0, sizeof(J_StreamHeader));
 	if (m_bIsComplate)
 	{
 		streamHeader.frameType = jo_video_p_frame;

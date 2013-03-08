@@ -180,7 +180,7 @@ void CRecoderManager::OnTimer()
 		if (it == m_recordVec.end())
             break;
 
-		usleep(1000);
+		//usleep(1000);
 	}
 	//J_OS::LOGINFO("CControlManager::OnTimer() %d %d", m_recordVec.size(), m_recordVec.empty());
 	TUnlock(m_locker);

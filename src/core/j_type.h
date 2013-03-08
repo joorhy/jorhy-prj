@@ -4,12 +4,11 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <map>
 
 #define JO_MAKE_FORCC(ch0, ch1, ch2, ch3) 	((ch0 & 0xFF) | ((ch1 & 0xFF) << 8) | ((ch2 & 0xFF) << 16) | ((ch3 & 0xFF) << 24))
 
 #define JO_MAX_ASIOSIZE 1024
-
-#define j_vector_t 			std::vector	
 
 ///协议状态
 #define J_ProUnReady			0
@@ -95,7 +94,12 @@ enum J_AlarmType
 {
 	jo_video_lost = 1,		//视频丢失
 	jo_video_motdet,		//移动侦测
-	jo_video_hide			//视频遮挡
+	jo_video_hide,			//视频遮挡
+	
+	jo_rcd_auto = 101,		//自动录像
+	jo_rcd_manual,
+	jo_rcd_timing,
+	jo_rcd_alarm,
 };
 
 ///NVR命令集合
@@ -151,15 +155,17 @@ typedef unsigned int 		j_uint32_t;
 typedef long long 			j_int64_t;
 typedef unsigned long long 	j_uint64_t;
 
-typedef std::string			j_string_t;		
+typedef std::string					j_string_t;	
+typedef std::vector<j_string_t>		j_vec_str_t;
+
 ///帧头结构
 struct J_StreamHeader
 {
 	j_uint32_t dataLen;			//数据长度
-	j_uint32_t frameType;			//帧类型
-	j_uint64_t timeStamp;			//时间戳
+	j_uint32_t frameType;		//帧类型
+	j_uint64_t timeStamp;		//时间戳
 	j_uint32_t frameNum;
-	//j_char_t data[1];				//帧数据
+	//j_char_t data[1];			//帧数据
 };
 
 ///NVR命令头结构
@@ -200,9 +206,17 @@ struct J_FileHeader
 ///文件信息
 struct J_FileInfo
 {
-	j_time_t tStartTime;						//文件的开始时间
+	j_time_t tStartTime;					//文件的开始时间
 	j_time_t tStoptime;						//文件的结束时间
-	j_vector_t<j_string_t> fileNames;
+	j_string_t fileName;
+};
+typedef std::vector<J_FileInfo> j_vec_file_info_t;
+
+///录像信息
+struct J_RcdTimeInfo
+{
+	j_time_t begin_time;
+	j_time_t end_time;
 };
 
 ///媒体上下文信息
@@ -243,6 +257,8 @@ struct J_ChannelInfo
 {
 	j_int8_t  devId;				//所属设备ID
 	j_int32_t channelNum;			//通道编号
+	j_char_t resid[16];				//资源ID
+	j_int32_t record_type;			//录像类型
 };
 
 ///录像信息结构
@@ -310,6 +326,7 @@ struct J_UserInfo
         j_char_t res_id[32];
     } id;
 };
+typedef std::map<j_string_t, J_UserInfo> j_map_user_info_t;
 
 ///JOSP 网络信息
 struct J_NetWorkInfo
@@ -317,6 +334,7 @@ struct J_NetWorkInfo
     j_char_t ip_addr[16];
     j_int16_t port;
 };
+typedef std::map<int, J_NetWorkInfo> j_map_network_info_t;
 
 ///JOSP 登录数据
 struct J_LoginData

@@ -35,8 +35,8 @@ class CJospParser : public J_CommandParser
         CJoissManager m_ivsManager;
 		//CMCManager m_ivsManager;
         CDeviceControl m_deviceControl;
-        std::map<std::string, J_UserInfo> m_userMap;
-		std::map<int, J_NetWorkInfo> m_networkMap;
+        j_map_user_info_t m_userMap;
+		j_map_network_info_t m_networkMap;
 };
 
 

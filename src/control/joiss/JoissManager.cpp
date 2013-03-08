@@ -15,19 +15,19 @@ CJoissManager::~CJoissManager()
 	}
 }
 
-bool CJoissManager::CheckUser(const char *pUserName, const char *pPasswd, int nAuthType)
+j_boolean_t CJoissManager::CheckUser(const j_char_t *pUserName, const j_char_t *pPasswd, j_int32_t nAuthType)
 {
-    int nRet = J_OK;
+    j_int32_t nRet = J_OK;
 	if ((nRet = OpenDB()) != J_OK)
 		return nRet;
 
-    const char *sql = "select pass_word from t_user where user_name='%s';";
-    char sql_buff[256] = {0};
+    const j_char_t *sql = "select pass_word from t_user where user_name='%s';";
+    j_char_t sql_buff[256] = {0};
     sprintf(sql_buff, sql, pUserName);
 
-	char **dbResult = NULL;
-    int nRow = 0;
-	int nColumn = 0;
+	j_char_t **dbResult = NULL;
+    j_int32_t nRow = 0;
+	j_int32_t nColumn = 0;
 	if (sqlite3_get_table(m_sqlite, sql_buff, &dbResult, &nRow, &nColumn, NULL) == SQLITE_OK)
     {
         if (memcmp(dbResult[nColumn], pPasswd, strlen(pPasswd)) == 0)
@@ -36,12 +36,12 @@ bool CJoissManager::CheckUser(const char *pUserName, const char *pPasswd, int nA
     return false;
 }
 
-const char *CJoissManager::GetResList()
+const j_char_t *CJoissManager::GetResList()
 {
-    const char *sql_buff = "select id, res_name from t_resource;";
-    char **dbResult = NULL;
-	int nRow = 0;
-	int nColumn = 0;
+    const j_char_t *sql_buff = "select id, res_name from t_resource;";
+    j_char_t **dbResult = NULL;
+	j_int32_t nRow = 0;
+	j_int32_t nColumn = 0;
 	TiXmlDocument *pXmlDoc = new TiXmlDocument();
 	TiXmlElement *pRootElement = new TiXmlElement("Server");
 	pXmlDoc->LinkEndChild(pRootElement);
@@ -52,11 +52,11 @@ const char *CJoissManager::GetResList()
 
 	if (sqlite3_get_table(m_sqlite, sql_buff, &dbResult, &nRow, &nColumn, NULL) == SQLITE_OK)
 	{
-		for (int i=1; i<=nRow; i++)
+		for (j_int32_t i=1; i<=nRow; i++)
 		{
 		    pChannelElement = new TiXmlElement("Channel");
 		    pRootElement->LinkEndChild(pChannelElement);
-			for (int j=0; j<nColumn; j++)
+			for (j_int32_t j=0; j<nColumn; j++)
 			{
 				if (memcmp(dbResult[j], "id", strlen("id")) == 0)
 					pChannelElement->SetAttribute("id", dbResult[j+i*nColumn]);
@@ -72,14 +72,45 @@ const char *CJoissManager::GetResList()
     return NULL;
 }
 
-int CJoissManager::GetRcdList(const char *pResid, time_t begin_time, time_t end_time, char *pDataBuff)
+j_int32_t CJoissManager::GetRcdList(const j_char_t *pResid, j_time_t begin_time, j_time_t end_time, j_char_t *pDataBuff)
 {
-	return 0;
+	int nOffset = 0;
+	time_t begin = 0;
+	time_t cur_begin = 0;
+	time_t cur_end = 0;
+	j_vec_file_info_t vecFileInfo;
+	m_file.GetFilesByTime("/home/jorhy/vod", pResid, begin_time, end_time, vecFileInfo);
+	j_vec_file_info_t::iterator it = vecFileInfo.begin();
+	for(; it!=vecFileInfo.end(); ++it)
+	{
+		cur_begin = it->tStartTime;
+		if (cur_end == 0)//初始化
+		{
+			begin = cur_begin;
+			cur_end = it->tStoptime;
+		}
+		else if (cur_end - cur_begin > 5)
+		{
+			J_RcdTimeInfo *pInfo = (J_RcdTimeInfo *)(pDataBuff + nOffset);
+			pInfo->begin_time = begin;
+			pInfo->end_time = it->tStoptime; 
+			nOffset += sizeof(J_RcdTimeInfo);
+			cur_end = 0;
+		}
+		else
+			cur_end = it->tStoptime;
+	}
+	J_RcdTimeInfo *pInfo = (J_RcdTimeInfo *)(pDataBuff + nOffset);
+	pInfo->begin_time = begin;
+	pInfo->end_time = cur_end; 
+	nOffset += sizeof(J_RcdTimeInfo);
+	
+	return nOffset;
 }
 
-int CJoissManager::OpenDB()
+j_result_t CJoissManager::OpenDB()
 {
-	int nRet = SQLITE_OK;
+	j_int32_t nRet = SQLITE_OK;
 	if (m_sqlite == NULL)
 		nRet = sqlite3_open("x_conf.db", &m_sqlite);
 

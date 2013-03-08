@@ -276,6 +276,14 @@ struct J_JoManager : virtual public J_Obj
 	///@param[out]	recordInfo 录像相关信息
 	///@return 		参见x_error_type.h
 	virtual int GetRecordInfo(J_RecordInfo &recordInfo) = 0;
+	
+	///启动录像
+	///@return 		参见x_error_type.h
+	virtual int StartRecord() = 0;
+	
+	///停止录像
+	///@return 		参见x_error_type.h
+	virtual int StopRecord() = 0;
 };
 
 struct J_CommandFilter : virtual public J_Obj

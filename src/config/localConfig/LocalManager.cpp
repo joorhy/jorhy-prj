@@ -95,6 +95,46 @@ int CLocalManager::GetRecordInfo(J_RecordInfo &recordInfo)
 	return J_OK;
 }
 
+int CLocalManager::StartRecord()
+{
+	const j_char_t *sql_buff = "select res_id,res_rcd_type from t_channel;";
+    j_char_t **dbResult = NULL;
+	j_int32_t nRow = 0;
+	j_int32_t nColumn = 0;
+	
+	if (sqlite3_get_table(m_sqlite, sql_buff, &dbResult, &nRow, &nColumn, NULL) == SQLITE_OK)
+	{
+		for (j_int32_t i=1; i<=nRow; i++)
+		{
+			if (atoi(dbResult[i*nColumn + 1]) == jo_rcd_auto)
+			{
+				m_deviceControl.StartRecord(dbResult[i*nColumn]);
+			}
+		}
+	}
+	
+	return J_OK;
+}
+
+int CLocalManager::StopRecord()
+{
+	const j_char_t *sql_buff = "select res_id,res_rcd_type from t_channel;";
+    j_char_t **dbResult = NULL;
+	j_int32_t nRow = 0;
+	j_int32_t nColumn = 0;
+	
+	if (sqlite3_get_table(m_sqlite, sql_buff, &dbResult, &nRow, &nColumn, NULL) == SQLITE_OK)
+	{
+		for (j_int32_t i=1; i<=nRow; i++)
+		{
+			if (atoi(dbResult[i*nColumn + 1]) == jo_rcd_auto)
+			{
+				m_deviceControl.StopRecord(dbResult[i*nColumn]);
+			}
+		}
+	}
+}
+
 int CLocalManager::OpenDB()
 {
 	int nRet = SQLITE_OK;

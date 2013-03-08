@@ -13,10 +13,10 @@ class CAipstarAdapter : public J_BaseAdapter<CAipstarAdapterBase>
 {
 	friend class CAipstarChannel;
 public:
-	CAipstarAdapter(int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword);
+	CAipstarAdapter(j_int32_t nDevId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword);
 	~CAipstarAdapter();
 
-	static int Maker(J_Obj *&pObj, int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
+	static j_result_t Maker(J_Obj *&pObj, j_int32_t nDevId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 	{
 		pObj = new CAipstarAdapter(nDevId, pAddr, nPort, pUsername, pPassword);
 		return J_OK;
@@ -25,17 +25,17 @@ public:
 public:
 	///J_VideoAdapter
 	virtual J_DevStatus GetStatus() const;
-	virtual int Broken();
-	virtual int MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode);
+	virtual j_result_t Broken();
+	virtual j_result_t MakeChannel(const j_char_t *pResid, j_void_t *&pObj, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode);
 
 protected:
     int Relogin();
 
 private:
-	char *GetRemoteIp() const { return (char *)m_remoteIP; }
-	int GetRemotePort() const { return m_remotePort; }
-	char *GetRemoteUser() const { return (char *)m_username; }
-	char *GetRemotePw() const { return (char *)m_password; }
+	j_char_t *GetRemoteIp() const { return (j_char_t *)m_remoteIP; }
+	j_int32_t GetRemotePort() const { return m_remotePort; }
+	j_char_t *GetRemoteUser() const { return (j_char_t *)m_username; }
+	j_char_t *GetRemotePw() const { return (j_char_t *)m_password; }
 	HANDLE GetClientHandle() const { return m_devHandle; }
 
 	static BOOL OnConnectCallBack(HANDLE hHandle, BOOL bConnect, unsigned int dResult, void *context)
@@ -46,17 +46,17 @@ private:
 
 		return true;
 	}
-	void OnConnect(HANDLE hHandle, BOOL bConnect);
+	j_void_t OnConnect(HANDLE hHandle, BOOL bConnect);
 
 private:
-	int Login();
-	int Logout();
+	j_result_t Login();
+	j_result_t Logout();
 
 private:
-	char m_remoteIP[16];
-	int  m_remotePort;
-	char m_username[64];
-	char m_password[64];
+	j_char_t m_remoteIP[16];
+	j_int32_t  m_remotePort;
+	j_char_t m_username[64];
+	j_char_t m_password[64];
 
 	J_DevStatus m_status;
 	HANDLE m_devHandle;

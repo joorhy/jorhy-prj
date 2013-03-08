@@ -73,11 +73,6 @@ int CRealMediaObj::Process(int nIoType)
 				pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
 				if (nDataLen > 0)
 				{
-					/*static FILE *fp = NULL;
-					if (fp == NULL)
-						fp = fopen("/home/jorhy/share/test2.h264", "wb+");
-					fwrite(m_pConvetBuff, 1, nDataLen, fp);*/
-					//if (nDataLen > 0xFFFF)
 					//	printf("nDataLen = %d\n", nDataLen);
 					int nRet = 0;
 					if ((nRet = m_sendSocket.Write_n(m_pConvetBuff/* + nOffset*/, (uint32_t)nDataLen)) < 0)
@@ -88,7 +83,7 @@ int CRealMediaObj::Process(int nIoType)
 				}
 				else
 				{
-					usleep(1);
+					//usleep(1);
 					return J_OK;
 				}
 			}
@@ -99,7 +94,7 @@ int CRealMediaObj::Process(int nIoType)
 			}
 			else
 			{
-				usleep(1);
+				//usleep(1);
 				//J_OS::LOGINFO("!m_pRingBuffer->PopBuffer socket = %d", m_nSocket);
 				return J_OK;
 			}

@@ -80,9 +80,7 @@ void *CXRender::Entry()
 	while (m_bRun)
 	{
 		nLen = m_buffer.PopData(pBuffer);
-		if (nLen == 0)
-			usleep(1);
-		else 
+		if (nLen > 0) 
 		{
 			RendRrame(pBuffer);
 		}
