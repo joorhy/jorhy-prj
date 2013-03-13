@@ -3,7 +3,7 @@
 #include "DVR_NET_SDK.h"
 #include "PTZ.h"
 
-CAironixChannel::CAironixChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
+CAironixChannel::CAironixChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	m_bOpened = false;
 	m_nChannel = nChannel;
@@ -26,7 +26,7 @@ CAironixChannel::~CAironixChannel()
 	//TMCC_Done(m_hStream);
 }
 
-int CAironixChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+j_result_t CAironixChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_bOpened && pObj != NULL)
 	{
@@ -61,7 +61,7 @@ int CAironixChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 	return J_OK;
 }
 
-int CAironixChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+j_result_t CAironixChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
@@ -88,9 +88,9 @@ int CAironixChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 	return J_OK;
 }
 
-int CAironixChannel::PtzControl(int nCmd, int nParam)
+j_result_t CAironixChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 {
-	int ptzCmd = 0;
+	j_int32_t ptzCmd = 0;
 	BOOL bRet = TRUE;
 	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
@@ -167,7 +167,7 @@ int CAironixChannel::PtzControl(int nCmd, int nParam)
 	return (bRet ? J_OK : J_UNKNOW);
 }
 
-int CAironixChannel::StartView(void *pObj)
+j_result_t CAironixChannel::StartView(j_void_t *pObj)
 {
     NET_SDK_CLIENTINFO clientInfo;
 	clientInfo.lChannel = m_nChannel - 1;
@@ -195,7 +195,7 @@ int CAironixChannel::StartView(void *pObj)
 	return J_OK;
 }
 
-int CAironixChannel::StopView()
+j_result_t CAironixChannel::StopView()
 {
     //NET_SDK_SetLiveDataCallBack(m_hStream, NULL, NULL);
     BOOL bRet = NET_SDK_StopLivePlay(m_hStream);

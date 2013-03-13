@@ -11,10 +11,10 @@ public:
 
 public:
 	///J_VideoParser
-	virtual int Init(int nDataType);
-	virtual int Deinit();
-	virtual int InputData(const char *pData, int nLen);
-	virtual int GetOnePacket(char *pData, J_StreamHeader &streamHeader);
+	virtual j_result_t Init(j_int32_t nDataType);
+	virtual j_result_t Deinit();
+	virtual j_result_t InputData(const j_char_t *pData, j_int32_t nLen);
+	virtual j_result_t GetOnePacket(j_char_t *pData, J_StreamHeader &streamHeader);
 
 private:
 

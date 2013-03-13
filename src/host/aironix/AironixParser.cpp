@@ -10,22 +10,22 @@ CAironixParser::~CAironixParser()
 
 }
 
-int CAironixParser::Init(int nDataType)
+j_result_t CAironixParser::Init(j_int32_t nDataType)
 {
 	return J_OK;
 }
 
-int CAironixParser::Deinit()
+j_result_t CAironixParser::Deinit()
 {
 	return J_OK;
 }
 
-int CAironixParser::InputData(const char *pData, int nLen)
+j_result_t CAironixParser::InputData(const j_char_t *pData, j_int32_t nLen)
 {
 	return J_OK;
 }
 
-int CAironixParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
+j_result_t CAironixParser::GetOnePacket(j_char_t *pData, J_StreamHeader &streamHeader)
 {
 	return J_OK;
 }

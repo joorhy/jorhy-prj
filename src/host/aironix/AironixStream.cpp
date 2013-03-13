@@ -1,7 +1,7 @@
 #include "AironixStream.h"
 //#include "j_type.h"
 
-CAironixStream::CAironixStream(std::string resid, int nChannel)
+CAironixStream::CAironixStream(j_string_t resid, j_int32_t nChannel)
 {
 	m_bStartup = false;
 }
@@ -11,7 +11,7 @@ CAironixStream::~CAironixStream()
 
 }
 
-int CAironixStream::Startup()
+j_result_t CAironixStream::Startup()
 {
 	if (m_bStartup)
 		return J_OK;
@@ -20,7 +20,7 @@ int CAironixStream::Startup()
 	return J_OK;
 }
 
-int CAironixStream::Shutdown()
+j_result_t CAironixStream::Shutdown()
 {
 	if (!m_bStartup)
 		return J_OK;
@@ -29,7 +29,7 @@ int CAironixStream::Shutdown()
 	return J_OK;
 }
 
-void CAironixStream::OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE *pBuffer)
+j_void_t CAironixStream::OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE *pBuffer)
 {
 	if (m_bStartup)
 	{
@@ -51,7 +51,7 @@ void CAironixStream::OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE
 		}
 
 		TLock(m_vecLocker);
-		std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+		j_vec_buffer_t::iterator it = m_vecRingBuffer.begin();
 		for (; it != m_vecRingBuffer.end(); it++)
 		{
 			(*it)->PushBuffer((const char *)pBuffer, streamHeader);

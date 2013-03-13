@@ -16,30 +16,30 @@ public:
 	J_OS::TLocker_t  m_sockLocker;
 public:
 	///J_StreamChannel
-	virtual int OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
-	virtual int CloseStream(void *pObj, CRingBuffer *pRingBuffer);
-	virtual bool HasMultiStream() { return true; }
+	virtual j_result_t OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
+	virtual j_result_t CloseStream(void *pObj, CRingBuffer *pRingBuffer);
+	virtual j_boolean_t HasMultiStream() { return true; }
 	///J_PtzControl
-	virtual int PtzControl(int nCmd, int nParam);
+	virtual j_result_t PtzControl(int nCmd, int nParam);
 
 private:
-	int StartView();
-	int StopView();
+	j_result_t StartView();
+	j_result_t StopView();
 
-	int SendOption();
-	int SendDescribe();
-	int SendSetup(int nTrack, int nPort);
-	int SendPlay();
-	int SendTeardown();
+	j_result_t SendOption();
+	j_result_t SendDescribe();
+	j_result_t SendSetup(j_int32_t nTrack, j_int32_t nPort);
+	j_result_t SendPlay();
+	j_result_t SendTeardown();
 
 private:
 	CAipstarAdapter *m_pAdapter;
-	int m_nChannel;
-	int m_nStreamType;
-	int m_nProtocol;
+	j_int32_t m_nChannel;
+	j_int32_t m_nStreamType;
+	j_int32_t m_nProtocol;
 
-	char *m_pDataBuff;
-	bool m_bOpened;
+	j_char_t *m_pDataBuff;
+	j_boolean_t m_bOpened;
 	HANDLE m_hStream;
 };
 

@@ -11,13 +11,13 @@ class CAironixStream : public J_BaseVideoStream<CAironixStreamBase>
 {
 	friend class CAironixChannel;
 public:
-	CAironixStream(std::string resid, int nChannel);
+	CAironixStream(j_string_t resid, j_int32_t nChannel);
 	~CAironixStream();
 
 public:
 	///J_VideoStream
-	virtual int Startup();
-	virtual int Shutdown();
+	virtual j_result_t Startup();
+	virtual j_result_t Shutdown();
 
 protected:
 	static void OnStreamCallBack(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE *pBuffer, void *pUser)
@@ -28,10 +28,10 @@ protected:
 	}
 
 private:
-	void OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE *pBuffer);
+	j_void_t OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE *pBuffer);
 
 private:
-	bool m_bStartup;
+	j_boolean_t m_bStartup;
 };
 
 #endif //~__AIRONIXSTREAM_H_

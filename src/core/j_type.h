@@ -140,7 +140,7 @@ enum J_DevStatus
 	jo_dev_broken,
 };
 
-typedef char 				j_boolean_t;
+typedef bool 				j_boolean_t;
 typedef unsigned int		j_time_t;
 typedef char				j_char_t;
 typedef int					j_result_t;

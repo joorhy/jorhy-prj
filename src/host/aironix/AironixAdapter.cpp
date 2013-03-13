@@ -3,7 +3,7 @@
 #include "AironixChannel.h"
 #include "DVR_NET_SDK.h"
 
-CAironixAdapter::CAironixAdapter(int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
+CAironixAdapter::CAironixAdapter(j_int32_t nDevId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 {
 	//m_devHandle = NULL;
 	m_status = jo_dev_broken;
@@ -36,12 +36,13 @@ J_DevStatus CAironixAdapter::GetStatus() const
 {
 	return m_status;
 }
-int CAironixAdapter::Broken()
+
+j_result_t CAironixAdapter::Broken()
 {
 	return J_OK;
 }
 
-int CAironixAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode)
+j_result_t CAironixAdapter::MakeChannel(const j_char_t *pResid, j_void_t *&pObj, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	CAironixChannel *pChannel = new CAironixChannel(pResid, pOwner, nChannel, nStream, nMode);
 	if (NULL == pChannel)
@@ -52,7 +53,7 @@ int CAironixAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, 
 	return J_OK;
 }
 
-int CAironixAdapter::Login()
+j_result_t CAironixAdapter::Login()
 {
     NET_SDK_DEVICEINFO info;
     m_userId = NET_SDK_Login(m_remoteIP, m_remotePort, m_username, m_password, &info);
@@ -70,7 +71,7 @@ int CAironixAdapter::Login()
 	return J_OK;
 }
 
-int CAironixAdapter::Logout()
+j_result_t CAironixAdapter::Logout()
 {
     BOOL bRet = NET_SDK_Logout(m_userId);
     assert(bRet);

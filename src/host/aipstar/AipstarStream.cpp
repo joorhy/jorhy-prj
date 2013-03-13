@@ -1,6 +1,6 @@
 #include "AipstarStream.h"
 
-CAipstarStream::CAipstarStream(std::string resid, int nChannel)
+CAipstarStream::CAipstarStream(j_string_t resid, j_int32_t nChannel)
 {
 	m_bStartup = false;
 }
@@ -10,7 +10,7 @@ CAipstarStream::~CAipstarStream()
 
 }
 
-int CAipstarStream::Startup()
+j_result_t CAipstarStream::Startup()
 {
 	if (m_bStartup)
 		return J_OK;
@@ -19,7 +19,7 @@ int CAipstarStream::Startup()
 	return J_OK;
 }
 
-int CAipstarStream::Shutdown()
+j_result_t CAipstarStream::Shutdown()
 {
 	if (!m_bStartup)
 		return J_OK;
@@ -28,7 +28,7 @@ int CAipstarStream::Shutdown()
 	return J_OK;
 }
 
-void CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
+j_void_t CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 {
 	if (m_bStartup)
 	{
@@ -49,7 +49,7 @@ void CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 		}
 
 		TLock(m_vecLocker);
-		std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+		j_vec_buffer_t::iterator it = m_vecRingBuffer.begin();
 		for (; it != m_vecRingBuffer.end(); it++)
 		{
 			(*it)->PushBuffer((const char *)streamInfo->pBuffer + 8, streamHeader);

@@ -44,5 +44,6 @@ class CRingBuffer
 		
 		J_MEMNODE m_Node;
 };
+typedef std::vector<CRingBuffer *>	j_vec_buffer_t;
 
 #endif //~__X_RINGBUFFER_H_

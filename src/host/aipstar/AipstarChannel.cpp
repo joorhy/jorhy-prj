@@ -1,7 +1,7 @@
 #include "AipstarChannel.h"
 #include "AipstarStream.h"
 
-CAipstarChannel::CAipstarChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
+CAipstarChannel::CAipstarChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	m_bOpened = false;
 	m_nChannel = nChannel;
@@ -24,7 +24,7 @@ CAipstarChannel::~CAipstarChannel()
 	TMCC_Done(m_hStream);
 }
 
-int CAipstarChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_bOpened && pObj != NULL)
 	{
@@ -35,7 +35,7 @@ int CAipstarChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	pObj = new CAipstarStream(m_resid, m_nChannel);
 	TMCC_RegisterStreamCallBack(m_hStream, CAipstarStream::OnStreamCallBack, pObj);
-	int nRet = StartView();
+	j_result_t nRet = StartView();
 	if (nRet != J_OK)
 	{
 		m_pAdapter->Broken();
@@ -52,7 +52,7 @@ int CAipstarChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 	return J_OK;
 }
 
-int CAipstarChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+j_result_t CAipstarChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
@@ -79,9 +79,9 @@ int CAipstarChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 	return J_OK;
 }
 
-int CAipstarChannel::PtzControl(int nCmd, int nParam)
+j_result_t CAipstarChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 {
-	int ptzCmd = 0;
+	j_int32_t ptzCmd = 0;
 	int nRet = TMCC_ERR_SUCCESS;
 	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
@@ -165,7 +165,7 @@ int CAipstarChannel::PtzControl(int nCmd, int nParam)
 	return (nRet == TMCC_ERR_SUCCESS ? J_OK : J_UNKNOW);
 }
 
-int CAipstarChannel::StartView()
+j_result_t CAipstarChannel::StartView()
 {
 	tmPlayRealStreamCfg_t realInfo = {0};
 	realInfo.dwSize = sizeof(tmRealStreamInfo_t);
@@ -189,7 +189,7 @@ int CAipstarChannel::StartView()
 	return J_OK;
 }
 
-int CAipstarChannel::StopView()
+j_result_t CAipstarChannel::StopView()
 {
 	int nRet = TMCC_CloseStream(m_hStream);
     if (nRet != TMCC_ERR_SUCCESS)

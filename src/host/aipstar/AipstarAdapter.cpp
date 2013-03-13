@@ -3,7 +3,7 @@
 #include "x_adapter_manager.h"
 #include "AipstarChannel.h"
 
-CAipstarAdapter::CAipstarAdapter(int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
+CAipstarAdapter::CAipstarAdapter(j_int32_t nDevId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 {
 	m_devHandle = NULL;
 	m_status = jo_dev_broken;
@@ -39,12 +39,12 @@ J_DevStatus CAipstarAdapter::GetStatus() const
 {
 	return m_status;
 }
-int CAipstarAdapter::Broken()
+j_result_t CAipstarAdapter::Broken()
 {
 	return J_OK;
 }
 
-int CAipstarAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode)
+j_result_t CAipstarAdapter::MakeChannel(const j_char_t *pResid, j_void_t *&pObj, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	CAipstarChannel *pChannel = new CAipstarChannel(pResid, pOwner, nChannel, nStream, nMode);
 	if (NULL == pChannel)
@@ -55,13 +55,13 @@ int CAipstarAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, 
 	return J_OK;
 }
 
-int CAipstarAdapter::Relogin()
+j_result_t CAipstarAdapter::Relogin()
 {
     Logout();
     return Login();
 }
 
-int CAipstarAdapter::Login()
+j_result_t CAipstarAdapter::Login()
 {
 	tmConnectInfo_t conInfo = {0};
 	conInfo.dwSize = sizeof(tmConnectInfo_t);
@@ -84,7 +84,7 @@ int CAipstarAdapter::Login()
 	return J_OK;
 }
 
-int CAipstarAdapter::Logout()
+j_result_t CAipstarAdapter::Logout()
 {
 	int nRet = TMCC_DisConnect(m_devHandle);
 	if (nRet == TMCC_ERR_SUCCESS)
@@ -93,7 +93,7 @@ int CAipstarAdapter::Logout()
 	return J_OK;
 }
 
-void CAipstarAdapter::OnConnect(HANDLE hHandle, BOOL bConnect)
+j_void_t CAipstarAdapter::OnConnect(HANDLE hHandle, BOOL bConnect)
 {
 	printf("connect = %d\n", bConnect);
 }

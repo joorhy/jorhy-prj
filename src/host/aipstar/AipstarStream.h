@@ -14,13 +14,13 @@ class CAipstarStream : public J_BaseVideoStream<CAipstarStreamBase>
 {
 	friend class CAipstarChannel;
 public:
-	CAipstarStream(std::string resid, int nChannel);
+	CAipstarStream(j_string_t resid, j_int32_t nChannel);
 	~CAipstarStream();
 
 public:
 	///J_VideoStream
-	virtual int Startup();
-	virtual int Shutdown();
+	virtual j_result_t Startup();
+	virtual j_result_t Shutdown();
 
 protected:
 	static int OnStreamCallBack(HANDLE hHandle, tmRealStreamInfo_t *streamInfo, void *context)
@@ -33,10 +33,10 @@ protected:
 	}
 
 private:
-	void OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo);
+	j_void_t OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo);
 
 private:
-	bool m_bStartup;
+	j_boolean_t m_bStartup;
 };
 
 #endif //~__AIPSTARSTREAM_H_
