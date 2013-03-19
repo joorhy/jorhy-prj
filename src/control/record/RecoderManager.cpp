@@ -131,6 +131,7 @@ void CRecoderManager::OnWork()
     MediaMap::iterator it;
     while (m_bStart)
 	{
+		usleep(10);
 	    TLock(m_locker2);
 	    if (m_mediaMap.empty())
 	    {

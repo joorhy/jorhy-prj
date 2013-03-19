@@ -4,8 +4,9 @@
 #include "x_sdk.h"
 #include "x_time.h"
 #include "x_file.h"
+#include "x_thread_pool.h"
 
-class CStreamRecordBase
+class CStreamRecordBase 
 {};
 
 class CStreamRecord : public J_BaseAdapter<CStreamRecordBase>
@@ -22,6 +23,7 @@ public:
 	int StopPreRecord(const char *pResid, int nStreamType, bool isStopVideo = true);
 
     int OnWriteVideo();
+	int OnRecord();
 
 private:
 	int CreateFile(char *pFileName);
@@ -58,6 +60,23 @@ private:
 	s_record m_record;
 	s_fileinfo m_fileInfo;
 	CXFile m_file;
+};
+
+class CRecordTask : public J_Task
+{
+	//friend class CStreamRecord;
+	public:
+		CRecordTask() { m_pParam = NULL; }
+		~CRecordTask() {}
+		/// J_Task
+		virtual int Run()
+		{
+			CStreamRecord *pRecorder = static_cast<CStreamRecord *>(m_pParam);
+			if (pRecorder)
+				pRecorder->OnRecord();
+				
+			return 0;
+		}
 };
 
 #endif // ~__STREAMRECORD_H_

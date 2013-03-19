@@ -18,6 +18,9 @@ public:
 	virtual int Run(bool bFlag);
 	///J_VideoClient
 	virtual const char *GetResid() const;
+	
+public: 
+	int OnWriteData();
 
 private:
 	//实时视频
@@ -32,12 +35,30 @@ private:
 	char *m_pDataBuff;
 	char *m_pConvetBuff;
 
-	std::string m_resid;
+	j_string_t m_resid;
 
 	J_OS::CTCPSocket m_sendSocket;
+	J_OS::CTLock m_locker;
 	J_StreamHeader m_streamHeader;
 
 	J_Obj *m_pObj;
+	int m_taskNum;
+};
+
+class CRealTask : public J_Task
+{
+	public:
+		CRealTask() { m_pParam = NULL; }
+		~CRealTask() {}
+		/// J_Task
+		virtual int Run()
+		{
+			CRealMediaObj *pRealMedia = static_cast<CRealMediaObj *>(m_pParam);
+			if (pRealMedia)
+				pRealMedia->OnWriteData();
+				
+			return 0;
+		}
 };
 
 #endif //~__REALMEDIAOBJ_H_

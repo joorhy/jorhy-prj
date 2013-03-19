@@ -73,7 +73,7 @@ int CLog::WriteLogError(const char *format, ...)
 {
 	m_locker._Lock();
 	char errBuff[256] = {0};
-	sprintf(errBuff, "(%s)", strerror(errno));
+	sprintf(errBuff, "(%s, errno = %d)", strerror(errno), errno);
 
 	static char dataBuff[1024] = {0};
 	int nArgLen = 0;

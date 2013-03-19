@@ -1,5 +1,6 @@
 #ifndef __J_VIDEOADAPTER_H_
 #define __J_VIDEOADAPTER_H_
+#include <queue>
 #include <vector>
 #include <string>
 #include <time.h>
@@ -9,6 +10,18 @@
 #include "x_lock.h"
 #include "j_obj.h"
 #include "j_type.h"
+
+///任务
+class J_Task : virtual public J_Obj
+{
+	public:
+		void *m_pParam;
+
+		///任务的工作函数,由使用者实现
+		///@return 参见x_error_type.h
+		virtual int Run() = 0;
+};
+typedef std::queue<J_Task *> j_queue_task;
 
 struct J_DevAdapter : virtual public J_Obj
 {

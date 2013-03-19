@@ -3,6 +3,7 @@
 #include "ControlManager.h"
 #include "x_loadso.h"
 #include "x_include.h"
+#include "x_thread_pool.h"
 
 #include "DeviceControl.h"
 
@@ -12,10 +13,9 @@ bool bRun = true;
 std::vector<CStreamManager *> streamManagerVec;
 std::vector<CControlManager *> controlManagerVec;
 
-//CDeviceControl deviceControl;
-
 void OnSignal(int nSigNum)
 {
+	J_OS::LOGINFO("signal = %d", nSigNum);
 	if (nSigNum == SIGINT)
 	{
 		J_OS::LOGINFO("Quit JoServer");
@@ -32,6 +32,8 @@ int main(int argc,char **argv)
         J_OS::LOGINFO("main loadSo JoLoadSo error");
         return 0;
     }
+	
+	//CThreadPool::Instance()->Create(2);
 
 	std::vector<J_ServerInfo> serverInfo = CXConfig::GetServerInfo();
 	std::vector<J_ServerInfo>::iterator it = serverInfo.begin();
@@ -58,8 +60,6 @@ int main(int argc,char **argv)
 		controlManagerVec.push_back(pControlManager);
 	}
 
-	//deviceControl.StartRecord("77");
-
     signal(SIGINT, OnSignal);
 	while(bRun)
 	{
@@ -81,6 +81,7 @@ end:
 		delete (*itControlManager);
 	}
 	loadSo.JoUnloadSo();
+	CThreadPool::Instance()->Destroy();
 
 	return 0;
 }

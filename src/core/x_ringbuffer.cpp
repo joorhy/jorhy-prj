@@ -1,4 +1,5 @@
 #include <string.h>
+#include <assert.h>
 
 #include "j_module.h"
 #include "x_ringbuffer.h"
@@ -11,16 +12,22 @@ CRingBuffer::CRingBuffer(int nCacheFrameNum, int nBufferSize)
 	m_pEnd = m_pBuffer + nBufferSize;
 	m_pWritePoint = m_pReadPoint = m_pBegin;
 	m_nDataLen = 0;
+	
+	pthread_mutex_init(&m_mutex, NULL);
+	pthread_cond_init(&m_cond, NULL);
 }
 CRingBuffer::~CRingBuffer()
 {
-	WLock(m_rwLocker);
+	pthread_mutex_lock(&m_mutex);
 	if (m_pBuffer)
 	{
 		delete m_pBuffer;
 		m_pBuffer = NULL;
 	}
-	RWUnlock(m_rwLocker);
+	pthread_mutex_unlock(&m_mutex);
+	
+	pthread_mutex_destroy(&m_mutex);
+	pthread_cond_destroy(&m_cond);
 }
 
 int CRingBuffer::ResetBufferSize(int nBufferSize)
@@ -30,52 +37,74 @@ int CRingBuffer::ResetBufferSize(int nBufferSize)
 
 int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 {
-	WLock(m_rwLocker);
-	int nLen = streamHeader.dataLen;
-	while (GetIdleLength() < (nLen + J_MEMNODE_LEN))
+	pthread_mutex_lock(&m_mutex);
+	/*if (streamHeader.frameType != jo_video_i_frame)
 	{
-		if (m_nDataLen <= 0)
+		pthread_mutex_unlock(&m_mutex);
+		return J_OK;
+	}*/
+		
+	int nLen = streamHeader.dataLen;
+	while (GetIdleLength() < (nLen + J_MEMNODE_LEN + sizeof(J_StreamHeader)))
+	{
+		if (m_nDataLen < 0)
+		{
+			J_OS::LOGINFO("CRingBuffer::PushBuffer Buffer Error");
+			pthread_mutex_unlock(&m_mutex);
 			return J_UNKNOW;
+		}
 			
 		EraseBuffer();
 	}
-		
+	
+	memset(&m_Node, 0, sizeof(m_Node));
 	m_Node.nLen = nLen + sizeof(J_StreamHeader);
 	m_Node.pData = AddBuffer(m_pWritePoint, J_MEMNODE_LEN);
 	Write((const char *)&m_Node, J_MEMNODE_LEN);
 	Write((const char *)&streamHeader, sizeof(J_StreamHeader));
 	Write(pBuffer, nLen);
-	RWUnlock(m_rwLocker);
-
+	pthread_mutex_unlock(&m_mutex);
+	//pthread_cond_signal(&m_cond);
+	
 	return J_UNKNOW;
 }
 
 int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 {
-	RLock(m_rwLocker);
+	pthread_mutex_lock(&m_mutex);
+	//if (m_nDataLen == 0)
+	//	pthread_cond_wait(&m_cond, &m_mutex);
+		
 	if (m_nDataLen > 0)
 	{
+		memset(&m_Node, 0, sizeof(m_Node));
 		Read((char *)&m_Node, J_MEMNODE_LEN);
 		Read((char *)&streamHeader, sizeof(J_StreamHeader));
 		Read(pBuffer, m_Node.nLen - sizeof(J_StreamHeader));
 		//nRetLen = m_Node.nLen;
+		pthread_mutex_unlock(&m_mutex);
+		return J_OK;
 	}
-	RWUnlock(m_rwLocker);
+	pthread_mutex_unlock(&m_mutex);
 
-	return J_OK;
+	return J_NOT_COMPLATE;
 }
 
 void CRingBuffer::Read(char *pData, int nLen)
-{
+{		
 	if (m_pEnd - (char *)m_pReadPoint <= nLen)
 	{
-		int nLastLen = m_pEnd - (char *)m_pReadPoint - 1;
-		memcpy(pData, m_pReadPoint, nLastLen);
-		memcpy(pData + nLastLen, m_pBegin, nLen - nLastLen);
+		if (pData != NULL)
+		{
+			int nLastLen = m_pEnd - (char *)m_pReadPoint;
+			memcpy(pData, m_pReadPoint, nLastLen);
+			memcpy(pData + nLastLen, m_pBegin, nLen - nLastLen);
+		}
 	}
 	else
 	{
-		memcpy(pData, m_pReadPoint, nLen);
+		if (pData != NULL)
+			memcpy(pData, m_pReadPoint, nLen);
 	}
 	m_pReadPoint = AddBuffer(m_pReadPoint, nLen);
 	m_nDataLen -= nLen;
@@ -85,7 +114,7 @@ void CRingBuffer::Write(const char *pData, int nLen)
 {
 	if (m_pEnd - m_pWritePoint <= nLen)
 	{
-		int nLastLen = m_pEnd - m_pWritePoint - 1;
+		int nLastLen = m_pEnd - m_pWritePoint;
 		memcpy(m_pWritePoint, pData, nLastLen);
 		memcpy(m_pBegin, pData + nLastLen, nLen - nLastLen);
 	}
@@ -105,11 +134,13 @@ int CRingBuffer::GetIdleLength()
 
 void CRingBuffer::EraseBuffer()
 {
-	J_MEMNODE node = {0};
-	Read((char *)&node, J_MEMNODE_LEN);
-	m_pReadPoint = AddBuffer(m_pReadPoint, node.nLen);
-	m_nDataLen -= node.nLen;
-	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", node.nLen);
+	J_StreamHeader streamHeader = {0};
+	memset(&m_Node, 0, sizeof(m_Node));
+	Read((char *)&m_Node, J_MEMNODE_LEN);
+	Read((char *)&streamHeader, sizeof(J_StreamHeader));
+	Read(NULL, m_Node.nLen - sizeof(J_StreamHeader));
+	
+	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
 }
 
 char *CRingBuffer::AddBuffer(char *pBuffer, int nLen)
@@ -117,7 +148,7 @@ char *CRingBuffer::AddBuffer(char *pBuffer, int nLen)
 	char *pNextBuff = NULL;
 	if (m_pEnd - pBuffer <= nLen)
 	{
-		pNextBuff = m_pBegin + (nLen - (m_pEnd - pBuffer - 1));
+		pNextBuff = m_pBegin + (nLen - (m_pEnd - pBuffer));
 	}
 	else
 	{

@@ -3,6 +3,8 @@
 #include "x_config.h"
 #include "x_manager_factory.h"
 
+extern CThreadPool g_thread_pool;
+
 #define DATA_BUFF_SIZE (1024 * 1024)
 #define HEAD_BUFF_SIZE (1024 * 1024)
 CStreamRecord::CStreamRecord()
@@ -142,7 +144,15 @@ int CStreamRecord::StopPreRecord(const char *pResid, int nStreamType, bool isSto
 
 int CStreamRecord::OnWriteVideo()
 {
-    J_StreamHeader streamHeader = {0};
+	/*CRecordTask *pTask = new CRecordTask;
+	pTask->m_pParam = this;
+	CThreadPool::Instance()->AddTask(pTask);*/
+	OnRecord();
+}
+
+int CStreamRecord::OnRecord()
+{
+	J_StreamHeader streamHeader = {0};
     int nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, streamHeader);
     if (nRet == J_OK && streamHeader.dataLen > 0)
     {
@@ -160,6 +170,10 @@ int CStreamRecord::OnWriteVideo()
 
         ParserAndSave(m_pDataBuff, streamHeader);
     }
+	else 
+	{
+		usleep(1000);
+	}
 
 	return J_OK;
 }

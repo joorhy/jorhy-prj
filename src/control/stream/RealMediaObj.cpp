@@ -2,6 +2,7 @@
 #include "x_filter_factory.h"
 #include "x_socket.h"
 #include "x_time.h"
+#include "x_thread_pool.h"
 
 #define CLIENT_BUFFER_SIZE (2 * 1024 * 1024)
 #define MAX_SEND_BUFF	8100
@@ -17,6 +18,7 @@ CRealMediaObj::CRealMediaObj(int nSocket, int nStreamType, J_Obj *pObj)
 	m_sendSocket.Init(nSocket);
 
 	m_pObj = pObj;
+	m_taskNum = 0;
 
 	J_OS::LOGINFO("CRealMediaObj::CRealMediaObj created socket =  %d", m_nSocket);
 }
@@ -62,45 +64,65 @@ int CRealMediaObj::Process(int nIoType)
 				J_OS::LOGINFO("CRealMediaObj::Process !m_bStart socket = %d", m_nSocket);
 				return J_OK;
 			}
-
-			J_RequestFilter *pAccess = dynamic_cast<J_RequestFilter *>(m_pObj);
-			//J_OS::LOGINFO("5555");
-			memset(&m_streamHeader, 0, sizeof(m_streamHeader));
-			nRet = m_pRingBuffer->PopBuffer(m_pDataBuff/* + sizeof(PackHeader)*/, m_streamHeader);
-			if (nRet == J_OK && m_streamHeader.dataLen > 0)
+			
+			/*TLock(m_locker);
+			if (m_taskNum == 0)
 			{
-                int nDataLen = 0;
-				pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
-				if (nDataLen > 0)
-				{
-					//	printf("nDataLen = %d\n", nDataLen);
-					int nRet = 0;
-					if ((nRet = m_sendSocket.Write_n(m_pConvetBuff/* + nOffset*/, (uint32_t)nDataLen)) < 0)
-					{
-						J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
-						return J_SOCKET_ERROR;
-					}
-				}
-				else
-				{
-					//usleep(1);
-					return J_OK;
-				}
+				CRealTask * pTask = new CRealTask;
+				pTask->m_pParam = this;
+				CThreadPool::Instance()->AddTask(pTask);
+				++m_taskNum;
 			}
-			else if (m_streamHeader.frameType == jo_media_broken)
-			{
-			    J_OS::LOGERROR("CRealMediaObj::OnWrite Source Broken");
-			    return J_SOCKET_ERROR;
-			}
-			else
-			{
-				//usleep(1);
-				//J_OS::LOGINFO("!m_pRingBuffer->PopBuffer socket = %d", m_nSocket);
-				return J_OK;
-			}
+			TUnlock(m_locker);*/
+			return OnWriteData();
 		}
 	}
 
+	return nRet;
+}
+
+int CRealMediaObj::OnWriteData()
+{
+	//TLock(m_locker);
+	J_RequestFilter *pAccess = dynamic_cast<J_RequestFilter *>(m_pObj);
+	memset(&m_streamHeader, 0, sizeof(m_streamHeader));
+	int nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, m_streamHeader);
+	if (nRet == J_OK && m_streamHeader.dataLen > 0)
+	{
+		int nDataLen = 0;
+		pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
+		if (nDataLen > 0)
+		{
+			int nRet = 0;
+			if ((nRet = m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen)) < 0)
+			{
+				J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
+				//TUnlock(m_locker);
+				return J_SOCKET_ERROR;
+			}
+		}
+		else
+		{
+			//TUnlock(m_locker);
+			return J_OK;
+		}
+	}
+	else if (m_streamHeader.frameType == jo_media_broken)
+	{
+		J_OS::LOGERROR("CRealMediaObj::OnWrite Source Broken");
+		//TUnlock(m_locker);
+		return J_SOCKET_ERROR;
+	}
+	else
+	{
+		usleep(1);
+		//J_OS::LOGERROR("CRealMediaObj::OnWrite Source Error");
+		//TUnlock(m_locker);
+		return J_OK;
+	}
+	//--m_taskNum;
+	//TUnlock(m_locker);
+	
 	return nRet;
 }
 

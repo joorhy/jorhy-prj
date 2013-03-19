@@ -162,6 +162,7 @@ private:
 		while (m_bStarted)
 		{
 			//printf("epoll_wait");
+			usleep(1);
 			nfds = epoll_wait(m_epoll_fd, m_evConnect, 1/*m_nCurfds > 1 ? m_nCurfds : 1*/, 200);
 			if (nfds < 0)
 			{

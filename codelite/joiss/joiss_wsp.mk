@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo ----------Building project:[ AironixHost - Debug ]----------
-	@"$(MAKE)" -f "AironixHost.mk"
+	@echo ----------Building project:[ utils - Debug ]----------
+	@"$(MAKE)" -f "utils.mk"
 clean:
-	@echo ----------Cleaning project:[ AironixHost - Debug ]----------
-	@"$(MAKE)" -f "AironixHost.mk" clean
+	@echo ----------Cleaning project:[ utils - Debug ]----------
+	@"$(MAKE)" -f "utils.mk" clean

@@ -4,7 +4,7 @@
 
 ///环形流队列
 #define CACHE_FRAME_NUM 100
-#define BUFFER_SIZE (1024 * 1024 * 50)
+#define BUFFER_SIZE (1024 * 1024 * 5)
 
 struct J_MEMNODE
 {
@@ -33,7 +33,9 @@ class CRingBuffer
 		char *AddBuffer(char *pBuffer, int nLen);
 		
 	private:
-		J_OS::RWLocker_t m_rwLocker;
+		pthread_mutex_t m_mutex;
+		pthread_cond_t m_cond;
+	
 		char *m_pBuffer;
 		char *m_pBegin;
 		char *m_pEnd;

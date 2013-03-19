@@ -178,13 +178,13 @@ write_begin:
 	int nSend = send(nSock, pBuff, nLen, 0/*MSG_NOSIGNAL*/);
 	if (nSend <= 0)
 	{
-		//J_OS::LOGERROR("CTCPSocket::Write nSend = %d, errno = %d", nSend, errno);
+		J_OS::LOGERROR("CTCPSocket::Write nSend = %d, errno = %d", nSend, errno);
 		if (errno == EINTR)
 		{
 			usleep(1000);
 			goto write_begin;
 		}
-		else if (errno == EAGAIN && nSend == 0)
+		else if (errno == EAGAIN/* && nSend == 0*/)
 		{
 			usleep(1000);
 			goto write_begin;
@@ -309,7 +309,7 @@ int CTCPSocket::Write_n(const char *pBuff, int nLen)
 	{
 		int nRet  = 0;
 		if (nTotleLen > IO_DATA_LEN)
-			nRet=  send(m_handle, (char *)(pBuff  + nSendLen), IO_DATA_LEN, MSG_NOSIGNAL);
+			nRet = send(m_handle, (char *)(pBuff  + nSendLen), IO_DATA_LEN, MSG_NOSIGNAL);
 		else
 			nRet = send(m_handle, (char *)(pBuff + nSendLen), nTotleLen, MSG_NOSIGNAL);
 
