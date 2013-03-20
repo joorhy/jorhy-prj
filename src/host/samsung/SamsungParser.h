@@ -12,24 +12,25 @@ public:
 
 public:
     ///J_VideoParser
-    virtual int Init(int nDataType = jo_video_normal);
-    virtual int Deinit();
-    virtual int InputData(const char *pData, int nLen);
-    virtual int GetOnePacket(char *pData, J_StreamHeader &streamHeader);
+    virtual j_result_t Init(int nDataType = jo_video_normal);
+    virtual j_result_t Deinit();
+    virtual j_result_t InputData(const char *pData, int nLen);
+    virtual j_result_t GetOnePacket(char *pData, J_StreamHeader &streamHeader);
 
 private:
-    void RectifyData();
+    j_void_t RectifyData();
 
 private:
     J_OS::RWLocker_t m_rwLocker;
-    char *m_pDataBuff;
-    char *m_pOutBuff;
-    int m_nOutSize;
-    int m_nDataSize;
-    int m_sdvrLen;
-    int m_videoLen;
-    int m_audioLen;
-    int m_curFrameType;
-    bool m_bIsComplate;
+    j_char_t *m_pDataBuff;
+    j_char_t *m_pOutBuff;
+    j_int32_t m_nOutSize;
+    j_int32_t m_nDataSize;
+    j_int32_t m_sdvrLen;
+    j_int32_t m_videoLen;
+    j_int32_t m_audioLen;
+    j_int32_t m_curFrameType;
+    j_boolean_t m_bIsComplate;
+	j_uint32_t m_frameNum;
 };
 #endif //~__SAMSUNGPARSER_H_

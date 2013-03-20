@@ -10,31 +10,31 @@ class CSamsungChannelBase : public J_ChannelStream
 class CSamsungChannel :  public J_ResidTmpl<J_BaseAdapter, CSamsungChannelBase>
 {
 public:
-    CSamsungChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode);
+    CSamsungChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode);
     ~CSamsungChannel();
 
 public:
 
     ///J_PtzControl
-    virtual int PtzControl(int nCmd, int nParam);
+    virtual j_result_t PtzControl(j_int32_t nCmd, j_int32_t nParam);
     ///J_StreamChannel
-    virtual int OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
-    virtual int CloseStream(void *pObj, CRingBuffer *pRingBuffer);
-    virtual bool HasMultiStream() { return false; }
+    virtual j_result_t OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer);
+    virtual j_result_t CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer);
+    virtual j_boolean_t HasMultiStream() { return false; }
 
 private:
-    int StartView();
-    int StopView();
-    int SelectStream();
+    j_result_t StartView();
+    j_result_t StopView();
+    j_result_t SelectStream();
 
 private:
     CSamsungAdapter *m_pAdapter;
-    int m_nChannel;
-    int m_nStreamType;
-    int m_nProtocol;
+    j_int32_t m_nChannel;
+    j_int32_t m_nStreamType;
+    j_int32_t m_nProtocol;
 
     J_OS::CTCPSocket *m_recvSocket;
-    bool m_bOpened;
+    j_boolean_t m_bOpened;
 };
 
 #endif //~__SAMSUNGCHANNEL_H_

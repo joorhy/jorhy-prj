@@ -20,6 +20,7 @@ public:
 private:
 	PARSERHANDLE m_parser;
 	DH_FRAME_INFO *m_frame;
+	j_uint32_t m_frameNum;
 };
 
 #endif //~__DAHUAPARSER_H_

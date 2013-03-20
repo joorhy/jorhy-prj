@@ -4,6 +4,7 @@
 CAironixStream::CAironixStream(j_string_t resid, j_int32_t nChannel)
 {
 	m_bStartup = false;
+	m_frameNum = 0;
 }
 
 CAironixStream::~CAironixStream()
@@ -40,6 +41,8 @@ j_void_t CAironixStream::OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, 
 		if (frameInfo.frameType == 1)
 		{
 			streamHeader.frameType = (frameInfo.keyFrame ? jo_video_i_frame : jo_video_p_frame);
+			streamHeader.frameNum = m_frameNum++;
+			m_frameNum %= 0xFFFFFFFF;
 		}
 		else if (frameInfo.frameType == 2)
 		{

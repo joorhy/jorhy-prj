@@ -38,11 +38,10 @@ int CRingBuffer::ResetBufferSize(int nBufferSize)
 int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 {
 	pthread_mutex_lock(&m_mutex);
-	/*if (streamHeader.frameType != jo_video_i_frame)
+	if (streamHeader.frameType != jo_video_i_frame)
 	{
-		pthread_mutex_unlock(&m_mutex);
-		return J_OK;
-	}*/
+		++m_nDiscardedFrameNum;
+	}
 		
 	int nLen = streamHeader.dataLen;
 	while (GetIdleLength() < (nLen + J_MEMNODE_LEN + sizeof(J_StreamHeader)))
@@ -81,7 +80,9 @@ int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 		Read((char *)&m_Node, J_MEMNODE_LEN);
 		Read((char *)&streamHeader, sizeof(J_StreamHeader));
 		Read(pBuffer, m_Node.nLen - sizeof(J_StreamHeader));
-		//nRetLen = m_Node.nLen;
+		if (streamHeader.frameType != jo_video_i_frame)
+			--m_nDiscardedFrameNum;
+			
 		pthread_mutex_unlock(&m_mutex);
 		return J_OK;
 	}
@@ -92,20 +93,7 @@ int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 
 void CRingBuffer::Read(char *pData, int nLen)
 {		
-	if (m_pEnd - (char *)m_pReadPoint <= nLen)
-	{
-		if (pData != NULL)
-		{
-			int nLastLen = m_pEnd - (char *)m_pReadPoint;
-			memcpy(pData, m_pReadPoint, nLastLen);
-			memcpy(pData + nLastLen, m_pBegin, nLen - nLastLen);
-		}
-	}
-	else
-	{
-		if (pData != NULL)
-			memcpy(pData, m_pReadPoint, nLen);
-	}
+	GetData(pData, nLen);
 	m_pReadPoint = AddBuffer(m_pReadPoint, nLen);
 	m_nDataLen -= nLen;
 }
@@ -127,6 +115,22 @@ void CRingBuffer::Write(const char *pData, int nLen)
 	//fprintf(stderr, "CXBuffer::Write len = %d\n", m_nDataLen);
 }
 
+int CRingBuffer::GetData(char *pData, int nLen, int nOffset)
+{
+	char *pCurPoint = m_pReadPoint + nOffset;
+	if (m_pEnd - (char *)pCurPoint <= nLen)
+	{
+		int nLastLen = m_pEnd - (char *)pCurPoint;
+		memcpy(pData, pCurPoint, nLastLen);
+		memcpy(pData + nLastLen, m_pBegin, nLen - nLastLen);
+	}
+	else
+	{
+		memcpy(pData, pCurPoint, nLen);
+	}
+	return nLen;
+}
+
 int CRingBuffer::GetIdleLength()
 {
 	return BUFFER_SIZE - m_nDataLen;
@@ -134,13 +138,40 @@ int CRingBuffer::GetIdleLength()
 
 void CRingBuffer::EraseBuffer()
 {
-	J_StreamHeader streamHeader = {0};
+	int nMoveLen = 0;
+	int nOffset = 0;
+	memset(&m_streamHeader, 0, sizeof(m_streamHeader));
 	memset(&m_Node, 0, sizeof(m_Node));
-	Read((char *)&m_Node, J_MEMNODE_LEN);
-	Read((char *)&streamHeader, sizeof(J_StreamHeader));
-	Read(NULL, m_Node.nLen - sizeof(J_StreamHeader));
+	GetData((char *)&m_Node, J_MEMNODE_LEN);
+	GetData((char *)&m_streamHeader, sizeof(J_StreamHeader));
+	nMoveLen = m_Node.nLen + sizeof(m_Node);
+	if (m_streamHeader.frameType == jo_video_i_frame && m_nDiscardedFrameNum > 0)
+	{
+		memset(&m_streamHeader, 0, sizeof(m_streamHeader));
+		memset(&m_Node, 0, sizeof(m_Node));
+		GetData((char *)&m_Node, J_MEMNODE_LEN, nMoveLen);
+		GetData((char *)&m_streamHeader, sizeof(J_StreamHeader), nMoveLen + sizeof(m_Node));
+		if (m_streamHeader.frameType == jo_video_i_frame)
+			nMoveLen += m_Node.nLen + sizeof(m_Node);
+		else
+		{
+			--m_nDiscardedFrameNum;
+			nOffset = m_Node.nLen + sizeof(m_Node);
+		}
+	}
+	MoveBuffer(nOffset, nMoveLen);
+
+	m_pReadPoint = AddBuffer(m_pReadPoint, m_Node.nLen + sizeof(m_Node));
+	m_nDataLen -= m_Node.nLen + sizeof(m_Node);
+	
 	
 	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
+}
+
+void CRingBuffer::MoveBuffer(int nOffset, int nLen)
+{
+	if (nOffset > 0)
+		memmove(m_pReadPoint + nOffset, m_pReadPoint, nLen);
 }
 
 char *CRingBuffer::AddBuffer(char *pBuffer, int nLen)

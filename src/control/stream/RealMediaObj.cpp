@@ -19,6 +19,9 @@ CRealMediaObj::CRealMediaObj(int nSocket, int nStreamType, J_Obj *pObj)
 
 	m_pObj = pObj;
 	m_taskNum = 0;
+	m_nextFrameTime = 0;
+	m_lastFrameTime = 0;
+	m_lastFrameNum = 0;
 
 	J_OS::LOGINFO("CRealMediaObj::CRealMediaObj created socket =  %d", m_nSocket);
 }
@@ -94,12 +97,30 @@ int CRealMediaObj::OnWriteData()
 		if (nDataLen > 0)
 		{
 			int nRet = 0;
-			if ((nRet = m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen)) < 0)
+			if (m_nextFrameTime <= 40)
 			{
-				J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
-				//TUnlock(m_locker);
-				return J_SOCKET_ERROR;
+				m_lastFrameTime = m_streamHeader.timeStamp;
+				if (m_streamHeader.frameType == jo_video_i_frame ||
+					((m_streamHeader.frameType == jo_video_p_frame) && (m_streamHeader.frameNum == ++m_lastFrameNum)))
+				{
+					if (m_streamHeader.frameType == jo_video_i_frame)
+						m_lastFrameNum = m_streamHeader.frameNum;
+						
+					if ((nRet = m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen)) < 0)
+					{
+						J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
+						//TUnlock(m_locker);
+						return J_SOCKET_ERROR;
+					}
+				}
+				m_nextFrameTime = 0;
 			}
+			else
+			{
+				m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
+				return J_OK;
+			}
+			//printf("send time = %d\n", m_streamHeader.timeStamp - m_lastFrameTime);
 		}
 		else
 		{

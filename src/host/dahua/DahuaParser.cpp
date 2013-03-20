@@ -14,6 +14,7 @@ const char DH_AUDIO_HEAD[8] = { 0x44, 0x48, 0x41, 0x56, 0xF0, 0x00, 0x00, 0x00};
 CDahuaParser::CDahuaParser()
 {
 	m_parser = NULL;
+	m_frameNum = 0;
 }
 
 CDahuaParser::~CDahuaParser()
@@ -67,6 +68,8 @@ int CDahuaParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 			{
 				streamHeader.frameType = jo_video_p_frame;
 			}
+			streamHeader.frameNum = m_frameNum++;
+			m_frameNum %= 0xFFFFFFFF;
 			memcpy(pData, m_frame->pContent, m_frame->nFrameLength);
 		}
 		return J_OK;

@@ -1,7 +1,7 @@
 #include "SamsungAdapter.h"
 #include "SamsungChannel.h"
 
-CSamsungAdapter::CSamsungAdapter(int nDvrId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
+CSamsungAdapter::CSamsungAdapter(j_int32_t nDvrId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 {
     memset(m_remoteIP, 0, sizeof(m_remoteIP));
     memset(m_username, 0, sizeof(m_username));
@@ -30,12 +30,12 @@ J_DevStatus CSamsungAdapter::GetStatus() const
     return jo_dev_ready;
 }
 
-int CSamsungAdapter::Broken()
+j_result_t CSamsungAdapter::Broken()
 {
     return J_OK;
 }
 
-int CSamsungAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode)
+j_result_t CSamsungAdapter::MakeChannel(const j_char_t *pResid, j_void_t *&pObj, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
     CSamsungChannel *pChannel = new CSamsungChannel(pResid, pOwner, nChannel, nStream,
             nMode);
@@ -47,22 +47,22 @@ int CSamsungAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, 
     return J_OK;
 }
 
-int CSamsungAdapter::EnableAlarm()
+j_result_t CSamsungAdapter::EnableAlarm()
 {
     return J_OK;
 }
 
-int CSamsungAdapter::DisableAlarm()
+j_result_t CSamsungAdapter::DisableAlarm()
 {
     return J_OK;
 }
 
-int CSamsungAdapter::EventAlarm(int nDvrId, int nChannel, int nAlarmType)
+j_result_t CSamsungAdapter::EventAlarm(j_int32_t nDvrId, j_int32_t nChannel, j_int32_t nAlarmType)
 {
     return J_OK;
 }
 
-int CSamsungAdapter::Login()
+j_result_t CSamsungAdapter::Login()
 {
     if (m_status == jo_dev_ready)
         return J_OK;
@@ -86,12 +86,12 @@ int CSamsungAdapter::Login()
     memcpy(login_req.continue_data.pass_word, m_password, strlen(m_password));
     memcpy(login_req.continue_data.user_name, m_username, strlen(m_username));
 
-    if (m_loginSocket.Write((char*) &login_req, sizeof(SNP_Login_req)) < 0)
+    if (m_loginSocket.Write((j_char_t*) &login_req, sizeof(SNP_Login_req)) < 0)
         return J_INVALID_DEV;
 
     SNP_Login_res login_res = {0};
     int nReadLen = sizeof(SNP_Login_res);
-    if (m_loginSocket.Read((char*) &login_res, nReadLen) < 0)
+    if (m_loginSocket.Read((j_char_t*) &login_res, nReadLen) < 0)
         return J_INVALID_DEV;
 
     if (login_res.continue_data.error == 0)
@@ -103,7 +103,7 @@ int CSamsungAdapter::Login()
     return J_OK;
 }
 
-void CSamsungAdapter::Logout()
+j_void_t CSamsungAdapter::Logout()
 {
     SNP_stop_req stop_req = {0};
     memcpy(stop_req.packet_header.start_code, "SDVR",  4);
@@ -118,7 +118,7 @@ void CSamsungAdapter::Logout()
     stop_req.continue_header.cs = 0x00;
     stop_req.data[0] = 0xFF;
     stop_req.data[1] = 0xFF;
-    if (m_loginSocket.Write((char*) &stop_req, sizeof(SNP_stop_req)) < 0)
+    if (m_loginSocket.Write((j_char_t*) &stop_req, sizeof(SNP_stop_req)) < 0)
     {
         J_OS::LOGINFO("CSamsungAdapter::Logout() error write");
         //return;
@@ -127,16 +127,16 @@ void CSamsungAdapter::Logout()
     m_status = jo_dev_broken;
 }
 
-int CSamsungAdapter::SendCommand(const char *pCommand, int nLen, int nRespLen)
+j_result_t CSamsungAdapter::SendCommand(const j_char_t *pCommand, j_int32_t nLen, j_int32_t nRespLen)
 {
     if (m_loginSocket.GetHandle() == -1)
         return J_SOCKET_ERROR;
 
-    if (m_loginSocket.Write((char*)pCommand, nLen) < 0)
+    if (m_loginSocket.Write((j_char_t*)pCommand, nLen) < 0)
         return J_SOCKET_ERROR;
 
-    char rep_buff[1024] = {0};
-    if (m_loginSocket.Read((char*)rep_buff, nRespLen) < 0)
+    j_char_t rep_buff[1024] = {0};
+    if (m_loginSocket.Read((j_char_t*)rep_buff, nRespLen) < 0)
     {
         J_OS::LOGINFO("CSamsungAdapter::SendCommand() error read");
         return J_SOCKET_ERROR;
@@ -145,7 +145,7 @@ int CSamsungAdapter::SendCommand(const char *pCommand, int nLen, int nRespLen)
     return J_OK;
 }
 
-void CSamsungAdapter::UserExchange()
+j_void_t CSamsungAdapter::UserExchange()
 {
     if (Login() != J_OK)
         return;
@@ -163,7 +163,7 @@ void CSamsungAdapter::UserExchange()
     condition_req.continue_header.cs = 0x00;
 
     //J_OS::LOGINFO("CSamsungAdapter::UserExchange() Begin");
-    if (m_loginSocket.Write((char*) &condition_req, sizeof(SNP_condition_req)) < 0)
+    if (m_loginSocket.Write((j_char_t*) &condition_req, sizeof(SNP_condition_req)) < 0)
     {
         m_loginSocket.Disconnect();
         m_status = jo_dev_broken;
@@ -172,8 +172,8 @@ void CSamsungAdapter::UserExchange()
     }
 
     SNP_condition_rep condition_rep = {0};
-    int nReadLen = sizeof(SNP_condition_rep);
-    if (m_loginSocket.Read((char*) &condition_rep, nReadLen) < 0)
+    j_int32_t nReadLen = sizeof(SNP_condition_rep);
+    if (m_loginSocket.Read((j_char_t*) &condition_rep, nReadLen) < 0)
     {
         m_loginSocket.Disconnect();
         m_status = jo_dev_broken;

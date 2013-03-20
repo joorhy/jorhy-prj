@@ -1,10 +1,10 @@
 #include "SamsungChannel.h"
 #include "SamsungStream.h"
 
-const char PT_SPEED[6] = {0x08, 0x10, 0x1B, 0x28, 0x34, 0x40};
-const char ZF_SPEED[6] = {0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C};
+const j_char_t PT_SPEED[6] = {0x08, 0x10, 0x1B, 0x28, 0x34, 0x40};
+const j_char_t ZF_SPEED[6] = {0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C};
 
-CSamsungChannel::CSamsungChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
+CSamsungChannel::CSamsungChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
     : m_pAdapter(NULL)
     , m_nChannel(0)
     , m_bOpened(false)
@@ -22,7 +22,7 @@ CSamsungChannel::~CSamsungChannel()
 
 }
 
-int CSamsungChannel::PtzControl(int nCmd, int nParam)
+j_result_t CSamsungChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 {
     SNP_ptz_req ptz_req = {0};
     memcpy(ptz_req.packet_header.start_code, "SDVR",  4);
@@ -61,7 +61,7 @@ int CSamsungChannel::PtzControl(int nCmd, int nParam)
     {
     	if (nParam > 0)
     	{
-    	    int nSpeed = nParam / 42;
+    	    j_int32_t nSpeed = nParam / 42;
     		switch (nCmd)
     		{
     		case jo_ptz_up:
@@ -172,7 +172,7 @@ int CSamsungChannel::PtzControl(int nCmd, int nParam)
     return m_pAdapter->SendCommand((const char *)&ptz_req, sizeof(SNP_ptz_req), sizeof(SNP_ptz_rep));
 }
 
-int CSamsungChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+j_result_t CSamsungChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer)
 {
     if (m_pAdapter->GetStatus() != jo_dev_ready)
     {
@@ -186,7 +186,7 @@ int CSamsungChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
         return J_OK;
     }
 
-    int nRet = StartView();
+    j_result_t nRet = StartView();
     if (nRet != J_OK)
     {
         return J_STREAM_ERROR;
@@ -200,7 +200,7 @@ int CSamsungChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
     return J_OK;
 }
 
-int CSamsungChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+j_result_t CSamsungChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer)
 {
     if (!m_bOpened)
         return J_OK;
@@ -226,7 +226,7 @@ int CSamsungChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
     return J_OK;
 }
 
-int CSamsungChannel::StartView()
+j_result_t CSamsungChannel::StartView()
 {
     //J_OS::LOGINFO("type = %d", m_nStreamType);
     //m_pAdapter->Login();
@@ -270,7 +270,7 @@ int CSamsungChannel::StartView()
     return J_OK;
 }
 
-int CSamsungChannel::StopView()
+j_result_t CSamsungChannel::StopView()
 {
     m_pAdapter->Logout();
     if (m_recvSocket != NULL)
@@ -304,5 +304,5 @@ int CSamsungChannel::SelectStream()
     enc_type_req.enc_type.atc = 0x00;
     enc_type_req.enc_type.data = 0x00;
 
-    return m_pAdapter->SendCommand((const char *)&enc_type_req, sizeof(SNP_enc_type_req), 16);
+    return m_pAdapter->SendCommand((const j_char_t *)&enc_type_req, sizeof(SNP_enc_type_req), 16);
 }

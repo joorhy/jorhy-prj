@@ -3,9 +3,9 @@
 
 #define PACKET_SIZE	1412
 
-const char START_CODE[4] = { 'S', 'D', 'V', 'R' };
-const char VIDEO_TAG[4] = { 0x00, 0x00, 0x01, 0xE0 };
-const char AUDIO_TAG[4] = { 0x00, 0x00, 0x01, 0xC0 };
+const j_char_t START_CODE[4] = { 'S', 'D', 'V', 'R' };
+const j_char_t VIDEO_TAG[4] = { 0x00, 0x00, 0x01, 0xE0 };
+const j_char_t AUDIO_TAG[4] = { 0x00, 0x00, 0x01, 0xC0 };
 #define GET_SDVR_LENGTH(x) (((*((x) + 15) & 0xFF) << 24) + ((*((x) + 14) & 0xFF) << 16) + ((*((x) + 13) & 0xFF) << 8) + (*((x) + 12) & 0xFF))
 #define GET_FRAME_TYPE(x) (*((x) + 20) & 0x0F)
 #define GET_PES_LENGTH(x) (((*((x) + 5) & 0xFF) << 8) + (*((x) + 4) & 0xFF))
@@ -25,6 +25,7 @@ CSamsungParser::CSamsungParser()
     m_nOutSize = 0;
     m_pOutBuff = NULL;
     m_bIsComplate = false;
+	m_frameNum = 0;
 }
 
 CSamsungParser::~CSamsungParser()
@@ -32,18 +33,18 @@ CSamsungParser::~CSamsungParser()
     delete m_pOutBuff;
 }
 
-int CSamsungParser::Init(int nDataType)
+j_result_t CSamsungParser::Init(j_int32_t nDataType)
 {
     if (m_pDataBuff == NULL)
-        m_pDataBuff = new char[1024 * 1024];
+        m_pDataBuff = new j_char_t[1024 * 1024];
 
     if (m_pOutBuff == NULL)
-        m_pOutBuff = new char[1024 * 1024];
+        m_pOutBuff = new j_char_t[1024 * 1024];
 
     return J_OK;
 }
 
-int CSamsungParser::Deinit()
+j_result_t CSamsungParser::Deinit()
 {
     if (m_pDataBuff != NULL)
     {
@@ -60,7 +61,7 @@ int CSamsungParser::Deinit()
     return J_OK;
 }
 
-int CSamsungParser::InputData(const char *pData, int nLen)
+j_result_t CSamsungParser::InputData(const j_char_t *pData, j_int32_t nLen)
 {
     //WLock(m_rwLocker);
     memcpy(m_pDataBuff + m_nDataSize, pData, nLen);
@@ -70,15 +71,15 @@ int CSamsungParser::InputData(const char *pData, int nLen)
     return J_OK;
 }
 
-int CSamsungParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
+j_result_t CSamsungParser::GetOnePacket(j_char_t *pData, J_StreamHeader &streamHeader)
 {
-    int nOffset = 0;
-    int nMedieOffset = 0;
-    int nFrameType = 0;
-    int nLen = 0;
+    j_int32_t nOffset = 0;
+    j_int32_t nMedieOffset = 0;
+    j_int32_t nFrameType = 0;
+    j_int32_t nLen = 0;
     m_bIsComplate = false;
-    int nPacketLen = 0;
-    bool bIsStart = false;
+    j_int32_t nPacketLen = 0;
+    j_boolean_t bIsStart = false;
     while (m_nDataSize > 12)
     {
         nOffset = 12;
@@ -100,7 +101,7 @@ int CSamsungParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
             ///获取媒体信息
             m_sdvrLen = GET_SDVR_LENGTH(m_pDataBuff);
             nOffset += 40;
-            int frameType = GET_FRAME_TYPE(m_pDataBuff);
+            j_int32_t frameType = GET_FRAME_TYPE(m_pDataBuff);
             if (frameType > 3)
                 m_curFrameType = jo_audio_frame;
             else if (frameType == 0)
@@ -163,6 +164,8 @@ int CSamsungParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
                 streamHeader.frameType = m_curFrameType;
                 streamHeader.dataLen = m_nOutSize;
                 memcpy(pData, m_pOutBuff, m_nOutSize);
+				streamHeader.frameNum = m_frameNum++;
+				m_frameNum %= 0xFFFFFFFF;
             }
             m_nOutSize = 0;
 
@@ -176,9 +179,9 @@ int CSamsungParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
     return J_NOT_COMPLATE;
 }
 
-void CSamsungParser::RectifyData()
+j_void_t CSamsungParser::RectifyData()
 {
-    int nOffset = 0;
+    j_int32_t nOffset = 0;
     while (m_nDataSize > 4 && memcmp(m_pDataBuff + nOffset, START_CODE, 4) != 0)
     {
         ++nOffset;

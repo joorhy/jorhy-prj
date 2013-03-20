@@ -37,6 +37,7 @@ CHikParser2::CHikParser2()
 	m_aacHandle = NULL;
 	m_nInputSamples = 0;
 	m_nOutputBytes = 0;
+	m_frameNum = 0;
 }
 
 CHikParser2::~CHikParser2()
@@ -145,6 +146,8 @@ int CHikParser2::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 		m_nDataLen -= m_nFrameLen;
 		memcpy(pData, m_pOutBuff, m_nFrameLen);
 		memmove(m_pOutBuff, m_pOutBuff + m_nFrameLen, m_nDataLen);
+		streamHeader.frameNum = m_frameNum++;
+		m_frameNum %= 0xFFFFFFFF;
 		
 		m_bIsComplate = false;
 	}

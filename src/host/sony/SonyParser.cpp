@@ -13,6 +13,7 @@ CSonyParser::CSonyParser()
 	m_pDataBuff = NULL;
 	m_nDataSize = 0;
 	m_nSeqNum = rand();
+	m_frameNum = 0;
 }
 
 CSonyParser::~CSonyParser()
@@ -98,6 +99,8 @@ int CSonyParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
         else
             streamHeader.frameType = jo_video_p_frame;
         streamHeader.dataLen = nOffset;
+		streamHeader.frameNum = m_frameNum++;
+		m_frameNum %= 0xFFFFFFFF;
 	}
 	memmove(m_pDataBuff, m_pDataBuff + nOffset, m_nDataSize - nOffset);
 	m_nDataSize -= nOffset;

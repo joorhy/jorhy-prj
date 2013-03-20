@@ -59,6 +59,7 @@ CHikParser::CHikParser()
 	m_aacHandle = NULL;
 	m_nInputSamples = 0;
 	m_nOutputBytes = 0;
+	m_frameNum = 0;
 }
 
 CHikParser::~CHikParser()
@@ -343,6 +344,8 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 			memcpy(pData, m_pOutBuff, m_nDataLen);
 			nLen = m_nDataLen;
 			m_nDataLen = 0;
+			streamHeader.frameNum = m_frameNum++;
+			m_frameNum %= 0xFFFFFFFF;
 		}
 		else if (nFrameType == jo_audio_frame)
 		{

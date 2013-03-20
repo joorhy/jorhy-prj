@@ -23,5 +23,6 @@ private:
 	char *m_pDataBuff;
 	int m_nDataSize;
 	int m_nSeqNum;
+	j_uint32_t m_frameNum;
 };
 #endif //~__SONYPARSER_H_

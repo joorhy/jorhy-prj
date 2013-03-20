@@ -32,6 +32,7 @@ private:
 
 private:
 	j_boolean_t m_bStartup;
+	j_uint32_t m_frameNum;
 };
 
 #endif //~__AIRONIXSTREAM_H_

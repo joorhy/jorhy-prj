@@ -6,7 +6,7 @@
 #include "x_time.h"
 
 #define RECV_SIZE (1024 * 1024)
-CSamsungStream::CSamsungStream(void *pTCPSocket, std::string resid)
+CSamsungStream::CSamsungStream(j_void_t *pTCPSocket, j_string_t resid)
     : m_nSocket(0)
     , m_bStartup(false)
     , m_pRecvBuff(NULL)
@@ -33,7 +33,7 @@ CSamsungStream::~CSamsungStream()
     J_OS::LOGINFO("CSamsungStream::~CSamsungStream destroy this = %d", this);
 }
 
-int CSamsungStream::Startup()
+j_result_t CSamsungStream::Startup()
 {
     if (m_bStartup)
         return J_OK;
@@ -49,7 +49,7 @@ int CSamsungStream::Startup()
     return J_OK;
 }
 
-int CSamsungStream::Shutdown()
+j_result_t CSamsungStream::Shutdown()
 {
     if (!m_bStartup)
         return J_OK;
@@ -64,7 +64,7 @@ int CSamsungStream::Shutdown()
     return J_OK;
 }
 
-int CSamsungStream::OnRead(int nfd)
+j_result_t CSamsungStream::OnRead(j_int32_t nfd)
 {
     if (!m_bStartup)
     {
@@ -74,7 +74,7 @@ int CSamsungStream::OnRead(int nfd)
 
     TLock(m_locker);
     //int	nLen = ((J_OS::CTCPSocket *)m_pTCPSocket)->Read(m_pRecvBuff, RECV_SIZE);
-    int	nLen = recv(nfd, m_pRecvBuff, RECV_SIZE, 0);
+    j_int32_t	nLen = recv(nfd, m_pRecvBuff, RECV_SIZE, 0);
     if (nLen < 0)
     {
 
@@ -86,7 +86,7 @@ int CSamsungStream::OnRead(int nfd)
     if (nLen > 0)
     {
         m_parser.InputData(m_pRecvBuff, nLen);
-        int nRet = 0;
+        j_result_t nRet = 0;
         do
         {
             J_StreamHeader streamHeader;
@@ -110,7 +110,7 @@ int CSamsungStream::OnRead(int nfd)
     return J_OK;
 }
 
-int CSamsungStream::OnBroken(int nfd)
+j_result_t CSamsungStream::OnBroken(j_int32_t nfd)
 {
     J_OS::LOGINFO("CSamsungStream::OnBroken");
     TLock(m_locker);
@@ -119,7 +119,7 @@ int CSamsungStream::OnBroken(int nfd)
     streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
 
     TLock(m_vecLocker);
-    std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+    j_vec_buffer_t::iterator it = m_vecRingBuffer.begin();
     for (; it != m_vecRingBuffer.end(); it++)
     {
         //J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);

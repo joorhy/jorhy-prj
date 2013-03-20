@@ -10,33 +10,33 @@ class CSamsungStreamBase : public J_MediaStream
 class CSamsungStream : public J_BaseVideoStream<CSamsungStreamBase>
 {
 public:
-    CSamsungStream(void *pTCPSocket, std::string resid);
+    CSamsungStream(j_void_t *pTCPSocket, j_string_t resid);
     ~CSamsungStream();
 
 public:
     ///J_VideoStream
-    virtual int Startup();
-    virtual int Shutdown();
+    virtual j_result_t Startup();
+    virtual j_result_t Shutdown();
     ///AsioUser
-    virtual int OnAccept(int nfd)
+    virtual j_result_t OnAccept(j_int32_t nfd)
     {
         return J_OK;
     }
-    virtual int OnRead(int nfd);
-    virtual int OnWrite(int nfd)
+    virtual j_result_t OnRead(j_int32_t nfd);
+    virtual j_result_t OnWrite(j_int32_t nfd)
     {
         return J_OK;
     }
-    virtual int OnBroken(int nfd);
+    virtual j_result_t OnBroken(j_int32_t nfd);
 
 private:
-    int m_nSocket;
-    bool m_bStartup;
-    char *m_pRecvBuff;//[100 * 1024];
-    void *m_pTCPSocket;
+    j_int32_t m_nSocket;
+    j_boolean_t m_bStartup;
+    j_char_t *m_pRecvBuff;//[100 * 1024];
+    j_void_t *m_pTCPSocket;
 
     CSamsungParser m_parser;
-    std::string m_resid;
+    j_string_t m_resid;
 
     J_OS::TLocker_t m_locker;
 };

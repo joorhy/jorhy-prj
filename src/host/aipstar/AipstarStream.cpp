@@ -3,6 +3,7 @@
 CAipstarStream::CAipstarStream(j_string_t resid, j_int32_t nChannel)
 {
 	m_bStartup = false;
+	m_frameNum = 0;
 }
 
 CAipstarStream::~CAipstarStream()
@@ -38,6 +39,8 @@ j_void_t CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 		if (streamInfo->byFrameType == 0)
 		{
 			streamHeader.frameType = (streamInfo->byKeyFrame ? jo_video_i_frame : jo_video_p_frame);
+			streamHeader.frameNum = m_frameNum++;
+			m_frameNum %= 0xFFFFFFFF;
 		}
 		else if (streamInfo->byFrameType == 1)
 		{

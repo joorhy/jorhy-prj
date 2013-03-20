@@ -43,6 +43,9 @@ private:
 
 	J_Obj *m_pObj;
 	int m_taskNum;
+	j_int64_t m_nextFrameTime;
+	j_int64_t m_lastFrameTime;
+	j_uint32_t m_lastFrameNum;
 };
 
 class CRealTask : public J_Task

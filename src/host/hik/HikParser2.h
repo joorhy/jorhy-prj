@@ -42,6 +42,7 @@ private:
 	faacEncHandle m_aacHandle;
 	unsigned long m_nInputSamples;
 	unsigned long m_nOutputBytes;
+	j_uint32_t m_frameNum;
 };
 
 #endif //~__HIKPARSER2_H_

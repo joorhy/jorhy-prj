@@ -28,8 +28,10 @@ class CRingBuffer
 	private:
 		void Read(char *pData, int nLen);
 		void Write(const char *pData, int nLen);
+		int GetData(char *pData, int nLen, int nOffset = 0);
 		int GetIdleLength();
 		void EraseBuffer();
+		void MoveBuffer(int nOffset, int nLen);
 		char *AddBuffer(char *pBuffer, int nLen);
 		
 	private:
@@ -45,6 +47,8 @@ class CRingBuffer
 		int m_nDataLen;
 		
 		J_MEMNODE m_Node;
+		J_StreamHeader m_streamHeader;
+		int m_nDiscardedFrameNum;		//非关键
 };
 typedef std::vector<CRingBuffer *>	j_vec_buffer_t;
 
