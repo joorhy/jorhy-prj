@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Workspace Name="joies" Database="./joies.tags">
+  <Project Name="jo_pcap" Path="jo_pcap.project" Active="No"/>
+  <Project Name="goose" Path="goose.project" Active="No"/>
+  <Project Name="joies" Path="joies.project" Active="Yes"/>
+  <Project Name="jo_utils" Path="jo_utils.project"/>
+  <Project Name="jo_core" Path="jo_core.project"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="jo_pcap" ConfigName="Debug"/>
+      <Project Name="goose" ConfigName="Debug"/>
+      <Project Name="joies" ConfigName="Debug"/>
+      <Project Name="jo_utils" ConfigName="Debug"/>
+      <Project Name="jo_core" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="jo_pcap" ConfigName="Release"/>
+      <Project Name="goose" ConfigName="Release"/>
+      <Project Name="joies" ConfigName="Release"/>
+      <Project Name="jo_utils" ConfigName="Release"/>
+      <Project Name="jo_core" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>
