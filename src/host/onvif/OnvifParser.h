@@ -24,5 +24,6 @@ private:
 	int m_nOffset;
 	bool m_bIsComplate;
 	bool m_bStartSlice;
+	j_uint32_t m_frameNum;
 };
 #endif //~__ONVIFPARSER_H_

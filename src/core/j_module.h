@@ -428,6 +428,14 @@ struct J_CommandParser : public J_Obj
 	virtual int DelUser(int nSocket) = 0;
 };
 
+struct J_EventParser : public J_Obj
+{
+	///事件解析
+	///@param[in]	pEventData 事件数据
+	///@return		见x_error_type.h
+	virtual int AnalyzePacket(const unsigned char *pEventData) = 0;
+};
+
 ///全局标识
 template <template <typename CBase> class CBaseAdapter, typename CChannel = J_ChannelStream>
 class J_ResidTmpl : public CBaseAdapter<CChannel>

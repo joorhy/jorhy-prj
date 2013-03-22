@@ -2,23 +2,33 @@
 <CodeLite_Project Name="goose" InternalType="Library">
   <Description/>
   <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="../../src/goose/x_goose.cpp"/>
+    <File Name="../../src/goose/gse_config.cpp"/>
+    <File Name="../../src/goose/x_gse_scd.cpp"/>
+    <File Name="../../src/goose/x_scd.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="include">
+    <File Name="../../src/goose/x_goose.h"/>
+    <File Name="../../src/goose/x_goose_def.h"/>
+    <File Name="../../src/goose/gse_config.h"/>
+    <File Name="../../src/goose/x_gse_scd.h"/>
+    <File Name="../../src/goose/x_scd.h"/>
+    <File Name="../../src/goose/x_scd_def.h"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Dynamic Library">
-    <GlobalSettings>
-      <Compiler Options="">
-        <IncludePath Value="."/>
-      </Compiler>
-      <Linker Options="">
-        <LibraryPath Value="."/>
-      </Linker>
-      <ResourceCompiler Options=""/>
-    </GlobalSettings>
-    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g" Required="yes" PreCompiledHeader="">
-        <IncludePath Value="."/>
+        <IncludePath Value="../../src/core"/>
+        <IncludePath Value="../../src/utils"/>
+        <IncludePath Value="../../src/pcap"/>
+        <IncludePath Value="../../src/scd"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
@@ -33,7 +43,7 @@
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
-        <ThirdPartyToolName/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
         <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
@@ -70,13 +80,14 @@
         <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
+    <GlobalSettings>
+      <Compiler Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
   </Settings>
-  <VirtualDirectory Name="src">
-    <File Name="../../src/goose/gse_config.cpp"/>
-    <File Name="../../src/goose/x_goose.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
-    <File Name="../../src/goose/gse_config.h"/>
-    <File Name="../../src/goose/x_goose.h"/>
-  </VirtualDirectory>
 </CodeLite_Project>

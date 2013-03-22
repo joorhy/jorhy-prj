@@ -1,4 +1,7 @@
+#include "x_errtype.h"
+#include "x_ether.h"
 #include "x_goose.h"
+#include "x_gse_scd.h"
 #include "gse_config.h"
 #include "json.h"
 #include "ghttp.h"
@@ -9,14 +12,12 @@ const char *gse_filter_exp = "ether proto 0x88B8";
 
 CXGooseCap::CXGooseCap()
 {
-    m_dev = NULL;
-    memset(m_errBuff, 0, sizeof(m_errBuff));
-    m_mask = 0;
-    m_net = 0;
-    m_handle = NULL;
-    m_thread = 0;
     m_stNum = 0;
 
+	CXGseScd gseHelper;
+	gseHelper.Init();
+	gseHelper.GetAllCtrlBlock();
+	gseHelper.Deinit();
     //m_sdlParser.LoadXMLFile("20120728.scd");
 }
 
@@ -25,121 +26,7 @@ CXGooseCap::~CXGooseCap()
 
 }
 
-int CXGooseCap::GSE_InitialPcap()
-{
-    m_dev = pcap_lookupdev(m_errBuff);
-    if (m_dev == NULL)
-    {
-        printf("CXGooseCap::GSE_InitialPcap Could not find default device:%s\n", m_errBuff);
-        return J_DEV_ERR;
-    }
-    printf("CXGooseCap::GSE_InitialPcap device:%s\n", m_dev);
-
-    if (pcap_lookupnet(m_dev, &m_net, &m_mask, m_errBuff) == -1)
-    {
-        printf("CXGooseCap::GSE_InitialPcap Counld not get netmask for device %s;%s\n", m_dev ,m_errBuff);
-        m_net = 0;
-        m_mask = 0;
-    }
-
-    m_handle = pcap_open_live(m_dev, PCAP_SNAPLEN, 1, 1000, m_errBuff);
-    if (m_handle == NULL)
-    {
-        printf("CXGooseCap::GSE_InitialPcap Could not open device %s;%s", m_dev, m_errBuff);
-        return J_DEV_ERR;
-    }
-
-    if (pcap_compile(m_handle, &m_bf, gse_filter_exp, 0, m_net) == -1)
-    {
-        printf("CXGooseCap::GSE_InitialPcap Counld not parse filter %s;%s\n", gse_filter_exp, pcap_geterr(m_handle));
-        return J_DEV_ERR;
-    }
-
-    if (pcap_setfilter(m_handle, &m_bf) == -1)
-    {
-        printf("CXGooseCap::GSE_InitialPcap Counld not install filter %s;%s\n", gse_filter_exp, pcap_geterr(m_handle));
-        return J_DEV_ERR;
-    }
-    pcap_freecode(&m_bf);
-
-    if (pthread_create(&m_thread, NULL, CXGooseCap::GSE_Thread, this) != 0)
-    {
-        printf("CXGooseCap::GSE_InitialPcap Counld not create thread\n");
-        return J_DEV_ERR;
-    }
-    pthread_detach(m_thread);
-
-    return J_OK;
-}
-
-int CXGooseCap::GSE_DestroyPcap()
-{
-    if (pthread_cancel(m_thread) != 0)
-    {
-        printf("CXGooseCap::GSE_DestroyPcap Counld not cancel thread\n");
-        return J_OPR_ERR;
-    }
-
-    if (m_handle)
-    {
-        pcap_close(m_handle);
-        m_handle = NULL;
-    }
-
-    return J_OK;
-}
-
-int CXGooseCap::TestGoose()
-{
-    struct pcap_pkthdr packet_header = {0};
-    FILE *f_gsecap = fopen("goose.cap_2", "rb");
-    assert(f_gsecap != NULL);
-    u_char packet_data[1500] = {0};
-    u_char *test = packet_data;
-    int nReadRet = 0;
-    int nHeaderLen = sizeof(GSE_Ether_Header) + sizeof (GSE_MAC_Header);
-    while (true)
-    {
-        memset(packet_data, 0, sizeof(packet_data));
-        nReadRet = fread(packet_data, 1, nHeaderLen, f_gsecap);
-        if (nReadRet != nHeaderLen)
-        {
-            break;
-        }
-        GSE_Ether_Header *pHeader = (GSE_Ether_Header *)(packet_data + sizeof(GSE_MAC_Header));
-        int asduLength = (pHeader->ether_length[0] << 8) + pHeader->ether_length[1] - 8;
-        nReadRet = fread(packet_data + nHeaderLen, 1, asduLength, f_gsecap);
-        if (nReadRet != asduLength)
-        {
-            break;
-        }
-        GSE_AnalyzePacket(packet_header, packet_data);
-        //usleep(20 * 1000);
-    }
-
-    return J_OK;
-}
-
-void CXGooseCap::GSE_CaptureData()
-{
-    struct pcap_pkthdr *packet_header = NULL;
-    const u_char *packet_data = NULL;
-    int ret_val = 0;
-
-    pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
-    while ((ret_val = pcap_next_ex(m_handle, &packet_header, &packet_data)) >= 0)
-    {
-        if (ret_val == 0)
-        {
-            usleep(10000);
-            continue;
-        }
-
-        GSE_AnalyzePacket(*packet_header, packet_data);
-    }
-}
-
-int CXGooseCap::GSE_AnalyzePacket(struct pcap_pkthdr &packet_header, const u_char *packet_data)
+int CXGooseCap::AnalyzePacket(const unsigned char *pEventData)
 {
     //static FILE *fp = NULL;
     //if (fp == NULL)
@@ -147,7 +34,7 @@ int CXGooseCap::GSE_AnalyzePacket(struct pcap_pkthdr &packet_header, const u_cha
     //fwrite(packet_data, 1, packet_header.len, fp);
 
     memset(&m_gseHeader, 0, sizeof(m_gseHeader));
-    GSE_MAC_Header *macHeader = (GSE_MAC_Header *)packet_data;
+    PCAP_MAC_Header *macHeader = (PCAP_MAC_Header *)pEventData;
     /*printf("源地址:%02X:%02X:%02X:%02X:%02X:%02X\n",
                             (macHeader->ether_shost)[0],
                             (macHeader->ether_shost)[1],
@@ -163,7 +50,7 @@ int CXGooseCap::GSE_AnalyzePacket(struct pcap_pkthdr &packet_header, const u_cha
                             (macHeader->ether_dhost)[4],
                             (macHeader->ether_dhost)[5]);*/
 
-    GSE_Ether_Header *etherHeader = (GSE_Ether_Header *)(packet_data + sizeof(GSE_MAC_Header));
+    GSE_Ether_Header *etherHeader = (GSE_Ether_Header *)(pEventData + sizeof(PCAP_MAC_Header));
     //assert((etherHeader->ether_tpid[0]==0x81) && (etherHeader->ether_tpid[1]==0x00));
     //assert((etherHeader->ether_tci[0]==0x40) && (etherHeader->ether_tci[1]==0x00));
     assert((etherHeader->ether_type[0]==0x88) && (etherHeader->ether_type[1]==0xB8));
@@ -177,7 +64,7 @@ int CXGooseCap::GSE_AnalyzePacket(struct pcap_pkthdr &packet_header, const u_cha
 
     //解析GOOSE头信息
     u_short asduLength = (etherHeader->ether_length[0] << 8) + etherHeader->ether_length[1] - 8;
-    const u_char *gseHeadInfo = packet_data + sizeof(GSE_MAC_Header) + sizeof(GSE_Ether_Header);
+    const u_char *gseHeadInfo = pEventData + sizeof(PCAP_MAC_Header) + sizeof(GSE_Ether_Header);
     assert(gseHeadInfo[0] == 0x61);
     u_short gseInfoLen = GSE_AnalyzeHead(gseHeadInfo, asduLength);
     //解析GOOSE开关量

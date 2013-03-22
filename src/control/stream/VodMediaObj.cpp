@@ -17,6 +17,10 @@ CVodMediaObj::CVodMediaObj(int nSocket, J_Obj *pObj)
 	m_sendSocket.Init(nSocket);
 	m_pObj = pObj;
 	m_pReader = NULL;
+	
+	m_nextFrameTime = 0;
+	m_lastFrameTime = 0;
+	m_lastFrameNum = 0;
 
 	J_OS::LOGINFO("CVodMediaObj::CVodMediaObj created socket =  %d", m_nSocket);
 }
@@ -75,14 +79,33 @@ int CVodMediaObj::Process(int nIoType)
 			if (nRet == J_OK && m_streamHeader.dataLen > 0)
 			{
 				int nDataLen = 0;
-				m_streamHeader.timeStamp &= 0x1FFFFFF;
+				//m_streamHeader.timeStamp &= 0x1FFFFFF;
 				J_RequestFilter *pAccess = dynamic_cast<J_RequestFilter *>(m_pObj);
 				pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
-
-				if (m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen) < 0)
+				if (nDataLen > 0)
 				{
-					J_OS::LOGINFO("CVodMediaObj::Process FILE_PALY error");
-					return J_SOCKET_ERROR;
+					if (m_nextFrameTime <= 40)
+					{
+						m_lastFrameTime = m_streamHeader.timeStamp;
+						if (m_streamHeader.frameType == jo_video_i_frame ||
+							((m_streamHeader.frameType == jo_video_p_frame) && (m_streamHeader.frameNum == ++m_lastFrameNum)))
+						{
+							if (m_streamHeader.frameType == jo_video_i_frame)
+								m_lastFrameNum = m_streamHeader.frameNum;
+
+							if (m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen) < 0)
+							{
+								J_OS::LOGINFO("CVodMediaObj::Process FILE_PALY error");
+								return J_SOCKET_ERROR;
+							}
+						}
+						m_nextFrameTime = 0;
+					}
+					else
+					{
+						m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
+						return J_OK;
+					}
 				}
 			}
 			else if (nRet < 0)

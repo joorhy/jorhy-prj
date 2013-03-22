@@ -40,6 +40,10 @@ private:
 	J_OS::CTCPSocket m_sendSocket;
 	J_Obj *m_pObj;
 	J_FileReader *m_pReader;
+	
+	j_int64_t m_nextFrameTime;
+	j_int64_t m_lastFrameTime;
+	j_uint32_t m_lastFrameNum;
 };
 
 #endif //~__VODMEDIAOBJ_H_

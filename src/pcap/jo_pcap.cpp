@@ -1,53 +1,107 @@
+#include "x_errtype.h"
+#include "jo_pcap.h"
+#include "x_log.h"
 #include "x_goose.h"
-#include "x_gse_scd.h"
+#include "j_module.h"
 
-bool bRun = true;
-
-void OnSignal(int nSigNum)
+CPcap::CPcap()
 {
-	if (nSigNum == SIGINT)
-	{
-		printf("Quit CapServer\n");
-		bRun = false;
-	}
-};
+	m_dev = NULL;
+    memset(m_errBuff, 0, sizeof(m_errBuff));
+	m_mask = 0;
+    m_net = 0;
+    m_handle = NULL;
+	m_thread = 0;
+	
+	pEventParser = new CXGooseCap;
+}
 
-int main()
+CPcap::~CPcap()
 {
-    printf("**************************************\n");
-    printf("* Please enter 1-4 to select service *\n");
-    printf("* 1:Generate config file             *\n");
-    printf("* 2:Local Test                       *\n");
-    printf("* 3:Capture GOOSE data               *\n");
-    printf("* 4:Quit                             *\n");
-    printf("**************************************\n");
+	if (pEventParser)
+		delete pEventParser;
+}
 
-    int c = getchar();
-    if (c == '1')
+int CPcap::InitialPcap(const char *pFilterExp)
+{
+    m_dev = pcap_lookupdev(m_errBuff);
+    if (m_dev == NULL)
     {
-        CXGseScd gseHelper;
-        gseHelper.Init();
-        gseHelper.GetAllCtrlBlock();
-        gseHelper.Deinit();
-        return 0;
+        J_OS::LOGINFO("CPcap::InitialPcap Could not find default device:%s\n", m_errBuff);
+        return J_DEV_ERROR;
     }
-    else if (c == '2')
+    J_OS::LOGINFO("CPcap::InitialPcap device:%s\n", m_dev);
+
+    if (pcap_lookupnet(m_dev, &m_net, &m_mask, m_errBuff) == -1)
     {
-        CXGooseCap gseCap;
-        gseCap.TestGoose();
-        return 0;
+        printf("CPcap::InitialPcap Counld not get netmask for device %s;%s\n", m_dev ,m_errBuff);
+        m_net = 0;
+        m_mask = 0;
     }
-    else if (c == '3')
+
+    m_handle = pcap_open_live(m_dev, PCAP_SNAPLEN, 1, 1000, m_errBuff);
+    if (m_handle == NULL)
     {
-        CXGooseCap gseCap;
-        gseCap.GSE_InitialPcap();
-        signal(SIGINT, OnSignal);
-        while(bRun)
+        J_OS::LOGINFO("CPcap::InitialPcap Could not open device %s;%s", m_dev, m_errBuff);
+        return J_DEV_ERROR;
+    }
+
+    if (pcap_compile(m_handle, &m_bf, pFilterExp, 0, m_net) == -1)
+    {
+        J_OS::LOGINFO("CPcap::InitialPcap Counld not parse filter %s;%s\n", pFilterExp, pcap_geterr(m_handle));
+        return J_DEV_ERROR;
+    }
+
+    if (pcap_setfilter(m_handle, &m_bf) == -1)
+    {
+        J_OS::LOGINFO("CPcap::InitialPcap Counld not install filter %s;%s\n", pFilterExp, pcap_geterr(m_handle));
+        return J_DEV_ERROR;
+    }
+    pcap_freecode(&m_bf);
+
+    if (pthread_create(&m_thread, NULL, CPcap::CAP_Thread, this) != 0)
+    {
+        J_OS::LOGINFO("CPcap::InitialPcap Counld not create thread\n");
+        return J_DEV_ERROR;
+    }
+    pthread_detach(m_thread);
+
+    return J_OK;
+}
+
+int CPcap::DestroyPcap()
+{
+    if (pthread_cancel(m_thread) != 0)
+    {
+        J_OS::LOGINFO("CPcap::DestroyPcap Counld not cancel thread\n");
+        return J_DEV_ERROR;
+    }
+
+    if (m_handle)
+    {
+        pcap_close(m_handle);
+        m_handle = NULL;
+    }
+
+    return J_OK;
+}
+
+void CPcap::CAP_CaptureData()
+{
+    struct pcap_pkthdr *packet_header = NULL;
+    const u_char *packet_data = NULL;
+    int ret_val = 0;
+
+    pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
+    while ((ret_val = pcap_next_ex(m_handle, &packet_header, &packet_data)) >= 0)
+    {
+        if (ret_val == 0)
         {
             usleep(10000);
+            continue;
         }
-        gseCap.GSE_DestroyPcap();
-    }
 
-	return 0;
+		pEventParser->AnalyzePacket(packet_data);
+        //GSE_AnalyzePacket(*packet_header, packet_data);
+    }
 }

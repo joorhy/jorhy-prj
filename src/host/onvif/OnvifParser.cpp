@@ -9,6 +9,7 @@ COnvifParser::COnvifParser()
 	m_nOffset = 0;
 	m_bStartSlice = true;
 	m_bIsComplate = false;
+	m_frameNum = 0;
 }
 
 COnvifParser::~COnvifParser()
@@ -95,6 +96,8 @@ int COnvifParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 			streamHeader.frameType = jo_video_i_frame;
 		streamHeader.dataLen = m_nOffset;
 		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+		streamHeader.frameNum = m_frameNum++;
+		m_frameNum %= 0xFFFFFFFF;
 		memcpy(pData, m_pOutBuff, m_nOffset);
 		m_nOffset = 0;
 		m_bIsComplate = false;
