@@ -14,10 +14,10 @@ CXGooseCap::CXGooseCap()
 {
     m_stNum = 0;
 
-	CXGseScd gseHelper;
+	/*CXGseScd gseHelper;
 	gseHelper.Init();
 	gseHelper.GetAllCtrlBlock();
-	gseHelper.Deinit();
+	gseHelper.Deinit();*/
     //m_sdlParser.LoadXMLFile("20120728.scd");
 }
 
@@ -307,6 +307,8 @@ u_short CXGooseCap::GSE_GetDataLen(const u_char *data)
 
 int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
 {
+	printf("type = %d\n", type);
+	//return 0;
     json_object *alm_body = json_object_new_object();
     json_object_object_add(alm_body, (char *)"cmd", json_object_new_int(103));
     json_object *alm_json = json_object_new_object();

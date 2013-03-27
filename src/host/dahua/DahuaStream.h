@@ -20,7 +20,7 @@ public:
 	virtual int Shutdown();
 
 protected:
-	static void OnStreamCallBack(LONG hHandle, DWORD dwDayaType, BYTE *pBuffer, DWORD dwBufsize, DWORD dwUser)
+	static void OnStreamCallBack(long hHandle, DWORD dwDayaType, BYTE *pBuffer, DWORD dwBufsize, long dwUser)
 	{
 		CDahuaStream *pThis = reinterpret_cast<CDahuaStream *>(dwUser);
 		if (pThis != NULL)

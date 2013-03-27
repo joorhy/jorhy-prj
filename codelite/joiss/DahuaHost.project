@@ -5,8 +5,8 @@
   <VirtualDirectory Name="src">
     <File Name="../../src/host/dahua/DahuaAdapter.cpp"/>
     <File Name="../../src/host/dahua/DahuaChannel.cpp"/>
-    <File Name="../../src/host/dahua/DahuaParser.cpp"/>
     <File Name="../../src/host/dahua/DahuaStream.cpp"/>
+    <File Name="../../src/host/dahua/DahuaParser.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/host/dahua/DahuaAdapter.h"/>
@@ -16,7 +16,8 @@
     <File Name="../../src/host/dahua/dhassistant.h"/>
     <File Name="../../src/host/dahua/dhconfigsdk.h"/>
     <File Name="../../src/host/dahua/dhnetsdk.h"/>
-    <File Name="../../src/host/dahua/dhstreamparse.h"/>
+    <File Name="../../src/host/dahua/StreamAnalyzer.h"/>
+    <File Name="../../src/host/dahua/platform.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
@@ -31,7 +32,7 @@
       <Linker Options="-Wl,-rpath,./plugins/libs" Required="yes">
         <LibraryPath Value="../../libs/dahua"/>
         <Library Value="dhnetsdk"/>
-        <Library Value="dhparser"/>
+        <Library Value="StreamAnalyzer"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Debug/plugins" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>

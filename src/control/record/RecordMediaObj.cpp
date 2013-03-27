@@ -50,7 +50,6 @@ int CStreamRecord::StartRecord(const char *pResid)
 	if (m_resid.empty())
 		m_resid = pResid;
 
-    Init();
 	int nRet = StartPreRecord(pResid, 0, false);
 	if (nRet < 0)
 	{
@@ -58,6 +57,7 @@ int CStreamRecord::StartRecord(const char *pResid)
 		return nRet;
 	}
 
+	Init();
 	m_bStart = true;
 	if (CreateFile(NULL) != J_OK)
 		return J_FILE_ERROR;

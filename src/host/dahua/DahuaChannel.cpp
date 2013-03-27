@@ -181,10 +181,15 @@ int CDahuaChannel::PtzControl(int nCmd, int nParam)
 
 int CDahuaChannel::StartView()
 {
-	m_lRealHandle = CLIENT_RealPlay(m_pAdapter->GetDevID(), m_nChannel - 1, NULL);
+	if (m_nStreamType == 0)
+		m_lRealHandle = CLIENT_RealPlayEx(m_pAdapter->GetDevID(), m_nChannel - 1, NULL, DH_RType_Realplay_0);
+	else
+		m_lRealHandle = CLIENT_RealPlayEx(m_pAdapter->GetDevID(), m_nChannel - 1, NULL, DH_RType_Realplay_1);
+		
     if (m_lRealHandle == 0)
 	{
-	    J_OS::LOGINFO("CDahuaChannel::StartView Error %d", m_lRealHandle);
+		//_EC();
+	    J_OS::LOGINFO("CDahuaChannel::StartView Error %u", CLIENT_GetLastError());
 	    return J_DEV_BROKEN;
 	}
 

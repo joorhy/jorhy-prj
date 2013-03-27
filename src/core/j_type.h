@@ -144,6 +144,7 @@ typedef bool 				j_boolean_t;
 typedef unsigned int		j_time_t;
 typedef char				j_char_t;
 typedef int					j_result_t;
+typedef long				j_long_t;
 typedef void				j_void_t;
 
 typedef char 				j_int8_t;

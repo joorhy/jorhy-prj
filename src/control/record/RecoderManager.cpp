@@ -77,10 +77,13 @@ int CRecoderManager::StartRecord(const char *pResid)
 		RecordInfo info;
 		info.pRecord = new CStreamRecord();
 		info.nCount = 0;
-		m_mediaMap[pResid] = info;
-		nRet = m_mediaMap[pResid].pRecord->StartRecord(pResid);
+		//m_mediaMap[pResid] = info;
+		nRet = info.pRecord->StartRecord(pResid);
         if (nRet == J_OK)
+		{
             m_mediaMap[pResid].nCount = 1;
+			m_mediaMap[pResid] = info;
+		}
 
 	}
 	else

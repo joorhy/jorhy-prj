@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=root
-Date                   :=03/22/2013
+Date                   :=03/27/2013
 CodeLitePath           :="/home/jorhy/.codelite"
 LinkerName             :=g++
 ArchiveTool            :=ar rcus
@@ -40,7 +40,7 @@ CmpOptions             := -g $(Preprocessors)
 LinkOptions            :=  -Wl,-rpath,./plugins/libs
 IncludePath            :=  "$(IncludeSwitch)." "$(IncludeSwitch)../../src/host/dahua" "$(IncludeSwitch)../../src/core" "$(IncludeSwitch)../../src/misc" "$(IncludeSwitch)../../src/utils" 
 RcIncludePath          :=
-Libs                   :=$(LibrarySwitch)dhnetsdk $(LibrarySwitch)dhparser 
+Libs                   :=$(LibrarySwitch)dhnetsdk $(LibrarySwitch)StreamAnalyzer 
 LibPath                := "$(LibraryPathSwitch)." "$(LibraryPathSwitch)../../libs/dahua" 
 
 
@@ -48,7 +48,7 @@ LibPath                := "$(LibraryPathSwitch)." "$(LibraryPathSwitch)../../lib
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects=$(IntermediateDirectory)/dahua_DahuaAdapter$(ObjectSuffix) $(IntermediateDirectory)/dahua_DahuaChannel$(ObjectSuffix) $(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix) $(IntermediateDirectory)/dahua_DahuaStream$(ObjectSuffix) 
+Objects=$(IntermediateDirectory)/dahua_DahuaAdapter$(ObjectSuffix) $(IntermediateDirectory)/dahua_DahuaChannel$(ObjectSuffix) $(IntermediateDirectory)/dahua_DahuaStream$(ObjectSuffix) $(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix) 
 
 ##
 ## Main Build Targets 
@@ -84,14 +84,6 @@ $(IntermediateDirectory)/dahua_DahuaChannel$(DependSuffix): ../../src/host/dahua
 $(IntermediateDirectory)/dahua_DahuaChannel$(PreprocessSuffix): ../../src/host/dahua/DahuaChannel.cpp
 	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/dahua_DahuaChannel$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaChannel.cpp"
 
-$(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix): ../../src/host/dahua/DahuaParser.cpp $(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix): ../../src/host/dahua/DahuaParser.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix) -MF$(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.cpp"
-
-$(IntermediateDirectory)/dahua_DahuaParser$(PreprocessSuffix): ../../src/host/dahua/DahuaParser.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/dahua_DahuaParser$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.cpp"
-
 $(IntermediateDirectory)/dahua_DahuaStream$(ObjectSuffix): ../../src/host/dahua/DahuaStream.cpp $(IntermediateDirectory)/dahua_DahuaStream$(DependSuffix)
 	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaStream.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/dahua_DahuaStream$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/dahua_DahuaStream$(DependSuffix): ../../src/host/dahua/DahuaStream.cpp
@@ -99,6 +91,14 @@ $(IntermediateDirectory)/dahua_DahuaStream$(DependSuffix): ../../src/host/dahua/
 
 $(IntermediateDirectory)/dahua_DahuaStream$(PreprocessSuffix): ../../src/host/dahua/DahuaStream.cpp
 	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/dahua_DahuaStream$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaStream.cpp"
+
+$(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix): ../../src/host/dahua/DahuaParser.cpp $(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix)
+	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix): ../../src/host/dahua/DahuaParser.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix) -MF$(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.cpp"
+
+$(IntermediateDirectory)/dahua_DahuaParser$(PreprocessSuffix): ../../src/host/dahua/DahuaParser.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/dahua_DahuaParser$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.cpp"
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
@@ -112,12 +112,12 @@ clean:
 	$(RM) $(IntermediateDirectory)/dahua_DahuaChannel$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/dahua_DahuaChannel$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/dahua_DahuaChannel$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/dahua_DahuaParser$(PreprocessSuffix)
 	$(RM) $(IntermediateDirectory)/dahua_DahuaStream$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/dahua_DahuaStream$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/dahua_DahuaStream$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/dahua_DahuaParser$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/dahua_DahuaParser$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/dahua_DahuaParser$(PreprocessSuffix)
 	$(RM) $(OutputFile)
 
 

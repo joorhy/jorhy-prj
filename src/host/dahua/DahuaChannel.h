@@ -40,7 +40,7 @@ private:
 
 	char *m_pDataBuff;
 	bool m_bOpened;
-	LONG m_lRealHandle;
+	long m_lRealHandle;
 };
 
 #endif //~__DAHUACHANNEL_H_

@@ -10,7 +10,7 @@
 
 
 USER=ivs
-BIN=ivs/ss
+BIN=ivs/ivs/ss
 
 HOME=/home/$USER
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
