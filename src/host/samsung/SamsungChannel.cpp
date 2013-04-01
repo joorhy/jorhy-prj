@@ -229,7 +229,8 @@ j_result_t CSamsungChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer
 j_result_t CSamsungChannel::StartView()
 {
     //J_OS::LOGINFO("type = %d", m_nStreamType);
-    //m_pAdapter->Login();
+	m_pAdapter->Logout();
+    m_pAdapter->Login();
     if (m_recvSocket != NULL)
     {
         delete m_recvSocket;

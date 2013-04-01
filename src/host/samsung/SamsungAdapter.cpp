@@ -15,7 +15,7 @@ CSamsungAdapter::CSamsungAdapter(j_int32_t nDvrId, const j_char_t *pAddr, j_int3
     m_status = jo_dev_broken;
     //定时检测设备状态
     UserExchange();
-    m_timer.Create(5 * 1000, CSamsungAdapter::OnTimer, this);
+    m_timer.Create(3 * 1000, CSamsungAdapter::OnTimer, this);
 
     J_OS::LOGINFO("CSamsungAdapter::CSamsungAdapter(ip = %s, port = %d)", pAddr, nPort);
 }

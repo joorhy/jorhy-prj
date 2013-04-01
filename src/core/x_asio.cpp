@@ -96,7 +96,7 @@ void CRdAsio::OnWork()
 	while (m_bStarted)
 	{
 		pthread_testcancel();
-		nfds = epoll_wait(m_epoll_fd, m_evConnect, 1024, 200);
+		nfds = epoll_wait(m_epoll_fd, m_evConnect, 1024, 1000);
 		if (nfds < 0)
 		{
 			usleep(10);
@@ -110,7 +110,7 @@ void CRdAsio::OnWork()
 
 		for (i = 0; i < nfds; i++)
 		{
-			if ((m_evConnect[i].events & EPOLLIN) && (m_evConnect[i].events & EPOLLRDHUP))
+			if ((m_evConnect[i].events & EPOLLRDHUP) && (m_evConnect[i].events & EPOLLIN))
 			{
 				//broken
 				TLock(m_locker);

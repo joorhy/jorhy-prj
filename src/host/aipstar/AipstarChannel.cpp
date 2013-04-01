@@ -167,6 +167,9 @@ j_result_t CAipstarChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 
 j_result_t CAipstarChannel::StartView()
 {
+	//m_pAdapter->Logout();
+    //m_pAdapter->Login();
+	
 	tmPlayRealStreamCfg_t realInfo = {0};
 	realInfo.dwSize = sizeof(tmRealStreamInfo_t);
 	strcpy(realInfo.szAddress, m_pAdapter->GetRemoteIp());

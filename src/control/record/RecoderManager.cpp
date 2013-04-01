@@ -20,7 +20,7 @@ int CRecoderManager::Init()
     m_bStart = true;
     pthread_create(&m_thread, NULL, CRecoderManager::WorkThread, this);
 
-    m_timer.Create(1000, CRecoderManager::TimerThread, this);
+    m_timer.Create(120000, CRecoderManager::TimerThread, this);
 
 	J_OS::LOGINFO("CRecoderManager::StartService");
     return J_OK;

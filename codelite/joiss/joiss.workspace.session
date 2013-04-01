@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss/joiss.workspace">
-  <int Value="3" Name="m_selectedTab"/>
+  <int Value="4" Name="m_selectedTab"/>
   <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss/joiss.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaAdapter.cpp" Name="FileName"/>
-      <int Value="8" Name="FirstVisibleLine"/>
-      <int Value="19" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/control/record/RecoderManager.cpp" Name="FileName"/>
+      <int Value="164" Name="FirstVisibleLine"/>
+      <int Value="173" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaAdapter.h" Name="FileName"/>
-      <int Value="24" Name="FirstVisibleLine"/>
-      <int Value="38" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/samsung/SamsungStream.cpp" Name="FileName"/>
+      <int Value="104" Name="FirstVisibleLine"/>
+      <int Value="105" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/j_type.h" Name="FileName"/>
-      <int Value="141" Name="FirstVisibleLine"/>
-      <int Value="151" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.cpp" Name="FileName"/>
-      <int Value="65" Name="FirstVisibleLine"/>
-      <int Value="71" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaParser.h" Name="FileName"/>
-      <int Value="8" Name="FirstVisibleLine"/>
-      <int Value="21" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/StreamAnalyzer.h" Name="FileName"/>
-      <int Value="264" Name="FirstVisibleLine"/>
-      <int Value="272" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaChannel.cpp" Name="FileName"/>
-      <int Value="26" Name="FirstVisibleLine"/>
-      <int Value="40" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaChannel.h" Name="FileName"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/x_asio.h" Name="FileName"/>
       <int Value="22" Name="FirstVisibleLine"/>
-      <int Value="42" Name="CurrentLine"/>
+      <int Value="29" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaStream.h" Name="FileName"/>
-      <int Value="8" Name="FirstVisibleLine"/>
-      <int Value="22" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/x_asio.cpp" Name="FileName"/>
+      <int Value="84" Name="FirstVisibleLine"/>
+      <int Value="98" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/aipstar/AipstarChannel.cpp" Name="FileName"/>
+      <int Value="161" Name="FirstVisibleLine"/>
+      <int Value="166" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/samsung/SamsungChannel.cpp" Name="FileName"/>
+      <int Value="222" Name="FirstVisibleLine"/>
+      <int Value="231" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/aipstar/AipstarAdapter.h" Name="FileName"/>
+      <int Value="50" Name="FirstVisibleLine"/>
+      <int Value="51" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/aipstar/AipstarAdapter.cpp" Name="FileName"/>
+      <int Value="62" Name="FirstVisibleLine"/>
+      <int Value="68" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/samsung/SamsungAdapter.cpp" Name="FileName"/>
+      <int Value="140" Name="FirstVisibleLine"/>
+      <int Value="64" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

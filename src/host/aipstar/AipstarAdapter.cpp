@@ -78,6 +78,8 @@ j_result_t CAipstarAdapter::Login()
     }
     else
     {
+		sleep(1);
+		Login();
         J_OS::LOGINFO("CAipstarAdapter::Login() Login faild");
     }
 

@@ -1,45 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/jorhy/WorkSpace/jorhy-prj/codelite/joisc/joisc.workspace">
-  <int Value="5" Name="m_selectedTab"/>
+  <int Value="0" Name="m_selectedTab"/>
   <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/codelite/joisc/joisc.workspace" Name="m_workspaceName"/>
-  <TabInfoArray Name="TabInfoArray">
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_render.cpp" Name="FileName"/>
-      <int Value="73" Name="FirstVisibleLine"/>
-      <int Value="79" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_rcdctl.cpp" Name="FileName"/>
-      <int Value="72" Name="FirstVisibleLine"/>
-      <int Value="0" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_tree.cpp" Name="FileName"/>
-      <int Value="143" Name="FirstVisibleLine"/>
-      <int Value="148" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/x_rcd_slider.cpp" Name="FileName"/>
-      <int Value="304" Name="FirstVisibleLine"/>
-      <int Value="308" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/include/jo_sdk.h" Name="FileName"/>
-      <int Value="7" Name="FirstVisibleLine"/>
-      <int Value="8" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/ui/wx_ivs/src/jo_sdk.cpp" Name="FileName"/>
-      <int Value="167" Name="FirstVisibleLine"/>
-      <int Value="168" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-  </TabInfoArray>
+  <TabInfoArray Name="TabInfoArray"/>
   <SerializedObject Name="m_breakpoints">
     <long Value="0" Name="Count"/>
   </SerializedObject>

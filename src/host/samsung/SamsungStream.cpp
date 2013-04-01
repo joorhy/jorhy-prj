@@ -112,7 +112,7 @@ j_result_t CSamsungStream::OnRead(j_int32_t nfd)
 
 j_result_t CSamsungStream::OnBroken(j_int32_t nfd)
 {
-    J_OS::LOGINFO("CSamsungStream::OnBroken");
+    J_OS::LOGERROR("CSamsungStream::OnBroken");
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
