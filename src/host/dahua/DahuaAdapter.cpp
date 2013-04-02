@@ -16,8 +16,9 @@ CDahuaAdapter::CDahuaAdapter(int nDevId, const char *pAddr, int nPort, const cha
 	strcpy(m_password, pPassword);
 
 	CLIENT_Init(NULL, 0);
-	Login();
+	CLIENT_SetConnectTime(5000, 5);
 	CLIENT_SetAutoReconnect(OnConnectCallBack, (DWORD)this);
+	Login();
 
 	J_OS::LOGINFO("CDahuaAdapter::CDahuaAdapter(ip = %s, port = %d)", pAddr, nPort);
 }
@@ -86,5 +87,6 @@ int CDahuaAdapter::Logout()
 
 void CDahuaAdapter::OnConnect(LONG hHandle, char *pDVRIP, LONG nDVRPort, DWORD dwUser)
 {
-	printf("connect = %d\n", hHandle);
+	m_status = jo_dev_ready;
+	J_OS::LOGINFO("CDahuaAdapter::OnConnect = %d\n", hHandle);
 }
