@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np_plugin", "np_plugin.vcproj", "{605C3399-F131-490D-8C6C-39EA7CCC65D9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np_pl_misc", "np_pl_misc.vcproj", "{EA19CC81-B10D-4716-B9BC-3B9E7C2B0D04}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np_utils", "np_utils.vcproj", "{B988AFA1-84A0-4C4A-878F-615943D7B8E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{605C3399-F131-490D-8C6C-39EA7CCC65D9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{605C3399-F131-490D-8C6C-39EA7CCC65D9}.Debug|Win32.Build.0 = Debug|Win32
+		{605C3399-F131-490D-8C6C-39EA7CCC65D9}.Release|Win32.ActiveCfg = Release|Win32
+		{605C3399-F131-490D-8C6C-39EA7CCC65D9}.Release|Win32.Build.0 = Release|Win32
+		{EA19CC81-B10D-4716-B9BC-3B9E7C2B0D04}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EA19CC81-B10D-4716-B9BC-3B9E7C2B0D04}.Debug|Win32.Build.0 = Debug|Win32
+		{EA19CC81-B10D-4716-B9BC-3B9E7C2B0D04}.Release|Win32.ActiveCfg = Release|Win32
+		{EA19CC81-B10D-4716-B9BC-3B9E7C2B0D04}.Release|Win32.Build.0 = Release|Win32
+		{B988AFA1-84A0-4C4A-878F-615943D7B8E2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B988AFA1-84A0-4C4A-878F-615943D7B8E2}.Debug|Win32.Build.0 = Debug|Win32
+		{B988AFA1-84A0-4C4A-878F-615943D7B8E2}.Release|Win32.ActiveCfg = Release|Win32
+		{B988AFA1-84A0-4C4A-878F-615943D7B8E2}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
