@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="1"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,7 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NP_PL_MISC_EXPORTS"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\np_pl_misc\include;&quot;..\..\src\ui\vs_plugins\xulrunner-sdk\sdk\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NP_PL_MISC_EXPORTS;MOZILLA_STRICT_API;XPCOM_GLUE;XP_WIN;_X86_"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -165,6 +166,74 @@
 	<References>
 	</References>
 	<Files>
+		<Filter
+			Name="include"
+			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\include\constructable_plugin.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\include\NPPluginMisc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\include\plugin_base.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\include\plugin_object.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\resource.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="src"
+			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\src\constructable_plugin.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\src\np_entry.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\src\npn_gate.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\src\npp_gate.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\src\NPPluginMisc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\src\plugin_base.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\src\plugin_object.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="res"
+			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\np_plugin_misc.rc"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\np_pl_misc\np_plugin_misc.def"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
