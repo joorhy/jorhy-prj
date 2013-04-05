@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib liveMedia.lib UsageEnvironment.lib BasicUsageEnvironment.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\live555"
+				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\live555;..\..\libs\DirectX"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"

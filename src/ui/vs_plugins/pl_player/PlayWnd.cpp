@@ -23,7 +23,7 @@ CPlayWnd::CPlayWnd()
 	bEraseOwn = TRUE;
 	if(NULL == m_FullWnd)
 	{
-		m_FullWnd = new CScreenWnd();
+		//m_FullWnd = new CScreenWnd();
 	}
 	m_WndNumber++;
 	m_nFocus = 1;
