@@ -1,8 +1,6 @@
 #include "StdAfx.h"
 #include "PlayerCtrl.h"
-#include "DataCenter.h"
-#include "RPlayWnd.h"
-#include "VPlayWnd.h"
+#include "pl_type.h"
 #include "PlayWnd.h"
 #include <cmath>
 using namespace std;

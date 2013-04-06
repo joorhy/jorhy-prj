@@ -1,7 +1,7 @@
 #pragma once
 
 #include <atlimage.h>
-#include "DataCenter.h"
+#include "pl_type.h"
 
 
 class CPngButton : public CButton

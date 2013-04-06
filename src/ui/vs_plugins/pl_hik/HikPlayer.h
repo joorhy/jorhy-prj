@@ -1,9 +1,9 @@
 #pragma once
-#include "BeyondPlayer.h"
+#include "j_player.h"
 #include "BeyondBuffer.h"
 #include "BeyondRecv.h"
 
-class HikPlayer :public BeyondPlayer
+class HikPlayer :public JoPlayer
 {
 public:
 	HikPlayer(int nWorkMode,void *pFactorUser);

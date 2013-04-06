@@ -177,11 +177,27 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\BeyondPlayer.h"
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_com.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\DataCenter.h"
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_core.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_err.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_player.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_singleton.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_type.h"
 				>
 			</File>
 			<File
@@ -203,7 +219,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\BeyondPlayer.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_com.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_core.cpp"
 				>
 			</File>
 			<File

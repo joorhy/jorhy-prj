@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ScreenWnd.h"
-#include "DataCenter.h"
+#include "j_type.h"
 #include "FlootTool.h"
 #include "PlayWnd.h"
 // CVPlayWnd
@@ -19,7 +19,6 @@ protected:
 
 private:
 	void InitParm();
-
 
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DataCenter.h"
+#include "j_type.h"
 #include "FlootTool.h"
 #include "ScreenWnd.h"
 #include "PlayWnd.h"

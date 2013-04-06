@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Resource.h"
 #include "RPlayWnd.h"
-#include "DataCenter.h"
+#include "j_type.h"
 #include <cmath>
 #include "runner_log.h"
 

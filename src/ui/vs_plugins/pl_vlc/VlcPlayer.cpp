@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "VlcPlayer.h"
 #include "WaitStatus.h"
-#include "DataCenter.h"
+#include "j_type.h"
 #include "PlayerFactor.h"
 #include "PlayerCtrl.h"
 #include "vlc_picture.h"

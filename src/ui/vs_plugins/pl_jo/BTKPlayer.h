@@ -1,10 +1,10 @@
 #pragma once
-#include "BeyondPlayer.h"
+#include "j_player.h"
 #include "BTKControl.h"
 #include <string>
 #include "BeyondLock.h"
 
-class BTKPlayer :public BeyondPlayer
+class BTKPlayer :public JoPlayer
 {
 public:
 	BTKPlayer(int nWorkMode,void *pFactorUser);

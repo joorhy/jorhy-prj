@@ -2,7 +2,7 @@
 
 #include "ExactSlider.h"
 #include "PngButton.h"
-#include "DataCenter.h"
+#include "pl_type.h"
 #include "PlayerFactor.h"
 #include "NewToolTip.h"
 // CFlootTool

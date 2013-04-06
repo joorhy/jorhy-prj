@@ -173,6 +173,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\PlayerCtrl.h"
 				>
 			</File>

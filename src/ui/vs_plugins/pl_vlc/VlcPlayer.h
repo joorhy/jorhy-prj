@@ -1,10 +1,10 @@
 #pragma once
-#include "BeyondPlayer.h"
+#include "j_player.h"
 #include "vlc.h"
 #define SPEED_INDEX_NUM 6
 #define NORMALSPEED		4
 
-class VlcPlayer :public BeyondPlayer
+class VlcPlayer :public JoPlayer
 {
 public:
 	VlcPlayer(int nWorkMode,void *pFactorUser);

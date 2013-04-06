@@ -51,26 +51,25 @@ public:
 	afx_msg LRESULT SetWndFocus(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT KillWndFocus(WPARAM wParam,LPARAM lParam);
 
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
+	afx_msg void OnPaint();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+
 public:
 	void DrawBorder(CPen *pen);
 	void SetFullModel(UINT nType);
 	PlayerFactor *GetPlayer();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	void ShowAllWindowEpt(HWND hWnd,int nCmdShow);
 	void SetNowShowWindow(int nNum);
 	HWND GetFocusWnd();
-	afx_msg void OnPaint();
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 
 	void MouseHook(bool bSetHook);
 	HWND FindPlayerWnd();
 
 private:
-	static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
-
-public:
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);	
 };
 
 

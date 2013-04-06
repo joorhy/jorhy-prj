@@ -1,17 +1,11 @@
 #pragma once
 
-#ifdef   PL_PLAYER_EXPORTS 
-#define   DLLAPI	__declspec(dllexport) 
-#else 
-#define   DLLAPI	__declspec(dllimport) 
-#endif 
-
-#include "PlayerFactor.h"
+//#include "PlayerFactor.h"
+#include "pl_type.h"
 #include <vector>
 #include "json.h"
 
-
-class DLLAPI CPlayerCtrl
+class __declspec(dllexport) CPlayerCtrl
 {
 public:
 	static CPlayerCtrl *CreateInstance();

@@ -2,9 +2,8 @@
 //
 
 #include "stdafx.h"
-//#include "Plugin_2.1.h"
 #include "WaitStatus.h"
-#include "DataCenter.h"
+#include "pl_type.h"
 #include "PlayerFactor.h"
 
 #define TIMER 1234
