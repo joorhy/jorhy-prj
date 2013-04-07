@@ -1,6 +1,6 @@
 #pragma once
 #include "PlayerDataCenter.h"
-#include "BeyondLock.h"
+#include "pl_lock.h"
 
 class BeyondBuffer
 {
@@ -23,5 +23,5 @@ private:
 	char *m_pWritePoint;
 	int m_nReadableSize;	//ø…∂¡buffer¥Û–°
 
-	BeyondLock m_lock;
+	PlLock m_lock;
 };

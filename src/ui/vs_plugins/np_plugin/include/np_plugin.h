@@ -9,7 +9,8 @@
 #include <string>
 #include "npapi.h"
 #include "npruntime.h"
-#include "PlayerCtrl.h"
+#include "stdint.h"
+#include "pl_ctrl.h"
 
 #ifdef NP_PLUGIN_EXPORTS
 #define NP_PLUGIN_API __declspec(dllexport)
@@ -63,14 +64,12 @@ private:
 	bool SetRetValue(char *psz_ret,NPVariant *result);
 
 private:
-	CPlayerCtrl *m_PlayCtrl;
+	CPlCtrl *m_PlayCtrl;
 	NPObject *m_CallBkPtz;
 	NPObject *m_CallBkState;
 	NPObject *m_CallBkVod;
 
-	
 	static WNDPROC CNPPlugin::lpOldProc;
-
 };
 
 #endif // __NP_PLUGIN_H__

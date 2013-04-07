@@ -302,3 +302,7 @@ void HikPlayer::SleepPlayer(bool bSleep)
 {
 
 }
+
+PLAYER_BEGIN_MAKER(pl_hik)
+	PLAYER_ENTER_MAKER("pl_hik", HikPlayer::Maker)
+PLAYER_END_MAKER()

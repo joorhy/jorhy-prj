@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			CharacterSet="0"
 			>
 			<Tool
@@ -43,10 +43,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_utils\json\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_CORE_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -62,6 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -94,7 +95,8 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="1"
+			UseOfMFC="1"
+			CharacterSet="0"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -116,8 +118,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_utils\json\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PL_CORE_EXPORTS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -173,10 +176,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\BeyondLock.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_com.h"
 				>
 			</File>
@@ -186,6 +185,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_err.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_lock.h"
 				>
 			</File>
 			<File
@@ -215,15 +218,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\BeyondLock.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_com.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_core.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_lock.cpp"
 				>
 			</File>
 			<File

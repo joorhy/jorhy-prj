@@ -35,5 +35,4 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
 	afx_msg LRESULT StartWait(WPARAM wParam,LPARAM lParam);
-
 };

@@ -1,6 +1,12 @@
 #pragma once
 #include "Windows.h"
 
+#ifdef PL_EXPORTS
+#define PL_API __declspec(dllexport)
+#else
+#define PL_API __declspec(dllimport)
+#endif
+
 // {00000000-0000-0000-0000-000000000000}
 static const GUID JO_INVALID_GUID =
 { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };

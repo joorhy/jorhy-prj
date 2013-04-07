@@ -1,18 +1,27 @@
 #pragma once
 
+#include "pl_type.h"
+#include "pl_err.h"
+#include "pl_factory.h"
+#include "pl_wnd.h"
 #include "ScreenWnd.h"
-#include "j_type.h"
 #include "FlootTool.h"
-#include "PlayWnd.h"
-// CVPlayWnd
 
-class CVPlayWnd : public CPlayWnd
+// CVPlayWnd
+class CVPlayWnd : public CPlWnd
 {
 	DECLARE_DYNAMIC(CVPlayWnd)
 
 public:
 	CVPlayWnd(HWND hParent,UINT nID);
 	virtual ~CVPlayWnd();
+
+	static int Maker(CWnd *&pObj, HWND hParent,UINT nID)
+	{
+		pObj = new CVPlayWnd(hParent, nID);
+		return PL_OK;
+	}
+	WINDOW_ENTER_MAKER("v_paly", CVPlayWnd::Maker)
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -31,5 +40,3 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	LRESULT MediaEnd(WPARAM wParam,LPARAM lParam);
 };
-
-

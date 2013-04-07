@@ -1,18 +1,27 @@
 #pragma once
 
-#include "j_type.h"
+#include "pl_type.h"
+#include "pl_err.h"
+#include "pl_factory.h"
+#include "pl_wnd.h"
 #include "FlootTool.h"
 #include "ScreenWnd.h"
-#include "PlayWnd.h"
 // CRPlayWnd
 
-class CRPlayWnd : public CPlayWnd
+class CRPlayWnd : public CPlWnd
 {
 	DECLARE_DYNAMIC(CRPlayWnd)
 
 public:
 	CRPlayWnd(HWND hParent,UINT nID);
 	virtual ~CRPlayWnd();
+
+	static int Maker(CWnd *&pObj, HWND hParent,UINT nID)
+	{
+		pObj = new CRPlayWnd(hParent, nID);
+		return PL_OK;
+	}
+	WINDOW_ENTER_MAKER("r_paly", CRPlayWnd::Maker)
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -42,5 +51,3 @@ public:
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
-
-

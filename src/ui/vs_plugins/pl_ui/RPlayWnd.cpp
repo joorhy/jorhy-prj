@@ -4,13 +4,14 @@
 #include "stdafx.h"
 #include "Resource.h"
 #include "RPlayWnd.h"
-#include "j_type.h"
-#include <cmath>
+#include "FlootTool.h"
+#include "pl_type.h"
 #include "runner_log.h"
+#include <cmath>
 
 // CRPlayWnd
 
-IMPLEMENT_DYNAMIC(CRPlayWnd, CPlayWnd)
+IMPLEMENT_DYNAMIC(CRPlayWnd, CPlWnd)
 
 CRPlayWnd::CRPlayWnd(HWND hParent,UINT nID)
 {
@@ -21,7 +22,7 @@ CRPlayWnd::CRPlayWnd(HWND hParent,UINT nID)
 	
 	// player parm Init
 	memset(&m_PlayerCenter,0,sizeof(m_PlayerCenter));
-	m_PlayerCenter.pPlayer	= new PlayerFactor(REALMODEL);
+	m_PlayerCenter.pPlayer	= new PlManager(REALMODEL);
 	m_PlayerCenter.pSound	= FALSE;
 	m_PlayerCenter.pVolume	= DEFAULT_VOLUME;
 	m_PlayerCenter.bNeedShowCTRL = SHOWCTRLCOMMAND;
@@ -41,11 +42,10 @@ void CRPlayWnd::InitParm()
 	m_nowCusID = -1;
 	if(NULL == m_Tool)
 	{
-		m_Tool = new CFlootTool(this,IDT_TOOL,REALMODEL);
+		m_Tool = new CFlootTool(this, IDT_TOOL);
+		m_Tool->SetModel(REALMODEL);
 	}
 	m_DobWMTime = 0;
-	
-	
 }
 
 CRPlayWnd::~CRPlayWnd()
@@ -74,9 +74,9 @@ BEGIN_MESSAGE_MAP(CRPlayWnd, CWnd)
 	ON_WM_ERASEBKGND()
 	ON_WM_LBUTTONUP()
 	ON_WM_PAINT()
-	ON_MESSAGE(WM_TRY_SET_MOUSE_HOOK,CPlayWnd::SetMouseHook)
-	ON_MESSAGE(WM_OWN_SETFOCUS,CPlayWnd::SetWndFocus)
-	ON_MESSAGE(WM_OWN_KILLFOCUS,CPlayWnd::KillWndFocus)
+	ON_MESSAGE(WM_TRY_SET_MOUSE_HOOK, CPlWnd::SetMouseHook)
+	ON_MESSAGE(WM_OWN_SETFOCUS, CPlWnd::SetWndFocus)
+	ON_MESSAGE(WM_OWN_KILLFOCUS, CPlWnd::KillWndFocus)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
@@ -180,7 +180,7 @@ BOOL CRPlayWnd::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	}
 	SetCursor(hc);
 
-	return CPlayWnd::OnSetCursor(pWnd, nHitTest, message);
+	return CPlWnd::OnSetCursor(pWnd, nHitTest, message);
 }
 
 void CRPlayWnd::OnMouseMove(UINT nFlags, CPoint point)
@@ -209,7 +209,7 @@ void CRPlayWnd::OnMouseMove(UINT nFlags, CPoint point)
 		m_bTrack =_TrackMouseEvent(&tmp);
 	}*/
 
-	CPlayWnd::OnMouseMove(nFlags, point);
+	CPlWnd::OnMouseMove(nFlags, point);
 }
 
 
@@ -265,19 +265,19 @@ void CRPlayWnd::OnLButtonDown(UINT nFlags, CPoint point)
 		json_object_put(info);
 
 	}
-	CPlayWnd::OnLButtonDown(nFlags, point);
+	CPlWnd::OnLButtonDown(nFlags, point);
 }
 
 void CRPlayWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 
-	CPlayWnd::OnLButtonDblClk(nFlags, point);
+	CPlWnd::OnLButtonDblClk(nFlags, point);
 }
 
 
 void CRPlayWnd::OnSize(UINT nType, int cx, int cy)
 {
-	CPlayWnd::OnSize(nType,cx,cy);
+	CPlWnd::OnSize(nType,cx,cy);
 }
 
 BOOL CRPlayWnd::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
@@ -296,11 +296,11 @@ BOOL CRPlayWnd::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
 		js_info = m_PlayerCenter.pPlayer->GetJSInfo();
 		if(!js_info)
-			return CPlayWnd::OnMouseWheel(nFlags, zDelta, pt);
+			return CPlWnd::OnMouseWheel(nFlags, zDelta, pt);
 		info = json_tokener_parse(js_info);
 		if(is_error(info))
 		{
-			return CPlayWnd::OnMouseWheel(nFlags, zDelta, pt);
+			return CPlWnd::OnMouseWheel(nFlags, zDelta, pt);
 		}
 		resid = json_object_get_string(json_object_object_get(info,"resid"));
 		args[1] = (int)resid;
@@ -320,12 +320,12 @@ BOOL CRPlayWnd::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		m_PlayerCenter.pPlayer->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
 		json_object_put(info);
 	}
-	return CPlayWnd::OnMouseWheel(nFlags, zDelta, pt);
+	return CPlWnd::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 BOOL CRPlayWnd::OnEraseBkgnd(CDC* pDC)
 {
-	return CPlayWnd::OnEraseBkgnd(pDC);
+	return CPlWnd::OnEraseBkgnd(pDC);
 }
 
 
@@ -341,7 +341,7 @@ void CRPlayWnd::OnLButtonUp(UINT nFlags, CPoint point)
 
 		js_info = m_PlayerCenter.pPlayer->GetJSInfo();
 		if(!js_info)
-			return CPlayWnd::OnLButtonUp(nFlags, point);
+			return CPlWnd::OnLButtonUp(nFlags, point);
 		info = json_tokener_parse(js_info);
 		if(is_error(info))
 		{
@@ -356,23 +356,22 @@ void CRPlayWnd::OnLButtonUp(UINT nFlags, CPoint point)
 		json_object_put(info);
 	}
 
-	CPlayWnd::OnLButtonUp(nFlags, point);
+	CPlWnd::OnLButtonUp(nFlags, point);
 }
 
 void CRPlayWnd::OnPaint()
 {
-	CPlayWnd::OnPaint();
+	CPlWnd::OnPaint();
 }
 
 
 void CRPlayWnd::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	
-	CPlayWnd::OnRButtonDown(nFlags, point);
+	CPlWnd::OnRButtonDown(nFlags, point);
 }
 
 
 void CRPlayWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	CPlayWnd::OnKeyDown(nChar, nRepCnt, nFlags);
+	CPlWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }

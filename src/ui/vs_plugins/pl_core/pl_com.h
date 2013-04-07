@@ -1,4 +1,5 @@
 #pragma once
+#include "pl_core.h"
 
 struct JoInterfaceEntry
 {
@@ -8,7 +9,7 @@ struct JoInterfaceEntry
 	typedef INT (*JoFQueryInterface)(void* pv, const GUID& guid, void*& pObj, DWORD dw);
 	JoFQueryInterface pFunc; // NULL-登记簿结束, 1-offset, 其它-函数指针
 };
-extern "C" __declspec(dllexport) INT JoQueryInterface(void* pThis, const JoInterfaceEntry* entries, const GUID& iid, void*& pObj);
+extern "C" PL_API INT JoQueryInterface(void* pThis, const JoInterfaceEntry* entries, const GUID& iid, void*& pObj);
 
 // 简单对象
 #define _JO_SIMPLEMAPENTRY ((JoInterfaceEntry::JoFQueryInterface)1)

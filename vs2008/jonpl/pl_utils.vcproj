@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -115,6 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_utils\libpng\include;..\..\src\ui\vs_plugins\pl_utils\libpng;..\..\src\ui\vs_plugins\pl_utils\zlib\include;..\..\src\ui\vs_plugins\pl_utils\zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PL_UTILS_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -265,11 +267,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\ui\vs_plugins\pl_utils\libpng\include\pnginfo.h"
+					RelativePath="..\..\src\ui\vs_plugins\pl_utils\libpng\pnginfo.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\ui\vs_plugins\pl_utils\libpng\pnginfo.h"
+					RelativePath="..\..\src\ui\vs_plugins\pl_utils\libpng\include\pnginfo.h"
 					>
 				</File>
 				<File

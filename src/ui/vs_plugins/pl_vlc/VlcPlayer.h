@@ -1,14 +1,23 @@
 #pragma once
-#include "j_player.h"
+#include "pl_player.h"
 #include "vlc.h"
+#include "pl_err.h"
+#include "pl_factory.h"
+
 #define SPEED_INDEX_NUM 6
 #define NORMALSPEED		4
 
-class VlcPlayer :public JoPlayer
+class VlcPlayer : public PlPlayer
 {
 public:
-	VlcPlayer(int nWorkMode,void *pFactorUser);
+	VlcPlayer(int nWorkMode, void *pFactorUser);
 	~VlcPlayer(void);
+
+	static int Maker(PlPlayer *&pObj, int nWorkMode,void *pUser)
+	{
+		pObj = new VlcPlayer(nWorkMode, pUser);
+		return PL_OK;
+	}
 
 public:
 	virtual BOOL Play(HWND hPlayWnd,char *psz_mrl);
@@ -54,3 +63,7 @@ private:
 	int64_t m_displaytime;		//目前帧的显示时间
 	int		m_times;			//在当前帧率下，目前显示了多少帧，一秒清空一次
 };
+
+PLAYER_BEGIN_MAKER(pl_vlc)
+	PLAYER_ENTER_MAKER("pl_vlc", VlcPlayer::Maker)
+PLAYER_END_MAKER()

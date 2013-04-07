@@ -115,6 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\np_pl_misc\include;&quot;..\..\src\ui\vs_plugins\xulrunner-sdk\sdk\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NP_PL_MISC_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

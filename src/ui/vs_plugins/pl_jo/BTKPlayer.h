@@ -1,14 +1,22 @@
 #pragma once
-#include "j_player.h"
+#include "pl_player.h"
 #include "BTKControl.h"
 #include <string>
-#include "BeyondLock.h"
+#include "pl_lock.h"
+#include "pl_err.h"
+#include "pl_factory.h"
 
-class BTKPlayer :public JoPlayer
+class BTKPlayer :public PlPlayer
 {
 public:
 	BTKPlayer(int nWorkMode,void *pFactorUser);
 	~BTKPlayer(void);
+
+	static int Maker(PlPlayer *&pObj, int nWorkMode,void *pFactorUser)
+	{
+		pObj = new BTKPlayer(nWorkMode, pFactorUser);
+		return PL_OK;
+	}
 
 public:
 	virtual BOOL Play(HWND hPlayWnd,char *psz_mrl);
@@ -38,5 +46,9 @@ private:
 	std::string m_lastMrl;
 	void *m_pFactor;
 	HWND m_hwnd;
-	BeyondLock m_lock;
+	PlLock m_lock;
 };
+
+PLAYER_BEGIN_MAKER(pl_jo)
+	PLAYER_ENTER_MAKER("pl_jo", BTKPlayer::Maker)
+PLAYER_END_MAKER()

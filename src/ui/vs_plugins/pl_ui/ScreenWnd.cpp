@@ -10,7 +10,7 @@
 
 IMPLEMENT_DYNAMIC(CScreenWnd, CWnd)
 
-CScreenWnd::CScreenWnd()
+CScreenWnd::CScreenWnd(HWND hParent, UINT nID)
 {
 	LPCTSTR wndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 									AfxGetApp()->LoadStandardCursor(IDC_ARROW),

@@ -3,9 +3,7 @@
 #include "np_plugin.h"
 #include "np_script_plugin_object.h"
 
-
 WNDPROC CNPPlugin::lpOldProc = NULL;
-
 
 CNPPlugin::CNPPlugin(NPP pNPInstance) :
 m_pNPInstance(pNPInstance),
@@ -72,7 +70,8 @@ NPBool CNPPlugin::init(NPWindow* pNPWindow)
 	m_bInitialized = TRUE;
 
 	//m_PlayCtrl = CPlayerCtrl::CreateInstance();		//保证只有一个实例
-	m_PlayCtrl = new CPlayerCtrl();		//多个实例
+	m_PlayCtrl = new CPlCtrl();		//多个实例
+	m_PlayCtrl->LoadPlLibrary();
 	m_CallBkPtz	= NULL;
 	m_CallBkState = NULL;
 	m_CallBkVod = NULL;

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "BTKPlayer.h"
-#include "PlayerFactor.h"
+#include "pl_manager.h"
 #include "WaitStatus.h"
 
 /*********************»Øµ÷º¯Êý*******************/
@@ -9,7 +9,7 @@ void BTKAPI BTKPlayer::EndCBK(void *pdata)
 	BTKPlayer *user = reinterpret_cast<BTKPlayer*>(pdata);
 	if(user)
 	{
-		PlayerFactor *tmp = static_cast<PlayerFactor*>(user->m_pFactor);
+		PlManager *tmp = static_cast<PlManager*>(user->m_pFactor);
 		if(tmp)
 		{
 			if(user->m_Model == STREAME_REALTIME)

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "BeyondRecv.h"
-#include "j_type.h"
+#include "pl_type.h"
 #include <fstream>
 using namespace std;
 ofstream hikFile("C:\\Users\\RY-yuanjiajun\\Desktop\\movie\\record\\hik",ios::binary);

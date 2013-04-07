@@ -10,9 +10,9 @@ INT JoQueryInterface(void* pThis, const JoInterfaceEntry* entries, const GUID& i
 	// First entry in the com map should be a simple map entry
 	ASSERT(entries->pFunc == _JO_SIMPLEMAPENTRY);
 
-	if( IID_JoObj == iid )
+	if( IID_PlObj == iid )
 	{
-		JoObj* p = (JoObj*)((int)pThis+entries->dw);
+		PlObj* p = (PlObj*)((int)pThis+entries->dw);
 		pObj= p;
 		return PL_OK;
 	}
@@ -25,7 +25,7 @@ INT JoQueryInterface(void* pThis, const JoInterfaceEntry* entries, const GUID& i
 			if(entries->pFunc == _JO_SIMPLEMAPENTRY) //offset
 			{
 				ASSERT(!bBlind);
-				JoObj* p = (JoObj*)((int)pThis+entries->dw);
+				PlObj* p = (PlObj*)((int)pThis+entries->dw);
 				pObj= p;
 				return PL_OK;
 			}

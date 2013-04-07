@@ -18,7 +18,7 @@ CVPlayWnd::CVPlayWnd(HWND hParent,UINT nID)
 											0);
 	// player parm Init
 	memset(&m_PlayerCenter,0,sizeof(m_PlayerCenter));
-	m_PlayerCenter.pPlayer	= new PlayerFactor(VODMODEL);
+	m_PlayerCenter.pPlayer	= new PlManager(VODMODEL);
 	m_PlayerCenter.pSound	= FALSE;
 	m_PlayerCenter.pVolume	= DEFAULT_VOLUME;
 	m_PlayerCenter.bNeedShowCTRL = SHOWCTRLCOMMAND;
@@ -35,9 +35,9 @@ void CVPlayWnd::InitParm()
 {
 	if(NULL == m_Tool)
 	{
-		m_Tool = new CFlootTool(this,IDT_TOOL,VODMODEL);
+		m_Tool = new CFlootTool(this,IDT_TOOL);
+		m_Tool->SetModel(VODMODEL);
 	}
-
 }
 
 CVPlayWnd::~CVPlayWnd()
@@ -64,11 +64,11 @@ BEGIN_MESSAGE_MAP(CVPlayWnd, CWnd)
 	ON_WM_MOUSEMOVE()
 	ON_WM_ERASEBKGND()
 	ON_WM_PAINT()
-	ON_MESSAGE(WM_TRY_SET_MOUSE_HOOK,CPlayWnd::SetMouseHook)
-	ON_MESSAGE(WM_OWN_ERASEBKGROUND,CPlayWnd::SetEraseType)
-	ON_MESSAGE(WM_MEDIA_END_REACHED,CVPlayWnd::MediaEnd)
-	ON_MESSAGE(WM_OWN_SETFOCUS,CPlayWnd::SetWndFocus)
-	ON_MESSAGE(WM_OWN_KILLFOCUS,CPlayWnd::KillWndFocus)
+	ON_MESSAGE(WM_TRY_SET_MOUSE_HOOK, CPlWnd::SetMouseHook)
+	ON_MESSAGE(WM_OWN_ERASEBKGROUND, CPlWnd::SetEraseType)
+	ON_MESSAGE(WM_OWN_SETFOCUS, CPlWnd::SetWndFocus)
+	ON_MESSAGE(WM_OWN_KILLFOCUS, CPlWnd::KillWndFocus)
+	ON_MESSAGE(WM_MEDIA_END_REACHED, CVPlayWnd::MediaEnd)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
@@ -81,18 +81,18 @@ END_MESSAGE_MAP()
 
 void CVPlayWnd::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	CPlayWnd::OnLButtonDown(nFlags, point);
+	CPlWnd::OnLButtonDown(nFlags, point);
 }
 
 void CVPlayWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	CPlayWnd::OnLButtonDblClk(nFlags, point);
+	CPlWnd::OnLButtonDblClk(nFlags, point);
 }
 
 
 void CVPlayWnd::OnSize(UINT nType, int cx, int cy)
 {
-	CPlayWnd::OnSize(nType, cx, cy);
+	CPlWnd::OnSize(nType, cx, cy);
 }
 
 void CVPlayWnd::OnMouseMove(UINT nFlags, CPoint point)
@@ -107,31 +107,30 @@ void CVPlayWnd::OnMouseMove(UINT nFlags, CPoint point)
 		m_bTrack =_TrackMouseEvent(&tmp);
 	}*/
 
-	CPlayWnd::OnMouseMove(nFlags, point);
+	CPlWnd::OnMouseMove(nFlags, point);
 }
 
 BOOL CVPlayWnd::OnEraseBkgnd(CDC* pDC)
 {
-	return CPlayWnd::OnEraseBkgnd(pDC);
+	return CPlWnd::OnEraseBkgnd(pDC);
 }
 
 
 void CVPlayWnd::OnPaint()
 {
 
-	CPlayWnd::OnPaint();
+	CPlWnd::OnPaint();
 }
 
 void CVPlayWnd::OnRButtonDown(UINT nFlags, CPoint point)
 {
 
-	CPlayWnd::OnRButtonDown(nFlags, point);
+	CPlWnd::OnRButtonDown(nFlags, point);
 }
 
 void CVPlayWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-
-	CPlayWnd::OnKeyDown(nChar, nRepCnt, nFlags);
+	CPlWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 LRESULT CVPlayWnd::MediaEnd(WPARAM wParam,LPARAM lParam)

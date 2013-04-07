@@ -1,15 +1,24 @@
 #pragma once
-
+#include "pl_player.h"
+#include "pl_err.h"
+#include "pl_factory.h"
 
 // CScreenWnd
-
-class CScreenWnd : public CWnd
+class CScreenWnd	 : public CWnd
+							 , public PlFullScreen
 {
 	DECLARE_DYNAMIC(CScreenWnd)
 
 public:
-	CScreenWnd();
+	CScreenWnd(HWND hParent = NULL, UINT nID = 0);
 	virtual ~CScreenWnd();
+
+	static int Maker(CWnd *&pObj, HWND hParent,UINT nID)
+	{
+		pObj = new CScreenWnd(hParent, nID);
+		return PL_OK;
+	}
+	WINDOW_ENTER_MAKER("f_paly", CScreenWnd::Maker)
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -21,8 +30,9 @@ private:
 	HWND m_hNeedFullWnd;		//ÒªÈ«ÆÁ´°¿Ú
 
 public:
-	void onFullScreen(HWND hNeedFullWnd);
+	///PlFullScreen
+	virtual void onFullScreen(HWND hNeedFullWnd);
+
+public:
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
-
-

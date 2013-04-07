@@ -5,13 +5,13 @@
 #include "Resource.h"
 #include "FlootTool.h"
 #include "Resource.h"
-#include "PlayerCtrl.h"
+#include "pl_ctrl.h"
 
 // CFlootTool
 
 IMPLEMENT_DYNAMIC(CFlootTool, CWnd)
 
-CFlootTool::CFlootTool(CWnd *parent,UINT nId,enum WorkModel model)
+CFlootTool::CFlootTool(CWnd *parent, UINT nId)
 {
 	LPCTSTR wndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 										AfxGetApp()->LoadStandardCursor(IDC_ARROW),
@@ -23,7 +23,6 @@ CFlootTool::CFlootTool(CWnd *parent,UINT nId,enum WorkModel model)
 			WS_CHILD | WS_CLIPSIBLINGS, 
 			0,0,MINWINDOW_WIDTH,MINWINDOW_HEIGHT,
 			parent->m_hWnd,0);
-	m_eModel = model;
 	//SetLayeredWindowAttributes(RGB(128,128,128),128,LWA_ALPHA);
 	InitParm();
 }
@@ -263,7 +262,7 @@ void CFlootTool::EnableSound()
 void CFlootTool::Capture()
 {
 	char path[PATH_LENGTH] = {0};
-	CPlayerCtrl::GetPath(path,IMAGEPATH);
+	CPlCtrl::GetPath(path,IMAGEPATH);
 	m_Player->pPlayer->Capture(path);
 }
 
@@ -279,7 +278,7 @@ void CFlootTool::Speak()
 void CFlootTool::Record()
 {
 	char path[PATH_LENGTH] = {0};
-	CPlayerCtrl::GetPath(path,VIDEOPATH);
+	CPlCtrl::GetPath(path,VIDEOPATH);
 	if(m_Player->pPlayer->Record(path))
 	{
 		m_Player->bRecoder = !m_Player->bRecoder;
@@ -360,11 +359,12 @@ void CFlootTool::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	CWnd::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
-BOOL CFlootTool::AttachPlayer(PlayParm *pPlayParm,CWnd *parent)
+BOOL CFlootTool::AttachPlayer(void *pPlayParm, void *parent)
 {
-	if(NULL == pPlayParm) return FALSE;
-
-	if(m_Player == pPlayParm) 
+	if(NULL == pPlayParm) 
+		return FALSE;
+	PlayParm *pPlayer = reinterpret_cast<PlayParm *>(pPlayParm);
+	if(m_Player == pPlayer) 
 	{
 		DWORD newTime = GetTickCount();
 		if(newTime - m_Player->dwUIT >= UPDATETOOLTIME)
@@ -380,9 +380,9 @@ BOOL CFlootTool::AttachPlayer(PlayParm *pPlayParm,CWnd *parent)
 	}
 	else
 	{
-		m_Player = pPlayParm;
+		m_Player = pPlayer;
 		ShowControls(FALSE);	//右键以后只有该窗口才不现实工具条
-		SetParent(parent);
+		SetParent((CWnd *)parent);
 	}
 
 	//绘制声音开关

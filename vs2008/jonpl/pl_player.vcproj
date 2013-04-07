@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			CharacterSet="0"
 			>
 			<Tool
@@ -43,10 +43,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\ui\vs_plugins\jo_player\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_PLAYER_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -62,6 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -94,7 +95,8 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="1"
+			UseOfMFC="1"
+			CharacterSet="0"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -116,8 +118,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PL_PLAYER_EXPORTS"
-				RuntimeLibrary="2"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\ui\vs_plugins\jo_player\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PL_EXPORTS"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -173,19 +176,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_ctrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_define.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\PlayerCtrl.h"
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_manager.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\PlayerFactor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\PlayWnd.h"
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.h"
 				>
 			</File>
 			<File
@@ -199,15 +206,19 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\PlayerCtrl.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_ctrl.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\PlayerFactor.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\PlayWnd.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_manager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.cpp"
 				>
 			</File>
 			<File

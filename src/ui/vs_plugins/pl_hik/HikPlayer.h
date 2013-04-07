@@ -1,13 +1,22 @@
 #pragma once
-#include "j_player.h"
+#include "pl_player.h"
+#include "pl_err.h"
+#include "pl_factory.h"
+
 #include "BeyondBuffer.h"
 #include "BeyondRecv.h"
 
-class HikPlayer :public JoPlayer
+class HikPlayer :public PlPlayer
 {
 public:
 	HikPlayer(int nWorkMode,void *pFactorUser);
 	~HikPlayer(void);
+
+	static int Maker(PlPlayer *&pObj, int nWorkMode,void *pFactorUser)
+	{
+		pObj = new HikPlayer(nWorkMode, pFactorUser);
+		return PL_OK;
+	}
 
 public:
 	virtual BOOL Play(HWND hPlayWnd,char *psz_mrl);

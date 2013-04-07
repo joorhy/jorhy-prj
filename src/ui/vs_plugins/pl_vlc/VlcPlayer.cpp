@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "VlcPlayer.h"
 #include "WaitStatus.h"
-#include "j_type.h"
-#include "PlayerFactor.h"
-#include "PlayerCtrl.h"
+#include "pl_type.h"
+#include "pl_manager.h"
+#include "pl_ctrl.h"
 #include "vlc_picture.h"
 
 /**************static变量 初始化*****************/
@@ -23,7 +23,7 @@ void VlcPlayer::PlayerCallBack(const libvlc_event_t *type, void *pUser)
 		return;
 	if(type->type == libvlc_MediaPlayerEndReached)
 	{
-		PlayerFactor *tmp = static_cast<PlayerFactor*>(user->GetPlayFactor());
+		PlManager *tmp = static_cast<PlManager*>(user->GetPlayFactor());
 		if(tmp)
 		{
 			if(user->m_Model == STREAME_REALTIME)
@@ -408,7 +408,7 @@ void VlcPlayer::TimeBarCallback(void *picture)
 	if(++m_times >= 25)
 	{
 		m_times = 0;
-		PlayerFactor *tmp = static_cast<PlayerFactor*>(m_pFactor);
+		PlManager *tmp = static_cast<PlManager*>(m_pFactor);
 		if(tmp)
 			tmp->VodCallBack();
 	}

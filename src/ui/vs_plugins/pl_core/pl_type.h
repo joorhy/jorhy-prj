@@ -122,3 +122,9 @@ enum ButtonStatus
 *		argCount:传递参数个数
 * return: 失败返回-1，成功返回0*/
 typedef void(*CALLBACK_onEvent)(void *pUser,unsigned int nType,int args[],unsigned int argCount);
+
+enum video_type
+{
+	HIK_VIDEO = 0,		//海康的视屏
+	VLC_VIDEO ,			//标准的视屏
+};

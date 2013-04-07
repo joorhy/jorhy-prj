@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "WaitStatus.h"
 #include "pl_type.h"
-#include "PlayerFactor.h"
+#include "pl_manager.h"
 
 #define TIMER 1234
 #define TIMER2 1235
@@ -65,7 +65,7 @@ END_MESSAGE_MAP()
 LRESULT CWaitStatus::StartWait(WPARAM wParam,LPARAM lParam)
 {
 	m_pUser = (void*)wParam;
-	PlayerFactor *user = static_cast<PlayerFactor*>(m_pUser);
+	PlManager *user = static_cast<PlManager*>(m_pUser);
 	SetTimer(TIMER,WAITSTATUS_TIME,NULL);
 	SetTimer(TIMER2,RESIZE_TIME,NULL);
 	CenterWindow(CWnd::FromHandle(user->GetPlayHwnd()));
@@ -82,7 +82,7 @@ void CWaitStatus::EndWait(CWaitStatus *pUser)
 
 void CWaitStatus::OnTimer(UINT_PTR nIDEvent)
 {
-	PlayerFactor *pUser = static_cast<PlayerFactor*>(m_pUser);
+	PlManager *pUser = static_cast<PlManager*>(m_pUser);
 	if(nIDEvent == TIMER)
 	{
 		if(!(pUser->IsPlaying()))
@@ -135,7 +135,7 @@ void CWaitStatus::DrawStatus()
 }
 void CWaitStatus::OnBnClickedOk()
 {
-	PlayerFactor *pUser = static_cast<PlayerFactor*>(m_pUser);
+	PlManager *pUser = static_cast<PlManager*>(m_pUser);
 	pUser->Stop();
 	KillTimer(TIMER);
 	KillTimer(TIMER2);
