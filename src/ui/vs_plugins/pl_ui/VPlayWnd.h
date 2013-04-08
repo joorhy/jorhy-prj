@@ -2,16 +2,15 @@
 
 #include "pl_type.h"
 #include "pl_err.h"
-#include "pl_factory.h"
+#include "pl_factory_wnd.h"
 #include "pl_wnd.h"
 #include "ScreenWnd.h"
 #include "FlootTool.h"
 
 // CVPlayWnd
-class CVPlayWnd : public CPlWnd
+class PL_API CVPlayWnd : public CPlWnd
 {
 	DECLARE_DYNAMIC(CVPlayWnd)
-
 public:
 	CVPlayWnd(HWND hParent,UINT nID);
 	virtual ~CVPlayWnd();
@@ -21,8 +20,6 @@ public:
 		pObj = new CVPlayWnd(hParent, nID);
 		return PL_OK;
 	}
-	WINDOW_ENTER_MAKER("v_paly", CVPlayWnd::Maker)
-
 protected:
 	DECLARE_MESSAGE_MAP()
 

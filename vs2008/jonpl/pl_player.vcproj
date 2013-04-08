@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfMFC="1"
+			UseOfMFC="0"
 			CharacterSet="0"
 			>
 			<Tool
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\ui\vs_plugins\jo_player\include"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\ui\vs_plugins\jo_player\include;..\..\src\ui\vs_plugins\pl_player"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,8 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="libvlc.lib PlayCtrl.lib"
 				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="..\..\libs\vlc;..\..\libs\hik"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -171,10 +173,14 @@
 	</References>
 	<Files>
 		<Filter
-			Name="include"
+			Name="pl_player"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_ctrl.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_ctrl.h"
 				>
@@ -184,7 +190,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory_wnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory_wnd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_manager.cpp"
 				>
 			</File>
 			<File
@@ -192,7 +214,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_player.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_player.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\WaitStatus.cpp"
 				>
 			</File>
 			<File
@@ -201,31 +239,353 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="src"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			Name="res"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_ctrl.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\capture\cD.png"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_factory.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\capture\cN.png"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_manager.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\capture\cV.png"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\capture\cX.png"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\WaitStatus.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\slowdown\downD.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\slowdown\downN.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\slowdown\downV.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\slowdown\downX.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\framePlay\fD.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\framePlay\fN.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\framePlay\fV.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\framePlay\fX.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\pause\pD.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\pl_player.rc2"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\pause\pN.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\pause\pV.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\pause\pX.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdD_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdD_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdN_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdN_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdV_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdV_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdX_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\record\rcdX_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\ronyao.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\save\saveD.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\save\saveN.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\save\saveV.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\save\saveX.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\stop\sD.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\stop\sN.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakD_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakD_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakN_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakN_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakV_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakV_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakX_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speak\speakX_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\stop\sV.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\stop\sX.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speedup\upD.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speedup\upN.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speedup\upV.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\speedup\upX.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vD_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vD_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vN_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vN_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vV_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vV_O.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vX_C.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\button\sound\vX_O.png"
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="pl_vlc"
+			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_vlc\VlcPlayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_vlc\VlcPlayer.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="pl_jo"
+			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_jo\BTKPlayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_jo\BTKPlayer.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="pl_hik"
+			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondBuffer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondRecv.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondRecv.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondSocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondSocket.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\HikPlayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\HikPlayer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_hik\PlayM4.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="pl_ui"
+			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\ExactSlider.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\ExactSlider.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\FlootTool.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\FlootTool.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\NewToolTip.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\NewToolTip.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\PngButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\PngButton.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\RPlayWnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\RPlayWnd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\ScreenWnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\ScreenWnd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\VPlayWnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\VPlayWnd.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\pl_player.rc"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

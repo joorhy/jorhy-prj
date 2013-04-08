@@ -213,3 +213,7 @@ void BTKPlayer::SleepPlayer(bool bSleep)
 		m_player->SleepPlayer(bSleep);
 	}
 }
+
+PLAYER_BEGIN_MAKER(pl_jo)
+	PLAYER_ENTER_MAKER("pl_jo", BTKPlayer::Maker)
+PLAYER_END_MAKER()

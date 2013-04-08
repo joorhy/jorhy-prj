@@ -8,10 +8,12 @@
 class PL_API CPlWnd : public CWnd
 {
 	DECLARE_DYNAMIC(CPlWnd)
-
 public:
-	CPlWnd();
+	CPlWnd(HWND hParent = NULL, UINT nID = 0);
 	virtual ~CPlWnd();
+
+	static PlToolWin *m_Tool;
+	static int m_wndRef;	 //	多个实例tool和fullwnd的销毁使用
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -20,9 +22,7 @@ protected:
 	static PlFullScreen *m_FullWnd;
 	static int m_WndNumber;
 	static int m_nNowShowWnd;
-	static PlToolWin *m_Tool;
 	static DWORD m_MouseHookThreadId;
-	static int m_wndRef;	 //	多个实例tool和fullwnd的销毁使用
 	CBitmap m_hBkg;
 	BOOL m_bFullScreen;
 	UINT m_nFullModel;

@@ -67,6 +67,9 @@ void CScreenWnd::onFullScreen(HWND hNeedFullWnd)
 
 void CScreenWnd::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-
 	CWnd::OnChar(nChar, nRepCnt, nFlags);
 }
+
+WND_BEGIN_MAKER(f_play)
+	WND_ENTER_MAKER("f_play", CScreenWnd::Maker)
+WND_END_MAKER()

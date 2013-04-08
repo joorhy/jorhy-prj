@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_player;..\..\src\ui\vs_plugins\pl_utils\json\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_VLC_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libvlc.lib"
-				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\pl_plugins\$(ProjectName).dll"
+				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\libs\vlc"
 				GenerateDebugInformation="true"

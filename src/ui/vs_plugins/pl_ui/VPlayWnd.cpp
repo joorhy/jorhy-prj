@@ -5,12 +5,11 @@
 #include "Resource.h"
 #include "VPlayWnd.h"
 
-
 // CVPlayWnd
-
 IMPLEMENT_DYNAMIC(CVPlayWnd, CWnd)
 
-CVPlayWnd::CVPlayWnd(HWND hParent,UINT nID)
+CVPlayWnd::CVPlayWnd(HWND hParent, UINT nID)
+: CPlWnd(hParent, nID)
 {
 	LPCTSTR lpWndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 											NULL,
@@ -141,3 +140,7 @@ LRESULT CVPlayWnd::MediaEnd(WPARAM wParam,LPARAM lParam)
 	}
 	return TRUE;
 }
+
+WND_BEGIN_MAKER(v_play)
+	WND_ENTER_MAKER("v_play", CVPlayWnd::Maker)
+WND_END_MAKER()

@@ -24,7 +24,6 @@ CFlootTool::CFlootTool(CWnd *parent, UINT nId)
 			0,0,MINWINDOW_WIDTH,MINWINDOW_HEIGHT,
 			parent->m_hWnd,0);
 	//SetLayeredWindowAttributes(RGB(128,128,128),128,LWA_ALPHA);
-	InitParm();
 }
 
 void CFlootTool::InitParm()
@@ -473,7 +472,6 @@ void CFlootTool::EnableSomeButton(BOOL bEnable)
 void CFlootTool::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CWnd::OnShowWindow(bShow, nStatus);
-	
 }
 
 void CFlootTool::OnSize(UINT nType, int cx, int cy)

@@ -7,7 +7,7 @@
 #define SPEED_INDEX_NUM 6
 #define NORMALSPEED		4
 
-class VlcPlayer : public PlPlayer
+class PL_API VlcPlayer : public PlPlayer
 {
 public:
 	VlcPlayer(int nWorkMode, void *pFactorUser);
@@ -63,7 +63,3 @@ private:
 	int64_t m_displaytime;		//目前帧的显示时间
 	int		m_times;			//在当前帧率下，目前显示了多少帧，一秒清空一次
 };
-
-PLAYER_BEGIN_MAKER(pl_vlc)
-	PLAYER_ENTER_MAKER("pl_vlc", VlcPlayer::Maker)
-PLAYER_END_MAKER()

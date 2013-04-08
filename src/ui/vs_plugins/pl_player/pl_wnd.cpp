@@ -5,24 +5,22 @@
 #include "Resource.h"
 #include "pl_wnd.h"
 #include "pl_factory.h"
+#include "pl_factory_wnd.h"
 #include "runner_log.h"
 
-
 // CPlayWnd
-
 IMPLEMENT_DYNAMIC(CPlWnd, CWnd)
 
 UINT CPlWnd::m_nFocus = 1;
 PlFullScreen *CPlWnd::m_FullWnd = NULL;
-int CPlWnd::m_WndNumber = 0;
 int CPlWnd::m_nNowShowWnd = 0;
-PlToolWin *CPlWnd::m_Tool = NULL;
 DWORD CPlWnd::m_MouseHookThreadId = 0;
+int CPlWnd::m_WndNumber = 0;
 int CPlWnd::m_wndRef = 0;
+PlToolWin *CPlWnd::m_Tool = NULL;
 
-CPlWnd::CPlWnd()
+CPlWnd::CPlWnd(HWND hParent, UINT nID)
 {
-	
 	m_hBkg.LoadBitmap(IDB_BACKGROUND);
 	m_bFullScreen = FALSE;
 	m_nFullModel = FULL_PLUGIN;
@@ -32,7 +30,7 @@ CPlWnd::CPlWnd()
 	bEraseOwn = TRUE;
 	if(NULL == m_FullWnd)
 	{
-		m_FullWnd = dynamic_cast<PlFullScreen *>(CPlFactory::Instance()->GetWindow("f_play", NULL, 1000));
+		m_FullWnd = dynamic_cast<PlFullScreen *>(CPlFactoryWnd::Instance()->GetWindow("f_play", NULL, 1000));
 		ASSERT(m_FullWnd != NULL);
 	}
 	m_WndNumber++;
@@ -45,7 +43,7 @@ CPlWnd::~CPlWnd()
 	m_WndNumber--;
 	if(NULL != m_FullWnd && m_wndRef == 0)
 	{
-		CPlFactory::Instance()->DelWindow(1000);
+		CPlFactoryWnd::Instance()->DelWindow(1000);
 		m_FullWnd = NULL;
 	}
 }

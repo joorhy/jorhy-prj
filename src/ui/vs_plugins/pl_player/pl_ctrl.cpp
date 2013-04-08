@@ -2,6 +2,7 @@
 #include "pl_ctrl.h"
 #include "pl_type.h"
 #include "pl_factory.h"
+#include "pl_factory_wnd.h"
 #include "pl_wnd.h"
 #include <cmath>
 using namespace std;
@@ -69,7 +70,7 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent,char* js_workMode)
 	case REALMODEL:		//real
 		for(int i=0; i<numWindow;i++)
 		{
-			CWnd *r_tmp = CPlFactory::Instance()->GetWindow("r_play", hParent, i+1);
+			CWnd *r_tmp = CPlFactoryWnd::Instance()->GetWindow("r_play", hParent, i+1);
 			m_vctPlayWnd.push_back(r_tmp);
 		}
 		break;
@@ -77,7 +78,7 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent,char* js_workMode)
 	case VODMODEL:		//vod
 		for(int i=0; i<numWindow;i++)
 		{
-			CWnd *v_tmp = CPlFactory::Instance()->GetWindow("v_play", hParent, i+1);
+			CWnd *v_tmp = CPlFactoryWnd::Instance()->GetWindow("v_play", hParent, i+1);
 			m_vctPlayWnd.push_back(v_tmp);
 		}
 		
@@ -156,7 +157,7 @@ BOOL CPlCtrl::SetLayout(int Layout,int Windows,int Maxmodel)
 		case REALMODEL:		//real
 			for(int i=0; i<newNum - oldNum;i++)
 			{
-				CWnd *r_tmp = CPlFactory::Instance()->GetWindow("r_play", m_hParent, i+1);
+				CWnd *r_tmp = CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i+1);
 				m_vctPlayWnd.push_back(r_tmp);
 			}
 			break;
@@ -164,7 +165,7 @@ BOOL CPlCtrl::SetLayout(int Layout,int Windows,int Maxmodel)
 		case VODMODEL:		//vod
 			for(int i=0; i<newNum - oldNum;i++)
 			{
-				CWnd *v_tmp = CPlFactory::Instance()->GetWindow("r_play", m_hParent, i+1);
+				CWnd *v_tmp = CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i+1);
 				m_vctPlayWnd.push_back(v_tmp);
 			}
 			break;
@@ -471,7 +472,7 @@ void CPlCtrl::LoadPlLibrary()
 	int nPos;   
 	nPos = sPath.ReverseFind('\\');   
 	sPath = sPath.Left(nPos);   
-	sPath += "\\plugins\\pl_plugins";
+	sPath += "\\plugins";
 
 	WIN32_FIND_DATAA ffd;
 	LARGE_INTEGER filesize;
@@ -488,20 +489,29 @@ void CPlCtrl::LoadPlLibrary()
 		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 		{
 			CString filename = ffd.cFileName;
-			if (filename.Find("pl_") != -1)
+			if (filename.Find("pl_hik") != -1 || filename.Find("pl_jo") != -1 || filename.Find("pl_vlc") != -1 /*|| filename.Find("pl_ui") != -1*/)
 			{
 				CString filedir = sPath+"\\"+filename;
 				HMODULE hDllLib = LoadLibrary(filedir);
-				FARPROC fpFun = GetProcAddress(hDllLib,"RegisterMaker");
-				if (fpFun)
-					fpFun();
+				dwError = GetLastError();
+				m_vecModule.push_back(hDllLib);
 			}	
 		}
 	}while (FindNextFileA(hFind, &ffd) != 0);
 
-	dwError = GetLastError();
-	if (dwError != ERROR_NO_MORE_FILES) 
-		return;
+	//dwError = GetLastError();
+	//if (dwError != ERROR_NO_MORE_FILES)
+	//	return;
 
 	FindClose(hFind);
+}
+
+void CPlCtrl::FreePlLibrary()
+{
+	std::vector<HMODULE>::iterator it = m_vecModule.begin();
+	for (; it!=m_vecModule.end(); it++)
+	{
+		FreeLibrary(*it);
+	}
+	m_vecModule.clear();
 }

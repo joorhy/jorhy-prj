@@ -34,8 +34,7 @@ CNPPlugin::~CNPPlugin()
 	}
 	if(NULL != m_PlayCtrl)
 	{
-		/*if(CPlayerCtrl::ReleaseInstance() == 0)
-			m_PlayCtrl = NULL;*/
+		//m_PlayCtrl->FreePlLibrary();
 		delete m_PlayCtrl;
 		m_PlayCtrl = NULL;
 	}
@@ -71,7 +70,7 @@ NPBool CNPPlugin::init(NPWindow* pNPWindow)
 
 	//m_PlayCtrl = CPlayerCtrl::CreateInstance();		//保证只有一个实例
 	m_PlayCtrl = new CPlCtrl();		//多个实例
-	m_PlayCtrl->LoadPlLibrary();
+	//m_PlayCtrl->LoadPlLibrary();
 	m_CallBkPtz	= NULL;
 	m_CallBkState = NULL;
 	m_CallBkVod = NULL;

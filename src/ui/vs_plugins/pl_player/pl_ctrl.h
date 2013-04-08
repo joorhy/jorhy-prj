@@ -29,6 +29,7 @@ public:
 	BOOL RegisterCallBack(CALLBACK_onEvent funcAddr,void *pUser);
 	static BOOL GetPath(char *psz_dest,UINT nType);
 	void LoadPlLibrary();
+	void FreePlLibrary();
 
 private:
 	HWND m_hParent;
@@ -42,6 +43,7 @@ private:
 	static char m_szImagePath[PATH_LENGTH];
 	static char m_szVideoPath[PATH_LENGTH];
 	std::vector<void *> m_vctPlayWnd; 
+	std::vector<HMODULE> m_vecModule; 
 	void *m_pUser;
 
 private:

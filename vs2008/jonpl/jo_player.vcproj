@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib liveMedia.lib UsageEnvironment.lib BasicUsageEnvironment.lib"
-				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\pl_plugins\$(ProjectName).dll"
+				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\live555;..\..\libs\DirectX"
 				GenerateDebugInformation="true"

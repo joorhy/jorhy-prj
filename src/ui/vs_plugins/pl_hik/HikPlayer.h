@@ -6,7 +6,7 @@
 #include "BeyondBuffer.h"
 #include "BeyondRecv.h"
 
-class HikPlayer :public PlPlayer
+class PL_API HikPlayer :public PlPlayer
 {
 public:
 	HikPlayer(int nWorkMode,void *pFactorUser);

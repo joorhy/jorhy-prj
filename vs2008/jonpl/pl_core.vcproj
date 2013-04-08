@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\Resource.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\runner_log.h"
 				>
 			</File>

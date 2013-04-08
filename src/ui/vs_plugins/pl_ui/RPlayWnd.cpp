@@ -10,10 +10,13 @@
 #include <cmath>
 
 // CRPlayWnd
+IMPLEMENT_DYNAMIC(CRPlayWnd, CWnd)
 
-IMPLEMENT_DYNAMIC(CRPlayWnd, CPlWnd)
+//int CPlWnd::m_wndRef = 0;
+//PlToolWin *CPlWnd::m_Tool = NULL;
 
 CRPlayWnd::CRPlayWnd(HWND hParent,UINT nID)
+: CPlWnd(hParent, nID)
 {
 	LPCTSTR lpWndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 											NULL,
@@ -375,3 +378,7 @@ void CRPlayWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	CPlWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
+
+WND_BEGIN_MAKER(r_play)
+	WND_ENTER_MAKER("r_play", CRPlayWnd::Maker)
+WND_END_MAKER()

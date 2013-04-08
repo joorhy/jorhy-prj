@@ -418,3 +418,7 @@ void VlcPlayer::SleepPlayer(bool bSleep)
 {
 
 }
+
+PLAYER_BEGIN_MAKER(pl_vlc)
+	PLAYER_ENTER_MAKER("pl_vlc", VlcPlayer::Maker)
+PLAYER_END_MAKER()

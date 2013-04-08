@@ -6,7 +6,7 @@
 #include "pl_err.h"
 #include "pl_factory.h"
 
-class BTKPlayer :public PlPlayer
+class PL_API BTKPlayer :public PlPlayer
 {
 public:
 	BTKPlayer(int nWorkMode,void *pFactorUser);
@@ -48,7 +48,3 @@ private:
 	HWND m_hwnd;
 	PlLock m_lock;
 };
-
-PLAYER_BEGIN_MAKER(pl_jo)
-	PLAYER_ENTER_MAKER("pl_jo", BTKPlayer::Maker)
-PLAYER_END_MAKER()

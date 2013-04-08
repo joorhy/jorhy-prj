@@ -1,7 +1,7 @@
 #pragma once
 #include "pl_player.h"
 #include "pl_err.h"
-#include "pl_factory.h"
+#include "pl_factory_wnd.h"
 
 // CScreenWnd
 class CScreenWnd	 : public CWnd
@@ -18,8 +18,6 @@ public:
 		pObj = new CScreenWnd(hParent, nID);
 		return PL_OK;
 	}
-	WINDOW_ENTER_MAKER("f_paly", CScreenWnd::Maker)
-
 protected:
 	DECLARE_MESSAGE_MAP()
 

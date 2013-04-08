@@ -49,7 +49,7 @@ private:
 
 public:
 	///PlToolWin
-	virtual void SetModel(int nModel) { m_eModel = nModel; } 
+	virtual void SetModel(int nModel) { m_eModel = nModel; InitParm(); } 
 	virtual void ShowControls(BOOL bShow);
 	virtual void Stop();
 	BOOL AttachPlayer(void *pPlayParm, void *parent);
