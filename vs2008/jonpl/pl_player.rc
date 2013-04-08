@@ -1,0 +1,249 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "..\..\src\ui\vs_plugins\pl_core\resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "..\..\src\ui\vs_plugins\pl_core\targetver.h"
+#endif
+#include "afxres.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "..\\..\\src\\ui\\vs_plugins\\pl_core\\resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""..\\..\\src\\ui\vs_plugins\\pl_core\\targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include "".\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\pl_player.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_UP                  CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_up.cur"
+IDC_DOWN                CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_down.cur"
+IDC_LEFT                CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_left.cur"
+IDC_RIGHT               CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_right.cur"
+IDC_LEFTUP              CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_left_up.cur"
+IDC_RIGHTUP             CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_right_up.cur"
+IDC_LEFTDOWN            CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_left_down.cur"
+IDC_RIGHTDOWN           CURSOR                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\arrow\\win_ptz_right_down.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDP_STOP_D              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\stop\\sD.png"
+IDP_STOP_N              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\stop\\sN.png"
+IDP_STOP_V              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\stop\\sV.png"
+IDP_STOP_X              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\stop\\sX.png"
+IDP_SPEEDUP_D           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speedup\\upD.png"
+IDP_SPEEDUP_N           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speedup\\upN.png"
+IDP_SPEEDUP_V           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speedup\\upV.png"
+IDP_SPEEDUP_X           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speedup\\upX.png"
+IDP_SPEAK_CLOSE_D       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakD_C.png"
+IDP_SPEAK_OPEN_D        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakD_O.png"
+IDP_SPEAK_CLOSE_N       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakN_C.png"
+IDP_SPEAK_OPEN_N        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakN_O.png"
+IDP_SPEAK_CLOSE_V       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakV_C.png"
+IDP_SPEAK_OPEN_V        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakV_O.png"
+IDP_SPEAK_CLOSE_X       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakX_C.png"
+IDP_SPEAK_OPEN_X        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\speak\\speakX_O.png"
+IDP_SOUND_CLOSE_D       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vD_C.png"
+IDP_SOUND_OPEN_D        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vD_O.png"
+IDP_SOUND_CLOSE_N       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vN_C.png"
+IDP_SOUND_OPEN_N        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vN_O.png"
+IDP_SOUND_CLOSE_V       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vV_C.png"
+IDP_SOUND_OPEN_V        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vV_O.png"
+IDP_SOUND_CLOSE_X       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vX_C.png"
+IDP_SOUND_OPEN_X        PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\sound\\vX_O.png"
+IDP_SLOWDOWN_D          PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\slowdown\\downD.png"
+IDP_SLOWDOWN_N          PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\slowdown\\downN.png"
+IDP_SLOWDOWN_V          PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\slowdown\\downV.png"
+IDP_SLOWDOWN_X          PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\slowdown\\downX.png"
+IDP_SAVE_D              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\save\\saveD.png"
+IDP_SAVE_N              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\save\\saveN.png"
+IDP_SAVE_V              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\save\\saveV.png"
+IDP_SAVE_X              PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\save\\saveX.png"
+IDP_RECORD_CLOSE_D      PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdD_C.png"
+IDP_RECORD_OPEN_D       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdD_O.png"
+IDP_RECORD_CLOSE_N      PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdN_C.png"
+IDP_RECORD_OPEN_N       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdN_O.png"
+IDP_RECORD_CLOSE_V      PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdV_C.png"
+IDP_RECORD_OPEN_V       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdV_O.png"
+IDP_RECORD_CLOSE_X      PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdX_C.png"
+IDP_RECORD_OPEN_X       PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\record\\rcdX_O.png"
+IDP_PAUSE_D             PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\pause\\pD.png"
+IDP_PAUSE_N             PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\pause\\pN.png"
+IDP_PAUSE_V             PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\pause\\pV.png"
+IDP_PAUSE_X             PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\pause\\pX.png"
+IDP_FRAMEPLAY_D         PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\framePlay\\fD.png"
+IDP_FRAMEPLAY_N         PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\framePlay\\fN.png"
+IDP_FRAMEPLAY_V         PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\framePlay\\fV.png"
+IDP_FRAMEPLAY_X         PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\framePlay\\fX.png"
+IDP_CAPTURE_D           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\capture\\cD.png"
+IDP_CAPTURE_N           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\capture\\cN.png"
+IDP_CAPTURE_V           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\capture\\cV.png"
+IDP_CAPTURE_X           PNG                     "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\button\\capture\\cX.png"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BACKGROUND          BITMAP                  "..\\..\\src\\ui\\vs_plugins\\pl_ui\\res\\ronyao.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_WAITSTAUS DIALOGEX 0, 0, 141, 30
+STYLE DS_ABSALIGN | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_CLIPSIBLINGS | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
+CAPTION "断线"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "取消重连",IDOK,84,7,50,16
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_WAITSTAUS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 134
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 23
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "TODO: <Company name>"
+            VALUE "FileDescription", "TODO: <File description>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "Plugin_3.0.dll"
+            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "OriginalFilename", "Plugin_3.0.dll"
+            VALUE "ProductName", "TODO: <Product name>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(936)
+#include "..\..\src\ui\vs_plugins\pl_ui\res\pl_player.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
