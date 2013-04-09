@@ -136,7 +136,7 @@ LRESULT CVPlayWnd::MediaEnd(WPARAM wParam,LPARAM lParam)
 {
 	if(m_Tool)
 	{
-		m_Tool->Stop();
+		m_Tool->StopPlayer();
 	}
 	return TRUE;
 }

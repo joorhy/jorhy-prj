@@ -9,7 +9,7 @@ WorkModel PlManager::m_playMode = REALMODEL;
 CALLBACK_onEvent PlManager::m_pFuncCallBk = NULL;
 int PlManager::m_nPlayerNum = 0;
 /*******************类实现*****************************/
-PlManager::PlManager(enum WorkModel playModel)
+PlManager::PlManager()
 {
 	m_pPlayer		= NULL;
 	m_playMode		= playModel;
@@ -24,7 +24,7 @@ PlManager::PlManager(enum WorkModel playModel)
 
 PlManager::~PlManager(void)
 {
-	Stop();
+	Stop(m_hPlayWnd);
 	if(NULL != m_waitStatus)
 	{
 		delete (CWaitStatus*)m_waitStatus;
@@ -33,7 +33,7 @@ PlManager::~PlManager(void)
 }
 
 
-BOOL PlManager::Play(HWND hwnd,char *js_playInfo)
+BOOL PlManager::Play(HWND hWnd,char *js_playInfo)
 {
 	BOOL bRet;
 	if(NULL != m_pPlayer)
@@ -59,23 +59,21 @@ BOOL PlManager::Play(HWND hwnd,char *js_playInfo)
 	m_nLastTime = 0;		////防止时间调跳动
 #endif
 	m_videoType = GetVideoType();
+	m_hPlayWnd = hWnd;
 	switch(m_videoType)
 	{
 	case HIK_VIDEO:
 		if(m_playMode == REALMODEL)
-			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", STREAME_REALTIME, this);
+			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", STREAME_REALTIME, this, hWnd);
 		else
-			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", STREAME_FILE, this);
-	
+			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", STREAME_FILE, this, hWnd);
 		break;
-
 	case VLC_VIDEO:
 		if(m_playMode == REALMODEL)
-			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", STREAME_REALTIME, this);
+			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", STREAME_REALTIME, this, hWnd);
 		else
-			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_vlc", STREAME_FILE, this);
+			m_pPlayer = CPlFactory::Instance()->GetPlayer("pl_vlc", STREAME_FILE, this, hWnd);
 		break;
-
 	default:
 		return FALSE;
 	}
@@ -85,17 +83,17 @@ BOOL PlManager::Play(HWND hwnd,char *js_playInfo)
 #ifndef APACHE_TEST
 		char mrl[512] = {0};
 		CreateMrl(mrl);
-		if((bRet = m_pPlayer->Play(hwnd,mrl)))
+		if((bRet = m_pPlayer->Play(hWnd, mrl)))
 			m_nPlayerNum++;
 		if(m_playMode == REALMODEL)
 		{
 			if(!m_waitStatus)
 			{
-				m_waitStatus = new CWaitStatus(CWnd::FromHandle(::GetParent(hwnd)));
+				m_waitStatus = new CWaitStatus(CWnd::FromHandle(::GetParent(hWnd)));
 			}
 		}
 #else 
-		bRet = m_pPlayer->Play(hwnd,js_playInfo);
+		bRet = m_pPlayer->Play(hWnd,js_playInfo);
 #endif
 	}
 	return bRet;
@@ -183,7 +181,7 @@ BOOL PlManager::Record(char *path)
 }
 
 
-void PlManager::Stop()
+void PlManager::Stop(HWND hWnd)
 {
 	if(m_pPlayer == NULL)
 		return;
@@ -201,7 +199,7 @@ void PlManager::Stop()
 
 		onCallBack(CALLBACK_ONSTATE,args,sizeof(args)/sizeof(int));
 	}
-	delete m_pPlayer;
+	CPlFactory::Instance()->DelPlayer(m_hPlayWnd);
 	m_pPlayer = NULL;
 	if(m_jsPlayInfo)
 	{

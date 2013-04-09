@@ -178,6 +178,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_app.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_app.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_ctrl.cpp"
 				>
 			</File>
@@ -211,14 +219,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_manager.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_player.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_player.h"
 				>
 			</File>
 			<File

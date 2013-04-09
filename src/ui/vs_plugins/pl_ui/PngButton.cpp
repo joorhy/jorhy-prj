@@ -11,7 +11,7 @@ IMPLEMENT_DYNAMIC(CPngButton, CButton)
 CPngButton::CPngButton(HINSTANCE hIns,CWnd *Parent,UINT nBtnId)
 {
 	
-	m_hInstance = hIns;
+	//m_hInstance = hIns;
 	Create(NULL,
 		WS_EX_LAYERED | WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW | WS_CLIPSIBLINGS,
 		CRect(0,0,0,0),Parent,nBtnId);

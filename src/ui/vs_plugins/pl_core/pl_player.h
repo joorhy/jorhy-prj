@@ -66,6 +66,15 @@ struct PlToolWin
 {
 	virtual void SetModel(int nModel) = 0;
 	virtual void ShowControls(BOOL bShow) = 0;
-	virtual void Stop() = 0; 
+	virtual void StopPlayer() = 0; 
 	virtual BOOL AttachPlayer(void *pPlayParm, void *parent) = 0;
+};
+
+///播放器信息
+struct PL_PlayerInfo
+{
+	HWND		hWnd;				//窗口句柄
+	INT			nType;				//播放器类型
+	PlPlayer	*pPlayer;			//播放器指针
+	BYTE			*pUrl;
 };

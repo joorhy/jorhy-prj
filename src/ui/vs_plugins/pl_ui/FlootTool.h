@@ -9,7 +9,7 @@
 
 // CFlootTool
 class CFlootTool : public CWnd
-									 , public PlToolWin
+						 , public PlToolWin
 {
 	DECLARE_DYNAMIC(CFlootTool)
 
@@ -51,7 +51,7 @@ public:
 	///PlToolWin
 	virtual void SetModel(int nModel) { m_eModel = nModel; InitParm(); } 
 	virtual void ShowControls(BOOL bShow);
-	virtual void Stop();
+	virtual void StopPlayer() { Stop(); }
 	BOOL AttachPlayer(void *pPlayParm, void *parent);
 
 public:
@@ -64,6 +64,7 @@ public:
 
 public:
 	//Both
+	void Stop();
 	void Capture();
 	void EnableSound();
 	//Real

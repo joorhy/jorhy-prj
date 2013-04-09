@@ -42,7 +42,7 @@ private:
 	int m_nUid;
 	static char m_szImagePath[PATH_LENGTH];
 	static char m_szVideoPath[PATH_LENGTH];
-	std::vector<void *> m_vctPlayWnd; 
+	std::vector<void *> m_vecPlayWnd; 
 	std::vector<HMODULE> m_vecModule; 
 	void *m_pUser;
 

@@ -23,67 +23,55 @@ CPlCtrl::CPlCtrl(void)
 
 CPlCtrl::~CPlCtrl(void)
 {
-	int size = m_vctPlayWnd.size();
-	for(int i=size-1;i>=0;i--)
+	int size = m_vecPlayWnd.size();
+	for(int i=size-1; i>=0; --i)
 	{
-		if(m_nModel == REALMODEL)
-		{
-			delete m_vctPlayWnd[i];
-		}
-		else
-		{
-			delete m_vctPlayWnd[i];
-		}
-		m_vctPlayWnd.pop_back();
+		CPlFactoryWnd::Instance()->DelWindow(i + 1);
 	}
+	m_vecPlayWnd.clear();
 }
 
 BOOL CPlCtrl::InitDisPlay(HWND hParent,char* js_workMode)
 {
 	if(m_hParent != NULL)
-	{
 		return TRUE;
-	}
-	json_object *WorkMode = json_tokener_parse(js_workMode);
-	if(is_error(WorkMode))
-	{
+	
+	json_object *workMode = json_tokener_parse(js_workMode);
+	if(is_error(workMode))
 		return FALSE;
-	}
-	m_nModel = json_object_get_int(json_object_object_get(WorkMode,"mod"));
-	m_nLayout = json_object_get_int(json_object_object_get(WorkMode,"layout"));
-	m_nWindows = json_object_get_int(json_object_object_get(WorkMode,"windows"));
-	m_nMaxmodel = json_object_get_int(json_object_object_get(WorkMode,"max"));
-	m_nUid = json_object_get_int(json_object_object_get(WorkMode,"uid"));
+	
+	m_nModel = json_object_get_int(json_object_object_get(workMode, "mod"));
+	m_nLayout = json_object_get_int(json_object_object_get(workMode, "layout"));
+	m_nWindows = json_object_get_int(json_object_object_get(workMode, "windows"));
+	m_nMaxmodel = json_object_get_int(json_object_object_get(workMode, "max"));
+	m_nUid = json_object_get_int(json_object_object_get(workMode, "uid"));
 
-	char *tmpstr = json_object_get_string(json_object_object_get(WorkMode,"imgPath"));
+	char *tmpstr = json_object_get_string(json_object_object_get(workMode, "imgPath"));
 	if(tmpstr)
 		strcpy(m_szImagePath,tmpstr);
-	tmpstr = json_object_get_string(json_object_object_get(WorkMode,"videoPath"));
+	tmpstr = json_object_get_string(json_object_object_get(workMode, "videoPath"));
 	if(tmpstr)
 		strcpy(m_szVideoPath,tmpstr);
 
-	json_object_put(WorkMode);
-	int numWindow = FindShowWndNum();
+	json_object_put(workMode);
+	int nWindows = FindShowWndNum();
 	
 	switch(m_nModel)
 	{
 	case REALMODEL:		//real
-		for(int i=0; i<numWindow;i++)
+		for(int i=0; i<nWindows; ++i)
 		{
 			CWnd *r_tmp = CPlFactoryWnd::Instance()->GetWindow("r_play", hParent, i+1);
-			m_vctPlayWnd.push_back(r_tmp);
+			m_vecPlayWnd.push_back(r_tmp);
 		}
 		break;
-
 	case VODMODEL:		//vod
-		for(int i=0; i<numWindow;i++)
+		for(int i=0; i<nWindows; ++i)
 		{
 			CWnd *v_tmp = CPlFactoryWnd::Instance()->GetWindow("v_play", hParent, i+1);
-			m_vctPlayWnd.push_back(v_tmp);
+			m_vecPlayWnd.push_back(v_tmp);
 		}
-		
 		break;
-
 	default:
 		return FALSE;
 	}
@@ -96,34 +84,32 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent,char* js_workMode)
 
 int CPlCtrl::FindShowWndNum()
 {
-	if(3 == m_nLayout)
-	{
-		switch(m_nWindows)
-		{
-		case 0:	return 1;
-		case 1:	return 4;
-		case 2: return 9;
-		case 3: return 16;
-		}
-	}
-	return m_nWindows;
+	return FindShowWndNum(m_nLayout, m_nWindows);
 }
 
-int CPlCtrl::FindShowWndNum(int layout,int windows)
+int CPlCtrl::FindShowWndNum(int nLayout,int nWindows)
 {
-	if(3 == layout)
+	int nWndNum = 1;
+	if(3 == nLayout)
 	{
-		switch(windows)
+		switch(nWindows)
 		{
-		case 0:	return 1;
-		case 1:	return 4;
-		case 2: return 9;
-		case 3: return 16;
+		case 0:	
+			nWndNum = 1;
+			break;
+		case 1:	
+			nWndNum = 4;
+			break;
+		case 2: 
+			nWndNum = 9;
+			break;
+		case 3: 
+			nWndNum = 16;
+			break;
 		}
 	}
-	return windows;
+	return nWndNum;
 }
-
 
 BOOL CPlCtrl::SetLayout(char *js_Layout)
 {
@@ -145,155 +131,146 @@ BOOL CPlCtrl::SetLayout(char *js_Layout)
 	return FALSE;
 }
 
-BOOL CPlCtrl::SetLayout(int Layout,int Windows,int Maxmodel)
+BOOL CPlCtrl::SetLayout(int nLayout, int nWndNum, int nMaxModel)
 {
-	int oldNum = m_vctPlayWnd.size();
-	int displayNum = FindShowWndNum();
-	int newNum = FindShowWndNum(Layout,Windows);
-	if(oldNum < newNum)
+	int nOldNum = m_vecPlayWnd.size();
+	int nDisplayNum = FindShowWndNum();
+	int nNewNum = FindShowWndNum(nLayout, nWndNum);
+	if(nOldNum < nNewNum)
 	{
 		switch(m_nModel)
 		{
 		case REALMODEL:		//real
-			for(int i=0; i<newNum - oldNum;i++)
+			for(int i=nOldNum; i<nNewNum; ++i)
 			{
 				CWnd *r_tmp = CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i+1);
-				m_vctPlayWnd.push_back(r_tmp);
+				m_vecPlayWnd.push_back(r_tmp);
 			}
 			break;
-
 		case VODMODEL:		//vod
-			for(int i=0; i<newNum - oldNum;i++)
+			for(int i=nOldNum; i<nNewNum; ++i)
 			{
 				CWnd *v_tmp = CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i+1);
-				m_vctPlayWnd.push_back(v_tmp);
+				m_vecPlayWnd.push_back(v_tmp);
 			}
 			break;
 		}
 	}
 	CRect rect;
 	GetClientRect(m_hParent,&rect);
-	ShowAllowWindow(newNum,displayNum);
-	switch(Layout)
+	ShowAllowWindow(nNewNum, nDisplayNum);
+	switch(nLayout)
 	{
 	case 1:
-		for(int i=0;i<newNum;i++)
+		for(int i=0; i<nNewNum; ++i)
 		{
-			((CWnd*)m_vctPlayWnd[i])->MoveWindow(rect.left+i*rect.Width() / newNum,
+			((CWnd*)m_vecPlayWnd[i])->MoveWindow(rect.left+i*rect.Width() / nNewNum,
 										rect.top,
-										rect.Width() / newNum,					
+										rect.Width() / nNewNum,					
 										rect.Height());
 		}
 		break;
-
 	case 2:
-		for(int i=0;i<newNum;i++)
+		for(int i=0; i<nNewNum; i++)
 		{
-			((CWnd*)m_vctPlayWnd[i])->MoveWindow(rect.left,		
-										rect.top+i*rect.Height() / newNum,
+			((CWnd*)m_vecPlayWnd[i])->MoveWindow(rect.left,		
+										rect.top+i*rect.Height() / nNewNum,
 										rect.Width(),	
-										rect.Height() / newNum);
+										rect.Height() / nNewNum);
 		}
 		break;
-
 	case 3:
-		switch(Windows)
+		switch(nWndNum)
 		{
 		case SF_ONE:
 			GridWindow(1);
 			break;
-
 		case SF_FOUR:
 			GridWindow(4);
 			break;
-
 		case SF_NINE:
 			GridWindow(9);
 			break;
-
 		case SF_SIXTEEN:
 			GridWindow(16);
 			break;
 		}
 		break;
-
 	default:
 		return FALSE;
 	}
-	SetAllFullModel(Maxmodel);
-	((CPlWnd*)m_vctPlayWnd[0])->SetNowShowWindow(newNum);
-	::SendMessage(GetFocusWnd(),WM_OWN_SETFOCUS,0,0);
+	SetAllFullModel(nMaxModel);
+	((CPlWnd*)m_vecPlayWnd[0])->SetNowShowWindow(nNewNum);
+	::SendMessage(GetFocusWnd(), WM_OWN_SETFOCUS, 0, 0);
 	return TRUE;
 }
 
-void CPlCtrl::GridWindow(int windowNum)
+void CPlCtrl::GridWindow(int nWndNum)
 {
 	CRect rect;
 	GetClientRect(m_hParent,&rect);
-	int num = sqrt((double)windowNum);
-	for(int i=0;i<num;i++)
+	int nNum = sqrt((double)nWndNum);
+	for(int i=0; i<nNum; ++i)
 		{
-			for(int j=0;j<num;j++)
+			for(int j=0; j<nNum; ++j)
 			{
-				((CWnd*)m_vctPlayWnd[i*num+j])->MoveWindow(rect.left + j*rect.Width() / num,
-												rect.top + i*rect.Height() / num,
-												rect.Width() / num,
-												rect.Height() / num);
+				((CWnd*)m_vecPlayWnd[i*nNum+j])->MoveWindow(rect.left + j*rect.Width() / nNum,
+												rect.top + i*rect.Height() / nNum,
+												rect.Width() / nNum,
+												rect.Height() / nNum);
 			}
 		}
 }
 
-
 BOOL CPlCtrl::Play(HWND hWnd,char *js_mrl)
 {
-	int size = m_vctPlayWnd.size();
+	int size = m_vecPlayWnd.size();
 	int i = 0;
 	BOOL bRet = FALSE;
-	for(i=0;i<size;i++)
+	for(i=0; i<size; ++i)
 	{
-		if(hWnd == ((CWnd*)m_vctPlayWnd[i])->m_hWnd)
+		if(hWnd == ((CWnd*)m_vecPlayWnd[i])->m_hWnd)
 		{
-			bRet = ((CPlWnd*)m_vctPlayWnd[i])->GetPlayer()->Play(hWnd,js_mrl);
+			bRet = ((CPlWnd*)m_vecPlayWnd[i])->GetPlayer()->Play(hWnd, js_mrl);
 			break;
 		}
 	}
-	return bRet;
-	
+	return bRet;	
 }
 
 void CPlCtrl::SetAllFullModel(UINT nType)
 {
-	int size = m_vctPlayWnd.size();
-	for(int i=0;i<size;i++)
+	int size = m_vecPlayWnd.size();
+	for(int i=0; i<size; ++i)
 	{
-		((CPlWnd*)m_vctPlayWnd[i])->SetFullModel(nType);
+		((CPlWnd*)m_vecPlayWnd[i])->SetFullModel(nType);
 	}
 }
 
 HWND CPlCtrl::GetFocusWnd()
 {
-	return ((CPlWnd*)m_vctPlayWnd[0])->GetFocusWnd(); 
+	return ((CPlWnd*)m_vecPlayWnd[0])->GetFocusWnd(); 
 }
 
 void CPlCtrl::ShowAllowWindow(int nNewNum,int nOldNum)
 {
 	if(nNewNum < nOldNum)
 	{
-		for(int i=nNewNum;i<nOldNum;i++)
+		for(int i=nNewNum; i<nOldNum; ++i)
 		{
-			::ShowWindow(((CWnd*)m_vctPlayWnd[i])->m_hWnd,SW_HIDE);
+			::ShowWindow(((CWnd*)m_vecPlayWnd[i])->m_hWnd, SW_HIDE);
 		}
 	}
 	else if(nOldNum < nNewNum)
 	{
-		for(int i=nOldNum;i<nNewNum;i++)
+		for(int i=nOldNum; i<nNewNum; ++i)
 		{
-			::ShowWindow(((CWnd*)m_vctPlayWnd[i])->m_hWnd,SW_SHOW);
+			::ShowWindow(((CWnd*)m_vecPlayWnd[i])->m_hWnd,SW_SHOW);
 		}
 	}
 }
 
-BOOL CPlCtrl::RegisterCallBack(CALLBACK_onEvent funcAddr,void *pUser)
+BOOL CPlCtrl::RegisterCallBack(CALLBACK_onEvent funcAddr, void *pUser)
 {
 	m_pUser = pUser;
 	return PlManager::RegisterCallBack(funcAddr);
@@ -301,25 +278,26 @@ BOOL CPlCtrl::RegisterCallBack(CALLBACK_onEvent funcAddr,void *pUser)
 
 BOOL CPlCtrl::StopAll()
 {
-	int size = m_vctPlayWnd.size();
-	for(int i=0;i<size;i++)
+	int nSize = m_vecPlayWnd.size();
+	for(int i=0; i<nSize; ++i)
 	{
-		((CPlWnd*)m_vctPlayWnd[i])->GetPlayer()->Stop();
+		((CPlWnd*)m_vecPlayWnd[i])->GetPlayer()->Stop();
 	}
 	return TRUE;
 }
 
 BOOL CPlCtrl::VodStreamJump(char *js_time)
 {
-	if(m_nModel == REALMODEL) return FALSE;
+	if(m_nModel == REALMODEL) 
+		return FALSE;
 	BOOL bRet = FALSE;
-	HWND wnd = GetFocusWnd();
-	int size = m_vctPlayWnd.size();
-	for(int i=0;i<size;i++)
+	HWND hWnd = GetFocusWnd();
+	int nSize = m_vecPlayWnd.size();
+	for(int i=0; i<nSize; ++i)
 	{
-		if(wnd == ((CWnd*)m_vctPlayWnd[i])->m_hWnd)
+		if(hWnd == ((CWnd*)m_vecPlayWnd[i])->m_hWnd)
 		{
-			bRet = ((CPlWnd*)m_vctPlayWnd[i])->GetPlayer()->VodStreamJump(js_time);
+			bRet = ((CPlWnd*)m_vecPlayWnd[i])->GetPlayer()->VodStreamJump(js_time);
 			break;
 		}
 	}
@@ -330,11 +308,11 @@ BOOL CPlCtrl::GetPath(char *psz_dest,UINT nType)
 {
 	if(nType == IMAGEPATH)
 	{
-		strncpy(psz_dest,m_szImagePath,PATH_LENGTH);
+		strncpy(psz_dest, m_szImagePath, PATH_LENGTH);
 	}
 	else if(nType == VIDEOPATH)
 	{
-		strncpy(psz_dest,m_szVideoPath,PATH_LENGTH);
+		strncpy(psz_dest, m_szVideoPath, PATH_LENGTH);
 	}
 
 	return TRUE;
@@ -342,8 +320,9 @@ BOOL CPlCtrl::GetPath(char *psz_dest,UINT nType)
 
 BOOL CPlCtrl::SetLayout()
 {
-	if(m_nLayout == -1) return FALSE;
-	return SetLayout(m_nLayout,m_nWindows,m_nMaxmodel);
+	if(m_nLayout == -1) 
+		return FALSE;
+	return SetLayout(m_nLayout, m_nWindows, m_nMaxmodel);
 }
 
 BOOL CPlCtrl::Play(char *js_mrl)
@@ -370,12 +349,12 @@ BOOL CPlCtrl::Play(char *js_mrl)
 	}
 	else
 	{
-		int size = m_vctPlayWnd.size();
-		if(wndId > size || wndId < 0) return FALSE;
-		HWND hWnd = ((CPlWnd*)m_vctPlayWnd[wndId])->m_hWnd;
-		bRet = ((CPlWnd*)m_vctPlayWnd[wndId])->GetPlayer()->Play(hWnd,js_mrl);
+		int nSize = m_vecPlayWnd.size();
+		if(wndId > nSize || wndId < 0) 
+			return FALSE;
+		HWND hWnd = ((CPlWnd*)m_vecPlayWnd[wndId])->m_hWnd;
+		bRet = ((CPlWnd*)m_vecPlayWnd[wndId])->GetPlayer()->Play(hWnd,js_mrl);
 	}
-	
 	json_object_put(playInfo);
 	json_object_put(tmp);
 #else
@@ -386,12 +365,12 @@ BOOL CPlCtrl::Play(char *js_mrl)
 
 HWND CPlCtrl::GetNextPlayWnd()
 {
-	int WndNum = FindShowWndNum();
-	for(int i=0;i<WndNum;i++)
+	int nWndNum = FindShowWndNum();
+	for(int i=0; i<nWndNum; ++i)
 	{
-		if(!((CPlWnd*)m_vctPlayWnd[i])->GetPlayer()->IsPlaying())
+		if(!((CPlWnd*)m_vecPlayWnd[i])->GetPlayer()->IsPlaying())
 		{
-			return ((CPlWnd*)m_vctPlayWnd[i])->m_hWnd;
+			return ((CPlWnd*)m_vecPlayWnd[i])->m_hWnd;
 		}
 	}
 	//return ((CPlayWnd*)m_vctPlayWnd[0])->m_hWnd;
@@ -404,8 +383,8 @@ BOOL CPlCtrl::GetWndParm(char *pRet,int nType)
 	char wndinfo[64] = {0};
 	if(nType == FOCUS_WINDOW)
 	{
-		int id = GetWindowLong(GetFocusWnd(),GWL_ID);
-		bRet = ((CPlWnd*)m_vctPlayWnd[id-1])->GetPlayer()->GetWndPlayParm(wndinfo);
+		int nId = GetWindowLong(GetFocusWnd(), GWL_ID);
+		bRet = ((CPlWnd*)m_vecPlayWnd[nId-1])->GetPlayer()->GetWndPlayParm(wndinfo);
 		if(bRet)
 		{
 			strcat(pRet,wndinfo);
@@ -416,12 +395,12 @@ BOOL CPlCtrl::GetWndParm(char *pRet,int nType)
 		json_object *allInfo = NULL;
 		json_object *tmp	= NULL;
 
-		int size = m_vctPlayWnd.size();
+		int nSize = m_vecPlayWnd.size();
 		allInfo = json_object_new_array();
-		for(int i=0;i<size;i++)
+		for(int i=0; i<nSize; ++i)
 		{
 			memset(wndinfo,0,sizeof(wndinfo));
-			bRet = ((CPlWnd*)m_vctPlayWnd[i])->GetPlayer()->GetWndPlayParm(wndinfo);
+			bRet = ((CPlWnd*)m_vecPlayWnd[i])->GetPlayer()->GetWndPlayParm(wndinfo);
 			if(bRet)
 			{
 				tmp = json_tokener_parse(wndinfo);
@@ -439,15 +418,14 @@ BOOL CPlCtrl::GetWndParm(char *pRet,int nType)
 	return bRet;
 }
 
-
 BOOL CPlCtrl::SetAllUserData()
 {
-	int WndNum = FindShowWndNum();
+	int nWndNum = FindShowWndNum();
 	if(!m_pUser)
 		return FALSE;
-	for(int i=0;i<WndNum;i++)
+	for(int i=0; i<nWndNum; ++i)
 	{
-		if(!((CPlWnd*)m_vctPlayWnd[i])->GetPlayer()->SetUserData(m_pUser))
+		if(!((CPlWnd*)m_vecPlayWnd[i])->GetPlayer()->SetUserData(m_pUser))
 		{
 			return FALSE;
 		}
@@ -457,10 +435,10 @@ BOOL CPlCtrl::SetAllUserData()
 
 void CPlCtrl::SleepPlayer(bool bSleep)
 {
-	int WndNum = FindShowWndNum();
-	for(int i=0;i<WndNum;i++)
+	int nWndNum = FindShowWndNum();
+	for(int i=0; i<nWndNum; ++i)
 	{
-		((CPlWnd*)m_vctPlayWnd[i])->GetPlayer()->SleepPlayer(bSleep);
+		((CPlWnd*)m_vecPlayWnd[i])->GetPlayer()->SleepPlayer(bSleep);
 	}
 }
 

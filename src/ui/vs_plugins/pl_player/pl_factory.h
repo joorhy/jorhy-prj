@@ -12,15 +12,15 @@ typedef int (*J_MakePlayerFun)(PlPlayer *&, int nWorkMode, void *pUser);
 class PL_API CPlFactory : public SingletonTmpl<CPlFactory>
 {
 	typedef std::map<std::string, J_MakePlayerFun> PlayerRegistMap;
-	typedef std::map<void *, PlPlayer *> PlayerMap;
+	typedef std::map<HWND, PlPlayer *> PlayerMap;
 public:
 	CPlFactory() {}
 	~CPlFactory() {}
 
 public:
 	int RegisterPlayer(const char *playerType, J_MakePlayerFun pFun);
-	PlPlayer *GetPlayer(const char *pType, int nWorkMode, void *pUser);
-	void DelPlayer(void *pUser);
+	PlPlayer *GetPlayer(const char *pType, int nWorkMode, void *pUser, HWND hWnd);
+	void DelPlayer(HWND hWnd);
 
 private:
 	PlayerRegistMap m_playerRegistMap;

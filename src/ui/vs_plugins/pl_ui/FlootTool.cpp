@@ -8,7 +8,6 @@
 #include "pl_ctrl.h"
 
 // CFlootTool
-
 IMPLEMENT_DYNAMIC(CFlootTool, CWnd)
 
 CFlootTool::CFlootTool(CWnd *parent, UINT nId)
@@ -223,9 +222,9 @@ void CFlootTool::Stop()
 	if(m_Player == NULL) return;
 	if(m_Player->pPlayer != NULL)
 	{
-		HWND wnd = m_Player->pPlayer->GetPlayHwnd();
-		m_Player->pPlayer->StatusCallBack(wnd);
-		m_Player->pPlayer->Stop();
+		HWND hWnd = m_Player->pPlayer->GetPlayHwnd();
+		m_Player->pPlayer->StatusCallBack(hWnd);
+		m_Player->pPlayer->Stop(hWnd);
 		m_Player->pSound  = FALSE;
 		m_Player->pVolume = DEFAULT_VOLUME;
 	}
@@ -254,8 +253,6 @@ void CFlootTool::EnableSound()
 		m_toolTip.AddTool(m_bnSound,"¾²Òô");
 		m_toolTip.AddTool(m_bnSlider,m_Player->pVolume);
 	}
-	
-	
 }
 
 void CFlootTool::Capture()

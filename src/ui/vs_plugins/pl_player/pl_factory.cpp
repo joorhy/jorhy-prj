@@ -16,11 +16,11 @@ int CPlFactory::RegisterPlayer(const char *playerType, J_MakePlayerFun pFun)
 	return PL_ERR_EXIST;
 }
 
-PlPlayer *CPlFactory::GetPlayer(const char *pType, int nWorkMode, void *pUser)
+PlPlayer *CPlFactory::GetPlayer(const char *pType, int nWorkMode, void *pUser, HWND hWnd)
 {
 	m_lock.Lock();
 	PlPlayer *player = NULL;
-	PlayerMap::iterator it = m_playerMap.find(pUser);
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it == m_playerMap.end())
 	{
 		PlayerRegistMap::iterator itPlayer = m_playerRegistMap.find(pType);
@@ -34,7 +34,7 @@ PlPlayer *CPlFactory::GetPlayer(const char *pType, int nWorkMode, void *pUser)
 		}
 
 		if (player != NULL)
-			m_playerMap[pUser] = dynamic_cast<PlPlayer *>(player);
+			m_playerMap[hWnd] = dynamic_cast<PlPlayer *>(player);
 	}
 	else
 		player = it->second;
@@ -44,10 +44,10 @@ PlPlayer *CPlFactory::GetPlayer(const char *pType, int nWorkMode, void *pUser)
 	return dynamic_cast<PlPlayer *>(player);
 }
 
-void CPlFactory::DelPlayer(void *pUser)
+void CPlFactory::DelPlayer(HWND hWnd)
 {
 	m_lock.Lock();
-	PlayerMap::iterator it = m_playerMap.find(pUser);
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		delete it->second;
