@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Resource.h"
 #include "RPlayWnd.h"
-#include "FlootTool.h"
+#include "pl_toolbar.h"
 #include "pl_type.h"
 #include "runner_log.h"
 #include <cmath>
@@ -25,7 +25,7 @@ CRPlayWnd::CRPlayWnd(HWND hParent,UINT nID)
 	
 	// player parm Init
 	memset(&m_PlayerCenter,0,sizeof(m_PlayerCenter));
-	m_PlayerCenter.pPlayer	= new PlManager(REALMODEL);
+	//m_PlayerCenter.pPlayer	= new PlManager(REALMODEL);
 	m_PlayerCenter.pSound	= FALSE;
 	m_PlayerCenter.pVolume	= DEFAULT_VOLUME;
 	m_PlayerCenter.bNeedShowCTRL = SHOWCTRLCOMMAND;
@@ -45,8 +45,8 @@ void CRPlayWnd::InitParm()
 	m_nowCusID = -1;
 	if(NULL == m_Tool)
 	{
-		m_Tool = new CFlootTool(this, IDT_TOOL);
-		m_Tool->SetModel(REALMODEL);
+		m_Tool = new CPlToolBar(this, IDT_TOOL);
+		m_Tool->SetModel(STREAME_REALTIME);
 	}
 	m_DobWMTime = 0;
 }
@@ -59,13 +59,7 @@ CRPlayWnd::~CRPlayWnd()
 		delete m_Tool;
 		m_Tool = NULL;
 	}
-	if(NULL != m_PlayerCenter.pPlayer)
-	{
-		delete m_PlayerCenter.pPlayer;
-		m_PlayerCenter.pPlayer = NULL;
-	}
 }
-
 
 BEGIN_MESSAGE_MAP(CRPlayWnd, CWnd)
 	ON_WM_SETCURSOR()
@@ -173,7 +167,7 @@ UINT CRPlayWnd::FindArea(CPoint point)
 BOOL CRPlayWnd::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
 	HCURSOR hc;
-	if(m_PlayerCenter.pPlayer->IsPlaying() && pWnd == this)
+	if(PlManager::Instance()->IsPlaying(m_hWnd) && pWnd == this)
 	{
 		hc = ::LoadCursor(AfxGetInstanceHandle(),MAKEINTRESOURCE(m_nowCusID));
 	}
@@ -188,7 +182,7 @@ BOOL CRPlayWnd::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 
 void CRPlayWnd::OnMouseMove(UINT nFlags, CPoint point)
  {
-	if(m_PlayerCenter.pPlayer->IsPlaying())
+	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
 		switch(FindArea(point))
 		{
@@ -222,7 +216,7 @@ void CRPlayWnd::OnLButtonDown(UINT nFlags, CPoint point)
 	if(m_dwInterval -  interval< 300)
 		return;
 	m_dwInterval = interval;
-	if(m_PlayerCenter.pPlayer->IsPlaying())
+	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
 		int args[3];
 		CRect rect;
@@ -232,7 +226,7 @@ void CRPlayWnd::OnLButtonDown(UINT nFlags, CPoint point)
 		char *js_info = NULL;
 
 		GetClientRect(&rect);
-		js_info = m_PlayerCenter.pPlayer->GetJSInfo();
+		//js_info = m_PlayerCenter.pPlayer->GetJSInfo();
 		if(!js_info)
 			return;
 		info = json_tokener_parse(js_info);
@@ -264,9 +258,8 @@ void CRPlayWnd::OnLButtonDown(UINT nFlags, CPoint point)
 		args[0]	= m_nowCusID - 999;
 		args[1] = (int)resid;
 		args[2]	= speed;
-		m_PlayerCenter.pPlayer->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
+		PlManager::Instance()->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
 		json_object_put(info);
-
 	}
 	CPlWnd::OnLButtonDown(nFlags, point);
 }
@@ -285,7 +278,7 @@ void CRPlayWnd::OnSize(UINT nType, int cx, int cy)
 
 BOOL CRPlayWnd::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {	
-	if(m_PlayerCenter.pPlayer->IsPlaying())
+	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
 		DWORD IntervalTime = GetTickCount() - m_DobWMTime;
 		m_DobWMTime = GetTickCount();
@@ -297,7 +290,7 @@ BOOL CRPlayWnd::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		if(zDelta > 0) args[0] = 12;
 		else		args[0] = 13;
 
-		js_info = m_PlayerCenter.pPlayer->GetJSInfo();
+		//js_info = m_PlayerCenter.pPlayer->GetJSInfo();
 		if(!js_info)
 			return CPlWnd::OnMouseWheel(nFlags, zDelta, pt);
 		info = json_tokener_parse(js_info);
@@ -316,11 +309,11 @@ BOOL CRPlayWnd::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		{
 			args[2] = 20;
 		}
-		m_PlayerCenter.pPlayer->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
+		PlManager::Instance()->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
 
 		Sleep(300);
 		args[2] = 0;
-		m_PlayerCenter.pPlayer->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
+		PlManager::Instance()->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
 		json_object_put(info);
 	}
 	return CPlWnd::OnMouseWheel(nFlags, zDelta, pt);
@@ -334,7 +327,7 @@ BOOL CRPlayWnd::OnEraseBkgnd(CDC* pDC)
 
 void CRPlayWnd::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if(m_PlayerCenter.pPlayer->IsPlaying())
+	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
 		int args[3];
 		char *resid = NULL;
@@ -342,7 +335,7 @@ void CRPlayWnd::OnLButtonUp(UINT nFlags, CPoint point)
 		json_object *info = NULL;
 		char *js_info = NULL;
 
-		js_info = m_PlayerCenter.pPlayer->GetJSInfo();
+		//js_info = m_PlayerCenter.pPlayer->GetJSInfo();
 		if(!js_info)
 			return CPlWnd::OnLButtonUp(nFlags, point);
 		info = json_tokener_parse(js_info);
@@ -355,7 +348,7 @@ void CRPlayWnd::OnLButtonUp(UINT nFlags, CPoint point)
 		args[0]	= m_nowCusID - 999;
 		args[1] = (int)resid;
 		args[2]	= speed;
-		m_PlayerCenter.pPlayer->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
+		PlManager::Instance()->onCallBack(CALLBACK_PTZCTL,args,sizeof(args)/sizeof(int));
 		json_object_put(info);
 	}
 

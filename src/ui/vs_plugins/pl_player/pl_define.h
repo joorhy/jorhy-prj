@@ -3,7 +3,6 @@
 
 typedef struct
 {
-	PlManager *pPlayer;
 	int pVolume;
 	BOOL pSound;
 	BOOL bRecoder;
@@ -11,3 +10,8 @@ typedef struct
 	BOOL bNeedShowCTRL;
 	BOOL bPlayOneByOne;
 }PlayParm;
+
+struct PL_ToolBarInfo
+{
+
+};

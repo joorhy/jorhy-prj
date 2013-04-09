@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "VlcPlayer.h"
-#include "WaitStatus.h"
+#include "pl_reconn.h"
 #include "pl_type.h"
 #include "pl_manager.h"
 #include "pl_ctrl.h"
@@ -23,19 +23,13 @@ void VlcPlayer::PlayerCallBack(const libvlc_event_t *type, void *pUser)
 		return;
 	if(type->type == libvlc_MediaPlayerEndReached)
 	{
-		PlManager *tmp = static_cast<PlManager*>(user->GetPlayFactor());
-		if(tmp)
+		if(user->m_Model == STREAME_REALTIME)
 		{
-			if(user->m_Model == STREAME_REALTIME)
-			{
-				HWND wnd = ((CWaitStatus*)tmp->GetRecntWnd())->m_hWnd;
-				PostMessage(wnd,WM_OWN_START_WAIT,(WPARAM)tmp,0);
-			}
-			else
-			{
-				HWND wnd = tmp->GetPlayHwnd();
-				PostMessage(wnd,WM_MEDIA_END_REACHED,0,0);
-			}
+			PostMessage(user->m_pPlWnd, WM_OWN_START_WAIT, (WPARAM)user->m_pPlWnd, 0);
+		}
+		else
+		{
+			PostMessage(user->m_pPlWnd, WM_MEDIA_END_REACHED,0,0);
 		}
 	}
 	if(type->type == libvlc_MediaPlayerPlaying)
@@ -63,7 +57,6 @@ VlcPlayer::VlcPlayer(int nWorkMode,void *pFactorUser)
 	m_play		= NULL;
 	if(NULL == m_pInstance)
 		InitPlay();
-	m_pFactor	= pFactorUser;
 	m_nSpeedIndex = NORMALSPEED;
 	m_times		= 0;
 	m_displaytime = 0;
@@ -379,7 +372,7 @@ BOOL VlcPlayer::VodStreamJump(char *pNewTime_MRL)
 
 void *VlcPlayer::GetPlayFactor() const
 {
-	return m_pFactor;
+	return NULL;
 }
 
 BOOL VlcPlayer::SetOSDText(int stime,char *osdText)
@@ -408,9 +401,7 @@ void VlcPlayer::TimeBarCallback(void *picture)
 	if(++m_times >= 25)
 	{
 		m_times = 0;
-		PlManager *tmp = static_cast<PlManager*>(m_pFactor);
-		if(tmp)
-			tmp->VodCallBack();
+		PlManager::Instance()->VodCallBack(m_pPlWnd);
 	}
 }
 

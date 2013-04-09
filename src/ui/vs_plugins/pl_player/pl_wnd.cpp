@@ -48,14 +48,13 @@ CPlWnd::~CPlWnd()
 	}
 }
 
-
 BEGIN_MESSAGE_MAP(CPlWnd, CWnd)
 END_MESSAGE_MAP()
 
 // CPlayWnd message handlers
 void CPlWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	if(!(m_PlayerCenter.pPlayer->IsPlaying()))
+	if(!(PlManager::Instance()->IsPlaying(m_hWnd)))
 	{
 		if(!m_bFullScreen)
 			return;
@@ -103,12 +102,9 @@ BOOL CPlWnd::OnEraseBkgnd(CDC* pDC)
 	if(!bEraseOwn)
 		return CWnd::OnEraseBkgnd(pDC);
 
-	if(m_PlayerCenter.pPlayer)
+	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
-		if(m_PlayerCenter.pPlayer->IsPlaying())
-		{
-			return TRUE;
-		}
+		return TRUE;
 	}
 
 	CRect rect;
@@ -164,11 +160,6 @@ void CPlWnd::SetFullModel(UINT nType)
 	m_nFullModel = nType;
 }
 
-PlManager *CPlWnd::GetPlayer()
-{
-	return m_PlayerCenter.pPlayer;
-}
-
 void CPlWnd::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
@@ -196,12 +187,9 @@ void CPlWnd::OnSize(UINT nType, int cx, int cy)
 						rect.Width(),
 						toolRect.Height(),
 						TRUE);
-	if(m_PlayerCenter.pPlayer)
+	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
-		if(m_PlayerCenter.pPlayer->IsPlaying())
-		{
-			m_PlayerCenter.pPlayer->AspectRatio();		//À­Éì
-		}
+		PlManager::Instance()->AspectRatio();		//À­Éì
 	}
 }
 
@@ -345,7 +333,7 @@ LRESULT CPlWnd::SetWndFocus(WPARAM wParam,LPARAM lParam)
 	{
 		m_nFocus = IdWnd;
 		::SendMessage(hOld,WM_OWN_KILLFOCUS,0,0);
-		if(m_PlayerCenter.pPlayer->IsPlaying())
+		if(PlManager::Instance()->IsPlaying(m_hWnd))
 		{
 			int args[2];
 			json_object *js_args	= NULL;
@@ -354,7 +342,7 @@ LRESULT CPlWnd::SetWndFocus(WPARAM wParam,LPARAM lParam)
 			json_object *info	= NULL;
 			char *p_jsinfo		= NULL;
 
-			p_jsinfo = m_PlayerCenter.pPlayer->GetJSInfo();
+			//p_jsinfo = m_PlayerCenter.pPlayer->GetJSInfo();
 			if(!p_jsinfo)
 				return TRUE;
 			info = json_tokener_parse(p_jsinfo);
@@ -377,7 +365,7 @@ LRESULT CPlWnd::SetWndFocus(WPARAM wParam,LPARAM lParam)
 				}
 				args[0] = 2;
 				args[1]	= (int)json_object_to_json_string(js_args);
-				m_PlayerCenter.pPlayer->onCallBack(CALLBACK_ONSTATE,args,sizeof(args)/sizeof(int));
+				PlManager::Instance()->onCallBack(CALLBACK_ONSTATE,args,sizeof(args)/sizeof(int));
 
 				json_object_put(info);
 				json_object_put(js_args);

@@ -214,6 +214,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_json_parser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_json_parser.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_manager.cpp"
 				>
 			</File>
@@ -222,19 +230,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_reconn.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_reconn.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\WaitStatus.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_player\WaitStatus.h"
 				>
 			</File>
 		</Filter>
@@ -534,19 +542,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\FlootTool.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\FlootTool.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_ui\NewToolTip.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_ui\NewToolTip.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_toolbar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_toolbar.h"
 				>
 			</File>
 			<File

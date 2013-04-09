@@ -4,7 +4,7 @@
 #include "pl_err.h"
 #include "pl_factory_wnd.h"
 #include "pl_wnd.h"
-#include "FlootTool.h"
+#include "pl_toolbar.h"
 #include "ScreenWnd.h"
 // CRPlayWnd
 

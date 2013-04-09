@@ -44,7 +44,7 @@ private:
 private:
 	BTKControl	*m_player;
 	std::string m_lastMrl;
-	void *m_pFactor;
+	HWND m_pPlWnd;
 	HWND m_hwnd;
 	PlLock m_lock;
 };

@@ -75,13 +75,6 @@ typedef int BOOL;
 #define FOCUS_WINDOW 1
 #define ALL_WINDOW 2
 
-//plugin work model
-enum WorkModel
-{
-	REALMODEL = 1,
-	VODMODEL
-};
-
 //Reconnect Parameter 
 #define WAITSTATUS_TIME (2*1000)		//Time Interval
 #define RESIZE_TIME		(100)		//Time Interval

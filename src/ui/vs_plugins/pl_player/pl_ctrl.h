@@ -2,32 +2,35 @@
 
 #include "pl_core.h"
 #include "pl_type.h"
+#include "pl_player.h"
+#include "pl_singleton.h"
+#include "pl_wnd.h"
 #include "json.h"
 #include <vector>
 
-class PL_API CPlCtrl
+class PL_API CPlCtrl : public SingletonTmpl<CPlCtrl>
 {
 public:
 	CPlCtrl(void);
 	~CPlCtrl(void);
 
 public:
-	BOOL InitDisPlay(HWND hParent,char* js_workMode);
-	BOOL SetLayout(char *js_Layout);
-	BOOL SetLayout();
-	BOOL Play(char *js_mrl);
-	BOOL Play(HWND hWnd,char *js_mrl);
-	BOOL StopAll();
-	BOOL VodStreamJump(char *js_time);
-	BOOL GetWndParm(char *pRet,int nType);
-	void SleepPlayer(bool bSleep);
+	BOOL	InitDisPlay(HWND hParent,char* js_workMode);
+	BOOL	SetLayout(char *js_Layout);
+	BOOL	SetLayout();
+	BOOL	Play(char *js_mrl);
+	BOOL	Play(HWND hWnd,char *js_mrl);
+	BOOL	StopAll();
+	BOOL	VodStreamJump(char *js_time);
+	BOOL	GetWndParm(char *pRet,int nType);
+	void		SleepPlayer(bool bSleep);
 
 	/**********************************************/
 	char *GetLayout() const;
 	void FullScreen();
 	HWND GetFocusWnd();
 	BOOL RegisterCallBack(CALLBACK_onEvent funcAddr,void *pUser);
-	static BOOL GetPath(char *psz_dest,UINT nType);
+	BOOL GetPath(char *psz_dest, UINT nType);
 	void LoadPlLibrary();
 	void FreePlLibrary();
 
@@ -35,22 +38,16 @@ private:
 	HWND m_hParent;
 
 	//work model
-	int m_nModel;
-	int m_nLayout;
-	int m_nWindows;
-	int m_nMaxmodel;
-	int m_nUid;
-	static char m_szImagePath[PATH_LENGTH];
-	static char m_szVideoPath[PATH_LENGTH];
-	std::vector<void *> m_vecPlayWnd; 
+	PL_LayoutInfo m_layoutInfo;
+	std::vector<CPlWnd *> m_vecPlayWnd; 
 	std::vector<HMODULE> m_vecModule; 
 	void *m_pUser;
 
 private:
 	int FindShowWndNum();
-	int FindShowWndNum(int layout,int windows);
+	int FindShowWndNum(const PL_LayoutInfo &layoutInfo);
 	HWND GetNextPlayWnd();
-	BOOL SetLayout(int Layout,int Windows,int Maxmodel);
+	BOOL SetLayout(const PL_LayoutInfo &layoutInfo);
 	void GridWindow(int windowNum);
 	void SetAllFullModel(UINT nType);
 	void ShowAllowWindow(int nNewNum,int nOldNum);

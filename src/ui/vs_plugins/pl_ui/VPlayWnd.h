@@ -5,7 +5,7 @@
 #include "pl_factory_wnd.h"
 #include "pl_wnd.h"
 #include "ScreenWnd.h"
-#include "FlootTool.h"
+#include "pl_toolbar.h"
 
 // CVPlayWnd
 class PL_API CVPlayWnd : public CPlWnd

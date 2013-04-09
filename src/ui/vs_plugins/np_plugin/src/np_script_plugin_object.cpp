@@ -1,6 +1,7 @@
 #include "np_script_plugin_object.h"
 #include "npupp.h"
 #include "np_plugin.h"
+#include "pl_type.h"
 #include <string>
 
 bool ScriptablePluginObject::HasMethod(NPIdentifier name)
@@ -49,11 +50,11 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 			break;
 
 		case 3:		//得到当前焦点播放窗口参数
-			bRet = pPlugin->GetWndParm(FOCUS_WINDOW,result);
+			bRet = pPlugin->GetWndParm(FOCUS_WINDOW, result);
 			break;
 
 		case 4:		//得到所有窗口播放参数列表
-			bRet = pPlugin->GetWndParm(ALL_WINDOW,result);
+			bRet = pPlugin->GetWndParm(ALL_WINDOW, result);
 			break;
 
 		case 11:	//播放实时视频

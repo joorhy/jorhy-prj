@@ -54,7 +54,7 @@ private:
 	static libvlc_instance_t *m_pInstance;		
 	libvlc_media_player_t *m_play;
 	libvlc_event_manager_t *m_manager;
-	void *m_pFactor;
+	HWND m_pPlWnd;
 	int m_nSpeedIndex;
 	static float m_nSpeed[SPEED_INDEX_NUM];
 	static const char *const m_pszSpeedTip[SPEED_INDEX_NUM];

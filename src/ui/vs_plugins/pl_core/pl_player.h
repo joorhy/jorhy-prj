@@ -26,23 +26,23 @@ struct PlPlayer : public PlObj
 {
 	///播放
 	virtual BOOL Play(HWND hPlayWnd,char *psz_mrl) = 0;
-	virtual void Play() = 0;							//断线重播
-	virtual void Stop() = 0;							//如果在播放，会停止当前播放，并开始新的播放
-	virtual void Pause() = 0;
-	virtual void PlayOneByOne() = 0;
-	virtual int GetVolume() = 0;
+	virtual void	Play() = 0;							//断线重播
+	virtual void	Stop() = 0;							//如果在播放，会停止当前播放，并开始新的播放
+	virtual void	Pause() = 0;
+	virtual void	PlayOneByOne() = 0;
+	virtual int		GetVolume() = 0;
 	virtual BOOL SetVolume(int nVolume) = 0;			// nVolume:0~~100
 	virtual BOOL IsPlaying() = 0;
 	virtual BOOL SetSpeed(BOOL bSpeedUp) = 0;
 	virtual BOOL Capture(char *path) = 0;
 	virtual BOOL Record(char *path) = 0;
-	virtual int GetPlayStatus() = 0;
+	virtual int		GetPlayStatus() = 0;
 	virtual HWND GetPlayHwnd() = 0;
 	virtual BOOL VodStreamJump(char *pNewTime_MRL) = 0;
 	virtual BOOL SetOSDText(int stime,char *osdText) = 0;
 	virtual BOOL IsPaused() = 0;
-	virtual void AspectRatio(int width=0,int height=0) = 0;
-	virtual void SleepPlayer(bool bSleep) = 0;
+	virtual void	AspectRatio(int width=0,int height=0) = 0;
+	virtual void	SleepPlayer(bool bSleep) = 0;
 
 public:	
 	int m_Model;													//工作模式
@@ -70,11 +70,29 @@ struct PlToolWin
 	virtual BOOL AttachPlayer(void *pPlayParm, void *parent) = 0;
 };
 
+///布局信息
+struct PL_LayoutInfo
+{
+	int nMod;						//工作模式，1实时，2历史;
+	int nLayout;					//布局方式， 1横向，2纵向，3、宫格;
+	int nWindows;				//布局参数，不为宫格的时候是视频窗口的数量；为宫格的时候表示不同宫格的布局方式。
+										//宫格布局模式：
+										//0：单窗口、
+										//1：四窗口(2×2)、
+										//2：9窗口（3*3）。
+	int nMax;						//窗口最大化方式：1：插件内最大化，2：全屏最大化。
+	int nUid;						//用户ID；
+	char imgPath[512];		//抓图存放路径；
+	char mediaPath[512];	//本地录像路径
+};
+
 ///播放器信息
 struct PL_PlayerInfo
 {
 	HWND		hWnd;				//窗口句柄
 	INT			nType;				//播放器类型
 	PlPlayer	*pPlayer;			//播放器指针
-	BYTE			*pUrl;
+	void			*pUser;
+	char			pUrl[512];			//url
+	INT64		nStartTime;		//历史回放开始时间
 };

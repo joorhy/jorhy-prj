@@ -53,7 +53,6 @@ public:
 public:
 	void DrawBorder(CPen *pen);
 	void SetFullModel(UINT nType);
-	PlManager *GetPlayer();
 	void ShowAllWindowEpt(HWND hWnd,int nCmdShow);
 	void SetNowShowWindow(int nNum);
 	HWND GetFocusWnd();

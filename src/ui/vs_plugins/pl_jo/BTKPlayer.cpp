@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "BTKPlayer.h"
 #include "pl_manager.h"
-#include "WaitStatus.h"
+#include "pl_reconn.h"
 
 /*********************»Øµ÷º¯Êý*******************/
 void BTKAPI BTKPlayer::EndCBK(void *pdata)
@@ -9,19 +9,13 @@ void BTKAPI BTKPlayer::EndCBK(void *pdata)
 	BTKPlayer *user = reinterpret_cast<BTKPlayer*>(pdata);
 	if(user)
 	{
-		PlManager *tmp = static_cast<PlManager*>(user->m_pFactor);
-		if(tmp)
+		if(user->m_Model == STREAME_REALTIME)
 		{
-			if(user->m_Model == STREAME_REALTIME)
-			{
-				HWND wnd = ((CWaitStatus*)tmp->GetRecntWnd())->m_hWnd;
-				PostMessage(wnd,WM_OWN_START_WAIT,(WPARAM)tmp,0);
-			}
-			else
-			{
-				HWND wnd = tmp->GetPlayHwnd();
-				PostMessage(wnd,WM_MEDIA_END_REACHED,0,0);
-			}
+			PostMessage(user->m_pPlWnd,WM_OWN_START_WAIT,(WPARAM)user->m_pPlWnd,0);
+		}
+		else
+		{
+			PostMessage(user->m_pPlWnd,WM_MEDIA_END_REACHED,0,0);
 		}
 	}
 }
@@ -31,7 +25,6 @@ BTKPlayer::BTKPlayer(int nWorkMode,void *pFactorUser)
 {
 	m_player	= new BTKControl();
 	m_Model		= nWorkMode;
-	m_pFactor	= pFactorUser;
 }
 
 BTKPlayer::~BTKPlayer(void)

@@ -17,7 +17,7 @@ CVPlayWnd::CVPlayWnd(HWND hParent, UINT nID)
 											0);
 	// player parm Init
 	memset(&m_PlayerCenter,0,sizeof(m_PlayerCenter));
-	m_PlayerCenter.pPlayer	= new PlManager(VODMODEL);
+	//m_PlayerCenter.pPlayer	= new PlManager(VODMODEL);
 	m_PlayerCenter.pSound	= FALSE;
 	m_PlayerCenter.pVolume	= DEFAULT_VOLUME;
 	m_PlayerCenter.bNeedShowCTRL = SHOWCTRLCOMMAND;
@@ -34,8 +34,8 @@ void CVPlayWnd::InitParm()
 {
 	if(NULL == m_Tool)
 	{
-		m_Tool = new CFlootTool(this,IDT_TOOL);
-		m_Tool->SetModel(VODMODEL);
+		m_Tool = new CPlToolBar(this, IDT_TOOL);
+		m_Tool->SetModel(STREAME_FILE);
 	}
 }
 
@@ -46,11 +46,6 @@ CVPlayWnd::~CVPlayWnd()
 	{
 		delete m_Tool;
 		m_Tool = NULL;
-	}
-	if(NULL != m_PlayerCenter.pPlayer)
-	{
-		delete m_PlayerCenter.pPlayer;
-		m_PlayerCenter.pPlayer = NULL;
 	}
 }
 
