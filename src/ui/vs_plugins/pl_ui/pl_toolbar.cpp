@@ -38,6 +38,7 @@ void CPlToolBar::InitParm()
 	m_bnSpeedup		= NULL;
 	m_bnSlowdown	= NULL;
 	m_bnDownload	= NULL;
+	m_pPlayParm		= NULL;
 	if(CreateToolBar())
 	{
 		m_bCreate = TRUE;
@@ -220,19 +221,20 @@ void CPlToolBar::Stop()
 {
 	PlManager::Instance()->StatusCallBack(m_hPlWnd);
 	PlManager::Instance()->Stop(m_hPlWnd);
-	//m_Player->pSound  = FALSE;
-	//m_Player->pVolume = DEFAULT_VOLUME;
+	m_pPlayParm->pSound  = FALSE;
+	m_pPlayParm->pVolume = DEFAULT_VOLUME;
 }
 
 void CPlToolBar::EnableSound()
 {
-	/*if(m_Player == NULL) return;
-	if(m_Player->pSound)
+	if(m_pPlayParm == NULL) 
+		return;
+	if(m_pPlayParm->pSound)
 	{
 		m_bnSound->ChangePng();
-		m_Player->pSound = FALSE;
-		m_Player->pVolume = m_Player->pPlayer->GetVolume();
-		m_Player->pPlayer->SetVolume(0);
+		m_pPlayParm->pSound = FALSE;
+		m_pPlayParm->pVolume = PlManager::Instance()->GetVolume(m_hPlWnd);
+		PlManager::Instance()->SetVolume(m_hPlWnd, 0);
 		m_bnSlider->SetPos(0);
 
 		m_toolTip.AddTool(m_bnSound,"取消静音");
@@ -241,12 +243,12 @@ void CPlToolBar::EnableSound()
 	else
 	{
 		m_bnSound->ChangePng(FALSE);
-		m_Player->pSound = TRUE;
-		m_Player->pPlayer->SetVolume(m_Player->pVolume);
-		m_bnSlider->SetPos(m_Player->pVolume);
-		m_toolTip.AddTool(m_bnSound,"静音");
-		m_toolTip.AddTool(m_bnSlider,m_Player->pVolume);
-	}*/
+		m_pPlayParm->pSound = TRUE;
+		PlManager::Instance()->SetVolume(m_hPlWnd, m_pPlayParm->pVolume);
+		m_bnSlider->SetPos(m_pPlayParm->pVolume);
+		m_toolTip.AddTool(m_bnSound, "静音");
+		m_toolTip.AddTool(m_bnSlider, m_pPlayParm->pVolume);
+	}
 }
 
 void CPlToolBar::Capture()
@@ -256,13 +258,12 @@ void CPlToolBar::Capture()
 	PlManager::Instance()->Capture(m_hPlWnd, path);
 }
 
-
 /************************************************************************/
 /*                               Real									*/
 /************************************************************************/
 void CPlToolBar::Speak()
 {
-	//m_Player->pPlayer->SetOsdText(2,"对讲");
+	PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "对讲");
 }
 
 void CPlToolBar::Record()
@@ -271,8 +272,8 @@ void CPlToolBar::Record()
 	CPlCtrl::Instance()->GetPath(path,VIDEOPATH);
 	if(PlManager::Instance()->Record(m_hPlWnd, path))
 	{
-		/*m_Player->bRecoder = !m_Player->bRecoder;
-		if(m_Player->bRecoder)
+		m_pPlayParm->bRecoder = !m_pPlayParm->bRecoder;
+		if(m_pPlayParm->bRecoder)
 		{
 			m_bnRecord->ChangePng(FALSE);
 			m_toolTip.AddTool(m_bnRecord,"关闭录像");
@@ -282,7 +283,7 @@ void CPlToolBar::Record()
 			m_bnRecord->ChangePng();
 			m_toolTip.AddTool(m_bnRecord,"开启录像");
 		}
-		m_Player->pPlayer->SetOsdText(2,"录像");*/
+		PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "录像");
 	}
 }
 
@@ -291,26 +292,26 @@ void CPlToolBar::Record()
 /************************************************************************/
 void CPlToolBar::Pause()
 {
-	/*m_Player->pPlayer->Pause();
-	if(m_Player->bPlayOneByOne)
+	PlManager::Instance()->Pause(m_hPlWnd);
+	if(m_pPlayParm->bPlayOneByOne)
 	{
-		m_Player->pPlayer->SetOsdText(2,"恢复播放");
-		m_Player->bPlayOneByOne = FALSE;
+		PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "恢复播放");
+		m_pPlayParm->bPlayOneByOne = FALSE;
 	}
 	else
 	{
-		if(m_Player->pPlayer->IsPaused())
-			m_Player->pPlayer->SetOsdText(2,"恢复播放");
+		if(PlManager::Instance()->IsPaused(m_hPlWnd))
+			PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "恢复播放");
 		else
-			m_Player->pPlayer->SetOsdText(2,"暂停");
-	}*/
+			PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "暂停");
+	}
 }
 
 void CPlToolBar::PlayOneByOne()
 {
 	PlManager::Instance()->PlayOneByOne(m_hPlWnd);
-	//m_Player->bPlayOneByOne = TRUE;
-	//m_Player->pPlayer->SetOsdText(2,"单帧播放>>");
+	m_pPlayParm->bPlayOneByOne = TRUE;
+	PlManager::Instance()->SetOsdText(m_hPlWnd, 2,"单帧播放>>");
 }
 
 void CPlToolBar::SpeedUp()
@@ -325,41 +326,40 @@ void CPlToolBar::SlowDown()
 
 void CPlToolBar::Download()
 {
-	//m_Player->pPlayer->SetOsdText(2,"下载");
+	PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "下载");
 }
 
 void CPlToolBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	/*m_Player->pVolume = ((CExactSlider*)pScrollBar)->GetPos();
-	m_Player->pPlayer->SetVolume(m_Player->pVolume);
-	m_toolTip.AddTool(m_bnSlider,m_Player->pVolume);
-	if(m_Player->pVolume == 0 && m_Player->pSound)
+	m_pPlayParm->pVolume = ((CExactSlider*)pScrollBar)->GetPos();
+	PlManager::Instance()->SetVolume(m_hPlWnd, m_pPlayParm->pVolume);
+	m_toolTip.AddTool(m_bnSlider, m_pPlayParm->pVolume);
+	if(m_pPlayParm->pVolume == 0 && m_pPlayParm->pSound)
 	{
 		m_bnSound->ChangePng();
-		m_Player->pSound = FALSE;
+		m_pPlayParm->pSound = FALSE;
 	}
-	else if(m_Player->pVolume != 0 && !m_Player->pSound)
+	else if(m_pPlayParm->pVolume != 0 && !m_pPlayParm->pSound)
 	{
 		m_bnSound->ChangePng(FALSE);
-		m_Player->pSound = TRUE;
-	}*/
-
+		m_pPlayParm->pSound = TRUE;
+	}
 	CWnd::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
-BOOL CPlToolBar::AttachPlayer(void *pPlayParm, void *parent)
+BOOL CPlToolBar::AttachPlayer(PL_PlayParm *pPlayParm, void *parent)
 {
-	/*if(NULL == pPlayParm) 
+	if(NULL == pPlayParm) 
 		return FALSE;
-	PlayParm *pPlayer = reinterpret_cast<PlayParm *>(pPlayParm);
-	if(m_Player == pPlayer) 
+
+	if(m_pPlayParm == pPlayParm) 
 	{
 		DWORD newTime = GetTickCount();
-		if(newTime - m_Player->dwUIT >= UPDATETOOLTIME)
+		if(newTime - m_pPlayParm->dwUIT >= UPDATETOOLTIME)
 		{
-			m_Player->dwUIT = newTime;
+			m_pPlayParm->dwUIT = newTime;
 			//disable some button
-			if(m_Player->pPlayer->IsPlaying())
+			if(PlManager::Instance()->IsPlaying(m_hPlWnd))
 				EnableSomeButton(TRUE);
 			else
 				EnableSomeButton(FALSE);
@@ -368,19 +368,19 @@ BOOL CPlToolBar::AttachPlayer(void *pPlayParm, void *parent)
 	}
 	else
 	{
-		m_Player = pPlayer;
+		m_pPlayParm = pPlayParm;
 		ShowControls(FALSE);	//右键以后只有该窗口才不现实工具条
 		SetParent((CWnd *)parent);
 	}
 
 	//绘制声音开关
-	if(m_Player->pSound)
+	if(m_pPlayParm->pSound)
 	{
 		m_bnSound->ChangePng(FALSE);
 		m_toolTip.AddTool(m_bnSound,"静音");
 		//绘制音量条
-		m_bnSlider->SetPos(m_Player->pVolume);
-		m_toolTip.AddTool(m_bnSlider,m_Player->pVolume);
+		m_bnSlider->SetPos(m_pPlayParm->pVolume);
+		m_toolTip.AddTool(m_bnSlider, m_pPlayParm->pVolume);
 	}
 	else
 	{
@@ -389,7 +389,7 @@ BOOL CPlToolBar::AttachPlayer(void *pPlayParm, void *parent)
 		//绘制音量条
 		m_bnSlider->SetPos(0);
 		m_toolTip.AddTool(m_bnSlider,0);
-	}*/
+	}
 
 	return TRUE;
 }
@@ -410,7 +410,6 @@ void CPlToolBar::ShowControls(BOOL bShow)
 		ShowWindow(SW_HIDE);
 	}
 }
-
 
 void CPlToolBar::OnTimer(UINT_PTR nIDEvent)
 {

@@ -12,6 +12,15 @@ public:
 		return m_instance;
 	}
 
+	static void Destroy()
+	{
+		if (0 != m_instance)
+		{
+			delete m_instance;
+			m_instance = 0;
+		}
+	}
+
 private:
 	static CBase *m_instance;
 };

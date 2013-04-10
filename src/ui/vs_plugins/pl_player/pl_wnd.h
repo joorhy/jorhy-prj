@@ -28,7 +28,7 @@ protected:
 	UINT m_nFullModel;
 	BOOL m_bTrack;
 	BOOL m_bOver;
-	PlayParm m_PlayerCenter;
+	PL_PlayParm m_PlayerParm;
 	DWORD m_Last_WM_MOUSEMOVE_Pos;
 	DWORD m_dwInterval;
 

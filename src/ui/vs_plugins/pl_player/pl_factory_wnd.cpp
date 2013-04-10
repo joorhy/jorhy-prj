@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "pl_factory_wnd.h"
+#include "pl_wnd.h"
 #include "pl_err.h"
 
 int CPlFactoryWnd::RegisterWindow(const char *wndType, J_MakeWindowFun pFun)
@@ -19,7 +20,7 @@ int CPlFactoryWnd::RegisterWindow(const char *wndType, J_MakeWindowFun pFun)
 CWnd *CPlFactoryWnd::GetWindow(const char *pType, HWND hParent, UINT nId)
 {
 	m_lock.Lock();
-	CWnd *wnd = NULL;
+	CWnd *hWnd = NULL;
 	WindowMap::iterator it = m_wndMap.find(nId);
 	if (it == m_wndMap.end())
 	{
@@ -30,18 +31,18 @@ CWnd *CPlFactoryWnd::GetWindow(const char *pType, HWND hParent, UINT nId)
 		}
 		else
 		{
-			itWnd->second(wnd, hParent, nId);
+			itWnd->second(hWnd, hParent, nId);
 		}
 
-		if (wnd != NULL)
-			m_wndMap[nId] = dynamic_cast<CWnd *>(wnd);
+		if (hWnd != NULL)
+			m_wndMap[nId] = hWnd;
 	}
 	else
-		wnd = it->second;
+		hWnd = it->second;
 
 	m_lock.Unlock();
 
-	return dynamic_cast<CWnd *>(wnd);
+	return hWnd;
 }
 
 void CPlFactoryWnd::DelWindow(int nId)
@@ -50,7 +51,7 @@ void CPlFactoryWnd::DelWindow(int nId)
 	WindowMap::iterator it = m_wndMap.find(nId);
 	if (it != m_wndMap.end())
 	{
-		delete it->second;
+		delete (CPlWnd *)it->second;
 		m_wndMap.erase(it);
 	}
 	m_lock.Unlock();

@@ -1,8 +1,8 @@
 #include "stdlib.h"
-#include <map>
 #include "np_plugin.h"
 #include "np_script_plugin_object.h"
 #include "pl_ctrl.h"
+#include <map>
 
 WNDPROC CNPPlugin::lpOldProc = NULL;
 
@@ -32,7 +32,8 @@ CNPPlugin::~CNPPlugin()
 	{
 		NPN_ReleaseObject(m_CallBkVod);
 		m_CallBkVod = NULL;
-	}	
+	}
+	CPlCtrl::Destroy();
 }
 
 NPBool CNPPlugin::init(NPWindow* pNPWindow)
@@ -250,7 +251,6 @@ bool CNPPlugin::SetWorkModel(char *js_workmodel,NPVariant *result)
 
 bool CNPPlugin::Play(char *js_playInfo,NPVariant *result)
 {
-
 	if(CPlCtrl::Instance()->Play(js_playInfo))
 		SetRetValue("{\"rst\":0}",result);
 	else	

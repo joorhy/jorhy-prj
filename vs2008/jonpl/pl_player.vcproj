@@ -550,6 +550,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_full_wnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_full_wnd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_real_wnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_real_wnd.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_toolbar.cpp"
 				>
 			</File>
@@ -558,35 +574,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_vod_wnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_vod_wnd.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_ui\PngButton.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_ui\PngButton.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\RPlayWnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\RPlayWnd.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\ScreenWnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\ScreenWnd.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\VPlayWnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\VPlayWnd.h"
 				>
 			</File>
 		</Filter>

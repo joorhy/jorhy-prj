@@ -33,10 +33,10 @@ BTKPlayer::~BTKPlayer(void)
 		delete m_player;
 }
 
-BOOL BTKPlayer::Play(HWND hPlayWnd,char *psz_mrl)
+BOOL BTKPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 {
 	BTK_RESULT br;
-	char *beg = strstr(psz_mrl,"//");
+	char *beg = strstr((char *)playInfo.pUrl, "//");
 	char *end = NULL;
 	int len = 0;
 	char mrl[128] = {0};
@@ -54,7 +54,7 @@ BOOL BTKPlayer::Play(HWND hPlayWnd,char *psz_mrl)
 		end = strchr(beg,'&');
 		memcpy(resid,beg,end-beg);
 
-		sprintf(mrl,"RYSP://%s:%d/%s",ip,8002,resid);
+		sprintf(mrl,"RYSP://%s:%d/%s", playInfo.strIpaddr, 8002, playInfo.strResid);
 
 		//sprintf(mrl,"RYSP://192.168.1.10:8002/44");
 		br = m_player->InitPlayByNetwork(mrl);
@@ -71,7 +71,6 @@ BOOL BTKPlayer::Play(HWND hPlayWnd,char *psz_mrl)
 		m_hwnd = hPlayWnd;
 
 		m_player->SetEndCBK(EndCBK,this);
-		
 	}
 	return TRUE;
 }
@@ -179,7 +178,7 @@ HWND BTKPlayer::GetPlayHwnd()
 	return m_hwnd;
 }
 
-BOOL BTKPlayer::VodStreamJump(char *pNewTime_MRL)
+BOOL BTKPlayer::VodStreamJump(const PL_PlayInfo &playInfo)
 {
 	return TRUE;
 }

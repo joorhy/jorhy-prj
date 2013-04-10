@@ -2,31 +2,24 @@
 #include "pl_manager.h"
 #include "pl_factory.h"
 #include "pl_reconn.h"
+#include "pl_json_parser.h"
 #include "runner_log.h"
 
-/*********************static 初始化***********************/
-CALLBACK_onEvent PlManager::m_pFuncCallBk = NULL;
-int PlManager::m_nPlayerNum = 0;
 /*******************类实现*****************************/
 PlManager::PlManager()
 {
-	m_nLastTime		= 0;
-	m_waitStatus	= NULL;
-	m_videoType		= VLC_VIDEO;
+	m_nLastTime			= 0;
 	m_nVodEndTime	= 0;
-	m_pUser			= NULL;
+	m_pFuncCallBk		= NULL;
+	m_nPlayNum		= 0;
 }
 
 PlManager::~PlManager(void)
 {
-	if(NULL != m_waitStatus)
-	{
-		delete (CWaitStatus*)m_waitStatus;
-		m_waitStatus = NULL;
-	}
+
 }
 
-BOOL PlManager::Play(HWND hWnd, char *pJsUrl, int nPlayMode, int nSteamType)
+BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 {
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
@@ -36,21 +29,17 @@ BOOL PlManager::Play(HWND hWnd, char *pJsUrl, int nPlayMode, int nSteamType)
 	}
 
 	BOOL bRet;
-	json_object *js_obj = json_tokener_parse(pJsUrl);
-	if(is_error(js_obj))
-		return FALSE;
-
 	PL_PlayerInfo info = {0};
 	info.hWnd = hWnd;
-	info.nType = nPlayMode;
-	CreateMrl(nPlayMode, nSteamType, pJsUrl, info.pUrl);
-	switch(nSteamType)
+	info.playInfo = playInfo;
+	CreateMrl(playInfo);
+	switch(playInfo.nStreamType)
 	{
 	case HIK_VIDEO:
-		info.pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", nPlayMode, this, hWnd);
+		info.pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", playInfo.nPlayMode, this, hWnd);
 		break;
 	case VLC_VIDEO:
-		info.pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", nPlayMode, this, hWnd);
+		info.pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", playInfo.nPlayMode, this, hWnd);
 		break;
 	default:
 		return FALSE;
@@ -58,14 +47,13 @@ BOOL PlManager::Play(HWND hWnd, char *pJsUrl, int nPlayMode, int nSteamType)
 
 	if(info.pPlayer)
 	{
-		if((bRet = info.pPlayer->Play(hWnd, info.pUrl)))
-			m_nPlayerNum++;
-		if(info.nType == STREAME_REALTIME)
+		if((bRet = info.pPlayer->Play(hWnd, playInfo)))
+			m_nPlayNum++;
+
+		if(playInfo.nPlayMode == STREAME_REALTIME)
 		{
-			if(!m_waitStatus)
-			{
-				m_waitStatus = new CWaitStatus(CWnd::FromHandle(::GetParent(hWnd)));
-			}
+			if(!info.pReconnWnd)
+				info.pReconnWnd = new CWaitStatus(CWnd::FromHandle(::GetParent(hWnd)));
 		}
 	}
 	m_playerMap[hWnd] = info;
@@ -73,41 +61,26 @@ BOOL PlManager::Play(HWND hWnd, char *pJsUrl, int nPlayMode, int nSteamType)
 	return bRet;
 }
 
-void PlManager::CreateMrl(int nPlayMode, int nSteamType,  char *pJsUrl, char *pUrl)
+void PlManager::CreateMrl(const PL_PlayInfo &playInfo)
 {
-	if(nSteamType == VLC_VIDEO)
-		sprintf(pUrl,"http://");
+	if(playInfo.nStreamType == VLC_VIDEO)
+		sprintf((char *)playInfo.pUrl, PROTO_HTTP);
 	else
-		sprintf(pUrl,CUSTOM_PROTOCOL);
+		sprintf((char *)playInfo.pUrl, PROTO_JOSP);
+
 	char tmpInfo[128];
-	json_object *js_obj = json_tokener_parse(pJsUrl);
-	if(is_error(js_obj))
-		return ;
-	
-	if(STREAME_REALTIME == nPlayMode)
+	if(STREAME_REALTIME == playInfo.nPlayMode)
 	{
 		sprintf(tmpInfo,"%s:%d/real?resid=%s&cmd=%d&type=%d",
-			json_object_get_string(json_object_object_get(js_obj,"ip")),
-			json_object_get_int(json_object_object_get(js_obj,"port")),
-			json_object_get_string(json_object_object_get(js_obj,"resid")),
-			1,
-			json_object_get_int(json_object_object_get(js_obj,"ms"))
-			);
+			playInfo.strIpaddr, playInfo.nPort, playInfo.strResid, 1, playInfo.nSubStreamType);
 	}
-	else if(STREAME_FILE == nPlayMode)
+	else if(STREAME_FILE == playInfo.nPlayMode)
 	{
-		m_nVodEndTime = json_object_get_int(json_object_object_get(js_obj,"end"));
+		m_nVodEndTime = playInfo.nEndTime;
 		sprintf(tmpInfo,"%s:%d/vodl?resid=%s&cmd=%d&start=%d&end=%d",
-			json_object_get_string(json_object_object_get(js_obj,"ip")),
-			json_object_get_int(json_object_object_get(js_obj,"port")),
-			json_object_get_string(json_object_object_get(js_obj,"resid")),
-			3,
-			json_object_get_int(json_object_object_get(js_obj,"start")),
-			json_object_get_int(json_object_object_get(js_obj,"end"))
-			);
+			playInfo.strIpaddr, playInfo.nPort, playInfo.strResid, 3, playInfo.nStartTime, playInfo.nEndTime);
 	}
-	strcat(pUrl, tmpInfo);
-	json_object_put(js_obj);
+	strcat((char *)playInfo.pUrl, tmpInfo);
 }
 
 BOOL PlManager::Capture(HWND hWnd, char *pPath)
@@ -163,17 +136,17 @@ void PlManager::Stop(HWND hWnd)
 		SendMessage(hWnd, WM_OWN_ERASEBKGROUND,TRUE,0);
 		it->second.pPlayer->Stop();
 
-		m_nPlayerNum--;
+		m_nPlayNum--;
 		m_nVodEndTime = 0;
-		if(m_nPlayerNum == 0)
+		if(m_nPlayNum == 0)
 		{
 			int args[2];
 			args[0] = 1;
 			args[1] = (int)"null";
 
-			onCallBack(CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
+			NotifyNpn(hWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
 		}
-		CPlFactory::Instance()->DelPlayer(m_hPlayWnd);
+		CPlFactory::Instance()->DelPlayer(hWnd);
 		m_playerMap.erase(it);
 	}
 	return;
@@ -234,164 +207,111 @@ void PlManager::VodCallBack(HWND hWnd)
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		/*int args[1];
-		int64_t startTime = 0;
-		if(m_jsPlayInfo)
+		int args[1];
+		if(it->second.playInfo.nStartTime > m_nVodEndTime)
 		{
-			json_object *js_obj = json_tokener_parse(m_jsPlayInfo);
-			if(is_error(js_obj))
-			{
-				return ;
-			}
-			json_object *tmp = json_object_object_get(js_obj,"start");
-			if(!is_error(tmp))
-			{
-				startTime = json_object_get_int(tmp);
-				startTime += m_nLastTime;
-				if(startTime > m_nVodEndTime)
-				{
-					PostMessage(GetPlayHwnd(),WM_MEDIA_END_REACHED,0,0);
-					return;
-				}
-				args[0] = (int)&startTime;
-				onCallBack(CALLBACK_ONVOD,args,sizeof(args)/sizeof(int));
-				m_nLastTime++;
-			}
-			else
-				return;
-			json_object_put(js_obj);
+			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
+			return;
 		}
-		else
-			return;*/
+		args[0] = (int)&it->second.playInfo.nStartTime;
+		NotifyNpn(hWnd, CALLBACK_ONVOD, args, sizeof(args)/sizeof(int));
 	}
 	return;
 }
 
-BOOL PlManager::RegisterCallBack(CALLBACK_onEvent funcAddr)
+BOOL PlManager::RegisterCallBack(NpnNotifyFunc funcAddr)
 {
 	if(NULL == funcAddr)
 		return FALSE;
 	else
 		m_pFuncCallBk = funcAddr;
-	return TRUE;
-}
-
-void PlManager::onCallBack(unsigned int nType,int args[],unsigned int argCount)
-{
-	if(NULL == m_pFuncCallBk || NULL == m_pUser) 
-		return;
-	else
-		m_pFuncCallBk(m_pUser,nType,args,argCount);
-}
-
-BOOL PlManager::GetWndPlayParm(HWND hWnd, char *OUT_playerParm)
-{
-	/*json_object *resid = NULL;
-	json_object *ms	= NULL;
-	json_object *retInfo = NULL;
-	json_object *id = NULL;
-
-	if(m_jsPlayInfo == NULL || m_pPlayer == NULL)
-	{
-		return TRUE;
-	}
-	json_object *js_obj = json_tokener_parse(m_jsPlayInfo);
-	if(is_error(js_obj))
-	{
-		return FALSE;
-	}
-	resid = json_object_object_get(js_obj,"resid");
-	ms = json_object_object_get(js_obj,"ms");
-	if(is_error(ms))
-	{
-		ms = json_object_new_int(-1);
-	}
-	id = json_object_new_int(GetWindowLong(m_pPlayer->GetPlayHwnd(),GWL_ID));
-	retInfo = json_object_new_object();
-
-	json_object_object_add(retInfo,"id",id);
-	json_object_object_add(retInfo,"resid",json_object_new_string(json_object_get_string(resid)));
-	json_object_object_add(retInfo,"ms",json_object_new_string(json_object_get_string(ms)));
-
-	sprintf(OUT_playerParm,"%s",json_object_to_json_string(retInfo));
-
-	json_object_put(id);
-	json_object_put(retInfo);
-	json_object_put(js_obj);*/
 
 	return TRUE;
 }
 
-BOOL PlManager::VodStreamJump(HWND hWnd, char *js_time)
+void PlManager::NotifyNpn(HWND hWnd, UINT nType, int args[], UINT argCount)
 {
-	/*if(m_pPlayer == NULL)
-		return FALSE;
-	if(!m_pPlayer->IsPlaying())
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
 	{
-		return TRUE;
+		if(NULL == m_pFuncCallBk || NULL == it->second.pUser) 
+			return;
+		else
+			m_pFuncCallBk(it->second.pUser, nType, args, argCount);
 	}
-	m_nLastTime = 0;		//防止时间调跳动
-	BOOL bRet = FALSE;
-	char mrl[512] = {0};
-	json_object *tmp = json_tokener_parse(js_time);
-	json_object *newTime = NULL;
-	if(is_error(tmp))
-	{
-		return FALSE;
-	}
-	newTime = json_object_object_get(tmp,"stime");
-	int time = json_object_get_int(newTime);
-	if(time > m_nVodEndTime)		//超出结束时间就停止
-	{
-		PostMessage(GetPlayHwnd(),WM_MEDIA_END_REACHED,0,0);
-		return FALSE;
-	}
-	json_object *js_obj = json_tokener_parse(m_jsPlayInfo);
-	if(is_error(js_obj))
-	{
-		return FALSE;
-	}
-	json_object_object_add(js_obj,"start",json_object_new_int(time));
-	delete m_jsPlayInfo;
-	char *js_str = json_object_to_json_string(js_obj);
-	int len = strlen(js_str);
-	m_jsPlayInfo = new char[len + 1];
-	strcpy(m_jsPlayInfo,js_str);
-	m_jsPlayInfo[len] = '\0';
-
-	CreateMrl(mrl);
-	return m_pPlayer->VodStreamJump(mrl);*/
-	return TRUE;
 }
 
-void PlManager::Play()
+BOOL PlManager::GetWndPlayParm(HWND hWnd, char *pPlayerParm)
 {
-	/*if(m_pPlayer == NULL)
-		return;
-	return m_pPlayer->Play();*/
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		PlJsonParser::Instance()->MakeWndParam(it->second.playInfo, pPlayerParm);
+		return  TRUE;
+	}
+	return FALSE;
 }
 
-
-void *PlManager::GetRecntWnd() const
+BOOL PlManager::GetPlayInfo(HWND hWnd, PL_PlayInfo &playInfo)
 {
-	return m_waitStatus;
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		playInfo = it->second.playInfo;
+		return  TRUE;
+	}
+	return FALSE;
+}
+
+BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
+{
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		if(!IsPlaying(hWnd))
+			return TRUE;
+		
+		if (playInfo.nStartTime > playInfo.nEndTime)		//超出结束时间就停止
+		{
+			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
+			return FALSE;
+		}
+		CreateMrl(playInfo);
+		return it->second.pPlayer->VodStreamJump(playInfo);
+	}
+	return FALSE;
+}
+
+void PlManager::Play(HWND hWnd)
+{
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		return it->second.pPlayer->Play();
+	}
+}
+
+CWnd *PlManager::GetRecntWnd(HWND hWnd)
+{
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		return it->second.pReconnWnd;
+	}
 }
 
 void PlManager::StatusCallBack(HWND hPlayWnd)
 {
-	int args[2];
-	int idWnd = 0;
-	json_object *j_obj = json_object_new_object();
-
-	args[0] = 3;
-	idWnd = GetWindowLong(hPlayWnd,GWL_ID);
-	json_object_object_add(j_obj,"id",json_object_new_int(idWnd));
-	json_object_object_add(j_obj,"state",json_object_new_int(1));
-	args[1] = (int)json_object_to_json_string(j_obj);
-
-	onCallBack(CALLBACK_ONSTATE,args,sizeof(args)/sizeof(int));
-
-	json_object_put(j_obj);
+	PlayerMap::iterator it = m_playerMap.find(hPlayWnd);
+	if (it != m_playerMap.end())
+	{
+		char pJsStr[512] = {0};
+		int args[2];
+		args[0] = 3;
+		PlJsonParser::Instance()->MakeCbStatus(it->second.playInfo, pJsStr);
+		args[1] = (int)pJsStr;
+		NotifyNpn(hPlayWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
+	}
 }
 
 BOOL PlManager::SetUserData(HWND hWnd, void *pUser)
@@ -404,32 +324,40 @@ BOOL PlManager::SetUserData(HWND hWnd, void *pUser)
 	return FALSE;
 }
 
-BOOL PlManager::SetOsdText(int stime,char *osdtext)
+BOOL PlManager::SetOsdText(HWND hWnd, int stime,char *osdtext)
 {
-	/*if(m_pPlayer == NULL)
-		return FALSE;
-	return m_pPlayer->SetOSDText(stime,osdtext);*/
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		it->second.pPlayer->SetOSDText(stime,osdtext);
+	}
 	return FALSE;
 }
 
-BOOL PlManager::IsPaused()
+BOOL PlManager::IsPaused(HWND hWnd)
 {
-	/*if(m_pPlayer == NULL)
-		return FALSE;
-	return m_pPlayer->IsPaused();*/
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		it->second.pPlayer->IsPaused();
+	}
 	return FALSE;
 }
 
-void PlManager::AspectRatio(int width,int height)
+void PlManager::AspectRatio(HWND hWnd, int width,int height)
 {
-	/*if(m_pPlayer == NULL)
-		return;
-	m_pPlayer->AspectRatio(width,height);*/
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		it->second.pPlayer->AspectRatio(width,height);
+	}
 }
 
-void PlManager::SleepPlayer(bool bSleep)
+void PlManager::SleepPlayer(HWND hWnd, bool bSleep)
 {
-	/*if(m_pPlayer == NULL)
-		return;
-	m_pPlayer->SleepPlayer(bSleep);*/
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		it->second.pPlayer->SleepPlayer(bSleep);
+	}
 }

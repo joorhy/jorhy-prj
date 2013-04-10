@@ -4,10 +4,10 @@
 #include "pl_type.h"
 #include "pl_player.h"
 #include "pl_singleton.h"
-#include "pl_wnd.h"
 #include "json.h"
 #include <vector>
 
+class CPlWnd;
 class PL_API CPlCtrl : public SingletonTmpl<CPlCtrl>
 {
 public:
@@ -19,28 +19,22 @@ public:
 	BOOL	SetLayout(char *js_Layout);
 	BOOL	SetLayout();
 	BOOL	Play(char *js_mrl);
-	BOOL	Play(HWND hWnd,char *js_mrl);
 	BOOL	StopAll();
 	BOOL	VodStreamJump(char *js_time);
 	BOOL	GetWndParm(char *pRet,int nType);
 	void		SleepPlayer(bool bSleep);
 
 	/**********************************************/
-	char *GetLayout() const;
 	void FullScreen();
 	HWND GetFocusWnd();
-	BOOL RegisterCallBack(CALLBACK_onEvent funcAddr,void *pUser);
+	BOOL RegisterCallBack(NpnNotifyFunc funcAddr, void *pUser);
 	BOOL GetPath(char *psz_dest, UINT nType);
-	void LoadPlLibrary();
-	void FreePlLibrary();
 
 private:
 	HWND m_hParent;
-
 	//work model
 	PL_LayoutInfo m_layoutInfo;
 	std::vector<CPlWnd *> m_vecPlayWnd; 
-	std::vector<HMODULE> m_vecModule; 
 	void *m_pUser;
 
 private:

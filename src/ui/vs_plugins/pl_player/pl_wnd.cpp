@@ -6,6 +6,7 @@
 #include "pl_wnd.h"
 #include "pl_factory.h"
 #include "pl_factory_wnd.h"
+#include "pl_json_parser.h"
 #include "runner_log.h"
 
 // CPlayWnd
@@ -36,6 +37,11 @@ CPlWnd::CPlWnd(HWND hParent, UINT nID)
 	m_WndNumber++;
 	m_nFocus = 1;
 	m_wndRef++;
+
+	memset(&m_PlayerParm, 0, sizeof(m_PlayerParm));
+	m_PlayerParm.pSound					= FALSE;
+	m_PlayerParm.pVolume				= DEFAULT_VOLUME;
+	m_PlayerParm.bNeedShowCTRL	= SHOWCTRLCOMMAND;
 }
 
 CPlWnd::~CPlWnd()
@@ -45,6 +51,13 @@ CPlWnd::~CPlWnd()
 	{
 		CPlFactoryWnd::Instance()->DelWindow(1000);
 		m_FullWnd = NULL;
+	}
+
+	m_wndRef--;
+	if(m_Tool != NULL && m_wndRef == 0)
+	{
+		delete m_Tool;
+		m_Tool = NULL;
 	}
 }
 
@@ -98,7 +111,6 @@ void CPlWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 BOOL CPlWnd::OnEraseBkgnd(CDC* pDC)
 {
-
 	if(!bEraseOwn)
 		return CWnd::OnEraseBkgnd(pDC);
 
@@ -189,7 +201,7 @@ void CPlWnd::OnSize(UINT nType, int cx, int cy)
 						TRUE);
 	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
-		PlManager::Instance()->AspectRatio();		//拉伸
+		PlManager::Instance()->AspectRatio(m_hWnd);		//拉伸
 	}
 }
 
@@ -241,14 +253,13 @@ void CPlWnd::OnMouseMove(UINT nFlags, CPoint point)
 		m_Last_WM_MOUSEMOVE_Pos = MsgPos;
 		if(m_Tool)
 		{
-			m_Tool->AttachPlayer(&m_PlayerCenter, this);
+			m_Tool->AttachPlayer(&m_PlayerParm, this);
 			m_Tool->ShowControls(TRUE);
 		}
 	}
 
 	CWnd::OnMouseMove(nFlags, point);
 }
-
 
 //MouseHook
 void CPlWnd::MouseHook(bool bSetHook)
@@ -270,7 +281,6 @@ void CPlWnd::MouseHook(bool bSetHook)
 	{
 		m_MouseHookThreadId = 0;
 	}
-
 }
 
 HWND CPlWnd::FindPlayerWnd()
@@ -299,9 +309,9 @@ LRESULT CPlWnd::SetMouseHook(WPARAM wParam,LPARAM lParam)
 
 void CPlWnd::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	m_PlayerCenter.bNeedShowCTRL = !m_PlayerCenter.bNeedShowCTRL;
+	m_PlayerParm.bNeedShowCTRL = !m_PlayerParm.bNeedShowCTRL;
 	if(m_Tool)
-		m_Tool->ShowControls(m_PlayerCenter.bNeedShowCTRL);
+		m_Tool->ShowControls(m_PlayerParm.bNeedShowCTRL);
 }
 
 LRESULT CPlWnd::SetEraseType(WPARAM wParam,LPARAM lParam)
@@ -314,63 +324,36 @@ void CPlWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if(nChar == VK_ESCAPE && m_bFullScreen == TRUE)
 	{
-		PostMessage(WM_LBUTTONDBLCLK,0,0);
+		PostMessage(WM_LBUTTONDBLCLK, 0, 0);
 	}
 	CWnd::OnKeyDown(nChar,nRepCnt,nFlags);
 }
 
 LRESULT CPlWnd::SetWndFocus(WPARAM wParam,LPARAM lParam)
 {
-	CPen pen = CPen(PS_SOLID,2,RGB(255,0,0));
+	CPen pen = CPen(PS_SOLID, 2, RGB(255,0,0));
 	DrawBorder(&pen);
 	DeleteObject(pen);
 
-	HWND hOld= ::GetDlgItem(GetParent()->m_hWnd,m_nFocus); 
-
+	HWND hOld= ::GetDlgItem(GetParent()->m_hWnd, m_nFocus); 
 	//回调
-	int IdWnd = GetWindowLong(this->m_hWnd,GWL_ID);
-	if(IdWnd != m_nFocus)
+	int nIdWnd = GetWindowLong(this->m_hWnd, GWL_ID);
+	if(nIdWnd != m_nFocus)
 	{
-		m_nFocus = IdWnd;
-		::SendMessage(hOld,WM_OWN_KILLFOCUS,0,0);
+		m_nFocus = nIdWnd;
+		::SendMessage(hOld, WM_OWN_KILLFOCUS, 0, 0);
 		if(PlManager::Instance()->IsPlaying(m_hWnd))
 		{
-			int args[2];
-			json_object *js_args	= NULL;
-			json_object *resid  = NULL;
-			json_object *ms		= NULL;
-			json_object *info	= NULL;
-			char *p_jsinfo		= NULL;
-
-			//p_jsinfo = m_PlayerCenter.pPlayer->GetJSInfo();
-			if(!p_jsinfo)
+			PL_PlayInfo playInfo = {0};
+			if(!PlManager::Instance()->GetPlayInfo(m_hWnd, playInfo))
 				return TRUE;
-			info = json_tokener_parse(p_jsinfo);
-			if(!is_error(info) && info)
-			{
-				js_args = json_object_new_object();
-				resid = json_object_object_get(info,"resid");
-				json_object_object_add(js_args,"id",json_object_new_int(IdWnd));
-				json_object_object_add(js_args,"resid",resid);
-				ms = json_object_object_get(info,"ms");
-				if(is_error(ms))
-				{
-					ms = json_object_new_string("NULL");
-					json_object_object_add(js_args,"ms",ms);
-				}
-				else
-				{
-					ms = json_object_new_string(json_object_get_string(ms));
-					json_object_object_add(js_args,"ms",ms);
-				}
-				args[0] = 2;
-				args[1]	= (int)json_object_to_json_string(js_args);
-				PlManager::Instance()->onCallBack(CALLBACK_ONSTATE,args,sizeof(args)/sizeof(int));
-
-				json_object_put(info);
-				json_object_put(js_args);
-
-			}
+			
+			char pJsData[64] = {0};
+			PlJsonParser::Instance()->MakeFocus(playInfo, pJsData);
+			int args[2];
+			args[0] = 2;
+			args[1]	= (int)pJsData;
+			PlManager::Instance()->NotifyNpn(m_hWnd, CALLBACK_ONSTATE,args,sizeof(args)/sizeof(int));
 		}
 	}
 	return FALSE;

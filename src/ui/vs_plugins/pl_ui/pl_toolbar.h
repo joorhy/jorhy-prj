@@ -46,13 +46,14 @@ private:
 	//player
 	BOOL m_bCreate;
 	CNewToolTip m_toolTip;
+	PL_PlayParm *m_pPlayParm;
 
 public:
 	///PlToolWin
 	virtual void SetModel(int nModel) { m_eModel = nModel; InitParm(); } 
 	virtual void ShowControls(BOOL bShow);
 	virtual void StopPlayer() { Stop(); }
-	BOOL AttachPlayer(void *pPlayParm, void *parent);
+	virtual BOOL AttachPlayer(PL_PlayParm *pPlayParm, void *parent);
 
 public:
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO *lpMMI);

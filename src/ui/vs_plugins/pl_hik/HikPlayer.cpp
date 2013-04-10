@@ -60,7 +60,7 @@ BOOL HikPlayer::InitPlay(char *pHeader,int nHeadLen)
 	
 }
 
-BOOL HikPlayer::Play(HWND hPlayWnd,char *psz_mrl)
+BOOL HikPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 {
 	m_hPlayWnd = hPlayWnd;
 	if(m_pBuff == NULL)
@@ -86,7 +86,7 @@ BOOL HikPlayer::Play(HWND hPlayWnd,char *psz_mrl)
 		}
 		return FALSE;
 	}
-	bRet = m_pRecv->StartRecv(psz_mrl,m_pBuff);
+	/*bRet = m_pRecv->StartRecv(psz_mrl,m_pBuff);
 	if(!bRet)
 	{
 		if(m_pRecv)
@@ -101,7 +101,7 @@ BOOL HikPlayer::Play(HWND hPlayWnd,char *psz_mrl)
 			m_pBuff = NULL;
 		}
 		return FALSE;
-	}
+	}*/
 
 	return TRUE;
 }
@@ -207,14 +207,14 @@ HWND HikPlayer::GetPlayHwnd()
 	return 0;
 }
 
-BOOL HikPlayer::VodStreamJump(char *pNewTime_MRL)
+BOOL HikPlayer::VodStreamJump(const PL_PlayInfo &playInfo)
 {
 	if(m_port == -1)
 		return FALSE;
 
 	if(m_pRecv)
 	{
-		m_pRecv->VodJumpRecv(pNewTime_MRL);
+		m_pRecv->VodJumpRecv((char *)playInfo.pUrl);
 		m_pBuff->FlushBuff();
 		PlayM4_ResetSourceBuffer(m_port);
 	}

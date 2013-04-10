@@ -113,7 +113,7 @@ void VlcPlayer::InitPlay()
 	m_pInstance = libvlc_new(argvlen,vlc_args);
 }
 
-BOOL VlcPlayer::Play(HWND hPlayWnd,char *psz_mrl)
+BOOL VlcPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 {
 	if(NULL == m_pInstance)
 		return FALSE;
@@ -121,7 +121,7 @@ BOOL VlcPlayer::Play(HWND hPlayWnd,char *psz_mrl)
 	{
 		Stop();
 	}
-	libvlc_media_t *media= libvlc_media_new_location(m_pInstance,psz_mrl);
+	libvlc_media_t *media= libvlc_media_new_location(m_pInstance, playInfo.pUrl);
 	m_play = libvlc_media_player_new_from_media(media);
 	libvlc_video_set_key_input(m_play,FALSE);
 	libvlc_video_set_mouse_input(m_play,FALSE);
@@ -360,14 +360,14 @@ void VlcPlayer::AspectRatio(int width,int height)
 
 };
 
-BOOL VlcPlayer::VodStreamJump(char *pNewTime_MRL)
+BOOL VlcPlayer::VodStreamJump(const PL_PlayInfo &playInfo)
 {
 	if(m_play == NULL)
 		return FALSE;
 	HWND hwnd = GetPlayHwnd();
 	SendMessage(hwnd,WM_OWN_ERASEBKGROUND,FALSE,0);
 	m_nSpeedIndex = NORMALSPEED;
-	return Play(hwnd,pNewTime_MRL);
+	return Play(hwnd, playInfo);
 }
 
 void *VlcPlayer::GetPlayFactor() const

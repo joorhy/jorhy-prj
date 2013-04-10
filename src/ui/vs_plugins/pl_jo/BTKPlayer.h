@@ -19,7 +19,7 @@ public:
 	}
 
 public:
-	virtual BOOL Play(HWND hPlayWnd,char *psz_mrl);
+	virtual BOOL Play(HWND hPlayWnd, const PL_PlayInfo &playInfo);
 	virtual void Play();
 	virtual void Stop();
 	virtual void Pause();
@@ -32,7 +32,7 @@ public:
 	virtual BOOL Record(char *path);
 	virtual int GetPlayStatus();
 	virtual HWND GetPlayHwnd();
-	virtual BOOL VodStreamJump(char *pNewTime_MRL);
+	virtual BOOL VodStreamJump(const PL_PlayInfo &playInfo);
 	virtual BOOL SetOSDText(int stime,char *osdText);
 	virtual BOOL IsPaused();
 	virtual void AspectRatio(int width=0,int height=0);

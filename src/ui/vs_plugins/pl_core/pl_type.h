@@ -103,6 +103,8 @@ enum ButtonStatus
 #define WM_OWN_START_WAIT				WM_USER+8			//wParam point to user
 
 //custom protocol
+#define PROTO_HTTP	"http://"
+#define PROTO_JOSP "JOSP://"
 #define CUSTOM_NAME "JOSP"
 #define CUSTOM_PROTOCOL CUSTOM_NAME##"://"
 #define CUSTOM_VERSION	CUSTOM_NAME##"/1.0 "
@@ -114,7 +116,7 @@ enum ButtonStatus
 *		args:传递参数数组
 *		argCount:传递参数个数
 * return: 失败返回-1，成功返回0*/
-typedef void(*CALLBACK_onEvent)(void *pUser,unsigned int nType,int args[],unsigned int argCount);
+typedef void(*NpnNotifyFunc)(void *pUser, UINT nType, int args[], UINT argCount);
 
 enum video_type
 {
