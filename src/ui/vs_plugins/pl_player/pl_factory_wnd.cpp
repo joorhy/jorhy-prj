@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "pl_factory_wnd.h"
-#include "pl_wnd.h"
 #include "pl_err.h"
 
 int CPlFactoryWnd::RegisterWindow(const char *wndType, J_MakeWindowFun pFun)
@@ -35,10 +34,18 @@ CWnd *CPlFactoryWnd::GetWindow(const char *pType, HWND hParent, UINT nId)
 		}
 
 		if (hWnd != NULL)
-			m_wndMap[nId] = hWnd;
+		{
+			PL_WndInfo info = {0};
+			info.pWnd = hWnd;
+			info.nRef = 1;
+			m_wndMap[nId] = info;
+		}
 	}
 	else
-		hWnd = it->second;
+	{
+		++it->second.nRef;
+		hWnd = it->second.pWnd;
+	}
 
 	m_lock.Unlock();
 
@@ -51,8 +58,12 @@ void CPlFactoryWnd::DelWindow(int nId)
 	WindowMap::iterator it = m_wndMap.find(nId);
 	if (it != m_wndMap.end())
 	{
-		delete (CPlWnd *)it->second;
-		m_wndMap.erase(it);
+		--it->second.nRef;
+		if (it->second.nRef == 0)
+		{
+			delete (CWnd *)it->second.pWnd;
+			m_wndMap.erase(it);
+		}
 	}
 	m_lock.Unlock();
 }

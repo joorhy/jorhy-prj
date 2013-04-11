@@ -26,21 +26,16 @@ CPlVodWnd::CPlVodWnd(HWND hParent, UINT nID)
 
 void CPlVodWnd::InitParm()
 {
-	if(NULL == m_Tool)
+	m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
+	ASSERT(m_Tool != NULL);
+	if(NULL != m_Tool)
 	{
-		m_Tool = new CPlToolBar(this, IDT_TOOL);
 		m_Tool->SetModel(STREAME_FILE);
 	}
 }
 
 CPlVodWnd::~CPlVodWnd()
 {
-	//m_wndRef--;
-	//if(m_Tool != NULL && m_wndRef == 0)
-	//{
-	//	delete m_Tool;
-	//	m_Tool = NULL;
-	//}
 }
 
 BEGIN_MESSAGE_MAP(CPlVodWnd, CWnd)

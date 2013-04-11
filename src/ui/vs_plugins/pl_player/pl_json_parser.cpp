@@ -66,7 +66,7 @@ BOOL PlJsonParser::ParserPlay(const char *pJsStr, PL_PlayInfo &playInfo)
 	strcpy(playInfo.strResid, json_object_get_string(json_object_object_get(play_obj,"resid")));
 	// µ ± ”∆µ
 	json_object *real_obj = json_object_object_get(play_obj, "ms");
-	if (!is_error(play_obj))
+	if (real_obj)
 	{
 		playInfo.nSubStreamType = 	json_object_get_int(real_obj);
 		playInfo.nPlayMode = STREAME_REALTIME;
@@ -80,6 +80,18 @@ BOOL PlJsonParser::ParserPlay(const char *pJsStr, PL_PlayInfo &playInfo)
 	}
 	playInfo.nStreamType = VLC_VIDEO;
 	json_object_put(real_obj);
+	json_object_put(play_obj);
+
+	return TRUE;
+}
+
+BOOL PlJsonParser::ParserDrag(const char *pJsStr, PL_PlayInfo &playInfo)
+{
+	json_object *play_obj = NULL;
+	play_obj = json_tokener_parse((char *)pJsStr);
+	if(is_error(play_obj))
+		return FALSE;
+	playInfo.nStartTime = json_object_get_int(json_object_object_get(play_obj, "stime"));
 	json_object_put(play_obj);
 
 	return TRUE;

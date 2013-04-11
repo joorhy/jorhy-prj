@@ -12,15 +12,12 @@ public:
 	CPlWnd(HWND hParent = NULL, UINT nID = 0);
 	virtual ~CPlWnd();
 
-	static PlToolWin *m_Tool;
-	static int m_wndRef;	 //	多个实例tool和fullwnd的销毁使用
-
 protected:
 	DECLARE_MESSAGE_MAP()
 
 	static UINT m_nFocus;		//目前的焦点窗口
-	static PlFullScreen *m_FullWnd;
-	static int m_WndNumber;
+	PlFullScreen *m_FullWnd;
+	PlToolWin *m_Tool;
 	static int m_nNowShowWnd;
 	static DWORD m_MouseHookThreadId;
 	CBitmap m_hBkg;
@@ -48,6 +45,7 @@ public:
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg void OnPaint();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseLeave();
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 public:

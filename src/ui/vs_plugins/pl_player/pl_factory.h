@@ -7,7 +7,7 @@
 #include <map>
 #include <string>
 
-typedef int (*J_MakePlayerFun)(PlPlayer *&, int nWorkMode, void *pUser);
+typedef int (*J_MakePlayerFun)(PlPlayer *&, int nWorkMode, HWND hWnd);
 
 class PL_API CPlFactory : public SingletonTmpl<CPlFactory>
 {

@@ -10,12 +10,12 @@
 class PL_API VlcPlayer : public PlPlayer
 {
 public:
-	VlcPlayer(int nWorkMode, void *pFactorUser);
+	VlcPlayer(int nWorkMode,  HWND hWnd);
 	~VlcPlayer(void);
 
-	static int Maker(PlPlayer *&pObj, int nWorkMode,void *pUser)
+	static int Maker(PlPlayer *&pObj, int nWorkMode, HWND hWnd)
 	{
-		pObj = new VlcPlayer(nWorkMode, pUser);
+		pObj = new VlcPlayer(nWorkMode, hWnd);
 		return PL_OK;
 	}
 

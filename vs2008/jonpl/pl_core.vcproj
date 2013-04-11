@@ -222,10 +222,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_com.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_core.cpp"
 				>
 			</File>

@@ -30,7 +30,7 @@ PlPlayer *CPlFactory::GetPlayer(const char *pType, int nWorkMode, void *pUser, H
 		}
 		else
 		{
-			itPlayer->second(player, nWorkMode, pUser);
+			itPlayer->second(player, nWorkMode, hWnd);
 		}
 
 		if (player != NULL)

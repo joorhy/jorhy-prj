@@ -5,6 +5,8 @@
 #include "ExactSlider.h"
 #include "PngButton.h"
 #include "pl_manager.h"
+#include "pl_err.h"
+
 #include "NewToolTip.h"
 
 // CFlootTool
@@ -14,9 +16,14 @@ class CPlToolBar : public CWnd
 	DECLARE_DYNAMIC(CPlToolBar)
 
 public:
-	CPlToolBar(CWnd *parent, UINT nId);
+	CPlToolBar(HWND parent, UINT nId);
 	virtual ~CPlToolBar();
 
+	static int Maker(CWnd *&pObj, HWND hParent,UINT nID)
+	{
+		pObj = new CPlToolBar(hParent, nID);
+		return PL_OK;
+	}
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -54,6 +61,7 @@ public:
 	virtual void ShowControls(BOOL bShow);
 	virtual void StopPlayer() { Stop(); }
 	virtual BOOL AttachPlayer(PL_PlayParm *pPlayParm, void *parent);
+	//virtual HWND GetPlWnd() { return m_hPlWnd; }
 
 public:
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO *lpMMI);

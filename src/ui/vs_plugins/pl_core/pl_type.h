@@ -57,7 +57,7 @@ typedef int BOOL;
 #define CALLBACK_TIMER2 2	//http
 #define TOOL_TIMER	3		//工具条定时器
 #define ELAPSE_TIME	499		//定时器时间 以毫秒为单位
-#define TOOLSTAYTIME 2000	//工具条停留时间
+#define TOOLSTAYTIME 1000	//工具条停留时间
 #define UPDATETOOLTIME	500	//更新工具条时间间隔
 #define SHOWCTRLCOMMAND FALSE	//是否开启显示工具条
 	

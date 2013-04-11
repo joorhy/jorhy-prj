@@ -7,13 +7,18 @@
 #include <map>
 #include <string>
 
-typedef int (*J_MakePlayerFun)(PlPlayer *&, int nWorkMode, void *pUser);
+struct PL_WndInfo
+{
+	CWnd	* pWnd;
+	int		nRef;
+};
+
 typedef int (*J_MakeWindowFun)(CWnd *&, HWND hParent,UINT nID);
 
 class PL_API CPlFactoryWnd : public SingletonTmpl<CPlFactoryWnd>
 {
 	typedef std::map<std::string, J_MakeWindowFun> WindowRegistMap;
-	typedef std::map<int, CWnd *> WindowMap;
+	typedef std::map<int, PL_WndInfo> WindowMap;
 public:
 	CPlFactoryWnd() {}
 	~CPlFactoryWnd() {}

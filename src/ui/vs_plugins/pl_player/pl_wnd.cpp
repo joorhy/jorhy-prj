@@ -13,30 +13,23 @@
 IMPLEMENT_DYNAMIC(CPlWnd, CWnd)
 
 UINT CPlWnd::m_nFocus = 1;
-PlFullScreen *CPlWnd::m_FullWnd = NULL;
 int CPlWnd::m_nNowShowWnd = 0;
 DWORD CPlWnd::m_MouseHookThreadId = 0;
-int CPlWnd::m_WndNumber = 0;
-int CPlWnd::m_wndRef = 0;
-PlToolWin *CPlWnd::m_Tool = NULL;
 
 CPlWnd::CPlWnd(HWND hParent, UINT nID)
+: CWnd()
 {
 	m_hBkg.LoadBitmap(IDB_BACKGROUND);
-	m_bFullScreen = FALSE;
-	m_nFullModel = FULL_PLUGIN;
-	m_bTrack	= TRUE;
-	m_bOver		= FALSE;
+	m_bFullScreen		= FALSE;
+	m_nFullModel		= FULL_PLUGIN;
+	m_bTrack				= TRUE;
+	m_bOver				= FALSE;
+	m_Tool					= NULL;
 	m_Last_WM_MOUSEMOVE_Pos = 0;
-	bEraseOwn = TRUE;
-	if(NULL == m_FullWnd)
-	{
-		m_FullWnd = dynamic_cast<PlFullScreen *>(CPlFactoryWnd::Instance()->GetWindow("f_play", NULL, 1000));
-		ASSERT(m_FullWnd != NULL);
-	}
-	m_WndNumber++;
+	bEraseOwn			= TRUE;
+	m_FullWnd = dynamic_cast<PlFullScreen *>(CPlFactoryWnd::Instance()->GetWindow("f_play", NULL, IDF_SCREEN));
+	ASSERT(m_FullWnd != NULL);
 	m_nFocus = 1;
-	m_wndRef++;
 
 	memset(&m_PlayerParm, 0, sizeof(m_PlayerParm));
 	m_PlayerParm.pSound					= FALSE;
@@ -46,17 +39,15 @@ CPlWnd::CPlWnd(HWND hParent, UINT nID)
 
 CPlWnd::~CPlWnd()
 {
-	m_WndNumber--;
-	if(NULL != m_FullWnd && m_wndRef == 0)
+	if(NULL != m_FullWnd)
 	{
-		CPlFactoryWnd::Instance()->DelWindow(1000);
+		CPlFactoryWnd::Instance()->DelWindow(IDF_SCREEN);
 		m_FullWnd = NULL;
 	}
 
-	m_wndRef--;
-	if(m_Tool != NULL && m_wndRef == 0)
+	if(m_Tool != NULL)
 	{
-		delete m_Tool;
+		CPlFactoryWnd::Instance()->DelWindow(IDT_TOOL);
 		m_Tool = NULL;
 	}
 }
@@ -107,7 +98,6 @@ void CPlWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 	PostMessage(WM_OWN_SETFOCUS);
 	CWnd::OnLButtonDblClk(nFlags, point);
 }
-
 
 BOOL CPlWnd::OnEraseBkgnd(CDC* pDC)
 {
@@ -176,8 +166,11 @@ void CPlWnd::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
 
-	if(!m_Tool) return;
-	if((dynamic_cast<CWnd *>(m_Tool))->GetParent() != this) return;
+	if(!m_Tool) 
+		return;
+
+	if(dynamic_cast<CWnd *>(m_Tool)->GetParent() != this) 
+		return;
 
 	if(nType == SIZE_MINIMIZED)
 	{
@@ -187,14 +180,14 @@ void CPlWnd::OnSize(UINT nType, int cx, int cy)
 	CRect rect,toolRect;
 	GetClientRect(&rect);
 	//ClientToScreen(&rect);
-	::GetWindowRect((dynamic_cast<CWnd *>(m_Tool))->m_hWnd,&toolRect);
+	::GetWindowRect(dynamic_cast<CWnd *>(m_Tool)->m_hWnd, &toolRect);
 	this->ScreenToClient(&toolRect);
 	/*m_Tool->MoveWindow(	rect.CenterPoint().x - toolRect.Width() / 2,
 						rect.bottom - toolRect.Height(),
 						toolRect.Width(),
 						toolRect.Height(),
 						TRUE);*/
-	(dynamic_cast<CWnd *>(m_Tool))->MoveWindow(rect.left+1,
+	dynamic_cast<CWnd *>(m_Tool)->MoveWindow(rect.left+1,
 						rect.bottom - toolRect.Height()-1,
 						rect.Width(),
 						toolRect.Height(),
@@ -251,14 +244,19 @@ void CPlWnd::OnMouseMove(UINT nFlags, CPoint point)
 	if(m_Last_WM_MOUSEMOVE_Pos != MsgPos)
 	{
 		m_Last_WM_MOUSEMOVE_Pos = MsgPos;
-		if(m_Tool)
+		if(m_Tool && PlManager::Instance()->IsPlaying(m_hWnd))
 		{
 			m_Tool->AttachPlayer(&m_PlayerParm, this);
-			m_Tool->ShowControls(TRUE);
+			m_Tool->ShowControls(m_PlayerParm.bNeedShowCTRL);
 		}
 	}
 
 	CWnd::OnMouseMove(nFlags, point);
+}
+
+void CPlWnd::OnMouseLeave()
+{
+	m_Tool->ShowControls(m_PlayerParm.bNeedShowCTRL);
 }
 
 //MouseHook
@@ -286,7 +284,7 @@ void CPlWnd::MouseHook(bool bSetHook)
 HWND CPlWnd::FindPlayerWnd()
 {
 	if(m_Tool)
-		return ::GetWindow((dynamic_cast<CWnd *>(m_Tool))->m_hWnd,GW_HWNDNEXT);
+		return ::GetWindow(dynamic_cast<CWnd *>(m_Tool)->m_hWnd,GW_HWNDNEXT);
 	else
 		return ::GetWindow(this->m_hWnd,GW_CHILD);
 }
@@ -310,7 +308,7 @@ LRESULT CPlWnd::SetMouseHook(WPARAM wParam,LPARAM lParam)
 void CPlWnd::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	m_PlayerParm.bNeedShowCTRL = !m_PlayerParm.bNeedShowCTRL;
-	if(m_Tool)
+	if(m_Tool && PlManager::Instance()->IsPlaying(m_hWnd))
 		m_Tool->ShowControls(m_PlayerParm.bNeedShowCTRL);
 }
 

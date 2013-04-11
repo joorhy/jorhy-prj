@@ -11,7 +11,7 @@ char hikhead[] = {0x49,0x4d,0x4b,0x48,0x01,0x01,0x00,0x00,0x02,0x00,
 
 extern std::ofstream hikFile;
 /***********************¿‡ µœ÷**********************************/
-HikPlayer::HikPlayer(int nWorkMode,void *pFactorUser)
+HikPlayer::HikPlayer(int nWorkMode, HWND hWnd)
 {
 	m_port		= -1;
 	m_Model		= nWorkMode;

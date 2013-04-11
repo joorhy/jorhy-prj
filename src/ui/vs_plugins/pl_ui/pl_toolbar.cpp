@@ -5,18 +5,19 @@
 #include "Resource.h"
 #include "pl_toolbar.h"
 #include "pl_ctrl.h"
+#include "pl_factory_wnd.h"
 
 // CFlootTool
 IMPLEMENT_DYNAMIC(CPlToolBar, CWnd)
 
-CPlToolBar::CPlToolBar(CWnd *pParent, UINT nId)
+CPlToolBar::CPlToolBar(HWND pParent, UINT nId)
 {
 	LPCTSTR wndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 										AfxGetApp()->LoadStandardCursor(IDC_ARROW),
 										(HBRUSH)(COLOR_3DFACE+1),
 										0);
 	m_bCreate = FALSE;
-	m_hPlWnd = pParent->m_hWnd;
+	m_hPlWnd = pParent;
 	CreateEx(WS_EX_TOPMOST,
 			wndClass,_T("myToolWnd"),
 			WS_CHILD | WS_CLIPSIBLINGS, 
@@ -27,21 +28,22 @@ CPlToolBar::CPlToolBar(CWnd *pParent, UINT nId)
 
 void CPlToolBar::InitParm()
 {
-	m_bnStop	= NULL;
-	m_bnSound	= NULL;
-	m_bnCapture	= NULL;
-	m_bnSlider	= NULL;
-	m_bnSpeak	= NULL;
-	m_bnRecord	= NULL;
-	m_bnPause	= NULL;
-	m_bnFramePlay	= NULL;
-	m_bnSpeedup		= NULL;
-	m_bnSlowdown	= NULL;
-	m_bnDownload	= NULL;
-	m_pPlayParm		= NULL;
-	if(CreateToolBar())
+	if(!m_bCreate)
 	{
-		m_bCreate = TRUE;
+		m_bnStop				= NULL;
+		m_bnSound			= NULL;
+		m_bnCapture		= NULL;
+		m_bnSlider			= NULL;
+		m_bnSpeak			= NULL;
+		m_bnRecord			= NULL;
+		m_bnPause			= NULL;
+		m_bnFramePlay	= NULL;
+		m_bnSpeedup		= NULL;
+		m_bnSlowdown	= NULL;
+		m_bnDownload	= NULL;
+		m_pPlayParm		= NULL;
+		if (CreateToolBar())
+			m_bCreate		= TRUE;
 	}
 }
 
@@ -223,6 +225,7 @@ void CPlToolBar::Stop()
 	PlManager::Instance()->Stop(m_hPlWnd);
 	m_pPlayParm->pSound  = FALSE;
 	m_pPlayParm->pVolume = DEFAULT_VOLUME;
+	ShowControls(FALSE);
 }
 
 void CPlToolBar::EnableSound()
@@ -371,6 +374,7 @@ BOOL CPlToolBar::AttachPlayer(PL_PlayParm *pPlayParm, void *parent)
 		m_pPlayParm = pPlayParm;
 		ShowControls(FALSE);	//右键以后只有该窗口才不现实工具条
 		SetParent((CWnd *)parent);
+		m_hPlWnd = ((CWnd *)parent)->m_hWnd;
 	}
 
 	//绘制声音开关
@@ -402,7 +406,7 @@ void CPlToolBar::ShowControls(BOOL bShow)
 		{
 			ShowWindow(SW_SHOW);
 		}
-		SetTimer(TOOL_TIMER,TOOLSTAYTIME,NULL);
+		SetTimer(TOOL_TIMER, TOOLSTAYTIME, NULL);
 	}
 	else
 	{
@@ -471,3 +475,7 @@ void CPlToolBar::OnMouseMove(UINT nFlags, CPoint point)
 	::SendMessage(GetParent()->m_hWnd,WM_MOUSEMOVE,0,MAKELPARAM(point.x,point.y));
 	CWnd::OnMouseMove(nFlags, point);
 }
+
+WND_BEGIN_MAKER(t_play)
+	WND_ENTER_MAKER("t_play", CPlToolBar::Maker)
+WND_END_MAKER()

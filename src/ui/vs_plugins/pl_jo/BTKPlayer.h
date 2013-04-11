@@ -9,12 +9,12 @@
 class PL_API BTKPlayer :public PlPlayer
 {
 public:
-	BTKPlayer(int nWorkMode,void *pFactorUser);
+	BTKPlayer(int nWorkMode, HWND hWnd);
 	~BTKPlayer(void);
 
-	static int Maker(PlPlayer *&pObj, int nWorkMode,void *pFactorUser)
+	static int Maker(PlPlayer *&pObj, int nWorkMode, HWND hWnd)
 	{
-		pObj = new BTKPlayer(nWorkMode, pFactorUser);
+		pObj = new BTKPlayer(nWorkMode, hWnd);
 		return PL_OK;
 	}
 

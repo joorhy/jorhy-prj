@@ -22,41 +22,50 @@ PlManager::~PlManager(void)
 BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 {
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
-	if (it != m_playerMap.end())
+	if (it != m_playerMap.end() && it->second.bPlay)
 	{
 		Stop(it->first);
-		m_playerMap.erase(it);
 	}
 
 	BOOL bRet;
-	PL_PlayerInfo info = {0};
-	info.hWnd = hWnd;
-	info.playInfo = playInfo;
+	
+	it->second.hWnd = hWnd;
+	it->second.playInfo = playInfo;
 	CreateMrl(playInfo);
 	switch(playInfo.nStreamType)
 	{
 	case HIK_VIDEO:
-		info.pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", playInfo.nPlayMode, this, hWnd);
+		it->second.pPlayer = CPlFactory::Instance()->GetPlayer("pl_hik", playInfo.nPlayMode, this, hWnd);
 		break;
 	case VLC_VIDEO:
-		info.pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", playInfo.nPlayMode, this, hWnd);
+		if (playInfo.nPlayMode == STREAME_REALTIME)
+			it->second.pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", playInfo.nPlayMode, this, hWnd);
+		else
+			it->second.pPlayer = CPlFactory::Instance()->GetPlayer("pl_vlc", playInfo.nPlayMode, this, hWnd);
 		break;
 	default:
 		return FALSE;
 	}
 
-	if(info.pPlayer)
+	if(it->second.pPlayer)
 	{
-		if((bRet = info.pPlayer->Play(hWnd, playInfo)))
+		if((bRet = it->second.pPlayer->Play(hWnd, playInfo)))
+		{
 			m_nPlayNum++;
+			it->second.bPlay = TRUE;
+			it->second.dwPlayTime = playInfo.nStartTime;
+		}
 
 		if(playInfo.nPlayMode == STREAME_REALTIME)
 		{
-			if(!info.pReconnWnd)
-				info.pReconnWnd = new CWaitStatus(CWnd::FromHandle(::GetParent(hWnd)));
+			if(!it->second.pReconnWnd)
+				it->second.pReconnWnd = new CWaitStatus(CWnd::FromHandle(::GetParent(hWnd)));
+		}
+		else
+		{
+			VodCallBack(hWnd);
 		}
 	}
-	m_playerMap[hWnd] = info;
 
 	return bRet;
 }
@@ -131,7 +140,7 @@ BOOL PlManager::Record(HWND hWnd, char *pPath)
 void PlManager::Stop(HWND hWnd)
 {
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
-	if (it != m_playerMap.end())
+	if (it != m_playerMap.end() && it->second.bPlay)
 	{
 		SendMessage(hWnd, WM_OWN_ERASEBKGROUND,TRUE,0);
 		it->second.pPlayer->Stop();
@@ -147,7 +156,7 @@ void PlManager::Stop(HWND hWnd)
 			NotifyNpn(hWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
 		}
 		CPlFactory::Instance()->DelPlayer(hWnd);
-		m_playerMap.erase(it);
+		it->second.bPlay = FALSE;
 	}
 	return;
 }
@@ -195,7 +204,7 @@ BOOL PlManager::SetVolume(HWND hWnd, int nVolume)
 BOOL PlManager::IsPlaying(HWND hWnd)
 {
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
-	if (it != m_playerMap.end())
+	if (it != m_playerMap.end() && it->second.bPlay)
 	{
 		return it->second.pPlayer->IsPlaying();
 	}
@@ -208,12 +217,13 @@ void PlManager::VodCallBack(HWND hWnd)
 	if (it != m_playerMap.end())
 	{
 		int args[1];
-		if(it->second.playInfo.nStartTime > m_nVodEndTime)
+		if(it->second.dwPlayTime > m_nVodEndTime)
 		{
 			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
 			return;
 		}
-		args[0] = (int)&it->second.playInfo.nStartTime;
+		args[0] = (int)&it->second.dwPlayTime;
+		++it->second.dwPlayTime;
 		NotifyNpn(hWnd, CALLBACK_ONVOD, args, sizeof(args)/sizeof(int));
 	}
 	return;
@@ -271,13 +281,15 @@ BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 		if(!IsPlaying(hWnd))
 			return TRUE;
 		
-		if (playInfo.nStartTime > playInfo.nEndTime)		//超出结束时间就停止
+		if (playInfo.nStartTime > it->second.playInfo.nEndTime)		//超出结束时间就停止
 		{
 			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
 			return FALSE;
 		}
-		CreateMrl(playInfo);
-		return it->second.pPlayer->VodStreamJump(playInfo);
+		it->second.playInfo.nStartTime = playInfo.nStartTime;
+		it->second.dwPlayTime = playInfo.nStartTime;
+		CreateMrl(it->second.playInfo);
+		return it->second.pPlayer->VodStreamJump(it->second.playInfo);
 	}
 	return FALSE;
 }
@@ -321,7 +333,14 @@ BOOL PlManager::SetUserData(HWND hWnd, void *pUser)
 	{
 		it->second.pUser = pUser;
 	}
-	return FALSE;
+	else
+	{
+		PL_PlayerInfo info = {0};
+		info.pUser = pUser;
+		m_playerMap[hWnd] = info;
+	}
+
+	return TRUE;
 }
 
 BOOL PlManager::SetOsdText(HWND hWnd, int stime,char *osdtext)

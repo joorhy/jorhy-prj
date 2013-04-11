@@ -21,9 +21,9 @@ void BTKAPI BTKPlayer::EndCBK(void *pdata)
 }
 
 /*********************¿‡ µœ÷*********************/
-BTKPlayer::BTKPlayer(int nWorkMode,void *pFactorUser)
+BTKPlayer::BTKPlayer(int nWorkMode, HWND hWnd)
 {
-	m_player	= new BTKControl();
+	m_player		= new BTKControl();
 	m_Model		= nWorkMode;
 }
 
@@ -80,7 +80,6 @@ void BTKPlayer::Play()
 	m_lock.Lock();
 	if(m_player)
 	{
-
 		BTK_RESULT br;
 		delete m_player;
 		m_player = NULL;

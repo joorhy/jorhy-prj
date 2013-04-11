@@ -9,12 +9,12 @@
 class PL_API HikPlayer :public PlPlayer
 {
 public:
-	HikPlayer(int nWorkMode,void *pFactorUser);
+	HikPlayer(int nWorkMode, HWND hWnd);
 	~HikPlayer(void);
 
-	static int Maker(PlPlayer *&pObj, int nWorkMode,void *pFactorUser)
+	static int Maker(PlPlayer *&pObj, int nWorkMode, HWND hWnd)
 	{
-		pObj = new HikPlayer(nWorkMode, pFactorUser);
+		pObj = new HikPlayer(nWorkMode, hWnd);
 		return PL_OK;
 	}
 

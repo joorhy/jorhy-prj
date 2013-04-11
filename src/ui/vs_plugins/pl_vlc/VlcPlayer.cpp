@@ -6,6 +6,38 @@
 #include "pl_ctrl.h"
 #include "vlc_picture.h"
 
+const char *real_args[]= {"--no-video-title-show",				//关闭标题;
+								 "--subsdec-encoding=UTF-8",		//字幕编码格式
+								 "--text-renderer=Freetype",			//关闭标题
+								 "--freetype-font=MingLiU",			//繁体字符集,包含全部中文字符
+#ifdef _DEBUG
+								"--file-logging",
+								"-vvv",	
+#else
+								"--no-plugins-cache",
+								"--no-xlib",
+#endif
+								"--no-media-library",
+								"--one-instance",				//一个实例
+								"--network-caching=300"};
+
+const char *vod_args[] = {"--no-video-title-show",				//关闭标题;
+								"--subsdec-encoding=UTF-8",		//字幕编码格式
+								"--text-renderer=Freetype",			//关闭标题
+								"--freetype-font=MingLiU",			//繁体字符集,包含全部中文字符
+#ifdef _DEBUG
+								"--file-logging",	
+								"-vvv",	
+#else
+								"--no-plugins-cache",
+								"--no-xlib",
+#endif
+								"--no-media-library",
+								"--one-instance",				//一个实例
+								"--ffmpeg-hw",							//硬件解码
+								"--no-drop-late-frames",
+								"--no-skip-frames"};
+
 /**************static变量 初始化*****************/
 libvlc_instance_t *VlcPlayer::m_pInstance = NULL;
 float VlcPlayer::m_nSpeed[] = {0.1f,0.2f,0.4f,0.6f,
@@ -50,7 +82,7 @@ void VlcPlayer::VLCDisplayCallBack(void *opaque,void *picture)
 }
 /*********************类实现*********************/
 
-VlcPlayer::VlcPlayer(int nWorkMode,void *pFactorUser)
+VlcPlayer::VlcPlayer(int nWorkMode,  HWND hWnd)
 {
 	m_Model		= nWorkMode;
 	m_manager	= NULL;
@@ -60,7 +92,7 @@ VlcPlayer::VlcPlayer(int nWorkMode,void *pFactorUser)
 	m_nSpeedIndex = NORMALSPEED;
 	m_times		= 0;
 	m_displaytime = 0;
-
+	m_pPlWnd = hWnd;
 }
 
 VlcPlayer::~VlcPlayer(void)
@@ -69,48 +101,12 @@ VlcPlayer::~VlcPlayer(void)
 
 void VlcPlayer::InitPlay()
 {
-	const char *vlc_args[32];
-	int argvlen = 0;
-	vlc_args[argvlen++] = "--no-video-title-show";	//关闭标题
-	vlc_args[argvlen++] = "--subsdec-encoding=UTF-8";		//字幕编码格式
-	vlc_args[argvlen++] = "--text-renderer=Freetype";	//关闭标题
-	vlc_args[argvlen++] = "--freetype-font=MingLiU";	//繁体字符集,包含全部中文字符
-	//vlc_args[argvlen++] = "--freetype-fontsize=50";
-#ifdef _DEBUG
-	vlc_args[argvlen++] = "--file-logging";	
-	vlc_args[argvlen++] = "-vvv";	
-	//vlc_args[argvlen++] = "--ffmpeg-threads=1";	
-#else
-	vlc_args[argvlen++] = "--no-plugins-cache";
-	vlc_args[argvlen++] = "--no-xlib";
-#endif
-	//vlc_args[argvlen++] = "--no-hdtv-fix";				//不固定HDTV 高度
-	vlc_args[argvlen++] = "--no-media-library";
-	//vlc_args[argvlen++] = "--no-overlay";				//覆盖视频输出关闭
-	//vlc_args[argvlen++] = "--no-video-on-top";
-	vlc_args[argvlen++] = "--one-instance";			//一个实例
 	if(m_Model == STREAME_REALTIME)
-		vlc_args[argvlen++] = "--network-caching=300";
+		m_pInstance = libvlc_new(sizeof(real_args) / sizeof(char *), real_args);
 	else
 	{
-		vlc_args[argvlen++] = "--ffmpeg-hw";			//硬件解码
-		vlc_args[argvlen++] = "--no-drop-late-frames";	
-		vlc_args[argvlen++] = "--no-skip-frames";
+		m_pInstance = libvlc_new(sizeof(vod_args) / sizeof(char *), vod_args);
 	}
-	//vlc_args[argvlen++] = "--mouse-events";			//开启鼠标事件
-	//vlc_args[argvlen++] = "--rmtosd-key-events";	//开启密匙事件
-	//vlc_args[argvlen++] = "--no-spu";				//关闭子画面
-	//vlc_args[argvlen++] = "--high-priority";		//增加进程的优先级
-	//vlc_args[argvlen++] = "--no-canvas-padd";		//关闭视频加边
-	//vlc_args[argvlen++] = "--no-sout-ts-crypt-audio";		//TS复用器 关闭加密音频
-	//vlc_args[argvlen++] = "--no-sout-ts-crypt-audio";		//TS复用器 关闭加密视频
-	//vlc_args[argvlen++] = "--no-video-deco";		//关闭窗口装饰
-	//vlc_args[argvlen++] = "--no-osd";				//关闭屏幕显示，显示消息
-	//vlc_args[argvlen++] = "--no-sub-autodetect-file";		//关闭自动检测字幕文件
-	//vlc_args[argvlen++] = "--no-interact";		//关闭界面交互
-	//vlc_args[argvlen++] = "--no-stats";			//关闭收集本地统计
-
-	m_pInstance = libvlc_new(argvlen,vlc_args);
 }
 
 BOOL VlcPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)

@@ -9,9 +9,11 @@
 #include "runner_log.h"
 #include <cmath>
 
+double CPlRealWnd::m_arrAreaAgl[4] = {atan(double(1.0/3)),atan(double(3.0/1)),
+		atan(double(3.0/-1)),atan(double(1.0/-3))};
+
 // CRPlayWnd
 IMPLEMENT_DYNAMIC(CPlRealWnd, CWnd)
-
 CPlRealWnd::CPlRealWnd(HWND hParent,UINT nID)
 //: CPlWnd(hParent, nID)
 {
@@ -25,19 +27,6 @@ CPlRealWnd::CPlRealWnd(HWND hParent,UINT nID)
 		WS_CHILD | WS_VISIBLE | WS_BORDER | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
 		0,0,0,0,hParent ,(HMENU)nID);	
 	InitParm();
-}
-
-double CPlRealWnd::m_arrAreaAgl[4] = {atan(double(1.0/3)),atan(double(3.0/1)),
-									atan(double(3.0/-1)),atan(double(1.0/-3))};
-void CPlRealWnd::InitParm()
-{
-	m_nowCusID = -1;
-	if(NULL == m_Tool)
-	{
-		m_Tool = new CPlToolBar(this, IDT_TOOL);
-		m_Tool->SetModel(STREAME_REALTIME);
-	}
-	m_DobWMTime = 0;
 }
 
 CPlRealWnd::~CPlRealWnd()
@@ -61,6 +50,19 @@ BEGIN_MESSAGE_MAP(CPlRealWnd, CWnd)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
+
+void CPlRealWnd::InitParm()
+{
+	m_nowCusID = -1;
+
+	m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
+	ASSERT(m_Tool != NULL);
+	if(NULL != m_Tool)
+	{
+		m_Tool->SetModel(STREAME_REALTIME);
+	}
+	m_DobWMTime = 0;
+}
 
 // CRPlayWnd message handlers
 UINT CPlRealWnd::FindArea(CPoint point)

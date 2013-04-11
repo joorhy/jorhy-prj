@@ -234,7 +234,7 @@ BOOL CPlCtrl::VodStreamJump(char *js_time)
 		return FALSE;
 
 	PL_PlayInfo playInfo = {0};
-	PlJsonParser::Instance()->ParserPlay(js_time, playInfo);
+	PlJsonParser::Instance()->ParserDrag(js_time, playInfo);
 
 	return PlManager::Instance()->VodStreamJump(GetFocusWnd(), playInfo);
 }
