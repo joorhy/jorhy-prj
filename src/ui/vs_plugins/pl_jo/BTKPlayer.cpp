@@ -97,7 +97,6 @@ void BTKPlayer::Play()
 
 		m_player->SetEndCBK(EndCBK,this);
 	}
-	m_lock.Unlock();
 
 BTK_Exit:
 	m_lock.Unlock();
