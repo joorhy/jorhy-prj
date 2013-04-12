@@ -173,71 +173,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="misc"
-			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBuffer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferFIFO.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferFIFO.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIFO.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIFO.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIST.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIST.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKControl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKControl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKMisc.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKMisc.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="input"
-			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKInput.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKInput.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="access"
 			>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccess.cpp"
@@ -263,6 +199,34 @@
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccessRYSP.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemux.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKDemux.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxH264.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxRYSP.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxRYSP.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKInput.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKInput.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="core"
@@ -284,6 +248,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKControl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKControl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKError.h"
 				>
 			</File>
@@ -301,6 +273,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKLog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKMisc.h"
 				>
 			</File>
 			<File
@@ -361,8 +337,36 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="render"
+			Name="output"
 			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKAudioDecode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKAudioDecode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKAudioOutput.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKAudioOutput.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKDecodeH264.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKDecodeH264.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxH264.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKPicture.cpp"
 				>
@@ -388,79 +392,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKVoutDDraw.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKVoutDDraw.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="decode"
-			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKAudioDecode.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKAudioDecode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKDecodeH264.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKDecodeH264.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxH264.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKVideoDecode.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKVideoDecode.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="demux"
-			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemux.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKDemux.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxH264.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxRYSP.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxRYSP.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="output"
-			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKAudioOutput.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKAudioOutput.h"
 				>
 			</File>
 			<File
@@ -471,10 +407,50 @@
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKVideoOutput.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKVoutDDraw.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKVoutDDraw.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="transform"
 			>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBuffer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferFIFO.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferFIFO.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIFO.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIFO.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIST.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIST.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKTransform.cpp"
 				>
