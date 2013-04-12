@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib liveMedia.lib UsageEnvironment.lib BasicUsageEnvironment.lib"
+				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib"
 				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\live555;..\..\libs\DirectX"
@@ -184,14 +184,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccessRTSP.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccessRTSP.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccessRYSP.cpp"
 				>
 			</File>
@@ -205,10 +197,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKDemux.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxH264.h"
 				>
 			</File>
 			<File
@@ -364,10 +352,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxH264.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKPicture.cpp"
 				>
 			</File>
@@ -433,22 +417,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferFIFO.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIFO.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIFO.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIST.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferLIST.h"
 				>
 			</File>
 			<File

@@ -44,6 +44,7 @@ struct btk_access_t
 
 struct btk_buffer_t
 {
+	int datatype;			//0-原数据，1-视频数据(解码后)，2-音频数据(解码后)
 	int datasize;			//实体数据
 	int extrasize;			//额外的描述数据
 };

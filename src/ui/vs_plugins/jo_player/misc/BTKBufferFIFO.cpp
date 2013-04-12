@@ -1,166 +1,110 @@
 #include "BTKBufferFIFO.h"
 #include "..\include\BTKError.h"
 #include "..\include\BTKLog.h"
+#include "assert.h"
 
 BTKBufferFIFO::BTKBufferFIFO(int size)
 :BTKBuffer(size)
 {
-	m_bufferID		= BUFFER_FIFO;
+	m_bufferID		= BUFFER_LIFO;
 	m_nBuffSize		= size;
-	m_pBegin		= new char[m_nBuffSize];
-	m_pEnd			= m_pBegin + m_nBuffSize;
-	m_pReadPoint	= m_pBegin;
-	m_pWritePoint	= m_pBegin;
-	m_nReadableSize = 0;
-	m_nReadableNum	= 0;
-	memset(m_pBegin,0,m_nBuffSize);
+	m_pBuffer			= new char[size];
+	m_pBegin			= m_pBuffer;
+	m_pEnd			= m_pBuffer + size;
+	m_pWritePoint  = m_pReadPoint = m_pBegin;
+	m_nDataLen		= 0;
+	m_nDiscardedFrameNum = 0;
 }
 
 BTKBufferFIFO::~BTKBufferFIFO(void)
 {
-	if(NULL != m_pBegin)
+	m_lock.WriteLock();
+	if (m_pBuffer)
 	{
-		m_lock.WriteLock();
-		delete m_pBegin;
-		m_pBegin = NULL;
-		m_lock.WriteUnlock();
+		delete m_pBuffer;
+		m_pBuffer = NULL;
 	}
+	m_lock.WriteUnlock();
 }
 
 BTK_RESULT BTKBufferFIFO::Read(char *OUT_Buffer,char *OUT_extra,btk_buffer_t &OUT_Header)
 {
 	m_lock.ReadLock();
-	
-	if(m_nReadableSize == 0)
+	if (m_nDataLen > 0)
 	{
-		m_lock.ReadUnlock();
-		return BTK_ERROR_EMPTY_BUFFER;
-	}
-	char *step = m_pReadPoint;
-	//需要重置readpoint到begin  读OUT_Header信息
-	if(m_pEnd - step < sizeof(btk_buffer_t))
-	{
-		int leftLen = m_pEnd - step;
-		memcpy(&OUT_Header,step,leftLen);
-		step = m_pBegin;
-		memcpy((&OUT_Header) + leftLen,step,sizeof(btk_buffer_t) - leftLen);
-		step += (sizeof(btk_buffer_t) - leftLen);
-	}
-	else
-	{
-		memcpy(&OUT_Header,step,sizeof(btk_buffer_t));
-		step += sizeof(btk_buffer_t);
-	}
-	//btk_Info("datasize=%d	extrasize=%d\n",OUT_Header.datasize,OUT_Header.extrasize);
-	//需要重置readpoint到begin 读OUT_extra信息
-	if(m_pEnd - step < OUT_Header.extrasize)
-	{
-		int leftLen = m_pEnd - step;
-		memcpy(OUT_extra,step,leftLen);
-		step = m_pBegin;
-		memcpy(OUT_extra + leftLen,step,OUT_Header.extrasize - leftLen);
-		step += (OUT_Header.extrasize - leftLen);
-	}
-	else
-	{
-		memcpy(OUT_extra,step,OUT_Header.extrasize);
-		step += OUT_Header.extrasize;
-	}
+		memset(&m_Node, 0, sizeof(m_Node));
+		Read((char *)&m_Node, J_MEMNODE_LEN);
+		Read((char *)&OUT_Header, sizeof(btk_buffer_t));
+		Read((char *)OUT_extra, OUT_Header.extrasize);
+		Read(OUT_Buffer, m_Node.nLen - OUT_Header.extrasize);
+		if (OUT_Header.datatype == 0)
+		{
+			btk_decode_t *pExHeader = (btk_decode_t *)OUT_extra;
+			if (pExHeader->type != DECODE_I_FRAME)
+				--m_nDiscardedFrameNum;
+		}
 
-	//需要重置readpoint到begin 读OUT_Buffer信息
-	if(m_pEnd - step < OUT_Header.datasize)
-	{
-		int leftLen = m_pEnd - step;
-		memcpy(OUT_Buffer,step,leftLen);
-		step = m_pBegin;
-		memcpy(OUT_Buffer + leftLen,step,OUT_Header.datasize - leftLen);
-		step += (OUT_Header.datasize - leftLen);
+		m_lock.ReadUnlock();
+		return BTK_NO_ERROR;
 	}
-	else
-	{
-		memcpy(OUT_Buffer,step,OUT_Header.datasize);
-		step += OUT_Header.datasize;
-	}
-	m_pSetpPoint = step;
-	m_nStepSize = OUT_Header.datasize + OUT_Header.extrasize + sizeof(btk_buffer_t);
 	m_lock.ReadUnlock();
-	return BTK_NO_ERROR;
+
+	return BTK_ERROR_UNKNOW;
 }
 
 BTK_RESULT BTKBufferFIFO::Write(char *IN_Buffer,char *IN_extra,btk_buffer_t &IN_Header)
 {
 	m_lock.WriteLock();
-	if(m_nBuffSize - m_nReadableSize < 
-	(sizeof(btk_buffer_t) + IN_Header.datasize + IN_Header.extrasize))	
+	if (IN_Header.datatype == 0)
 	{
-		m_lock.WriteUnlock();
-		return BTK_ERROR_FULL_BUFFER;
-	}
-	m_sem.Post();
-	//需要重置writepoint到begin 写IN_Header信息
-	if(m_pEnd - m_pWritePoint < sizeof(btk_buffer_t))
-	{
-		int leftLen = m_pEnd - m_pWritePoint;
-		memcpy(m_pWritePoint,&IN_Header,leftLen);
-		m_pWritePoint = m_pBegin;
-		memcpy(m_pWritePoint,(&IN_Header) + leftLen,sizeof(btk_buffer_t) - leftLen);
-		m_pWritePoint += (sizeof(btk_buffer_t) - leftLen);
-	}
-	else
-	{
-		memcpy(m_pWritePoint,&IN_Header,sizeof(btk_buffer_t));
-		m_pWritePoint += sizeof(btk_buffer_t);
+		btk_decode_t *pExHeader = (btk_decode_t *)IN_extra;
+		if (pExHeader->type != DECODE_I_FRAME)
+		{
+			//++m_nDiscardedFrameNum;
+			m_lock.WriteUnlock();
+			return BTK_NO_ERROR;
+		}
 	}
 
-	//需要重置writepoint到begin 写IN_extra信息
-	if(m_pEnd - m_pWritePoint < IN_Header.extrasize)
+	int nLen = IN_Header.datasize;
+	while (GetIdleLength() < (nLen + J_MEMNODE_LEN +sizeof(btk_buffer_t) + IN_Header.extrasize))
 	{
-		int leftLen = m_pEnd - m_pWritePoint;
-		memcpy(m_pWritePoint,IN_extra,leftLen);
-		m_pWritePoint = m_pBegin;
-		memcpy(m_pWritePoint,IN_extra + leftLen,IN_Header.extrasize - leftLen);
-		m_pWritePoint += (IN_Header.extrasize - leftLen);
-	}
-	else
-	{
-		memcpy(m_pWritePoint,IN_extra,IN_Header.extrasize);
-		m_pWritePoint += IN_Header.extrasize;
+		if (m_nDataLen < 0)
+		{
+			//J_OS::LOGINFO("CRingBuffer::PushBuffer Buffer Error");
+			m_lock.WriteUnlock();
+			return BTK_ERROR_UNKNOW;
+		}
+		EraseBuffer();
 	}
 
-	//需要重置writepoint到begin 写IN_Buffer信息
-	if(m_pEnd - m_pWritePoint < IN_Header.datasize)
-	{
-		int leftLen = m_pEnd - m_pWritePoint;
-		memcpy(m_pWritePoint,IN_Buffer,leftLen);
-		m_pWritePoint = m_pBegin;
-		memcpy(m_pWritePoint,IN_Buffer + leftLen,IN_Header.datasize - leftLen);
-		m_pWritePoint += (IN_Header.datasize - leftLen);
-	}
-	else
-	{
-		memcpy(m_pWritePoint,IN_Buffer,IN_Header.datasize);
-		m_pWritePoint += IN_Header.datasize;
-	}
-	m_nReadableSize += (IN_Header.datasize + IN_Header.extrasize + sizeof(btk_buffer_t));
-	m_nReadableNum++;
+	memset(&m_Node, 0, sizeof(m_Node));
+	m_Node.nLen = nLen + IN_Header.extrasize;
+	m_Node.pData = AddBuffer(m_pWritePoint, J_MEMNODE_LEN);
+	Write((const char *)&m_Node, J_MEMNODE_LEN);
+	Write((const char *)&IN_Header, sizeof(btk_buffer_t));
+	Write((const char *)IN_extra, IN_Header.extrasize);
+	Write(IN_Buffer, nLen);
 	m_lock.WriteUnlock();
+	m_sem.Post();
+
 	return BTK_NO_ERROR;
 }
 
 BTK_RESULT BTKBufferFIFO::MoveNext()
 {
-	m_lock.WriteLock();
+	/*m_lock.WriteLock();
 
 	m_pReadPoint = m_pSetpPoint;
 	m_nReadableSize -= m_nStepSize;
 	m_nReadableNum--;
-	m_lock.WriteUnlock();
+	m_lock.WriteUnlock();*/
 	return BTK_NO_ERROR;
 }
 
 BTK_RESULT BTKBufferFIFO::Flush()
 {
-	m_lock.WriteLock();
+	/*m_lock.WriteLock();
 
 	if(m_pBegin == NULL)
 		return BTK_NO_ERROR;
@@ -172,7 +116,7 @@ BTK_RESULT BTKBufferFIFO::Flush()
 	m_nReadableNum	= 0;
 	memset(m_pBegin,0,m_nBuffSize);
 
-	m_lock.WriteUnlock();
+	m_lock.WriteUnlock();*/
 	return BTK_NO_ERROR;
 }
 
@@ -181,90 +125,141 @@ void BTKBufferFIFO::WaitData()
 	m_sem.WaitTime(300);
 }
 
-int BTKBufferFIFO::GetReadableSize()
-{
-	int n = 0;
-	m_lock.ReadLock();
-	n = m_nReadableSize;
-	m_lock.ReadUnlock();
-	return n;
+void BTKBufferFIFO::Read(char *pData, int nLen)
+{		
+	GetData(pData, nLen);
+	m_pReadPoint = AddBuffer(m_pReadPoint, nLen);
+	m_nDataLen -= nLen;
 }
 
-int BTKBufferFIFO::GetReadableNum()
+void BTKBufferFIFO::Write(const char *pData, int nLen)
 {
-	int n = 0;
-	m_lock.ReadLock();
-	n = m_nReadableNum;
-	m_lock.ReadUnlock();
-	return n;
-}
-
-BTK_RESULT BTKBufferFIFO::DropData(int num)
-{
-	m_lock.WriteLock();
-	if(m_nReadableSize == 0)
+	if (m_pEnd - m_pWritePoint <= nLen)
 	{
-		m_lock.WriteLock();
-		return BTK_ERROR_EMPTY_BUFFER;
+		int nLastLen = m_pEnd - m_pWritePoint;
+		memcpy(m_pWritePoint, pData, nLastLen);
+		memcpy(m_pBegin, pData + nLastLen, nLen - nLastLen);
 	}
-	btk_buffer_t tmp;
-
-	for(int i=0;i<num;i++)
+	else
 	{
-		if(m_nReadableSize == 0)
-		{
-			m_lock.ReadUnlock();
-			return BTK_NO_ERROR;
-		}
+		memcpy(m_pWritePoint, pData, nLen);
+	}
+	m_pWritePoint = AddBuffer(m_pWritePoint, nLen);
+	m_nDataLen += nLen;
+	//fprintf(stderr, "CXBuffer::Write len = %d\n", m_nDataLen);
+}
 
-		int leftLen;
-		if(m_pEnd - m_pReadPoint < sizeof(btk_buffer_t))
+int BTKBufferFIFO::GetData(char *pData, int nLen, int nOffset)
+{
+	char *pCurPoint = m_pReadPoint + nOffset;
+	if (m_pEnd - (char *)pCurPoint <= nLen)
+	{
+		int nLastLen = m_pEnd - (char *)pCurPoint;
+		memcpy(pData, pCurPoint, nLastLen);
+		memcpy(pData + nLastLen, m_pBegin, nLen - nLastLen);
+	}
+	else
+	{
+		memcpy(pData, pCurPoint, nLen);
+	}
+	return nLen;
+}
+
+int BTKBufferFIFO::GetIdleLength()
+{
+	return m_nBuffSize - m_nDataLen;
+}
+
+void BTKBufferFIFO::EraseBuffer()
+{
+	int nMoveLen = 0;
+	int nOffset = 0;
+	int nDorpLen = 0;
+	memset(&m_streamHeader, 0, sizeof(btk_buffer_t));
+	memset(&m_Node, 0, J_MEMNODE_LEN);
+	GetData((char *)&m_Node, J_MEMNODE_LEN);
+	GetData((char *)&m_streamHeader, sizeof(btk_buffer_t), J_MEMNODE_LEN);
+	nMoveLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
+	if (m_streamHeader.datatype == 0)
+	{
+		if (m_nDiscardedFrameNum > 0)
 		{
-			leftLen = m_pEnd - m_pReadPoint;
-			memcpy(&tmp,m_pReadPoint,leftLen);
-			m_pReadPoint = m_pBegin;
-			memcpy((&tmp) + leftLen,m_pReadPoint,sizeof(btk_buffer_t) - leftLen);
-			m_pReadPoint += (sizeof(btk_buffer_t) - leftLen);
+			btk_decode_t headerEx = {0};
+			GetData((char *)&headerEx, sizeof(btk_decode_t), sizeof(btk_buffer_t) + J_MEMNODE_LEN);
+			if (headerEx.type == DECODE_I_FRAME)
+			{
+				memset(&m_Node, 0, sizeof(m_Node));
+				memset(&headerEx, 0, sizeof(btk_decode_t));
+				GetData((char *)&m_Node, J_MEMNODE_LEN, nMoveLen);
+				GetData((char *)&headerEx, sizeof(btk_decode_t), nMoveLen + J_MEMNODE_LEN + sizeof(btk_buffer_t));
+				if (headerEx.type == DECODE_I_FRAME)
+				{
+					nMoveLen += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
+				}
+				else
+				{
+					--m_nDiscardedFrameNum;
+					nOffset = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
+					nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
+				}
+			}
+
+			int nCurOffset = nMoveLen;
+			while (m_nDiscardedFrameNum > 0 && nCurOffset < m_nDataLen)
+			{
+				memset(&m_Node, 0, sizeof(m_Node));
+				memset(&headerEx, 0, sizeof(btk_decode_t));
+				GetData((char *)&m_Node, J_MEMNODE_LEN, nCurOffset);
+				GetData((char *)&headerEx, sizeof(btk_decode_t), nCurOffset + J_MEMNODE_LEN + sizeof(btk_buffer_t));
+				//btk_Info("BTKBufferFIFO::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, headerEx.type, this);
+				if (headerEx.type == DECODE_I_FRAME)
+					break;
+				nCurOffset += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
+				nDorpLen += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
+				nOffset += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
+				--m_nDiscardedFrameNum;
+			}
+			MoveBuffer(nOffset, nMoveLen);
+			btk_Info("CXBuffer::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, headerEx.type, this);
 		}
 		else
 		{
-			memcpy(&tmp,m_pReadPoint,sizeof(btk_buffer_t));
-			m_pReadPoint += sizeof(btk_buffer_t);
+			nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
 		}
-
-		if(m_pEnd - m_pReadPoint < tmp.extrasize)
-		{
-			leftLen = m_pEnd - m_pReadPoint;
-			m_pReadPoint = m_pBegin;
-			m_pReadPoint += (tmp.extrasize - leftLen);
-		}
-		else
-			m_pReadPoint += tmp.extrasize;
-
-		if(m_pEnd - m_pReadPoint < tmp.datasize)
-		{
-			leftLen = m_pEnd - m_pReadPoint;
-			m_pReadPoint = m_pBegin;
-			m_pReadPoint += (tmp.datasize - leftLen);
-		}
-		else
-			m_pReadPoint += tmp.datasize;
-
-		m_nReadableSize -= (tmp.datasize + tmp.extrasize + sizeof(btk_buffer_t));
-		m_nReadableNum--;
+	}
+	else
+	{
+		nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
 	}
 
-	m_lock.WriteUnlock();
+	m_pReadPoint = AddBuffer(m_pReadPoint, nDorpLen);
+	m_nDataLen -= nDorpLen;
 
-	return BTK_NO_ERROR;
+	//btk_Info("CXBuffer::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, m_streamHeader.extrasize, this);
+	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
 }
 
-BTK_RESULT BTKBufferFIFO::SetReadType(bool bFront)
+void BTKBufferFIFO::MoveBuffer(int nOffset, int nLen)
 {
-	return BTK_NO_ERROR;
+	if (nOffset > 0 && nLen > 0)
+	if (m_pEnd - m_pReadPoint <= nOffset)
+	{
+		memmove(m_pBegin + nOffset - (m_pEnd - m_pReadPoint) , m_pReadPoint, nLen);
+	}
+	else
+		memmove(m_pReadPoint + nOffset, m_pReadPoint, nLen);
 }
 
-BTK_RESULT BTKBufferFIFO::SetReadPoint(bool bEnd)
+char *BTKBufferFIFO::AddBuffer(char *pBuffer, int nLen)
 {
-	return BTK_NO_ERROR;
+	char *pNextBuff = NULL;
+	if (m_pEnd - pBuffer <= nLen)
+	{
+		pNextBuff = m_pBegin + (nLen - (m_pEnd - pBuffer));
+	}
+	else
+	{
+		pNextBuff = pBuffer + nLen;
+	}
+	return pNextBuff;
 }

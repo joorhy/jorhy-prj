@@ -1,6 +1,5 @@
 #include "..\include\BTKAccess.h"
 #include "BTKAccessRYSP.h"
-#include "BTKAccessRTSP.h"
 
 BTKAccess::BTKAccess(btk_cfg_t &cfg)
 {
@@ -25,14 +24,6 @@ BTKAccess *BTKAccess::CreateInstance(btk_cfg_t &cfg)
 			pInstance = NULL;
 		}
 		break;
-	case PROTOCOL_RTSP: 
-		pInstance = new BTKAccessRTSP(cfg); 
-		if(!pInstance->m_bUsable)
-		{
-			delete pInstance;
-			pInstance = NULL;
-		}
-		break;
 	}
 	if(pInstance)
 	{
@@ -49,10 +40,6 @@ void BTKAccess::ReleaseInstance(BTKAccess **pInstance)
 	{
 	case PROTOCOL_RYSP: 
 		delete (BTKAccessRYSP*)(*pInstance);
-		*pInstance = NULL;
-		break;
-	case PROTOCOL_RTSP: 
-		delete (BTKAccessRTSP*)(*pInstance);
 		*pInstance = NULL;
 		break;
 	}

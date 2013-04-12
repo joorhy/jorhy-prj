@@ -3,6 +3,7 @@
 #include "..\include\BTKControl.h"
 #include "..\include\DefaultConfig.h"
 #include "..\include\BTKLog.h"
+#include "assert.h"
 
 BTKTransform::BTKTransform(btk_transform_t &t,void *control)
 {
@@ -126,6 +127,7 @@ BTK_RESULT BTKTransform::AudioLoopPush()
 				aout.timestamp	= format.timestamp;
 				head.datasize	= dstlen;
 				head.extrasize	= sizeof(btk_audio_format_t);
+				head.datatype	= 2;
 				m_abuffer->Write(dstData,(char*)&aout,head);
 				ctl->m_input->m_buffer->MoveNext();
 			}
@@ -198,6 +200,7 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 							vout.fps		= format.fps;
 							head.datasize	= dstlen;
 							head.extrasize	= sizeof(btk_audio_format_t);
+							head.datatype	= 1;
 							br = m_vbuffer->Write(dstData,(char*)&vout,head);
 							if(br == BTK_ERROR_FULL_BUFFER)
 							{
@@ -312,16 +315,6 @@ BTK_RESULT BTKTransform::SwitchBuffer()
 			tmp			= m_vbuffer;
 			m_vbuffer	= m_vbufferEX;
 			m_vbufferEX	= tmp;
-			
-			BTKControl *ctl = reinterpret_cast<BTKControl*>(m_control);
-			if(ctl)
-			{
-				ctl->m_bForward->GetVariable(&front);
-				if(front)
-					m_vbuffer->SetReadPoint(false);			//begin point
-				else
-					m_vbuffer->SetReadPoint(true);			//end point
-			}
 			m_bDecDone = false;
 			break;
 		}
@@ -383,6 +376,7 @@ BTK_RESULT BTKTransform::VideoLoopPull()
 							vout.fps		= format.fps;
 							head.datasize	= dstlen;
 							head.extrasize	= sizeof(btk_audio_format_t);
+							head.datatype	= 1;
 							br = m_vbufferEX->Write(dstData,(char*)&vout,head);
 						}
 						ctl->m_input->m_buffer->MoveNext();
@@ -426,16 +420,7 @@ BTK_RESULT BTKTransform::AudioLoopPull()
 
 BTK_RESULT BTKTransform::SetDirection(bool bFront)
 {
-	if(bFront)
-	{
-		m_vbuffer->SetReadType(true);
-	}
-	else
-	{
-		m_vbuffer->SetReadType(false);
-	}
 	m_vbufferEX->Flush();
-
 	return BTK_NO_ERROR;
 }
 
@@ -461,11 +446,11 @@ BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format,DWORD LastDecTime,bo
 			}	
 			else							//不是睡眠的情况
 			{
-				if(LastDecTime > 1000 /*/ format.fps*/)
+				/*if(LastDecTime > 1000 // format.fps)
 				{
 					bRet = BTK_FALSE;
 					bNeedIframe = true;
-				}
+				}*/
 
 				if(bNeedIframe)			//如果需要I帧
 					bRet = BTK_FALSE;

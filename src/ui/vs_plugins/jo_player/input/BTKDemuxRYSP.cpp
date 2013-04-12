@@ -67,6 +67,7 @@ BTK_RESULT BTKDemuxRYSP::DemuxBlock(char *data,BTKBuffer *pIO)
 
 		bufHead.datasize	= decHead.size;
 		bufHead.extrasize	= sizeof(btk_decode_t);
+		bufHead.datatype = 0;
 		br = pIO->Write(data+sizeof(RYSP_DataHead),(char*)&decHead,bufHead);
 		if(br == BTK_ERROR_FULL_BUFFER)
 		{
@@ -112,6 +113,7 @@ BTK_RESULT BTKDemuxRYSP::DemuxBlock(char *data,BTKBuffer *pIO)
 
 			bufHead.datasize	= decHead.size;
 			bufHead.extrasize	= sizeof(btk_decode_t);
+			bufHead.datatype = 0;
 			br = pIO->Write(pos+sizeof(RYSP_DataHead),(char*)&decHead,bufHead);
 			if(br != BTK_NO_ERROR)
 				return br;

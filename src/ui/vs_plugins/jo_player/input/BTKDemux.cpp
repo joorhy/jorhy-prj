@@ -1,6 +1,5 @@
 #include "..\include\BTKDemux.h"
 #include "BTKDemuxRYSP.h"
-#include "BTKDemuxH264.h"
 
 BTKDemux::BTKDemux(void)
 {
@@ -17,11 +16,6 @@ BTKDemux *BTKDemux::CreateInstance(btk_demux_t &t)
 	{
 	case DEMUX_RYSP: 
 		pInstance = new BTKDemuxRYSP();
-		pInstance->m_demuxID = t;
-		break; 
-
-	case DEMUX_H264: 
-		pInstance = new BTKDemuxH264();
 		pInstance->m_demuxID = t;
 		break; 
 	}

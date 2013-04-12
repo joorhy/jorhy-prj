@@ -143,7 +143,7 @@ void CRingBuffer::EraseBuffer()
 	memset(&m_streamHeader, 0, sizeof(m_streamHeader));
 	memset(&m_Node, 0, sizeof(m_Node));
 	GetData((char *)&m_Node, J_MEMNODE_LEN);
-	GetData((char *)&m_streamHeader, sizeof(J_StreamHeader));
+	GetData((char *)&m_streamHeader, sizeof(J_StreamHeader), J_MEMNODE_LEN);
 	nMoveLen = m_Node.nLen + sizeof(m_Node);
 	if (m_streamHeader.frameType == jo_video_i_frame && m_nDiscardedFrameNum > 0)
 	{
