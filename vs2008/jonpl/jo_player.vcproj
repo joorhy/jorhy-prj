@@ -244,6 +244,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKCpuUseage.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKCpuUseage.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKError.h"
 				>
 			</File>
