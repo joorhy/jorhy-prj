@@ -5,6 +5,9 @@
 #include "..\include\BTKLog.h"
 #include "assert.h"
 
+#define			SLEEP_MODE		20
+#define			NORMAL_MODE	60
+
 BTKTransform::BTKTransform(btk_transform_t &t,void *control)
 {
 	m_decoders		= t;
@@ -17,7 +20,7 @@ BTKTransform::BTKTransform(btk_transform_t &t,void *control)
 	m_aDecoder		= NULL;
 	m_abuffer		= NULL;
 	m_abufferEX		= NULL;
-	m_bDecDone		= false;
+	m_cpuInfo.Init();
 }
 
 BTKTransform::~BTKTransform(void)
@@ -155,7 +158,7 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 
 	BTKControl *ctl = reinterpret_cast<BTKControl*>(m_control);
 	bool bFirst = true;
-	DWORD dwDecTime = 0;
+	bool bNeedDec = true;
 	bool bNeedIframe = false;
 	char *srcData = new char[MAX_VIDEO_FRAME_SIZE];
 	char *dstData = new char[MAX_VIDEO_FRAME_SIZE];
@@ -183,11 +186,9 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 			{
 				if(format.type != DECODE_AUDIO)
 				{	
-					if(ConsiderVDecoder(format,dwDecTime,bNeedIframe))
+					if(ConsiderVDecoder(format, bNeedDec, bNeedIframe))
 					{
-						dwDecTime = GetTickCount();
 						br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen);
-						dwDecTime = GetTickCount() - dwDecTime;
 						if(br == BTK_NO_ERROR)
 						{
 							if(bFirst)
@@ -308,18 +309,12 @@ BTK_RESULT BTKTransform::SwitchBuffer()
 {
 	BTKBuffer *tmp = NULL;
 	bool front = true;
-	while(true)
-	{
-		if(m_bDecDone)
-		{
-			tmp			= m_vbuffer;
-			m_vbuffer	= m_vbufferEX;
-			m_vbufferEX	= tmp;
-			m_bDecDone = false;
-			break;
-		}
-	}
-	
+
+	m_sem.WaitTime(100);
+	tmp			= m_vbuffer;
+	m_vbuffer	= m_vbufferEX;
+	m_vbufferEX	= tmp;
+
 	return BTK_NO_ERROR;
 }
 
@@ -390,7 +385,7 @@ BTK_RESULT BTKTransform::VideoLoopPull()
 					break;
 				}
 			}
-			m_bDecDone = true;
+			m_sem.Post();
 			break;
 
 		case BTK_END: 
@@ -424,7 +419,7 @@ BTK_RESULT BTKTransform::SetDirection(bool bFront)
 	return BTK_NO_ERROR;
 }
 
-BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format,DWORD LastDecTime,bool &bNeedIframe)
+BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format, bool &bNeedDec, bool &bNeedIframe)
 {
 	BTKControl *ctl = reinterpret_cast<BTKControl*>(m_control);
 	bool bSleep = false;
@@ -432,29 +427,44 @@ BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format,DWORD LastDecTime,bo
 	if(ctl)
 	{
 		ctl->m_bSleep->GetVariable(&bSleep);
-		if(format.type == DECODE_I_FRAME)			//自要是I帧都不丢
+		if(bSleep)						//睡眠的情况
+		{
+			bRet = BTK_FALSE;
+			bNeedIframe = true;
+			bNeedDec = false;
+			return bRet;
+		}
+		if(format.type == DECODE_I_FRAME)			//只要是I帧都不丢
 		{
 			bRet = BTK_TRUE;
 			bNeedIframe = false;
+			bNeedDec = true;
 		}
 		else								//睡眠状态切换都要重新找到I帧开始解码
 		{
-			if(bSleep)						//睡眠的情况
+			//不是睡眠的情况
+			if(!bNeedDec)
 			{
 				bRet = BTK_FALSE;
 				bNeedIframe = true;
-			}	
-			else							//不是睡眠的情况
-			{
-				/*if(LastDecTime > 1000 // format.fps)
-				{
-					bRet = BTK_FALSE;
-					bNeedIframe = true;
-				}*/
-
-				if(bNeedIframe)			//如果需要I帧
-					bRet = BTK_FALSE;
 			}
+			else
+			{
+				UINT nInfo = 0;
+				if (m_cpuInfo.GetInfo(nInfo) && nInfo > NORMAL_MODE)
+				{
+					//if ((bSleep && nInfo > SLEEP_MODE) || (!bSleep && nInfo > NORMAL_MODE))
+					{
+						//btk_Info("cpu %d\n", nInfo);
+						bNeedDec = false;
+						bRet = BTK_FALSE;
+						bNeedIframe = true;
+					}
+				}
+			}
+
+			if(bNeedIframe)			//如果需要I帧
+				bRet = BTK_FALSE;
 		}
 	}
 	return bRet;

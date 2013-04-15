@@ -34,49 +34,48 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 	if(name == NPN_GetStringIdentifier("Plugin_Interface"))
 	{
 		int	cmd			= (int)NPVARIANT_TO_DOUBLE(args[0]);
-		NPString jsonStr= NPVARIANT_TO_STRING(args[1]);
-		char *js_parm		= new char[jsonStr.utf8length + 1];
-
-		memcpy(js_parm,jsonStr.utf8characters,jsonStr.utf8length);
-		js_parm[jsonStr.utf8length] = '\0';
+		char *js_parm	= NULL;
+		switch (cmd)
+		{
+		case 1:case 2:case 21:case 23:case 11:
+			{
+				NPString jsonStr= NPVARIANT_TO_STRING(args[1]);
+				js_parm		= new char[jsonStr.utf8length + 1];
+				memcpy(js_parm,jsonStr.utf8characters,jsonStr.utf8length);
+				js_parm[jsonStr.utf8length] = '\0';
+			}
+			break;
+		}
 		switch(cmd)
 		{
 		case 1:		//设置工作模式和布局
 			bRet = pPlugin->SetWorkModel(js_parm,result);
 			break;
-
 		case 2:		//改变布局
 			bRet = pPlugin->SetLayout(js_parm,result);
+			break;
+		case 21:	//打开历史流
+			bRet = pPlugin->Play(js_parm,result);
+			break;
+		case 23:	//历史流跳转
+			bRet = pPlugin->VodPlayJump(js_parm,result);
+			break;
+		case 11:	//播放实时视频
+			bRet = pPlugin->Play(js_parm,result);
 			break;
 
 		case 3:		//得到当前焦点播放窗口参数
 			bRet = pPlugin->GetWndParm(FOCUS_WINDOW, result);
 			break;
-
 		case 4:		//得到所有窗口播放参数列表
 			bRet = pPlugin->GetWndParm(ALL_WINDOW, result);
 			break;
-
-		case 11:	//播放实时视频
-			bRet = pPlugin->Play(js_parm,result);
-			break;
-
 		case 12:	//关闭所有播放
 			bRet = pPlugin->StopAllPlay(result);
 			break;
-
-		case 21:	//打开历史流
-			bRet = pPlugin->Play(js_parm,result);
-			break;
-
 		case 22:	//关闭所有历史流
 			bRet = pPlugin->StopAllPlay(result);
 			break;
-
-		case 23:	//历史流跳转
-			bRet = pPlugin->VodPlayJump(js_parm,result);
-			break;
-
 		case 30:	//播放器sleep
 			bRet = pPlugin->SleepPlayer((bool)NPVARIANT_TO_BOOLEAN(args[1]),result);
 			break;
@@ -84,7 +83,8 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 		default:
 			break;
 		}
-		delete [] js_parm;
+		if (js_parm)
+			delete js_parm;
 	}
 
 	if(name == NPN_GetStringIdentifier("ResgisterFunction"))

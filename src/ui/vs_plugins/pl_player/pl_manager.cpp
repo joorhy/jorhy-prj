@@ -303,12 +303,12 @@ void PlManager::Play(HWND hWnd)
 	}
 }
 
-CWnd *PlManager::GetRecntWnd(HWND hWnd)
+HWND PlManager::GetRecntWnd(HWND hWnd)
 {
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		return it->second.pReconnWnd;
+		return it->second.pReconnWnd->m_hWnd;
 	}
 }
 
@@ -348,7 +348,8 @@ BOOL PlManager::SetOsdText(HWND hWnd, int stime,char *osdtext)
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		it->second.pPlayer->SetOSDText(stime,osdtext);
+		if (it->second.bPlay)
+			it->second.pPlayer->SetOSDText(stime,osdtext);
 	}
 	return FALSE;
 }
@@ -358,7 +359,8 @@ BOOL PlManager::IsPaused(HWND hWnd)
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		it->second.pPlayer->IsPaused();
+		if (it->second.bPlay)
+			it->second.pPlayer->IsPaused();
 	}
 	return FALSE;
 }
@@ -368,7 +370,8 @@ void PlManager::AspectRatio(HWND hWnd, int width,int height)
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		it->second.pPlayer->AspectRatio(width,height);
+		if (it->second.bPlay)
+			it->second.pPlayer->AspectRatio(width,height);
 	}
 }
 
@@ -377,6 +380,7 @@ void PlManager::SleepPlayer(HWND hWnd, bool bSleep)
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		it->second.pPlayer->SleepPlayer(bSleep);
+		if (it->second.bPlay)
+			it->second.pPlayer->SleepPlayer(bSleep);
 	}
 }

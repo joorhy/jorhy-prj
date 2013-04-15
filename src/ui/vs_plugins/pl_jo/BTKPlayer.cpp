@@ -11,7 +11,7 @@ void BTKAPI BTKPlayer::EndCBK(void *pdata)
 	{
 		if(user->m_Model == STREAME_REALTIME)
 		{
-			PostMessage(user->m_pPlWnd,WM_OWN_START_WAIT,(WPARAM)user->m_pPlWnd,0);
+			PostMessage(PlManager::Instance()->GetRecntWnd(user->m_pPlWnd),WM_OWN_START_WAIT,(WPARAM)user->m_pPlWnd,0);
 		}
 		else
 		{
@@ -25,6 +25,7 @@ BTKPlayer::BTKPlayer(int nWorkMode, HWND hWnd)
 {
 	m_player		= new BTKControl();
 	m_Model		= nWorkMode;
+	m_pPlWnd	= hWnd;
 }
 
 BTKPlayer::~BTKPlayer(void)
@@ -68,7 +69,7 @@ BOOL BTKPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 			return FALSE;
 		
 		m_lastMrl = mrl;
-		m_hwnd = hPlayWnd;
+		m_pPlWnd = hPlayWnd;
 
 		m_player->SetEndCBK(EndCBK,this);
 	}
@@ -88,7 +89,7 @@ void BTKPlayer::Play()
 		br = m_player->InitPlayByNetwork(m_lastMrl.c_str());
 		if(br != BTK_NO_ERROR)
 			goto BTK_Exit;
-		br = m_player->SetHwnd(m_hwnd);
+		br = m_player->SetHwnd(m_pPlWnd);
 		if(br != BTK_NO_ERROR)
 			goto BTK_Exit;
 		br = m_player->Run();
@@ -173,7 +174,7 @@ int BTKPlayer::GetPlayStatus()
 
 HWND BTKPlayer::GetPlayHwnd()
 {
-	return m_hwnd;
+	return m_pPlWnd;
 }
 
 BOOL BTKPlayer::VodStreamJump(const PL_PlayInfo &playInfo)

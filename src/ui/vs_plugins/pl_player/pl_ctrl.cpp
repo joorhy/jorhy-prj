@@ -54,7 +54,7 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent, char* pJsUrl)
 	}
 	m_hParent = hParent;
 	SetLayout(m_layoutInfo);
-	SetAllUserData();
+	
 	return TRUE;
 }
 
@@ -76,7 +76,7 @@ int CPlCtrl::FindShowWndNum(const PL_LayoutInfo &layoutInfo)
 BOOL CPlCtrl::SetLayout(char *pJsUrl)
 {
 	PL_LayoutInfo layoutInfo;
-	if (!PlJsonParser::Instance()->ParserLayout(pJsUrl, layoutInfo))
+	if (!PlJsonParser::Instance()->ParserLayout2(pJsUrl, layoutInfo))
 		return FALSE;
 
 	if(SetLayout(layoutInfo))
@@ -84,6 +84,7 @@ BOOL CPlCtrl::SetLayout(char *pJsUrl)
 		m_layoutInfo.nLayout = layoutInfo.nLayout;
 		m_layoutInfo.nWindows = layoutInfo.nWindows;
 		m_layoutInfo.nMax = layoutInfo.nMax;
+		SetAllUserData();
 		return TRUE;
 	}
 	return FALSE;
@@ -114,6 +115,7 @@ BOOL CPlCtrl::SetLayout(const PL_LayoutInfo &layoutInfo)
 			break;
 		}
 	}
+
 	CRect rect;
 	GetClientRect(m_hParent, &rect);
 	ShowAllowWindow(nNewNum, nDisplayNum);
@@ -176,6 +178,10 @@ void CPlCtrl::GridWindow(int nWndNum)
 												rect.top + i*rect.Height() / nNum,
 												rect.Width() / nNum,
 												rect.Height() / nNum);
+				((CWnd*)m_vecPlayWnd[i*nNum+j])->Invalidate(TRUE);
+				//CRect rect;
+				//GetWindowRect(m_hParent, &rect);
+				//InvalidateRect(((CWnd*)m_vecPlayWnd[i*nNum+j])->m_hWnd, &rect, TRUE);
 			}
 		}
 }

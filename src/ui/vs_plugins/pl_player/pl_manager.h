@@ -37,7 +37,7 @@ public:
 	void		VodCallBack(HWND hWnd);											//历史播放时间条回调
 	BOOL	RegisterCallBack(NpnNotifyFunc funcAddr);
 	void		NotifyNpn(HWND hWnd, UINT nType, int args[], UINT argCount);
-	CWnd  *GetRecntWnd(HWND hWnd);								//获得重连窗口
+	HWND	GetRecntWnd(HWND hWnd);								//获得重连窗口
 	void		StatusCallBack(HWND hPlayWnd);			//插件状态通知
 	BOOL	SetUserData(HWND hWnd, void *pUser);							//设置用户数据，多个实例化用到
 	void		AspectRatio(HWND hWnd, int width=0,int height=0);		//拉伸

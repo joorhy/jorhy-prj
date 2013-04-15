@@ -60,9 +60,9 @@ BTK_RESULT BTKBufferFIFO::Write(char *IN_Buffer,char *IN_extra,btk_buffer_t &IN_
 		btk_decode_t *pExHeader = (btk_decode_t *)IN_extra;
 		if (pExHeader->type != DECODE_I_FRAME)
 		{
-			//++m_nDiscardedFrameNum;
-			m_lock.WriteUnlock();
-			return BTK_NO_ERROR;
+			++m_nDiscardedFrameNum;
+			//m_lock.WriteUnlock();
+			//return BTK_NO_ERROR;
 		}
 	}
 
@@ -180,7 +180,7 @@ void BTKBufferFIFO::EraseBuffer()
 	GetData((char *)&m_Node, J_MEMNODE_LEN);
 	GetData((char *)&m_streamHeader, sizeof(btk_buffer_t), J_MEMNODE_LEN);
 	nMoveLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-	if (m_streamHeader.datatype == 0)
+	/*if (m_streamHeader.datatype == 0)
 	{
 		if (m_nDiscardedFrameNum > 0)
 		{
@@ -226,11 +226,11 @@ void BTKBufferFIFO::EraseBuffer()
 		{
 			nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
 		}
-	}
-	else
-	{
+	}*/
+	//else
+	//{
 		nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-	}
+	//}
 
 	m_pReadPoint = AddBuffer(m_pReadPoint, nDorpLen);
 	m_nDataLen -= nDorpLen;

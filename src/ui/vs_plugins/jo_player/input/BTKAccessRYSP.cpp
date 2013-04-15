@@ -181,6 +181,10 @@ BTK_RESULT BTKAccessRYSP::ReadBlockReal(char *OUT_buf,int &OUT_len)
 		memcpy(OUT_buf,(char*)&head,sizeof(head));
 
 		br = m_netWork->NRead(OUT_buf+sizeof(head),datalen);
+		if(br == BTK_ERROR_RECEIVE)
+			return BTK_ERROR_ACCESS_END;
+		if(br == BTK_ERROR_RECEIVE_TIMEOUT)
+			return BTK_ERROR_ACCESS_ERROR;
 
 		OUT_len = sizeof(head) + datalen;
 	}

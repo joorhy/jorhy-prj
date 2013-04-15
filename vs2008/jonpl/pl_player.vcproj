@@ -120,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\ui\vs_plugins\jo_player\include"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\ui\vs_plugins\jo_player\include;..\..\src\ui\vs_plugins\pl_player"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PL_EXPORTS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -139,10 +139,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="libvlc.lib PlayCtrl.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\libs\vlc;..\..\libs\hik"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				OptimizeReferences="2"
+				OptimizeReferences="1"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
 			/>

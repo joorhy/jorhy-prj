@@ -44,13 +44,13 @@ BOOL BTKCpuInfo::GetInfo(UINT &nInfo)
 		m_dbIdleTime = m_dbIdleTime / m_dbSystemTime;
 
 		// CurrentCpuUsage% = 100 - (CurrentCpuIdle * 100) / NumberOfProcessors
-		m_dbIdleTime = 100.0 - m_dbIdleTime * 100.0 / (double)m_SysBaseInfo.bKeNumberProcessors;
+		m_dbIdleTime = ((double)m_SysBaseInfo.bKeNumberProcessors - m_dbIdleTime) * 100.0 / (double)m_SysBaseInfo.bKeNumberProcessors;
 		nInfo = (UINT)m_dbIdleTime;
+		return TRUE;
 	}
-
 	// store new CPU's idle and system time
 	m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
 	m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime;
 
-	return TRUE;
+	return FALSE;
 }

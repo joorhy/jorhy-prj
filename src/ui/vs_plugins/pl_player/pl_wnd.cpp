@@ -127,18 +127,18 @@ BOOL CPlWnd::OnEraseBkgnd(CDC* pDC)
 
 void CPlWnd::DrawBorder(CPen *pen)
 {
-	CRect rect;
-	GetClientRect(&rect);
-	if(m_bFullScreen || m_nNowShowWnd == 1)
+	if(m_bFullScreen/* || m_nNowShowWnd == 1*/)
 		return;
 
+	CRect rect;
+	GetClientRect(&rect);
 	CDC *wndDC = GetWindowDC();
 	CPen *oldpen = wndDC->SelectObject(pen);
 	wndDC->MoveTo(rect.left,rect.top);
-	wndDC->LineTo(rect.right+1,rect.top);
+	wndDC->LineTo(rect.right+1,rect.top+1);
 	wndDC->LineTo(rect.right+1,rect.bottom+1);
-	wndDC->LineTo(rect.left,rect.bottom+1);
-	wndDC->LineTo(rect.left,rect.top);
+	wndDC->LineTo(rect.left+1,rect.bottom+1);
+	wndDC->LineTo(rect.left+1,rect.top+1);
 	wndDC->SelectObject(oldpen);
 }
 
@@ -196,6 +196,8 @@ void CPlWnd::OnSize(UINT nType, int cx, int cy)
 	{
 		PlManager::Instance()->AspectRatio(m_hWnd);		//¿≠…Ï
 	}
+
+	//Invalidate(TRUE);
 }
 
 void CPlWnd::ShowAllWindowEpt(HWND hWnd,int nCmdShow)
@@ -235,7 +237,6 @@ void CPlWnd::OnPaint()
 		DrawBorder(&pen);
 		DeleteObject(pen);
 	}
-	
 }
 
 void CPlWnd::OnMouseMove(UINT nFlags, CPoint point)

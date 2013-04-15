@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\jo_player\include\ffmpeg;..\..\src\ui\vs_plugins\jo_player\include\live555\liveMedia;..\..\src\ui\vs_plugins\jo_player\include\live555\BasicUsageEnvironment;..\..\src\ui\vs_plugins\jo_player\include\live555\groupsock;..\..\src\ui\vs_plugins\jo_player\include\live555\UsageEnvironment;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\jo_player\include\ffmpeg;..\..\src\ui\vs_plugins\jo_player\include;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_PLAYER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -64,7 +64,7 @@
 				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib"
 				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\live555;..\..\libs\DirectX"
+				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\DirectX"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -118,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\jo_player\include\ffmpeg;..\..\src\ui\vs_plugins\jo_player\include\live555\liveMedia;..\..\src\ui\vs_plugins\jo_player\include\live555\BasicUsageEnvironment;..\..\src\ui\vs_plugins\jo_player\include\live555\groupsock;..\..\src\ui\vs_plugins\jo_player\include\live555\UsageEnvironment;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\jo_player\include\ffmpeg;..\..\src\ui\vs_plugins\jo_player\include;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JO_PLAYER_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -137,9 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib liveMedia.lib UsageEnvironment.lib BasicUsageEnvironment.lib"
+				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\live555;..\..\libs\DirectX"
+				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\DirectX"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

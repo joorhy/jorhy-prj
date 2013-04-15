@@ -120,7 +120,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\np_plugin\include;&quot;..\..\src\ui\vs_plugins\xulrunner-sdk\sdk\include&quot;;..\..\src\ui\vs_plugins\np_plugin\;..\..\src\ui\vs_plugins\np_utils\json\include;..\..\src\ui\vs_plugins\pl_player;..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_utils\json\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NP_PLUGIN_EXPORTS;MOZILLA_STRICT_API;XPCOM_GLUE;XP_WIN;_X86_"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MOZILLA_STRICT_API;XPCOM_GLUE;XP_WIN;_X86_"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -139,6 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
+				ModuleDefinitionFile="..\..\src\ui\vs_plugins\np_plugin\np_plugin.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
