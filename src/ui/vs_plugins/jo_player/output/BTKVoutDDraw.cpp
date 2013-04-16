@@ -222,7 +222,7 @@ BTK_RESULT BTKVoutDDraw::ShowPicture()
 		ClientToScreen(m_hwnd,(LPPOINT)&DestRect.right);
 		
 		hRet = m_pDDSPrimary->Blt(&DestRect,m_pSurface,NULL,DDBLT_ALPHADEST,NULL);
-		while(hRet == DDERR_WASSTILLDRAWING); 
+		//while(hRet == DDERR_WASSTILLDRAWING); 
 		if(hRet != DD_OK) 
 			return BTK_ERROR_SURFACE_BLT;
 	}

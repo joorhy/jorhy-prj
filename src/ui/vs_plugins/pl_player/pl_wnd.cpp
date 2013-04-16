@@ -120,6 +120,8 @@ BOOL CPlWnd::OnEraseBkgnd(CDC* pDC)
 	m_hBkg.GetBitmap(&hbitmap);
 	pDC->StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,hbitmap.bmWidth,hbitmap.bmHeight,SRCCOPY);
 	memdc.SelectObject(oldbit);
+	memdc.DeleteDC();
+	oldbit->DeleteObject();
 
 	return TRUE;
 	//return CWnd::OnEraseBkgnd(pDC);
@@ -140,6 +142,7 @@ void CPlWnd::DrawBorder(CPen *pen)
 	wndDC->LineTo(rect.left+1,rect.bottom+1);
 	wndDC->LineTo(rect.left+1,rect.top+1);
 	wndDC->SelectObject(oldpen);
+	ReleaseDC(wndDC);
 }
 
 void CPlWnd::OnLButtonDown(UINT nFlags, CPoint point)
@@ -179,14 +182,8 @@ void CPlWnd::OnSize(UINT nType, int cx, int cy)
 
 	CRect rect,toolRect;
 	GetClientRect(&rect);
-	//ClientToScreen(&rect);
 	::GetWindowRect(dynamic_cast<CWnd *>(m_Tool)->m_hWnd, &toolRect);
 	this->ScreenToClient(&toolRect);
-	/*m_Tool->MoveWindow(	rect.CenterPoint().x - toolRect.Width() / 2,
-						rect.bottom - toolRect.Height(),
-						toolRect.Width(),
-						toolRect.Height(),
-						TRUE);*/
 	dynamic_cast<CWnd *>(m_Tool)->MoveWindow(rect.left+1,
 						rect.bottom - toolRect.Height()-1,
 						rect.Width(),

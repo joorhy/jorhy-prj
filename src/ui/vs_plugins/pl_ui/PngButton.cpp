@@ -208,6 +208,8 @@ void CPngButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	pDC->StretchBlt(0,0,bitmap.bmWidth,bitmap.bmHeight,&memdc,0,0,bitmap.bmWidth,bitmap.bmHeight,SRCCOPY);
 	SetLayeredWindowAttributes(RGB(128,128,128),0,LWA_COLORKEY);
 	SelectObject(memdc,hOldSel);
+	memdc.DeleteDC();
+	ReleaseDC(pDC);
 }
 
 
