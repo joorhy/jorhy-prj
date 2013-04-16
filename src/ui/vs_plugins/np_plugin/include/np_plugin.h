@@ -49,7 +49,7 @@ public:
 	void RegisterCallBack(NPObject *CallBackFunc,UINT type);
 	bool SetWorkModel(char *js_workmodel,NPVariant *result);
 	bool Play(char *js_playInfo,NPVariant *result);
-	bool SetLayout(char *js_layout,NPVariant *result);
+	bool ChangeLayout(char *js_layout,NPVariant *result);
 	bool SetLayout();
 	bool StopAllPlay(NPVariant *result);
 	bool VodPlayJump(char *js_time,NPVariant *result);

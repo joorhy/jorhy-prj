@@ -5,7 +5,7 @@
 #include "pl_player.h"
 #include "pl_singleton.h"
 #include "json.h"
-#include <vector>
+#include <map>
 
 class CPlWnd;
 class PL_API CPlCtrl : public SingletonTmpl<CPlCtrl>
@@ -34,18 +34,17 @@ private:
 	HWND m_hParent;
 	//work model
 	PL_LayoutInfo m_layoutInfo;
-	std::vector<CPlWnd *> m_vecPlayWnd; 
+	typedef std::map<UINT, CPlWnd *> PlayWndMap;
+	PlayWndMap m_playWndMap; 
 	void *m_pUser;
 
 private:
-	int FindShowWndNum();
-	int FindShowWndNum(const PL_LayoutInfo &layoutInfo);
 	HWND GetNextPlayWnd();
 	BOOL SetLayout(const PL_LayoutInfo &layoutInfo);
 	void GridWindow(int windowNum);
-	void SetAllFullModel(UINT nType);
-	void ShowAllowWindow(int nNewNum,int nOldNum);
-	BOOL SetAllUserData();
+	BOOL CreateWindows(const PL_LayoutInfo &layoutInfo);
+	void DestroyWindows();
+	int CalcWndNum(const PL_LayoutInfo &layoutInfo);
 };
 
 static void Convert(const char* strIn,char* strOut,int sourceCodepage,int targetCodepage)

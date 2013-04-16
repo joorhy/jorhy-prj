@@ -372,7 +372,7 @@ BOOL CPlToolBar::AttachPlayer(PL_PlayParm *pPlayParm, void *parent)
 	else
 	{
 		m_pPlayParm = pPlayParm;
-		ShowControls(FALSE);	//右键以后只有该窗口才不现实工具条
+		//ShowControls(FALSE);	//右键以后只有该窗口才不现实工具条
 		SetParent((CWnd *)parent);
 		m_hPlWnd = ((CWnd *)parent)->m_hWnd;
 	}

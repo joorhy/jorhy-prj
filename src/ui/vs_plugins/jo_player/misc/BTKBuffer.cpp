@@ -6,7 +6,8 @@ BTKBuffer *BTKBuffer::CreateInstance(buffer_type_e t,int size_buffer)
 	BTKBuffer *pInstance = NULL;
 	switch(t)
 	{
-	case BUFFER_FIFO: pInstance = new BTKBufferFIFO(size_buffer); break;
+	case BUFFER_FIFO: pInstance = new BTKBufferFIFO(size_buffer); 
+		break;
 	}
 	return pInstance;
 }

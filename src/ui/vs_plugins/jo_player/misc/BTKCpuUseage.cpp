@@ -24,14 +24,21 @@ BOOL BTKCpuInfo::Init()
 BOOL BTKCpuInfo::GetInfo(UINT &nInfo)
 {
 	// get new system time
+	//m_lock.Lock();
 	m_status = m_NtQuerySystemInformation(SystemTimeInformation, &m_SysTimeInfo, sizeof(SYSTEM_TIME_INFORMATION), NULL);
 	if (m_status!=NO_ERROR)
+	{
+		//m_lock.Unlock();
 		return FALSE;
+	}
 
 	// get new CPU's idle time
 	m_status = m_NtQuerySystemInformation(SystemPerformanceInformation, &m_SysPerfInfo ,sizeof(SYSTEM_PERFORMANCE_INFORMATION), NULL);
 	if (m_status != NO_ERROR)
+	{
+		//m_lock.Unlock();
 		return FALSE;
+	}
 
 	// if it's a first call - skip it
 	if (m_liOldIdleTime.QuadPart != 0)
@@ -46,11 +53,12 @@ BOOL BTKCpuInfo::GetInfo(UINT &nInfo)
 		// CurrentCpuUsage% = 100 - (CurrentCpuIdle * 100) / NumberOfProcessors
 		m_dbIdleTime = ((double)m_SysBaseInfo.bKeNumberProcessors - m_dbIdleTime) * 100.0 / (double)m_SysBaseInfo.bKeNumberProcessors;
 		nInfo = (UINT)m_dbIdleTime;
+		//m_lock.Unlock();
 		return TRUE;
 	}
 	// store new CPU's idle and system time
 	m_liOldIdleTime = m_SysPerfInfo.liIdleTime;
 	m_liOldSystemTime = m_SysTimeInfo.liKeSystemTime;
-
+	//m_lock.Unlock();
 	return FALSE;
 }

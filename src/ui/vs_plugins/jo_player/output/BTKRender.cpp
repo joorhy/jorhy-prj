@@ -224,7 +224,7 @@ BTK_RESULT BTKRender::VoutLoopPush()
 
 	}
 Vout_End:
-	delete []m_vdata;
+	delete m_vdata;
 	m_vdata = NULL;
 	btk_Info("Video Output Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
 	ctl->m_AllClose.Post();
@@ -260,7 +260,7 @@ BTK_RESULT BTKRender::TakeSnapshot(char *path_name)
 
 	br = BTKPicture::SavePicture(format,data,voutfmt,path_name);
 
-	delete []data;
+	delete data;
 	data = NULL;
 	return BTK_NO_ERROR;
 }
@@ -323,7 +323,7 @@ BTK_RESULT BTKRender::VoutLoopPull()
 
 	}
 Vout_End2:
-	delete []m_vdata;
+	delete m_vdata;
 	m_vdata = NULL;
 	btk_Info("Pull Video Output Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
 	ctl->m_AllClose.Post();

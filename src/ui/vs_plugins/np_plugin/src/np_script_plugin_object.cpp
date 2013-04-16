@@ -52,7 +52,7 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 			bRet = pPlugin->SetWorkModel(js_parm,result);
 			break;
 		case 2:		//改变布局
-			bRet = pPlugin->SetLayout(js_parm,result);
+			bRet = pPlugin->ChangeLayout(js_parm,result);
 			break;
 		case 21:	//打开历史流
 			bRet = pPlugin->Play(js_parm,result);

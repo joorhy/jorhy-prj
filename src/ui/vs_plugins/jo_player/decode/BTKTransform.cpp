@@ -44,14 +44,12 @@ unsigned BTKTransform::AudioThread(void *parm)
 		BTKControl *ctl = reinterpret_cast<BTKControl*>(pThis->m_control);
 		if(ctl)
 		{
-			
-
 			if(ctl->m_WorkModel == BTK_PLAY_REALTIME)
 			{
 				pThis->m_abuffer = BTKBuffer::CreateInstance(BUFFER_FIFO,BUFFER_ADUIO_OUTPUT);		//参见m_decoders动态生成大小
 				br = pThis->AudioLoopPush();
 			}
-			else if(ctl->m_WorkModel == BTK_PLAY_FILE);
+			else if(ctl->m_WorkModel == BTK_PLAY_FILE)
 			{
 				pThis->m_abuffer	= BTKBuffer::CreateInstance(BUFFER_FIFO,BUFFER_ADUIO_OUTPUT);		//参见m_decoders动态生成大小
 				pThis->m_abufferEX	= BTKBuffer::CreateInstance(BUFFER_FIFO,BUFFER_ADUIO_OUTPUT);		//参见m_decoders动态生成大小
@@ -235,8 +233,8 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 	}
 
 VDec_End:
-	delete []srcData;
-	delete []dstData;
+	delete srcData;
+	delete dstData;
 	btk_Info("Video Decode Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
 	ctl->m_AllClose.Post();
 	return br;
@@ -401,8 +399,8 @@ BTK_RESULT BTKTransform::VideoLoopPull()
 	}
 
 VDec_End2:
-	delete []srcData;
-	delete []dstData;
+	delete srcData;
+	delete dstData;
 	btk_Info("Pull Video Decode Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
 	ctl->m_AllClose.Post();
 	return br;

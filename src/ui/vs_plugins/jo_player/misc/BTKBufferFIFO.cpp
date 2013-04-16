@@ -6,7 +6,7 @@
 BTKBufferFIFO::BTKBufferFIFO(int size)
 :BTKBuffer(size)
 {
-	m_bufferID		= BUFFER_LIFO;
+	m_bufferID		= BUFFER_FIFO;
 	m_nBuffSize		= size;
 	m_pBuffer			= new char[size];
 	m_pBegin			= m_pBuffer;

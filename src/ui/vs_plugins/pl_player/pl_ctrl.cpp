@@ -12,16 +12,13 @@ CPlCtrl::CPlCtrl(void)
 {
 	m_hParent	= NULL;
 	m_pUser		= NULL;
+	memset(&m_layoutInfo, 0, sizeof(PL_LayoutInfo));
 }
 
 CPlCtrl::~CPlCtrl(void)
 {
-	int size = m_vecPlayWnd.size();
-	for(int i=size; i>0; --i)
-	{
-		CPlFactoryWnd::Instance()->DelWindow(i);
-	}
-	m_vecPlayWnd.clear();
+	m_layoutInfo.bInit = FALSE;
+	DestroyWindows();
 }
 
 BOOL CPlCtrl::InitDisPlay(HWND hParent, char* pJsUrl)
@@ -32,38 +29,15 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent, char* pJsUrl)
 	if (!PlJsonParser::Instance()->ParserLayout(pJsUrl, m_layoutInfo))
 		return FALSE;
 
-	int nWindows = FindShowWndNum();
-	switch(m_layoutInfo.nMod)
-	{
-	case STREAME_REALTIME:		//real
-		for(int i=0; i<nWindows; ++i)
-		{
-			CPlWnd *r_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("r_play", hParent, i+1));
-			m_vecPlayWnd.push_back(r_tmp);
-		}
-		break;
-	case STREAME_FILE:		//vod
-		for(int i=0; i<nWindows; ++i)
-		{
-			CPlWnd *v_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("v_play", hParent, i+1));
-			m_vecPlayWnd.push_back(v_tmp);
-		}
-		break;
-	default:
-		return FALSE;
-	}
 	m_hParent = hParent;
+	CreateWindows(m_layoutInfo);
+	m_layoutInfo.bInit = TRUE;
 	SetLayout(m_layoutInfo);
 	
 	return TRUE;
 }
 
-int CPlCtrl::FindShowWndNum()
-{
-	return FindShowWndNum(m_layoutInfo);
-}
-
-int CPlCtrl::FindShowWndNum(const PL_LayoutInfo &layoutInfo)
+int CPlCtrl::CalcWndNum(const PL_LayoutInfo &layoutInfo)
 {
 	int nWndNum = 1;
 	if(3 == layoutInfo.nLayout)
@@ -78,13 +52,13 @@ BOOL CPlCtrl::SetLayout(char *pJsUrl)
 	PL_LayoutInfo layoutInfo;
 	if (!PlJsonParser::Instance()->ParserLayout2(pJsUrl, layoutInfo))
 		return FALSE;
-
+	
+	CreateWindows(layoutInfo);
 	if(SetLayout(layoutInfo))
 	{
 		m_layoutInfo.nLayout = layoutInfo.nLayout;
 		m_layoutInfo.nWindows = layoutInfo.nWindows;
 		m_layoutInfo.nMax = layoutInfo.nMax;
-		SetAllUserData();
 		return TRUE;
 	}
 	return FALSE;
@@ -92,76 +66,34 @@ BOOL CPlCtrl::SetLayout(char *pJsUrl)
 
 BOOL CPlCtrl::SetLayout(const PL_LayoutInfo &layoutInfo)
 {
-	int nOldNum = m_vecPlayWnd.size();
-	int nDisplayNum = FindShowWndNum();
-	int nNewNum = FindShowWndNum(layoutInfo);
-	if(nOldNum < nNewNum)
-	{
-		switch(m_layoutInfo.nMod)
-		{
-		case STREAME_REALTIME:		//real
-			for(int i=nOldNum; i<nNewNum; ++i)
-			{
-				CPlWnd *r_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i+1));
-				m_vecPlayWnd.push_back(r_tmp);
-			}
-			break;
-		case STREAME_FILE:		//vod
-			for(int i=nOldNum; i<nNewNum; ++i)
-			{
-				CPlWnd *v_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("v_play", m_hParent, i+1));
-				m_vecPlayWnd.push_back(v_tmp);
-			}
-			break;
-		}
-	}
-
+	int nWindowNum = CalcWndNum(layoutInfo);
 	CRect rect;
 	GetClientRect(m_hParent, &rect);
-	ShowAllowWindow(nNewNum, nDisplayNum);
 	switch(layoutInfo.nLayout)
 	{
 	case 1:
-		for(int i=0; i<nNewNum; ++i)
+		for(int i=0; i<nWindowNum; ++i)
 		{
-			((CWnd*)m_vecPlayWnd[i])->MoveWindow(rect.left+i*rect.Width() / nNewNum,
+			((CWnd*)m_playWndMap[i])->MoveWindow(rect.left+i*rect.Width() / nWindowNum,
 										rect.top,
-										rect.Width() / nNewNum,					
+										rect.Width() / nWindowNum,					
 										rect.Height());
 		}
 		break;
 	case 2:
-		for(int i=0; i<nNewNum; i++)
+		for(int i=0; i<nWindowNum; i++)
 		{
-			((CWnd*)m_vecPlayWnd[i])->MoveWindow(rect.left,		
-										rect.top+i*rect.Height() / nNewNum,
+			((CWnd*)m_playWndMap[i])->MoveWindow(rect.left,		
+										rect.top+i*rect.Height() / nWindowNum,
 										rect.Width(),	
-										rect.Height() / nNewNum);
+										rect.Height() / nWindowNum);
 		}
 		break;
 	case 3:
-		switch(layoutInfo.nWindows)
-		{
-		case SF_ONE:
-			GridWindow(1);
-			break;
-		case SF_FOUR:
-			GridWindow(4);
-			break;
-		case SF_NINE:
-			GridWindow(9);
-			break;
-		case SF_SIXTEEN:
-			GridWindow(16);
-			break;
-		}
+		GridWindow(layoutInfo.nWindows+1);
 		break;
-	default:
-		return FALSE;
 	}
-	SetAllFullModel(layoutInfo.nMax);
-	m_vecPlayWnd[0]->SetNowShowWindow(nNewNum);
-	::SendMessage(GetFocusWnd(), WM_OWN_SETFOCUS, 0, 0);
+	m_playWndMap[0]->SetNowShowWindow(nWindowNum);
 	return TRUE;
 }
 
@@ -169,53 +101,22 @@ void CPlCtrl::GridWindow(int nWndNum)
 {
 	CRect rect;
 	GetClientRect(m_hParent,&rect);
-	int nNum = sqrt((double)nWndNum);
-	for(int i=0; i<nNum; ++i)
-		{
-			for(int j=0; j<nNum; ++j)
-			{
-				((CWnd*)m_vecPlayWnd[i*nNum+j])->MoveWindow(rect.left + j*rect.Width() / nNum,
-												rect.top + i*rect.Height() / nNum,
-												rect.Width() / nNum,
-												rect.Height() / nNum);
-				((CWnd*)m_vecPlayWnd[i*nNum+j])->Invalidate(TRUE);
-				//CRect rect;
-				//GetWindowRect(m_hParent, &rect);
-				//InvalidateRect(((CWnd*)m_vecPlayWnd[i*nNum+j])->m_hWnd, &rect, TRUE);
-			}
-		}
-}
-
-void CPlCtrl::SetAllFullModel(UINT nType)
-{
-	int size = m_vecPlayWnd.size();
-	for(int i=0; i<size; ++i)
+	for(int i=0; i<nWndNum; ++i)
 	{
-		m_vecPlayWnd[i]->SetFullModel(nType);
+		for(int j=0; j<nWndNum; ++j)
+		{
+			((CWnd*)m_playWndMap[i*nWndNum+j])->MoveWindow(rect.left + j*rect.Width() / nWndNum,
+											rect.top + i*rect.Height() / nWndNum,
+											rect.Width() / nWndNum,
+											rect.Height() / nWndNum);
+			((CWnd*)m_playWndMap[i*nWndNum+j])->Invalidate(TRUE);
+		}
 	}
 }
 
 HWND CPlCtrl::GetFocusWnd()
 {
-	return m_vecPlayWnd[0]->GetFocusWnd(); 
-}
-
-void CPlCtrl::ShowAllowWindow(int nNewNum,int nOldNum)
-{
-	if(nNewNum < nOldNum)
-	{
-		for(int i=nNewNum; i<nOldNum; ++i)
-		{
-			::ShowWindow(((CWnd*)m_vecPlayWnd[i])->m_hWnd, SW_HIDE);
-		}
-	}
-	else if(nOldNum < nNewNum)
-	{
-		for(int i=nOldNum; i<nNewNum; ++i)
-		{
-			::ShowWindow(((CWnd*)m_vecPlayWnd[i])->m_hWnd, SW_SHOW);
-		}
-	}
+	return m_playWndMap[0]->GetFocusWnd(); 
 }
 
 BOOL CPlCtrl::RegisterCallBack(NpnNotifyFunc funcAddr, void *pUser)
@@ -226,11 +127,10 @@ BOOL CPlCtrl::RegisterCallBack(NpnNotifyFunc funcAddr, void *pUser)
 
 BOOL CPlCtrl::StopAll()
 {
-	int nSize = m_vecPlayWnd.size();
-	for(int i=0; i<nSize; ++i)
-	{
-		PlManager::Instance()->Stop(((CWnd*)m_vecPlayWnd[i])->m_hWnd);
-	}
+	PlayWndMap::iterator it = m_playWndMap.begin();
+	for(; it!=m_playWndMap.end(); ++it)
+		PlManager::Instance()->Stop(it->second->m_hWnd);
+
 	return TRUE;
 }
 
@@ -261,7 +161,7 @@ BOOL CPlCtrl::GetPath(char *psz_dest,UINT nType)
 
 BOOL CPlCtrl::SetLayout()
 {
-	if(m_layoutInfo.nLayout == -1) 
+	if(!m_layoutInfo.nLayout) 
 		return FALSE;
 
 	return SetLayout(m_layoutInfo);
@@ -279,12 +179,17 @@ BOOL CPlCtrl::Play(char *js_mrl)
 	}
 	else
 	{
-		int nSize = m_vecPlayWnd.size();
+		int nSize = m_playWndMap.size();
 		if(playInfo.nId > nSize || playInfo.nId < 0) 
 			return FALSE;
 
-		hWnd = m_vecPlayWnd[playInfo.nId]->m_hWnd;
+		hWnd = m_playWndMap[playInfo.nId]->m_hWnd;
 	}
+
+	if(!PlManager::Instance()->SetUserData(hWnd, m_pUser))
+		return FALSE;
+
+	::SendMessage(hWnd, WM_OWN_SETFOCUS, 0, 0);
 	bRet = PlManager::Instance()->Play(hWnd, playInfo);
 
 	return bRet;
@@ -292,15 +197,12 @@ BOOL CPlCtrl::Play(char *js_mrl)
 
 HWND CPlCtrl::GetNextPlayWnd()
 {
-	int nWndNum = FindShowWndNum();
-	for(int i=0; i<nWndNum; ++i)
+	PlayWndMap::iterator it = m_playWndMap.begin();
+	for(; it!=m_playWndMap.end(); ++it)
 	{
-		if(!PlManager::Instance()->IsPlaying(m_vecPlayWnd[i]->m_hWnd))
-		{
-			return m_vecPlayWnd[i]->m_hWnd;
-		}
+		if(!PlManager::Instance()->IsPlaying(it->second->m_hWnd))
+			return it->second->m_hWnd;
 	}
-	//return ((CPlayWnd*)m_vctPlayWnd[0])->m_hWnd;
 	return GetFocusWnd();
 }
 
@@ -311,17 +213,17 @@ BOOL CPlCtrl::GetWndParm(char *pRet, int nType)
 	if(nType == FOCUS_WINDOW)
 	{
 		int nId = GetWindowLong(GetFocusWnd(), GWL_ID);
-		bRet = PlManager::Instance()->GetWndPlayParm(m_vecPlayWnd[nId-1]->m_hWnd, wndinfo);
+		bRet = PlManager::Instance()->GetWndPlayParm(m_playWndMap[nId]->m_hWnd, wndinfo);
 	}
 	else if(nType == ALL_WINDOW)
 	{
 		char ppWndInfo[64][64];
-		int nWndNum = m_vecPlayWnd.size();
+		int nWndNum = m_playWndMap.size();
 		int nRealNum = 0;
 		for (int i=0; i<nWndNum; ++i)
 		{
 			memset(ppWndInfo[i], 0, 64);
-			bRet = PlManager::Instance()->GetWndPlayParm(m_vecPlayWnd[i]->m_hWnd, ppWndInfo[i]);
+			bRet = PlManager::Instance()->GetWndPlayParm(m_playWndMap[i]->m_hWnd, ppWndInfo[i]);
 			if (bRet)
 			{
 				++nRealNum;
@@ -334,26 +236,57 @@ BOOL CPlCtrl::GetWndParm(char *pRet, int nType)
 	return bRet;
 }
 
-BOOL CPlCtrl::SetAllUserData()
+void CPlCtrl::SleepPlayer(bool bSleep)
 {
-	int nWndNum = FindShowWndNum();
-	if(!m_pUser)
-		return FALSE;
-	for(int i=0; i<nWndNum; ++i)
+	PlayWndMap::iterator it = m_playWndMap.begin();
+	for(; it!=m_playWndMap.end(); ++it)
+		PlManager::Instance()->SleepPlayer(it->second->m_hWnd, bSleep);
+}
+
+BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
+{
+	int nOldWnds = m_playWndMap.size();//CalcWndNum(m_layoutInfo);
+	int nWindows = CalcWndNum(layoutInfo);
+	//if (!m_layoutInfo.bInit)
+	//	nOldWnds = 0;
+	if (nOldWnds < nWindows)
 	{
-		if(!PlManager::Instance()->SetUserData(m_vecPlayWnd[i]->m_hWnd, m_pUser))
+		switch(m_layoutInfo.nMod)
 		{
+		case STREAME_REALTIME:		//real
+			for(int i=nOldWnds; i<nWindows; ++i)
+			{
+				CPlWnd *r_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i));
+				::ShowWindow(((CWnd*)r_tmp)->m_hWnd, SW_SHOW);
+				r_tmp->SetFullModel(m_layoutInfo.nMax);
+				PlManager::Instance()->SetUserData(r_tmp->m_hWnd, m_pUser);
+				m_playWndMap[i] = r_tmp;
+			}
+			break;
+		case STREAME_FILE:				//vod
+			for(int i=nOldWnds; i<nWindows; ++i)
+			{
+				CPlWnd *v_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("v_play", m_hParent, i));
+				::ShowWindow(((CWnd*)v_tmp)->m_hWnd, SW_SHOW);
+				v_tmp->SetFullModel(m_layoutInfo.nMax);
+				PlManager::Instance()->SetUserData(v_tmp->m_hWnd, m_pUser);
+				m_playWndMap[i] = v_tmp;
+			}
+			break;
+		default:
 			return FALSE;
 		}
 	}
+
 	return TRUE;
 }
 
-void CPlCtrl::SleepPlayer(bool bSleep)
+void CPlCtrl::DestroyWindows()
 {
-	int nWndNum = FindShowWndNum();
-	for(int i=0; i<nWndNum; ++i)
+	PlayWndMap::iterator it = m_playWndMap.begin();
+	for(; it!=m_playWndMap.end(); ++it)
 	{
-		PlManager::Instance()->SleepPlayer(m_vecPlayWnd[i]->m_hWnd, bSleep);
+		CPlFactoryWnd::Instance()->DelWindow(it->first);
 	}
+	m_playWndMap.clear();
 }

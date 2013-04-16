@@ -37,11 +37,11 @@ BTK_RESULT BTKAccessRYSP::GetDemuxType(btk_demux_t &t)
 {
 	BTK_RESULT br;
 	br = RequestServer(m_cfg.i_real);
-	assert(br == BTK_NO_ERROR);
+	//assert(br == BTK_NO_ERROR);
 	FAILED_BTK(br);
 
 	br = ReadHeader(t);
-	assert(br == BTK_NO_ERROR);
+	//assert(br == BTK_NO_ERROR);
 
 	return br;
 }
@@ -62,21 +62,22 @@ BTK_RESULT BTKAccessRYSP::RequestServer(btk_work_type type)
 	if(!m_netWork)
 		return BTK_ERROR_NO_NETWORK;
 
-	RYSP_CtrlHead head;
-	RYSP_OpenData data;
-	memset(&head,0,sizeof(head));
-	strcpy((char*)head.start_code,"JOSP");
-	head.version	= 2;
-	head.cmd		= (type == BTK_PLAY_REALTIME ? RYSP_OPEN_STREAM : RYSP_OPEN_FILE);
-	head.ex_length	= htons(sizeof(data));
+	struct RequestData
+	{
+		RYSP_CtrlHead head;
+		RYSP_OpenData data;
+	} req_data;
 
-	strncpy_s(data.res_id,m_cfg.psz_resource,sizeof(data.res_id));
-	data.stream_type= 0;		//主码流
+	memset(&req_data.head,0,sizeof(RYSP_CtrlHead));
+	strcpy((char*)req_data.head.start_code,"JOSP");
+	req_data.head.version	= 2;
+	req_data.head.cmd		= (type == BTK_PLAY_REALTIME ? RYSP_OPEN_STREAM : RYSP_OPEN_FILE);
+	req_data.head.ex_length	= htons(sizeof(RYSP_OpenData));
 
-	br = m_netWork->NWrite((const char*)&head,sizeof(head));
-	FAILED_BTK(br);
+	strncpy_s(req_data.data.res_id,m_cfg.psz_resource,sizeof(req_data.data.res_id));
+	req_data.data.stream_type= 0;		//主码流
 
-	br = m_netWork->NWrite((const char*)&data,sizeof(data));
+	br = m_netWork->NWrite((const char*)&req_data,sizeof(RequestData));
 	FAILED_BTK(br);
 
 	return br;
@@ -164,7 +165,7 @@ BTK_RESULT BTKAccessRYSP::Control(int type,va_list args)
 BTK_RESULT BTKAccessRYSP::ReadBlockReal(char *OUT_buf,int &OUT_len)
 {
 	BTK_RESULT br;
-	RYSP_DataHead head;
+	RYSP_DataHead head = {0};
 
 	if(!m_netWork)
 		return BTK_NO_ERROR;
@@ -187,8 +188,11 @@ BTK_RESULT BTKAccessRYSP::ReadBlockReal(char *OUT_buf,int &OUT_len)
 			return BTK_ERROR_ACCESS_ERROR;
 
 		OUT_len = sizeof(head) + datalen;
+
+		return BTK_NO_ERROR;
 	}
-	return BTK_NO_ERROR;
+	
+	return BTK_ERROR_ACCESS_END;
 }
 
 BTK_RESULT BTKAccessRYSP::ReadBlockFile(char *OUT_buf,int &OUT_len)

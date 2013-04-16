@@ -5,7 +5,7 @@
 #include <errno.h>
 
 #define IO_READ_SIZE 1400
-#define READ_TIMES_EXIT 10
+#define READ_TIMES_EXIT 1
 
 BTKSockt::BTKSockt(void)
 {

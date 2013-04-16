@@ -26,11 +26,12 @@ CPlVodWnd::CPlVodWnd(HWND hParent, UINT nID)
 
 void CPlVodWnd::InitParm()
 {
-	m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
-	ASSERT(m_Tool != NULL);
-	if(NULL != m_Tool)
+	if(NULL == m_Tool)
 	{
+		m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
+		ASSERT(m_Tool != NULL);
 		m_Tool->SetModel(STREAME_FILE);
+		//m_Tool->AttachPlayer(&m_PlayerParm, this);
 	}
 }
 

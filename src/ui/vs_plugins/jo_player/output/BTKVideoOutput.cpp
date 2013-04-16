@@ -15,9 +15,10 @@ BTKVideoOutput::~BTKVideoOutput(void)
 BTKVideoOutput *BTKVideoOutput::CreateInstance(btk_video_out_t &t)
 {
 	BTKVideoOutput *pInstance = NULL;
-		switch(t.VoutDev)
+	switch(t.VoutDev)
 	{
-	case BTK_DDRAW: pInstance = new BTKVoutDDraw(t); break;
+		case BTK_DDRAW: pInstance = new BTKVoutDDraw(t); 
+			break;
 	}
 
 	return pInstance;

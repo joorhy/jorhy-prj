@@ -14,6 +14,7 @@ struct PL_PlayParm
 ///布局信息
 struct PL_LayoutInfo
 {
+	BOOL bInit;
 	int nMod;						//工作模式，1实时，2历史;
 	int nLayout;					//布局方式， 1横向，2纵向，3、宫格;
 	int nWindows;				//布局参数，不为宫格的时候是视频窗口的数量；为宫格的时候表示不同宫格的布局方式。

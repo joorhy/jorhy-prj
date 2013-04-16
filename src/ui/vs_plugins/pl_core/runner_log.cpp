@@ -22,7 +22,7 @@ CLog::~CLog()
 		m_pFile->close();
 		m_pFile = NULL;
 	}
-	delete []m_pStrtime;
+	delete m_pStrtime;
 }
 
 CLog *CLog::Instance()

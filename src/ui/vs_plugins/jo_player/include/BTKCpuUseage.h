@@ -20,6 +20,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <stdio.h>
+#include "BTKThread.h"
 
 #define SystemBasicInformation				0
 #define SystemPerformanceInformation	2
@@ -67,6 +68,7 @@ public:
 	BOOL GetInfo(UINT &nInfo);
 
 private:
+	//BTKMutexLock											m_lock;
 	PROCNTQSI												m_NtQuerySystemInformation;
 	SYSTEM_PERFORMANCE_INFORMATION m_SysPerfInfo;
 	SYSTEM_TIME_INFORMATION					m_SysTimeInfo;

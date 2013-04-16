@@ -54,13 +54,14 @@ END_MESSAGE_MAP()
 void CPlRealWnd::InitParm()
 {
 	m_nowCusID = -1;
-
-	m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
-	ASSERT(m_Tool != NULL);
-	if(NULL != m_Tool)
+	if (m_Tool == NULL)
 	{
+		m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
+		ASSERT(m_Tool != NULL);
 		m_Tool->SetModel(STREAME_REALTIME);
+		//m_Tool->AttachPlayer(&m_PlayerParm, this);
 	}
+
 	m_DobWMTime = 0;
 }
 

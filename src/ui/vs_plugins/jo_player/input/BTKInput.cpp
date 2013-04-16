@@ -134,7 +134,7 @@ BTK_RESULT BTKInput::ThreadLoopPush()
 
 	}
 Input_End:
-	delete []accessdata;
+	delete accessdata;
 	btk_Info("Input Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
 	ctl->m_AllClose.Post();
 	return br;
@@ -255,7 +255,7 @@ BTK_RESULT BTKInput::ThreadLoopPull()
 		m_pullSwitch.Unsingle();
 	}
 Input_End2:
-	delete []accessdata;
+	delete accessdata;
 	btk_Info("Pull Input Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
 	ctl->m_AllClose.Post();
 	return br;

@@ -258,7 +258,7 @@ bool CNPPlugin::Play(char *js_playInfo,NPVariant *result)
 	return true;
 }
 
-bool CNPPlugin::SetLayout(char *js_layout,NPVariant *result)
+bool CNPPlugin::ChangeLayout(char *js_layout,NPVariant *result)
 {
 	if(CPlCtrl::Instance()->SetLayout(js_layout))
 		SetRetValue("{\"rst\":0}",result);
