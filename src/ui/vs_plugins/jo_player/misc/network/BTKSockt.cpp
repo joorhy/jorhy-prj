@@ -52,10 +52,10 @@ BTK_RESULT BTKSockt::NRead(char *OUT_pBuff, int nLen)
 			nRet=  recv(m_hSocket,OUT_pBuff  + nRecvLen,IO_READ_SIZE,0);
 		else
 			nRet = recv(m_hSocket,OUT_pBuff + nRecvLen,nTotleLen, 0);
-		error = WSAGetLastError();
 
 		if(nRet == -1)
 		{
+			error = WSAGetLastError();
 			switch (error)
 			{
 			case WSAEWOULDBLOCK:
@@ -122,7 +122,7 @@ BTK_RESULT BTKSockt::BlockConnect(const char *pAddr, int nPort)
 		return BTK_ERROR_CONNECT;
 
 	m_bConnecting = true;
-	return SetTimeOut(2000,2000);
+	return SetTimeOut(3000,3000);
 }
 
 BTK_RESULT BTKSockt::SetTimeOut(int nRcvMS,int nSendMS)

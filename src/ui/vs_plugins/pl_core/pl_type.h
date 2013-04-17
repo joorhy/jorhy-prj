@@ -76,7 +76,7 @@ typedef int BOOL;
 #define ALL_WINDOW 2
 
 //Reconnect Parameter 
-#define WAITSTATUS_TIME (2*1000)		//Time Interval
+#define WAITSTATUS_TIME (1000)		//Time Interval
 #define RESIZE_TIME		(100)		//Time Interval
 #define MAX_POINTNUM 3			//point number
 #define FONT_TYPE "ËÎÌו"		//×ÖÌו

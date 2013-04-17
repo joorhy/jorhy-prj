@@ -106,9 +106,9 @@ BOOL HikPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 	return TRUE;
 }
 
-void HikPlayer::Play()
+BOOL HikPlayer::RePlay()
 {
-	
+	return TRUE;
 }
 
 void HikPlayer::Stop()

@@ -294,13 +294,14 @@ BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 	return FALSE;
 }
 
-void PlManager::Play(HWND hWnd)
+BOOL PlManager::RePlay(HWND hWnd)
 {
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		return it->second.pPlayer->Play();
+		return it->second.pPlayer->RePlay();
 	}
+	return FALSE;
 }
 
 HWND PlManager::GetRecntWnd(HWND hWnd)

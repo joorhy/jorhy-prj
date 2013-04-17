@@ -20,7 +20,7 @@ public:
 
 public:
 	virtual BOOL Play(HWND hPlayWnd, const PL_PlayInfo &playInfo);
-	virtual void Play();
+	virtual BOOL RePlay();
 	virtual void Stop();
 	virtual void Pause();
 	virtual void PlayOneByOne();

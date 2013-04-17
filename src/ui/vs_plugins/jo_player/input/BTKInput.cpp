@@ -17,7 +17,6 @@ BTKInput::~BTKInput(void)
 	BTKAccess::ReleaseInstance(&m_access);
 	BTKDemux::ReleaseInstance(&m_demux);
 	BTKBuffer::ReleaseInstance(&m_buffer);
-	//m_thread.Release();
 }
 
 BTK_RESULT BTKInput::Init(btk_cfg_t &cfg,void *control)
@@ -26,6 +25,10 @@ BTK_RESULT BTKInput::Init(btk_cfg_t &cfg,void *control)
 	m_access = BTKAccess::CreateInstance(cfg);
 	if(m_access == NULL)
 		return BTK_ERROR_ACCESS_CREATE;
+
+	BTK_RESULT br = InitDemux();
+	if(br != BTK_NO_ERROR)
+		return br;
 
 	return BTK_NO_ERROR;
 }
@@ -39,13 +42,13 @@ unsigned BTKInput::Thread(void *pdata)
 		BTKControl *ctl = reinterpret_cast<BTKControl*>(pThis->m_control);
 		if(ctl)
 		{
-			br = pThis->InitDemux();
-			if(br != BTK_NO_ERROR)
-			{
-				int state = BTK_ERROR;
-				ctl->m_state->SetVariable(&state);
-				return br;
-			}
+			//br = pThis->InitDemux();
+			//if(br != BTK_NO_ERROR)
+			//{
+			//	int state = BTK_ERROR;
+			//	ctl->m_state->SetVariable(&state);
+			//	return br;
+			//}
 
 			br = pThis->InitDecoder();			//额外产生两个线程
 			if(br != BTK_NO_ERROR)
@@ -54,7 +57,8 @@ unsigned BTKInput::Thread(void *pdata)
 				ctl->m_state->SetVariable(&state);
 				return br;
 			}
-
+			
+			ctl->m_switch.Single();
 			if(ctl->m_WorkModel == BTK_PLAY_REALTIME)
 				br = pThis->ThreadLoopPush();
 			else
@@ -97,7 +101,6 @@ BTK_RESULT BTKInput::ThreadLoopPush()
 		switch(state)
 		{
 		case BTK_NORMAL: break;
-
 		case BTK_PALYING:
 		case BTK_PAUSE:
 			ctl->m_switch.Wait();
@@ -114,24 +117,19 @@ BTK_RESULT BTKInput::ThreadLoopPush()
 				ctl->m_state->SetVariable(&state);
 				break;
 			}
-
 			br = m_demux->DemuxBlock(accessdata,m_buffer);			//demux
 			if(br != BTK_NO_ERROR)
 				Sleep(30);
 			break;
-
 		case BTK_END: 
 			goto Input_End;
 			break;
-
 		case BTK_ERROR:
 			if(ctl->m_pEndCBK)					//回调
 				ctl->m_pEndCBK(ctl->m_pEndData);
 			goto Input_End;
 			break;
-
 		}
-
 	}
 Input_End:
 	delete accessdata;
@@ -162,6 +160,8 @@ BTK_RESULT BTKInput::InitDemux()
 		size = demux_parm.height * demux_parm.width * demux_parm.iframe_interval;
 
 	m_buffer = BTKBuffer::CreateInstance(BUFFER_FIFO,size);		//智能判断buffer大小
+	if (!m_buffer)
+		return BTK_ERROR_UNKNOW;
 
 	m_demux = BTKDemux::CreateInstance(demux_parm);
 	

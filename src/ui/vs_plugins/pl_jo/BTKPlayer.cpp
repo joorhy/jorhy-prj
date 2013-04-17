@@ -56,7 +56,7 @@ BOOL BTKPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 		memcpy(resid,beg,end-beg);
 
 		sprintf(mrl,"RYSP://%s:%d/%s", playInfo.strIpaddr, 8002, playInfo.strResid);
-
+		m_lastMrl = mrl;
 		//sprintf(mrl,"RYSP://192.168.1.10:8002/44");
 		br = m_player->InitPlayByNetwork(mrl);
 		if(br != BTK_NO_ERROR)
@@ -68,7 +68,6 @@ BOOL BTKPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 		if(br != BTK_NO_ERROR)
 			return FALSE;
 		
-		m_lastMrl = mrl;
 		m_pPlWnd = hPlayWnd;
 
 		m_player->SetEndCBK(EndCBK,this);
@@ -76,7 +75,7 @@ BOOL BTKPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 	return TRUE;
 }
 
-void BTKPlayer::Play()
+BOOL BTKPlayer::RePlay()
 {
 	m_lock.Lock();
 	if(m_player)
@@ -88,19 +87,27 @@ void BTKPlayer::Play()
 	
 		br = m_player->InitPlayByNetwork(m_lastMrl.c_str());
 		if(br != BTK_NO_ERROR)
-			goto BTK_Exit;
+		{
+			m_lock.Unlock();
+			return FALSE;
+		}
 		br = m_player->SetHwnd(m_pPlWnd);
 		if(br != BTK_NO_ERROR)
-			goto BTK_Exit;
+		{
+			m_lock.Unlock();
+			return FALSE;
+		}
 		br = m_player->Run();
 		if(br != BTK_NO_ERROR)
-			goto BTK_Exit;
+		{
+			m_lock.Unlock();
+			return FALSE;
+		}
 
 		m_player->SetEndCBK(EndCBK,this);
 	}
-
-BTK_Exit:
 	m_lock.Unlock();
+	return TRUE;
 }
 
 void BTKPlayer::Stop()

@@ -329,13 +329,14 @@ void VlcPlayer::SetWndStyle(BOOL bSetStyle)
 		PostMessage(hMPWnd,WM_TRY_SET_MOUSE_HOOK,bSetStyle,0);
 }
 
-void VlcPlayer::Play()
+BOOL VlcPlayer::RePlay()
 {
 	if(m_play != NULL)
 	{
 		libvlc_media_player_stop(m_play);
 		libvlc_media_player_play(m_play);
 	}
+	return TRUE;
 }
 
 void VlcPlayer::AspectRatio(int width,int height)

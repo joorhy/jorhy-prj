@@ -108,7 +108,7 @@ BTK_RESULT BTKControl::Run()
 {
 	if(m_input == NULL || m_render == NULL)
 		return BTK_ERROR_UNKNOW;
-	m_switch.Single();
+	//m_switch.Single();
 
 	return m_input->Run();
 }

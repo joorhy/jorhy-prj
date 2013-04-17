@@ -85,7 +85,7 @@ void CWaitStatus::OnTimer(UINT_PTR nIDEvent)
 		if(!(PlManager::Instance()->IsPlaying(m_pPlWnd)))
 		{
 			DrawStatus();
-			PlManager::Instance()->Play(m_pPlWnd);			//重连
+			PlManager::Instance()->RePlay(m_pPlWnd);//重连
 		}
 		else
 		{

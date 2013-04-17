@@ -32,7 +32,7 @@ BTKTransform::~BTKTransform(void)
 	BTKBuffer::ReleaseInstance(&m_abufferEX);
 	BTKBuffer::ReleaseInstance(&m_vbuffer);
 	BTKBuffer::ReleaseInstance(&m_vbufferEX);
-	btk_Info("BTKTransform::~BTKTransform : %d\n",this);
+	//sbtk_Info("BTKTransform::~BTKTransform : %d\n",this);
 }
 
 
@@ -68,7 +68,6 @@ unsigned BTKTransform::VideoThread(void *parm)
 	BTKTransform *pThis = reinterpret_cast<BTKTransform*>(parm);
 	if(pThis)
 	{
-
 		BTKControl *ctl = reinterpret_cast<BTKControl*>(pThis->m_control);
 		if(ctl)
 		{
@@ -180,8 +179,8 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 		case BTK_PALYING:
 		case BTK_PAUSE:
 			ctl->m_switch.Wait();
-			br = ctl->m_input->m_buffer->Read(srcData,(char*)&format,head);
-			if(br == BTK_NO_ERROR)
+			if(ctl->m_input->m_buffer && 
+				(br = ctl->m_input->m_buffer->Read(srcData,(char*)&format,head)) == BTK_NO_ERROR)
 			{
 				if(format.type != DECODE_AUDIO)
 				{	
@@ -210,14 +209,15 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 						}
 					}
 
-					ctl->m_input->m_buffer->MoveNext();
+					//ctl->m_input->m_buffer->MoveNext();
 				}
 				else
 					Sleep(1);
 			}
 			else
 			{
-				ctl->m_input->m_buffer->WaitData();
+				if (ctl->m_input->m_buffer)
+					ctl->m_input->m_buffer->WaitData();
 			}
 			break;
 
@@ -228,9 +228,7 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 		case BTK_ERROR: 
 			goto VDec_End;
 			break;
-
 		}
-
 	}
 
 VDec_End:

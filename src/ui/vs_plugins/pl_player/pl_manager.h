@@ -30,7 +30,7 @@ public:
 	BOOL	VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo);				//历史流跳转
 	BOOL	GetWndPlayParm(HWND hWnd, char *pPlayerParm);
 	BOOL	GetPlayInfo(HWND hWnd, PL_PlayInfo &playInfo);
-	void		Play(HWND hWnd);																			//重连调用
+	BOOL	RePlay(HWND hWnd);																			//重连调用
 	BOOL	SetOsdText(HWND hWnd, int stime,char *osdtext);								//osd文本设置
 	BOOL	IsPaused(HWND hWnd);
 
