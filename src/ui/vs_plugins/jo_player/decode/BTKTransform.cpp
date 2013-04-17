@@ -32,6 +32,7 @@ BTKTransform::~BTKTransform(void)
 	BTKBuffer::ReleaseInstance(&m_abufferEX);
 	BTKBuffer::ReleaseInstance(&m_vbuffer);
 	BTKBuffer::ReleaseInstance(&m_vbufferEX);
+	btk_Info("BTKTransform::~BTKTransform : %d\n",this);
 }
 
 

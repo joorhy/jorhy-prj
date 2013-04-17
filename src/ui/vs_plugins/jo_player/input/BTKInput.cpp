@@ -17,7 +17,7 @@ BTKInput::~BTKInput(void)
 	BTKAccess::ReleaseInstance(&m_access);
 	BTKDemux::ReleaseInstance(&m_demux);
 	BTKBuffer::ReleaseInstance(&m_buffer);
-
+	//m_thread.Release();
 }
 
 BTK_RESULT BTKInput::Init(btk_cfg_t &cfg,void *control)

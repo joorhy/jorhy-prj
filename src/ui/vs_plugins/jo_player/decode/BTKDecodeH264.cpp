@@ -2,8 +2,9 @@
 #include "..\include\BTKError.h"
 #include "..\include\BTKFile.h"
 #include "..\include\BTKLog.h"
+#include "..\include\BTKThread.h"
 
-
+void *BTKDecodeH264::m_mtx = NULL;
 BTKDecodeH264::BTKDecodeH264(void)
 {
 	m_pContext	= NULL;
@@ -52,6 +53,7 @@ BTK_RESULT BTKDecodeH264::InitDecode()
 #ifdef _DEBUG
 	av_log_set_callback(LogCallBack);
 #endif
+	av_lockmgr_register(lockmgr);
 	m_pCodec	= avcodec_find_decoder(CODEC_ID_H264);
 	m_pContext	= avcodec_alloc_context();
 	m_pPicture	= avcodec_alloc_frame();
@@ -141,3 +143,24 @@ void BTKDecodeH264::LogCallBack(void *pUser, int level, const char *fmt, va_list
 	va_end(args);
 }
 
+int BTKDecodeH264::lockmgr(void **mtx, enum AVLockOp op)
+{
+	switch(op) 
+	{
+		case AV_LOCK_CREATE:
+			if (m_mtx == NULL)
+				m_mtx = new BTKMutexLock();
+			*mtx = m_mtx;
+			return 0;
+		case AV_LOCK_OBTAIN:
+			((BTKMutexLock *)(*mtx))->Lock();
+			return 0;
+		case AV_LOCK_RELEASE:
+			((BTKMutexLock *)(*mtx))->Unlock();
+			return 0;
+		case AV_LOCK_DESTROY:
+			//delete ((BTKMutexLock *)(*mtx));
+			return 0;
+	}
+	return 1;
+}

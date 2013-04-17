@@ -62,7 +62,6 @@ CPlToolBar::~CPlToolBar()
 	delete m_bnDownload;
 }
 
-
 BEGIN_MESSAGE_MAP(CPlToolBar, CWnd)
 	ON_WM_GETMINMAXINFO()
 	ON_BN_CLICKED(IDBN_STOP,&CPlToolBar::Stop)
@@ -90,16 +89,16 @@ BOOL CPlToolBar::CreateToolBar()
 	EnableToolTips(TRUE);
 	m_toolTip.Create(this);
 	HINSTANCE hInst = AfxGetInstanceHandle();
-	m_bnStop	= new CPngButton(hInst,this,IDBN_STOP);
+	m_bnStop	= new CPlButton(hInst,this,IDBN_STOP);
 	m_bnStop->LoadPng(IDP_STOP_N,IDP_STOP_V,IDP_STOP_D,IDP_STOP_X);
 	m_toolTip.AddTool(m_bnStop,"停止");
 
-	m_bnSound	= new CPngButton(hInst,this,IDBN_SOUND);
+	m_bnSound	= new CPlButton(hInst,this,IDBN_SOUND);
 	m_bnSound->LoadPng(IDP_SOUND_CLOSE_N,IDP_SOUND_CLOSE_V,IDP_SOUND_CLOSE_D,IDP_SOUND_CLOSE_X,
 					IDP_SOUND_OPEN_N,IDP_SOUND_OPEN_V,IDP_SOUND_OPEN_D,IDP_SOUND_OPEN_X);
 	m_toolTip.AddTool(m_bnSound,"取消静音");
 
-	m_bnCapture	= new CPngButton(hInst,this,IDBN_CAPTURE);
+	m_bnCapture	= new CPlButton(hInst,this,IDBN_CAPTURE);
 	m_bnCapture->LoadPng(IDP_CAPTURE_N,IDP_CAPTURE_V,IDP_CAPTURE_D,IDP_CAPTURE_X);
 	m_toolTip.AddTool(m_bnCapture,"抓图");
 
@@ -108,40 +107,36 @@ BOOL CPlToolBar::CreateToolBar()
 	switch(m_eModel)
 	{
 	case STREAME_REALTIME:
-		m_bnSpeak	= new CPngButton(hInst,this,IDBN_SPEAK);
+		m_bnSpeak	= new CPlButton(hInst,this,IDBN_SPEAK);
 		m_bnSpeak->LoadPng(IDP_SPEAK_CLOSE_N,IDP_SPEAK_CLOSE_V,IDP_SPEAK_CLOSE_D,IDP_SPEAK_CLOSE_X);
 		m_toolTip.AddTool(m_bnSpeak,"开启对讲");
 
-		m_bnRecord	= new CPngButton(hInst,this,IDBN_RECORD);
+		m_bnRecord	= new CPlButton(hInst,this,IDBN_RECORD);
 		m_bnRecord->LoadPng(IDP_RECORD_CLOSE_N,IDP_RECORD_CLOSE_V,IDP_RECORD_CLOSE_D,IDP_RECORD_CLOSE_X,
 							IDP_RECORD_OPEN_N,IDP_RECORD_OPEN_V,IDP_RECORD_OPEN_D,IDP_RECORD_OPEN_X);
 		m_toolTip.AddTool(m_bnRecord,"开启录像");
-
 		break;
-
 	case STREAME_FILE:
-		m_bnPause	= new CPngButton(hInst,this,IDBN_PAUSE);
+		m_bnPause	= new CPlButton(hInst,this,IDBN_PAUSE);
 		m_bnPause->LoadPng(IDP_PAUSE_N,IDP_PAUSE_V,IDP_PAUSE_D,IDP_PAUSE_X);
 		m_toolTip.AddTool(m_bnPause,"暂停播放");
 
-		m_bnFramePlay= new CPngButton(hInst,this,IDBN_FRAMEPLAY);
+		m_bnFramePlay= new CPlButton(hInst,this,IDBN_FRAMEPLAY);
 		m_bnFramePlay->LoadPng(IDP_FRAMEPLAY_N,IDP_FRAMEPLAY_V,IDP_FRAMEPLAY_D,IDP_FRAMEPLAY_X);
 		m_toolTip.AddTool(m_bnFramePlay,"单帧播放");
 
-		m_bnSpeedup	= new CPngButton(hInst,this,IDBN_SPEEDUP);
+		m_bnSpeedup	= new CPlButton(hInst,this,IDBN_SPEEDUP);
 		m_bnSpeedup->LoadPng(IDP_SPEEDUP_N,IDP_SPEEDUP_V,IDP_SPEEDUP_D,IDP_SPEEDUP_X);
 		m_toolTip.AddTool(m_bnSpeedup,"快进");
 
-		m_bnSlowdown= new CPngButton(hInst,this,IDBN_SLOWDOWN);
+		m_bnSlowdown= new CPlButton(hInst,this,IDBN_SLOWDOWN);
 		m_bnSlowdown->LoadPng(IDP_SLOWDOWN_N,IDP_SLOWDOWN_V,IDP_SLOWDOWN_D,IDP_SLOWDOWN_X);
 		m_toolTip.AddTool(m_bnSlowdown,"慢放");
 
-		m_bnDownload	= new CPngButton(hInst,this,IDBN_DOWNLOAD);
+		m_bnDownload	= new CPlButton(hInst,this,IDBN_DOWNLOAD);
 		m_bnDownload->LoadPng(IDP_SAVE_N,IDP_SAVE_V,IDP_SAVE_D,IDP_SAVE_X);
 		m_toolTip.AddTool(m_bnDownload,"录像下载");
-		
 		break;
-
 	default:
 		return FALSE;
 	}
@@ -175,7 +170,6 @@ void CPlToolBar::SetLayout()
 		LayWndLeft(TRUE,m_bnSlowdown->m_hWnd,m_bnCapture->m_hWnd,5);
 		LayWndLeft(TRUE,m_bnCapture->m_hWnd,m_bnDownload->m_hWnd,5);
 		break;
-
 	default:
 		break;
 	}

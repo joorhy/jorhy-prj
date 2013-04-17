@@ -3,7 +3,7 @@
 #include "pl_type.h"
 #include "pl_define.h"
 #include "ExactSlider.h"
-#include "PngButton.h"
+#include "pl_button.h"
 #include "pl_manager.h"
 #include "pl_err.h"
 
@@ -37,19 +37,19 @@ private:
 	HWND m_hPlWnd;
 	int m_eModel;
 	//Both
-	CPngButton *m_bnStop;
-	CPngButton *m_bnSound;
-	CPngButton *m_bnCapture;
+	CPlButton *m_bnStop;
+	CPlButton *m_bnSound;
+	CPlButton *m_bnCapture;
 	CExactSlider *m_bnSlider;
 	//real
-	CPngButton *m_bnSpeak;
-	CPngButton *m_bnRecord;
+	CPlButton *m_bnSpeak;
+	CPlButton *m_bnRecord;
 	//vod
-	CPngButton *m_bnPause;
-	CPngButton *m_bnFramePlay;
-	CPngButton *m_bnSpeedup;
-	CPngButton *m_bnSlowdown;
-	CPngButton *m_bnDownload;
+	CPlButton *m_bnPause;
+	CPlButton *m_bnFramePlay;
+	CPlButton *m_bnSpeedup;
+	CPlButton *m_bnSlowdown;
+	CPlButton *m_bnDownload;
 	//player
 	BOOL m_bCreate;
 	CNewToolTip m_toolTip;

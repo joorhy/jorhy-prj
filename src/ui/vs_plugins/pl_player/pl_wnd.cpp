@@ -142,6 +142,7 @@ void CPlWnd::DrawBorder(CPen *pen)
 	wndDC->LineTo(rect.left+1,rect.bottom+1);
 	wndDC->LineTo(rect.left+1,rect.top+1);
 	wndDC->SelectObject(oldpen);
+	oldpen->DeleteObject();
 	ReleaseDC(wndDC);
 }
 
@@ -221,7 +222,6 @@ HWND CPlWnd::GetFocusWnd()
 void CPlWnd::OnPaint()
 {
 	CPaintDC dc(this); 
-	
 	if(m_nFocus == GetWindowLong(this->m_hWnd,GWL_ID))
 	{
 		CPen pen = CPen(PS_SOLID,2,RGB(255,0,0));

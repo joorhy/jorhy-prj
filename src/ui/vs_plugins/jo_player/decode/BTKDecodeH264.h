@@ -25,8 +25,10 @@ private:
 	void SetDebugInfo();
 	void ReleaseDebugInfo();
 	static void LogCallBack(void*, int, const char*, va_list);
+	static int lockmgr(void **mtx, enum AVLockOp op);
 
 private:
+	static void *m_mtx;
 	AVCodecContext *m_pContext;
 	AVFrame *m_pPicture;
 	AVPacket m_Packet;

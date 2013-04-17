@@ -129,6 +129,7 @@ void CWaitStatus::DrawStatus()
 			&rect,DT_LEFT | DT_VCENTER | DT_SINGLELINE);
 	}
 	dc.SelectObject(oldFont);
+	oldFont->DeleteObject();
 }
 void CWaitStatus::OnBnClickedOk()
 {

@@ -552,6 +552,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_button.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_button.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_full_wnd.cpp"
 				>
 			</File>
@@ -581,14 +589,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_ui\pl_vod_wnd.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\PngButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_ui\PngButton.h"
 				>
 			</File>
 		</Filter>
