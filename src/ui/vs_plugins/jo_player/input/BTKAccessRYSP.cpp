@@ -35,13 +35,16 @@ BTKAccessRYSP::~BTKAccessRYSP(void)
 
 BTK_RESULT BTKAccessRYSP::GetDemuxType(btk_demux_t &t)
 {
-	BTK_RESULT br;
-	br = RequestServer(m_cfg.i_real);
-	//assert(br == BTK_NO_ERROR);
-	FAILED_BTK(br);
+	BTK_RESULT br = BTK_ERROR_CONNECT;
+	if (m_bUsable)
+	{
+		br = RequestServer(m_cfg.i_real);
+		//assert(br == BTK_NO_ERROR);
+		FAILED_BTK(br);
 
-	br = ReadHeader(t);
-	//assert(br == BTK_NO_ERROR);
+		br = ReadHeader(t);
+		//assert(br == BTK_NO_ERROR);
+	}
 
 	return br;
 }

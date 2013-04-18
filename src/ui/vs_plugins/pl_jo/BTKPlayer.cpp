@@ -11,6 +11,7 @@ void BTKAPI BTKPlayer::EndCBK(void *pdata)
 	{
 		if(user->m_Model == STREAME_REALTIME)
 		{
+			user->Stop();
 			PostMessage(PlManager::Instance()->GetRecntWnd(user->m_pPlWnd),WM_OWN_START_WAIT,(WPARAM)user->m_pPlWnd,0);
 		}
 		else

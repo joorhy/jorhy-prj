@@ -299,9 +299,10 @@ BTK_RESULT BTKControl::CallBackStop()
 	int num = 0;
 	m_ThreadNumer->GetVariable(&num);
 
-	for(int i=0;i<num;i++)
+	for (int i=0; i<num; ++i)
 	{
 		m_AllClose.Wait();
+		//--m_ThreadNumer;
 	}
 
 	if(m_input != NULL)

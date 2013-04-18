@@ -242,25 +242,13 @@ LRESULT CALLBACK BTKVoutDDraw::ControlProc(HWND hwnd,UINT message,WPARAM wParam,
 			break;
 
 		case WM_SHOWWINDOW:
-			/*if((BOOL)wParam==TRUE)
-			{
-				pUser->m_bShow = TRUE;;
-			}
-			else
-			{
-				pUser->m_bShow = FALSE;
-			}*/
-			break;
-
-		/*case WM_NCPAINT:
-			return TRUE;*/
-			
+			break;	
 		}
 		//直接调用窗口过程会出错
 		if(message != 0)
 			return CallWindowProc(pUser->m_oldProc,hwnd,message,wParam,lParam);
-		else
-			return TRUE;
+		//else
+		//	return TRUE;
 	}
 	return DefWindowProc(hwnd,message,wParam,lParam);
 }

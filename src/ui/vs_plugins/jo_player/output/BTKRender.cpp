@@ -11,7 +11,7 @@ BTKRender::BTKRender(void *control)
 	m_control	= control;
 	m_hwnd		= NULL;
 	m_vdata		= NULL;
-	m_vOut		= NULL;
+	m_vOut			= NULL;
 	m_aOut		= NULL;
 }
 
@@ -20,8 +20,6 @@ BTKRender::~BTKRender(void)
 	BTKVideoOutput::ReleaseInstance(&m_vOut);
 	BTKAudioOutput::ReleaseInstance(&m_aOut);
 }
-
-
 
 BTK_RESULT BTKRender::CreateVout(btk_video_out_t &vParm)
 {
@@ -35,20 +33,17 @@ BTK_RESULT BTKRender::CreateVout(btk_video_out_t &vParm)
 BTK_RESULT BTKRender::CreateAout(btk_audio_out_t &aParm)
 {
 	BTK_RESULT br = BTK_NO_ERROR;
-
-
 	return br;
 }
 
 BTK_RESULT BTKRender::RunVout()
 {
 	BTK_RESULT br = BTK_NO_ERROR;
-	btk_thread_t parm;
-	parm.data = this;
-	parm.priority = 0; 
+	m_vThreadParm.data = this;
+	m_vThreadParm.priority = 0; 
 
-	parm.entry= BTKRender::VoutThread;
-	br = m_vThread.Create(parm);
+	m_vThreadParm.entry= BTKRender::VoutThread;
+	br = m_vThread.Create(m_vThreadParm);
 	if(br != BTK_NO_ERROR)
 		return br;
 

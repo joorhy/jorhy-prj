@@ -34,7 +34,7 @@ protected:
 	btk_video_format_t	m_vformat;
 	char				*m_vdata;
 	BTKMutexLock		m_vLock;
-
+	btk_thread_t m_vThreadParm;
 
 	//control instance
 	void		*m_control;

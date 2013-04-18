@@ -44,6 +44,8 @@ private:
 	BTKCpuInfo m_cpuInfo;
 
 	void *m_control;			//control
+	btk_thread_t m_vThreadParm;
+	btk_thread_t m_aThreadParm;
 
 	BTKCond			m_pullSwitch;	//only for pullswitch
 

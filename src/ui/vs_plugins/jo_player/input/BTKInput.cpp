@@ -74,11 +74,10 @@ unsigned BTKInput::Thread(void *pdata)
 BTK_RESULT BTKInput::Run()
 {
 	BTK_RESULT br;
-	btk_thread_t parm;
-	parm.data = this;
-	parm.entry= BTKInput::Thread;
-	parm.priority = 0; 
-	br = m_thread.Create(parm);
+	m_threadParm.data = this;
+	m_threadParm.entry= BTKInput::Thread;
+	m_threadParm.priority = 0; 
+	br = m_thread.Create(m_threadParm);
 
 	return br;
 }

@@ -28,6 +28,7 @@ private:
 	BTKDemux	*m_demux;
 	BTKAccess	*m_access;
 	BTKThread	m_thread;
+	btk_thread_t m_threadParm;
 
 protected:
 	void		*m_control;

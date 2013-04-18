@@ -3,6 +3,7 @@
 #include "..\..\include\DefaultConfig.h"
 #include "..\..\include\BTKLog.h"
 #include <errno.h>
+#include "MSTCPiP.h" 
 
 #define IO_READ_SIZE 1400
 #define READ_TIMES_EXIT 1
@@ -60,6 +61,7 @@ BTK_RESULT BTKSockt::NRead(char *OUT_pBuff, int nLen)
 			{
 			case WSAEWOULDBLOCK:
 			case WSAEINTR:
+			case WSAETIMEDOUT:
 				continue;
 
 			case WSAEMSGSIZE:			//udp only
@@ -127,6 +129,19 @@ BTK_RESULT BTKSockt::BlockConnect(const char *pAddr, int nPort)
 
 BTK_RESULT BTKSockt::SetTimeOut(int nRcvMS,int nSendMS)
 {
+	DWORD dwError = 0L ;
+	DWORD dwBytes;
+	tcp_keepalive sKA_Settings = {0}, sReturned = {0} ;
+	sKA_Settings.onoff					= 1 ;
+	sKA_Settings.keepalivetime		= 500 ; // Keep Alive in 5.5 sec.
+	sKA_Settings.keepaliveinterval	= 500 ; // Resend if No-Reply
+	if (WSAIoctl(m_hSocket, SIO_KEEPALIVE_VALS, &sKA_Settings,
+		sizeof(sKA_Settings), &sReturned, sizeof(sReturned), &dwBytes,
+		NULL, NULL) != 0)
+	{
+		dwError = WSAGetLastError() ;
+		return BTK_ERROR_SOCKET;
+	}
 	if(nRcvMS > 0)
 	{
 		if(setsockopt(m_hSocket, SOL_SOCKET, SO_RCVTIMEO, (char *)&nRcvMS, sizeof(nRcvMS)) == SOCKET_ERROR)

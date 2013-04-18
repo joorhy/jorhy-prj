@@ -35,7 +35,6 @@ BTKTransform::~BTKTransform(void)
 	//sbtk_Info("BTKTransform::~BTKTransform : %d\n",this);
 }
 
-
 unsigned BTKTransform::AudioThread(void *parm)
 {
 	BTK_RESULT br = BTK_NO_ERROR;
@@ -285,17 +284,18 @@ BTK_RESULT BTKTransform::Run()
 {
 	BTK_RESULT br = BTK_NO_ERROR;
 
-	btk_thread_t parm;
-	parm.data = this;
-	parm.priority = 0;//THREAD_PRIORITY_HIGHEST; 
-
-	parm.entry= BTKTransform::AudioThread;
-	br = m_aThread.Create(parm);
+	
+	m_aThreadParm.data = this;
+	m_aThreadParm.priority = 0;//THREAD_PRIORITY_HIGHEST; 
+	m_aThreadParm.entry= BTKTransform::AudioThread;
+	br = m_aThread.Create(m_aThreadParm);
 	if(br != BTK_NO_ERROR)
 		return br;
 
-	parm.entry= BTKTransform::VideoThread;
-	br = m_vThread.Create(parm);
+	m_vThreadParm.data = this;
+	m_vThreadParm.priority = 0;//THREAD_PRIORITY_HIGHEST; 
+	m_vThreadParm.entry= BTKTransform::VideoThread;
+	br = m_vThread.Create(m_vThreadParm);
 	if(br != BTK_NO_ERROR)
 		return br;
 
