@@ -25,9 +25,6 @@ int CXLoadso::JoLoadSo()
     }
     //LoadSo(currentPath, "plugins/access");
     //LoadSo(currentPath, "plugins/config");
-    //LoadSo(currentPath, "plugins/devices");
-    //LoadSo(currentPath, "plugins/file_reader");
-    //LoadSo(currentPath, "plugins/mux");
 	LoadSo(currentPath, "plugins");
 
     return J_OK;
