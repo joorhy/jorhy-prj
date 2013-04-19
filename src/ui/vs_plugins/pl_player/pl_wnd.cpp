@@ -19,6 +19,7 @@ DWORD CPlWnd::m_MouseHookThreadId = 0;
 CPlWnd::CPlWnd(HWND hParent, UINT nID)
 : CWnd()
 {
+	m_hParent = hParent;
 	m_hBkg.LoadBitmap(IDB_BACKGROUND);
 	m_bFullScreen		= FALSE;
 	m_nFullModel		= FULL_PLUGIN;
@@ -41,13 +42,13 @@ CPlWnd::~CPlWnd()
 {
 	if(NULL != m_FullWnd)
 	{
-		CPlFactoryWnd::Instance()->DelWindow(IDF_SCREEN);
+		CPlFactoryWnd::Instance()->DelWindow(NULL, IDF_SCREEN);
 		m_FullWnd = NULL;
 	}
 
 	if(m_Tool != NULL)
 	{
-		CPlFactoryWnd::Instance()->DelWindow(IDT_TOOL);
+		CPlFactoryWnd::Instance()->DelWindow(m_hWnd, (UINT)m_hParent);
 		m_Tool = NULL;
 	}
 }

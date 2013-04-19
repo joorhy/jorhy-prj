@@ -35,6 +35,7 @@ private:
 
 private:
 	HWND m_hPlWnd;
+	HWND m_hParent;
 	int m_eModel;
 	//Both
 	CPlButton *m_bnStop;

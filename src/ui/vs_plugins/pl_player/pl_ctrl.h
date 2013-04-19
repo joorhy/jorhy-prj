@@ -3,13 +3,21 @@
 #include "pl_core.h"
 #include "pl_type.h"
 #include "pl_player.h"
-#include "pl_singleton.h"
+#include "pl_lock.h"
 #include "json.h"
 #include <map>
 
 class CPlWnd;
-class PL_API CPlCtrl : public SingletonTmpl<CPlCtrl>
+class PL_API CPlCtrl
 {
+public:
+	static CPlCtrl *CreateInstance(HWND pWnd);
+	static void ReleaseInstance(HWND pWnd); 
+
+private:
+	static std::map<HWND, CPlCtrl*>	m_ctrlMap;
+	static PlLock	m_lock;
+
 public:
 	CPlCtrl(void);
 	~CPlCtrl(void);
@@ -37,6 +45,7 @@ private:
 	typedef std::map<UINT, CPlWnd *> PlayWndMap;
 	PlayWndMap m_playWndMap; 
 	void *m_pUser;
+	//WindowKey m_key;
 
 private:
 	HWND GetNextPlayWnd();

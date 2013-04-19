@@ -8,6 +8,38 @@
 #include <cmath>
 using namespace std;
 
+std::map<HWND, CPlCtrl*>	CPlCtrl::m_ctrlMap;
+PlLock	CPlCtrl::m_lock;
+
+CPlCtrl *CPlCtrl::CreateInstance(HWND pWnd)
+{
+	m_lock.Lock();
+	CPlCtrl *pCtrl = NULL;
+	std::map<HWND, CPlCtrl*>::iterator it = m_ctrlMap.find(pWnd);
+	if (it == m_ctrlMap.end())
+	{
+		pCtrl = new CPlCtrl();
+		m_ctrlMap[pWnd] = pCtrl;
+	}
+	else
+		pCtrl = it->second;
+	m_lock.Unlock();
+	return pCtrl;
+}
+
+void CPlCtrl::ReleaseInstance(HWND pWnd)
+{
+	m_lock.Lock();
+	CPlCtrl *pCtrl = NULL;
+	std::map<HWND, CPlCtrl*>::iterator it = m_ctrlMap.find(pWnd);
+	if (it != m_ctrlMap.end())
+	{
+		delete  it->second;
+		m_ctrlMap.erase(it);
+	}
+	m_lock.Unlock();
+}
+
 CPlCtrl::CPlCtrl(void)
 {
 	m_hParent	= NULL;
@@ -26,6 +58,7 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent, char* pJsUrl)
 	if(m_hParent != NULL)
 		return TRUE;
 
+	//m_key.hWnd = hParent;
 	if (!PlJsonParser::Instance()->ParserLayout(pJsUrl, m_layoutInfo))
 		return FALSE;
 
@@ -66,6 +99,7 @@ BOOL CPlCtrl::SetLayout(char *pJsUrl)
 
 BOOL CPlCtrl::SetLayout(const PL_LayoutInfo &layoutInfo)
 {
+	//WindowKey key = {m_hParent, 0};
 	int nWindowNum = CalcWndNum(layoutInfo);
 	CRect rect;
 	GetClientRect(m_hParent, &rect);
@@ -74,6 +108,7 @@ BOOL CPlCtrl::SetLayout(const PL_LayoutInfo &layoutInfo)
 	case 1:
 		for(int i=0; i<nWindowNum; ++i)
 		{
+			//m_key.nId = i + (UINT)m_hParent;
 			((CWnd*)m_playWndMap[i])->MoveWindow(rect.left+i*rect.Width() / nWindowNum,
 										rect.top,
 										rect.Width() / nWindowNum,					
@@ -83,6 +118,7 @@ BOOL CPlCtrl::SetLayout(const PL_LayoutInfo &layoutInfo)
 	case 2:
 		for(int i=0; i<nWindowNum; i++)
 		{
+			//m_key.nId = i + (UINT)m_hParent;
 			((CWnd*)m_playWndMap[i])->MoveWindow(rect.left,		
 										rect.top+i*rect.Height() / nWindowNum,
 										rect.Width(),	
@@ -93,18 +129,21 @@ BOOL CPlCtrl::SetLayout(const PL_LayoutInfo &layoutInfo)
 		GridWindow(layoutInfo.nWindows+1);
 		break;
 	}
+	//m_key.nId = 0 + (UINT)m_hParent;
 	m_playWndMap[0]->SetNowShowWindow(nWindowNum);
 	return TRUE;
 }
 
 void CPlCtrl::GridWindow(int nWndNum)
 {
+	//WindowKey key = {m_hParent, 0};
 	CRect rect;
 	GetClientRect(m_hParent,&rect);
 	for(int i=0; i<nWndNum; ++i)
 	{
 		for(int j=0; j<nWndNum; ++j)
 		{
+			//m_key.nId = i*nWndNum+j + (UINT)m_hParent;
 			((CWnd*)m_playWndMap[i*nWndNum+j])->MoveWindow(rect.left + j*rect.Width() / nWndNum,
 											rect.top + i*rect.Height() / nWndNum,
 											rect.Width() / nWndNum,
@@ -116,6 +155,8 @@ void CPlCtrl::GridWindow(int nWndNum)
 
 HWND CPlCtrl::GetFocusWnd()
 {
+	//WindowKey key = {m_hParent, 0};
+	//m_key.nId = 0 + (UINT)m_hParent;
 	return m_playWndMap[0]->GetFocusWnd(); 
 }
 
@@ -183,6 +224,8 @@ BOOL CPlCtrl::Play(char *js_mrl)
 		if(playInfo.nId > nSize || playInfo.nId < 0) 
 			return FALSE;
 
+		//WindowKey key = {m_hParent, playInfo.nId};
+		//m_key.nId = playInfo.nId;
 		hWnd = m_playWndMap[playInfo.nId]->m_hWnd;
 	}
 
@@ -208,11 +251,13 @@ HWND CPlCtrl::GetNextPlayWnd()
 
 BOOL CPlCtrl::GetWndParm(char *pRet, int nType)
 {
+	//WindowKey key = {m_hParent, 0};
 	BOOL bRet = FALSE;
 	char wndinfo[2048] = {0};
 	if(nType == FOCUS_WINDOW)
 	{
 		int nId = GetWindowLong(GetFocusWnd(), GWL_ID);
+		//m_key.nId = GetWindowLong(GetFocusWnd(), GWL_ID) + (UINT)m_hParent;
 		bRet = PlManager::Instance()->GetWndPlayParm(m_playWndMap[nId]->m_hWnd, wndinfo);
 	}
 	else if(nType == ALL_WINDOW)
@@ -223,6 +268,7 @@ BOOL CPlCtrl::GetWndParm(char *pRet, int nType)
 		for (int i=0; i<nWndNum; ++i)
 		{
 			memset(ppWndInfo[i], 0, 64);
+			//m_key.nId = i + (UINT)m_hParent;
 			bRet = PlManager::Instance()->GetWndPlayParm(m_playWndMap[i]->m_hWnd, ppWndInfo[i]);
 			if (bRet)
 			{
@@ -245,10 +291,9 @@ void CPlCtrl::SleepPlayer(bool bSleep)
 
 BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
 {
+	//WindowKey key = {m_hParent, 0};
 	int nOldWnds = m_playWndMap.size();//CalcWndNum(m_layoutInfo);
 	int nWindows = CalcWndNum(layoutInfo);
-	//if (!m_layoutInfo.bInit)
-	//	nOldWnds = 0;
 	if (nOldWnds < nWindows)
 	{
 		switch(m_layoutInfo.nMod)
@@ -260,6 +305,7 @@ BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
 				::ShowWindow(((CWnd*)r_tmp)->m_hWnd, SW_SHOW);
 				r_tmp->SetFullModel(m_layoutInfo.nMax);
 				PlManager::Instance()->SetUserData(r_tmp->m_hWnd, m_pUser);
+				//m_key.nId = i + (UINT)m_hParent;
 				m_playWndMap[i] = r_tmp;
 			}
 			break;
@@ -270,6 +316,7 @@ BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
 				::ShowWindow(((CWnd*)v_tmp)->m_hWnd, SW_SHOW);
 				v_tmp->SetFullModel(m_layoutInfo.nMax);
 				PlManager::Instance()->SetUserData(v_tmp->m_hWnd, m_pUser);
+				//m_key.nId = i + (UINT)m_hParent;
 				m_playWndMap[i] = v_tmp;
 			}
 			break;
@@ -286,7 +333,7 @@ void CPlCtrl::DestroyWindows()
 	PlayWndMap::iterator it = m_playWndMap.begin();
 	for(; it!=m_playWndMap.end(); ++it)
 	{
-		CPlFactoryWnd::Instance()->DelWindow(it->first);
+		CPlFactoryWnd::Instance()->DelWindow(m_hParent, it->first);
 	}
 	m_playWndMap.clear();
 }

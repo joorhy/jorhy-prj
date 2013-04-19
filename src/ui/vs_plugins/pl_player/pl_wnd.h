@@ -16,6 +16,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	static UINT m_nFocus;		//目前的焦点窗口
+	HWND	m_hParent;
 	PlFullScreen *m_FullWnd;
 	PlToolWin *m_Tool;
 	static int m_nNowShowWnd;

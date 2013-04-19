@@ -123,3 +123,18 @@ enum video_type
 	HIK_VIDEO = 0,		//海康的视屏
 	VLC_VIDEO ,			//标准的视屏
 };
+
+struct WindowKey
+{
+	HWND hWnd;
+	UINT nId;
+	bool operator<(const WindowKey &other) const 
+	{
+		bool b_ret = true;
+		if (hWnd != other.hWnd)
+			b_ret = (hWnd < other.hWnd);
+		else
+			b_ret = (nId < other.nId);
+		return b_ret;
+	}
+};

@@ -62,6 +62,7 @@ BTK_RESULT BTKSockt::NRead(char *OUT_pBuff, int nLen)
 			case WSAEWOULDBLOCK:
 			case WSAEINTR:
 			case WSAETIMEDOUT:
+				Sleep(1);
 				continue;
 
 			case WSAEMSGSIZE:			//udp only

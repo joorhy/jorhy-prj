@@ -15,8 +15,8 @@ double CPlRealWnd::m_arrAreaAgl[4] = {atan(double(1.0/3)),atan(double(3.0/1)),
 // CRPlayWnd
 IMPLEMENT_DYNAMIC(CPlRealWnd, CWnd)
 CPlRealWnd::CPlRealWnd(HWND hParent,UINT nID)
-//: CPlWnd(hParent, nID)
 {
+	m_hParent = hParent;
 	LPCTSTR lpWndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 											NULL,
 											(HBRUSH)GetStockObject(BLACK_BRUSH),
@@ -56,7 +56,7 @@ void CPlRealWnd::InitParm()
 	m_nowCusID = -1;
 	if (m_Tool == NULL)
 	{
-		m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
+		m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, (UINT)m_hParent));
 		ASSERT(m_Tool != NULL);
 		m_Tool->SetModel(STREAME_REALTIME);
 		//m_Tool->AttachPlayer(&m_PlayerParm, this);

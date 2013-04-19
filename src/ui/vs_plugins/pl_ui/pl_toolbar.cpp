@@ -18,6 +18,7 @@ CPlToolBar::CPlToolBar(HWND pParent, UINT nId)
 										0);
 	m_bCreate = FALSE;
 	m_hPlWnd = pParent;
+	m_hParent = (HWND)nId;
 	CreateEx(WS_EX_TOPMOST,
 			wndClass,_T("myToolWnd"),
 			WS_CHILD | WS_CLIPSIBLINGS, 
@@ -251,7 +252,7 @@ void CPlToolBar::EnableSound()
 void CPlToolBar::Capture()
 {
 	char path[PATH_LENGTH] = {0};
-	CPlCtrl::Instance()->GetPath(path, IMAGEPATH);
+	CPlCtrl::CreateInstance(m_hParent)->GetPath(path, IMAGEPATH);
 	PlManager::Instance()->Capture(m_hPlWnd, path);
 }
 
@@ -266,7 +267,7 @@ void CPlToolBar::Speak()
 void CPlToolBar::Record()
 {
 	char path[PATH_LENGTH] = {0};
-	CPlCtrl::Instance()->GetPath(path,VIDEOPATH);
+	CPlCtrl::CreateInstance(m_hParent)->GetPath(path,VIDEOPATH);
 	if(PlManager::Instance()->Record(m_hPlWnd, path))
 	{
 		m_pPlayParm->bRecoder = !m_pPlayParm->bRecoder;

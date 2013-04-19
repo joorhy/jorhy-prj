@@ -232,7 +232,6 @@ BTK_RESULT BTKControl::SetPlayDirection(bool bFront)
 				br = m_tansfm->SetDirection(bFront); //和当前播放模式不一样才设置
 				br = m_input->ControlAccess(ACCESS_SET_BACKRUN,(va_list)&bFront);
 			}
-
 		}
 	}
 

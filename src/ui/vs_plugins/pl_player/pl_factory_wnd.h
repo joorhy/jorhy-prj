@@ -18,7 +18,7 @@ typedef int (*J_MakeWindowFun)(CWnd *&, HWND hParent,UINT nID);
 class PL_API CPlFactoryWnd : public SingletonTmpl<CPlFactoryWnd>
 {
 	typedef std::map<std::string, J_MakeWindowFun> WindowRegistMap;
-	typedef std::map<int, PL_WndInfo> WindowMap;
+	typedef std::map<WindowKey, PL_WndInfo> WindowMap;
 public:
 	CPlFactoryWnd() {}
 	~CPlFactoryWnd() {}
@@ -26,12 +26,13 @@ public:
 public:
 	int RegisterWindow(const char *wndType, J_MakeWindowFun pFun);
 	CWnd *GetWindow(const char *pType, HWND hParent, UINT nId);
-	void DelWindow(int nId);
+	void DelWindow(HWND hParent, UINT nId);
 
 private:
 	WindowRegistMap m_wndRegistMap;
 	WindowMap m_wndMap;
 	PlLock m_lock;
+	WindowKey m_key;
 };
 
 ///Window

@@ -6,7 +6,6 @@
 #include <fstream>
 #include <Windows.h>
 
-
 BTKLog *BTKLog::m_pInstance = NULL;
 
 BTKLog::BTKLog():m_pFile(NULL)
@@ -15,13 +14,17 @@ BTKLog::BTKLog():m_pFile(NULL)
 	m_pFile		= NULL;				
 	m_hConsloe	= NULL;
 	OpenFile();
+#ifdef _DEBUG
 	InitConsole();
+#endif
 }
 
 BTKLog::~BTKLog()
 {
 	CloseFile();
+#ifdef _DEBUG
 	UnInitConsole();
+#endif
 }
 
 BTKLog *BTKLog::Instance()
@@ -52,12 +55,23 @@ void BTKLog::CloseFile()
 
 int BTKLog::WriteLog(int type,const char *format,...)  
 {
+	m_lock.Lock();
 	va_list args;
 	unsigned long lgsize;
 	char nowtime[32] = {0};
 	
-	if(!m_pFile || !m_hConsloe)
+	if(!m_pFile)
+	{
+		m_lock.Unlock();
 		return 1;
+	}
+#ifdef _DEBUG
+	if(!m_hConsloe)
+	{
+		m_lock.Unlock();
+		return 1;
+	}
+#endif
 
 	va_start(args, format);
 	int len = vsnprintf (NULL, 0, format, args);
@@ -68,31 +82,42 @@ int BTKLog::WriteLog(int type,const char *format,...)
 	switch(type)
 	{
 	case BTK_LOG_INFO:	
+#ifdef _DEBUG
 		printf("[%s]Info:%s",nowtime,str);
+#endif
 		(*(std::ofstream*)m_pFile)<<"["<<nowtime<<"]"<<"Info:"<<str;
 		((std::ofstream*)m_pFile)->flush();
 		break;
 	case BTK_LOG_ERR:
+#ifdef _DEBUG
 		SetConsoleTextAttribute(m_hConsloe,FOREGROUND_INTENSITY|FOREGROUND_RED);
 		printf("[%s]Error:%s",nowtime,str);
+#endif
 		(*(std::ofstream*)m_pFile)<<"["<<nowtime<<"]"<<"Error:"<<str;
 		((std::ofstream*)m_pFile)->flush();
 		break;
 	case BTK_LOG_WARN:	
+#ifdef _DEBUG
 		SetConsoleTextAttribute(m_hConsloe,FOREGROUND_INTENSITY|FOREGROUND_BLUE);
 		printf("[%s]Warning:%s",nowtime,str);
+#endif
 		(*(std::ofstream*)m_pFile)<<"["<<nowtime<<"]"<<"Warning:"<<str;
 		((std::ofstream*)m_pFile)->flush();
 		break;
 	case BTK_LOG_DBG:
+#ifdef _DEBUG
 		SetConsoleTextAttribute(m_hConsloe,FOREGROUND_INTENSITY|FOREGROUND_GREEN);
 		printf("[%s]Debug:%s",nowtime,str);
+#endif
 		(*(std::ofstream*)m_pFile)<<"["<<nowtime<<"]"<<"Debug:"<<str;
 		((std::ofstream*)m_pFile)->flush();
 		break;
 	}
+#ifdef _DEBUG
 	SetConsoleTextAttribute(m_hConsloe,FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_RED);
+#endif
 	delete str;
+	m_lock.Unlock();
 	return 1;
 }
 
@@ -118,37 +143,6 @@ int BTKLog::GetStrTime(char *OUT_time)
 
 void BTKLog::InitConsole()
 {
-	//BOOL bRet;
-	//SECURITY_ATTRIBUTES sa;
-	//ZeroMemory( &sa,sizeof(sa));
-
-	//sa.nLength = sizeof(sa);
-	//sa.bInheritHandle = 1;
-	//sa.lpSecurityDescriptor = 0;
-
-	//bRet = CreatePipe(&m_hRead,&m_hWrite,&sa, 0);
-	//if(!bRet)
-	//	return FALSE;
-
-	//STARTUPINFO si;
-	//ZeroMemory( &si, sizeof(si) );
-	//si.cb			= sizeof(si) ;
-	//si.dwFlags		= STARTF_USESHOWWINDOW;
-	//si.wShowWindow	= SW_SHOW;
-	//si.hStdInput	= m_hRead;//让等会建立的进程的标准输入来自管道的read端;
-
-	//PROCESS_INFORMATION pi;
-	//ZeroMemory( &pi, sizeof(pi) );
-
-	//bRet = CreateProcess(NULL,"BTKPlayer-Debug.exe",NULL,NULL,
-	//					TRUE,0,NULL,NULL,&si,&pi
-	//					);
-	//if(!bRet)
-	//	return FALSE;
-	//WaitForSingleObject( pi.hProcess,INFINITE);
-	//m_hProcess	= pi.hProcess;
-	//m_hThread	= pi.hThread;
-
 	AllocConsole();
 	SetConsoleTitle("BTKPlayer-Debug");
 	freopen("CONOUT$", "w", stderr);
