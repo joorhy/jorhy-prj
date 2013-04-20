@@ -15,5 +15,7 @@ do
     $JO_Dir/jo_svr &
   fi
 
-  sleep 2
+  sleep 3
 done
+
+
