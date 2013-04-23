@@ -19,6 +19,12 @@ BTKDecodeH264::~BTKDecodeH264(void)
 	Release();
 }
 
+BTK_RESULT BTKDecodeH264::FlushBuffer()
+{
+	avcodec_flush_buffers(m_pContext);
+	return BTK_NO_ERROR;
+}
+
 BTK_RESULT BTKDecodeH264::Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len)
 {
 	int nRet = 0;
@@ -28,7 +34,7 @@ BTK_RESULT BTKDecodeH264::Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_
 	nRet = avcodec_decode_video2(m_pContext,m_pPicture,&size,&m_Packet);
 	if(nRet < 0)
 	{
-		btk_Error("error :%d\n",nRet);
+		btk_Error("BTKDecodeH264::Decode error :%d\n",nRet);
 		return BTK_ERROR_DECODE;
 	}
 
@@ -60,6 +66,9 @@ BTK_RESULT BTKDecodeH264::InitDecode()
 	av_init_packet(&m_Packet);
 	if(!m_pCodec || !m_pContext || !m_pPicture)
 		return BTK_ERROR_DECODE_INIT;
+
+	//if(m_pCodec->capabilities & CODEC_CAP_TRUNCATED)
+	//	m_pContext->flags|= CODEC_FLAG_TRUNCATED; /* we do not send complete frames */
 
 	if(avcodec_open(m_pContext,m_pCodec) < 0)
 		return BTK_ERROR_DECODE_INIT;

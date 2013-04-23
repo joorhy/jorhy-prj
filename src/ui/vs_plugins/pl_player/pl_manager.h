@@ -6,6 +6,7 @@
 #include "pl_type.h"
 #include "pl_core.h"
 #include "pl_player.h"
+#include "pl_lock.h"
 #include "pl_singleton.h"
 #include <map>
 
@@ -47,7 +48,8 @@ private:
 	void		CreateMrl(const PL_PlayInfo &playInfo);					//生成播发MRL字串
 
 private:
-	PlayerMap m_playerMap;
+	PlLock			m_locker;
+	PlayerMap	m_playerMap;
 	NpnNotifyFunc m_pFuncCallBk;						//回调函数指针
 	int64_t		m_nLastTime;									//历史播放时间条回调函数时间值
 	int			m_nPlayNum;									//目前有几个窗口在播放

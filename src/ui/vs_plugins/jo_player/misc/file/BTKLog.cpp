@@ -10,7 +10,9 @@ BTKLog *BTKLog::m_pInstance = NULL;
 
 BTKLog::BTKLog():m_pFile(NULL)
 {
-	m_pFileName = "BTKPlayer-LoggFile.txt";
+	memset (m_pFileName, 0, sizeof(m_pFileName));
+	GetStrTime(m_pFileName);
+	strcat(m_pFileName, ".log");
 	m_pFile		= NULL;				
 	m_hConsloe	= NULL;
 	OpenFile();
@@ -129,14 +131,13 @@ int BTKLog::GetStrTime(char *OUT_time)
 	time_t curtime = time(NULL);
 	tm *ascCurtime;
 	ascCurtime = localtime(&curtime); 
-	sprintf(OUT_time,"%d-%d-%d %d:%d:%d",
+	sprintf(OUT_time,"%04d%02d%02d%02d%02d%02d",
 			ascCurtime->tm_year+1990,
 			ascCurtime->tm_mon+1,
 			ascCurtime->tm_mday,
 			ascCurtime->tm_hour,
 			ascCurtime->tm_min,
-			ascCurtime->tm_sec
-			);
+			ascCurtime->tm_sec);
 	return TRUE;
 }
 

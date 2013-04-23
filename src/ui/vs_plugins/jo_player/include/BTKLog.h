@@ -34,6 +34,6 @@ private:
 	static BTKLog *m_pInstance;
 	BTKMutexLock m_lock;
 	void *m_pFile;				//std::ofstream
-	char *m_pFileName;
+	char m_pFileName[256];
 	void *m_hConsloe;
 };

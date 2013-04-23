@@ -157,6 +157,7 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 	bool bFirst = true;
 	bool bNeedDec = true;
 	bool bNeedIframe = false;
+	bool bIsIFrame = false;
 	char *srcData = new char[MAX_VIDEO_FRAME_SIZE];
 	char *dstData = new char[MAX_VIDEO_FRAME_SIZE];
 	int dstlen = 0;
@@ -183,8 +184,11 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 			{
 				if(format.type != DECODE_AUDIO)
 				{	
-					if(ConsiderVDecoder(format, bNeedDec, bNeedIframe))
+					if(ConsiderVDecoder(format, bNeedDec, bNeedIframe, bIsIFrame))
 					{
+						if (bIsIFrame)
+							m_vDecoder->FlushBuffer();
+
 						br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen);
 						if(br == BTK_NO_ERROR)
 						{
@@ -206,8 +210,13 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 								m_vbuffer->Write(dstData,(char*)&vout,head);
 							}
 						}
+						else
+						{
+							state = BTK_ERROR;
+							ctl->m_state->SetVariable(&state);
+							break;
+						}
 					}
-
 					//ctl->m_input->m_buffer->MoveNext();
 				}
 				else
@@ -416,7 +425,7 @@ BTK_RESULT BTKTransform::SetDirection(bool bFront)
 	return BTK_NO_ERROR;
 }
 
-BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format, bool &bNeedDec, bool &bNeedIframe)
+BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format, bool &bNeedDec, bool &bNeedIframe, bool &bIsIFrame)
 {
 	BTKControl *ctl = reinterpret_cast<BTKControl*>(m_control);
 	bool bSleep = false;
@@ -436,9 +445,11 @@ BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format, bool &bNeedDec, boo
 			bRet = BTK_TRUE;
 			bNeedIframe = false;
 			bNeedDec = true;
+			bIsIFrame = true;
 		}
 		else								//睡眠状态切换都要重新找到I帧开始解码
 		{
+			bIsIFrame = false;
 			//不是睡眠的情况
 			if(!bNeedDec)
 			{
@@ -450,13 +461,9 @@ BTK_BOOL BTKTransform::ConsiderVDecoder(btk_decode_t format, bool &bNeedDec, boo
 				UINT nInfo = 0;
 				if (m_cpuInfo.GetInfo(nInfo) && nInfo > NORMAL_MODE)
 				{
-					//if ((bSleep && nInfo > SLEEP_MODE) || (!bSleep && nInfo > NORMAL_MODE))
-					{
-						//btk_Info("cpu %d\n", nInfo);
-						bNeedDec = false;
-						bRet = BTK_FALSE;
-						bNeedIframe = true;
-					}
+					bNeedDec = false;
+					bRet = BTK_FALSE;
+					bNeedIframe = true;
 				}
 			}
 

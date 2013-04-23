@@ -13,6 +13,7 @@ public:
 	~BTKDecodeH264(void);
 
 	virtual BTK_RESULT Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len);
+	virtual BTK_RESULT FlushBuffer();
 	virtual BTK_RESULT GetOutputType(btk_video_out_t &t);
 	virtual BTK_RESULT InitDecode();
 

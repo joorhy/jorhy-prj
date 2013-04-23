@@ -245,10 +245,10 @@ LRESULT CALLBACK BTKVoutDDraw::ControlProc(HWND hwnd,UINT message,WPARAM wParam,
 			break;	
 		}
 		//直接调用窗口过程会出错
-		if(message != 0)
+		if(message != 0 && message != WM_SYSCOLORCHANGE)
 			return CallWindowProc(pUser->m_oldProc,hwnd,message,wParam,lParam);
-		//else
-		//	return TRUE;
+		else
+			return TRUE;
 	}
 	return DefWindowProc(hwnd,message,wParam,lParam);
 }

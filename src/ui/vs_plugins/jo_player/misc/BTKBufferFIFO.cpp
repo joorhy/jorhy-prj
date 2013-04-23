@@ -180,62 +180,12 @@ void BTKBufferFIFO::EraseBuffer()
 	GetData((char *)&m_Node, J_MEMNODE_LEN);
 	GetData((char *)&m_streamHeader, sizeof(btk_buffer_t), J_MEMNODE_LEN);
 	nMoveLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-	/*if (m_streamHeader.datatype == 0)
-	{
-		if (m_nDiscardedFrameNum > 0)
-		{
-			btk_decode_t headerEx = {0};
-			GetData((char *)&headerEx, sizeof(btk_decode_t), sizeof(btk_buffer_t) + J_MEMNODE_LEN);
-			if (headerEx.type == DECODE_I_FRAME)
-			{
-				memset(&m_Node, 0, sizeof(m_Node));
-				memset(&headerEx, 0, sizeof(btk_decode_t));
-				GetData((char *)&m_Node, J_MEMNODE_LEN, nMoveLen);
-				GetData((char *)&headerEx, sizeof(btk_decode_t), nMoveLen + J_MEMNODE_LEN + sizeof(btk_buffer_t));
-				if (headerEx.type == DECODE_I_FRAME)
-				{
-					nMoveLen += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-				}
-				else
-				{
-					--m_nDiscardedFrameNum;
-					nOffset = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-					nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-				}
-			}
-
-			int nCurOffset = nMoveLen;
-			while (m_nDiscardedFrameNum > 0 && nCurOffset < m_nDataLen)
-			{
-				memset(&m_Node, 0, sizeof(m_Node));
-				memset(&headerEx, 0, sizeof(btk_decode_t));
-				GetData((char *)&m_Node, J_MEMNODE_LEN, nCurOffset);
-				GetData((char *)&headerEx, sizeof(btk_decode_t), nCurOffset + J_MEMNODE_LEN + sizeof(btk_buffer_t));
-				//btk_Info("BTKBufferFIFO::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, headerEx.type, this);
-				if (headerEx.type == DECODE_I_FRAME)
-					break;
-				nCurOffset += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-				nDorpLen += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-				nOffset += m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-				--m_nDiscardedFrameNum;
-			}
-			MoveBuffer(nOffset, nMoveLen);
-			btk_Info("CXBuffer::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, headerEx.type, this);
-		}
-		else
-		{
-			nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-		}
-	}*/
-	//else
-	//{
-		nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
-	//}
+	nDorpLen = m_Node.nLen + J_MEMNODE_LEN + sizeof(btk_buffer_t);
 
 	m_pReadPoint = AddBuffer(m_pReadPoint, nDorpLen);
 	m_nDataLen -= nDorpLen;
 
-	//btk_Info("CXBuffer::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, m_streamHeader.extrasize, this);
+	btk_Info("CXBuffer::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, m_streamHeader.extrasize, this);
 	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
 }
 

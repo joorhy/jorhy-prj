@@ -16,6 +16,7 @@ public:
 	//子类需要重写
 	virtual BTK_RESULT InitDecode() = 0;
 	virtual BTK_RESULT Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len) = 0;
+	virtual BTK_RESULT FlushBuffer() = 0;
 	virtual BTK_RESULT GetOutputType(btk_video_out_t &t) = 0;
 
 protected:

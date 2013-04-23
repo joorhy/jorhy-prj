@@ -16,7 +16,7 @@ public:
 	BTK_RESULT Run();			//创建A/V两个解码线程
 	BTK_RESULT SwitchBuffer();
 	BTK_RESULT SetDirection(bool bFront);
-	BTK_BOOL ConsiderVDecoder(btk_decode_t format, bool &bNeedDec, bool &bNeedIframe);		//实时
+	BTK_BOOL ConsiderVDecoder(btk_decode_t format, bool &bNeedDec, bool &bNeedIframe, bool &bIsIFrame);		//实时
 
 protected:
 	
