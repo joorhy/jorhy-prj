@@ -20,11 +20,11 @@ public:
 		pObj = new CPlRealWnd(hParent, nID);
 		return PL_OK;
 	}
+	void Init();
 protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	void InitParm();
 	UINT FindArea(CPoint point);
 
 private:

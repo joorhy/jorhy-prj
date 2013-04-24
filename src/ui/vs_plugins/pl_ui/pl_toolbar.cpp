@@ -348,7 +348,10 @@ void CPlToolBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 BOOL CPlToolBar::AttachPlayer(PL_PlayParm *pPlayParm, void *parent)
 {
 	if(NULL == pPlayParm) 
+	{
+		SetParent((CWnd *)parent);
 		return FALSE;
+	}
 
 	if(m_pPlayParm == pPlayParm) 
 	{

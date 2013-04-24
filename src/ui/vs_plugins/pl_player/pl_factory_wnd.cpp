@@ -22,15 +22,14 @@ CWnd *CPlFactoryWnd::GetWindow(const char *pType, HWND hParent, UINT nId)
 	CWnd *hWnd = NULL;
 	m_key.hWnd = hParent;
 	m_key.nId = nId;
+	if (memcmp(pType, "t_play", 6) == 0)
+		m_key.hWnd = (HWND)nId;
+
 	WindowMap::iterator it = m_wndMap.find(m_key);
 	if (it == m_wndMap.end())
 	{
 		WindowRegistMap::iterator itWnd = m_wndRegistMap.find(pType);
-		if (itWnd == m_wndRegistMap.end())
-		{
-			//J_OS::LOGINFO("CFilterFactory::GetFilter Filter not registed, filterType = %s", pType);
-		}
-		else
+		if (itWnd != m_wndRegistMap.end())
 		{
 			itWnd->second(hWnd, hParent, nId);
 		}

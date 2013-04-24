@@ -29,8 +29,8 @@ BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 		it->second.pPlayer->Stop();
 		CPlFactory::Instance()->DelPlayer(hWnd);
 		it->second.bPlay = FALSE;
-		m_locker.Lock();
-		return FALSE;
+		//m_locker.Lock();
+		//return FALSE;
 	}
 
 	BOOL bRet;

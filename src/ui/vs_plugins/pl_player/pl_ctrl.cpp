@@ -72,10 +72,10 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent, char* pJsUrl)
 
 int CPlCtrl::CalcWndNum(const PL_LayoutInfo &layoutInfo)
 {
-	int nWndNum = 1;
+	int nWndNum = (layoutInfo.nWindows + 1);
 	if(3 == layoutInfo.nLayout)
 	{
-		nWndNum = (layoutInfo.nWindows + 1) * (layoutInfo.nWindows + 1);
+		nWndNum *= nWndNum;
 	}
 	return nWndNum;
 }
@@ -257,7 +257,6 @@ BOOL CPlCtrl::GetWndParm(char *pRet, int nType)
 	if(nType == FOCUS_WINDOW)
 	{
 		int nId = GetWindowLong(GetFocusWnd(), GWL_ID);
-		//m_key.nId = GetWindowLong(GetFocusWnd(), GWL_ID) + (UINT)m_hParent;
 		bRet = PlManager::Instance()->GetWndPlayParm(m_playWndMap[nId]->m_hWnd, wndinfo);
 	}
 	else if(nType == ALL_WINDOW)
@@ -299,20 +298,24 @@ BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
 		switch(m_layoutInfo.nMod)
 		{
 		case STREAME_REALTIME:		//real
+			TRACE("%d\n", GetTickCount());
 			for(int i=nOldWnds; i<nWindows; ++i)
 			{
 				CPlWnd *r_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i));
+				r_tmp->Init();
 				::ShowWindow(((CWnd*)r_tmp)->m_hWnd, SW_SHOW);
 				r_tmp->SetFullModel(m_layoutInfo.nMax);
 				PlManager::Instance()->SetUserData(r_tmp->m_hWnd, m_pUser);
 				//m_key.nId = i + (UINT)m_hParent;
 				m_playWndMap[i] = r_tmp;
 			}
+			TRACE("%d\n", GetTickCount());
 			break;
 		case STREAME_FILE:				//vod
 			for(int i=nOldWnds; i<nWindows; ++i)
 			{
 				CPlWnd *v_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("v_play", m_hParent, i));
+				v_tmp->Init();
 				::ShowWindow(((CWnd*)v_tmp)->m_hWnd, SW_SHOW);
 				v_tmp->SetFullModel(m_layoutInfo.nMax);
 				PlManager::Instance()->SetUserData(v_tmp->m_hWnd, m_pUser);

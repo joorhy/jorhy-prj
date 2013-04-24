@@ -102,7 +102,7 @@ BTK_RESULT BTKInput::ThreadLoopPush()
 		case BTK_NORMAL: break;
 		case BTK_PALYING:
 		case BTK_PAUSE:
-			ctl->m_switch.Wait();
+			//ctl->m_switch.Wait();
 			br = m_access->ReadBlock(accessdata,readlen);
 			if(br == BTK_ERROR_ACCESS_END)
 			{
@@ -186,7 +186,7 @@ BTK_RESULT BTKInput::InitDecoder()
 	br = m_demux->GetDecodeType(parm);
 	if(br != BTK_NO_ERROR)
 	{
-		btk_Error("Error Demux!\n");
+		btk_Error("BTKInput::InitDecoder Error Demux!\n");
 		return br;
 	}
 	control->m_tansfm = new BTKTransform(parm,m_control);

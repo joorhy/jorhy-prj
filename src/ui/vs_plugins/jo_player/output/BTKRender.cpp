@@ -151,7 +151,7 @@ BTK_RESULT BTKRender::VoutLoopPush()
 	while(true)
 	{
 		ctl->m_state->GetVariable(&state);
-		ctl->m_switch.Wait();
+		//ctl->m_switch.Wait();
 		switch(state)
 		{
 		case BTK_NORMAL: break;
@@ -214,9 +214,7 @@ BTK_RESULT BTKRender::VoutLoopPush()
 
 		case BTK_ERROR:
 			goto Vout_End;
-
 		}
-
 	}
 Vout_End:
 	delete m_vdata;
@@ -350,7 +348,7 @@ BTK_RESULT BTKRender::GetNextFrame(char *data,btk_video_format_t &t,btk_buffer_t
 			}
 			br = ctl->m_tansfm->m_vbuffer->MoveNext();
 
-			if(bFront)
+			/*if(bFront)
 			{
 				if(lasttime <= t.timestamp)
 				{
@@ -363,7 +361,7 @@ BTK_RESULT BTKRender::GetNextFrame(char *data,btk_video_format_t &t,btk_buffer_t
 				{
 					break;
 				}
-			}
+			}*/
 		}
 
 	}

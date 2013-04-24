@@ -178,7 +178,7 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 
 		case BTK_PALYING:
 		case BTK_PAUSE:
-			ctl->m_switch.Wait();
+			//ctl->m_switch.Wait();
 			if(ctl->m_input->m_buffer && 
 				(br = ctl->m_input->m_buffer->Read(srcData,(char*)&format,head)) == BTK_NO_ERROR)
 			{
@@ -219,8 +219,8 @@ BTK_RESULT BTKTransform::VideoLoopPush()
 					}
 					//ctl->m_input->m_buffer->MoveNext();
 				}
-				else
-					Sleep(1);
+				//else
+				//	Sleep(1);
 			}
 			else
 			{

@@ -49,7 +49,7 @@ BTK_RESULT BTKBufferFIFO::Read(char *OUT_Buffer,char *OUT_extra,btk_buffer_t &OU
 	}
 	m_lock.ReadUnlock();
 
-	return BTK_ERROR_UNKNOW;
+	return BTK_ERROR_EMPTY_BUFFER;
 }
 
 BTK_RESULT BTKBufferFIFO::Write(char *IN_Buffer,char *IN_extra,btk_buffer_t &IN_Header)
