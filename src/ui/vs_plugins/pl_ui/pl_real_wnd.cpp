@@ -13,7 +13,7 @@ double CPlRealWnd::m_arrAreaAgl[4] = {atan(double(1.0/3)),atan(double(3.0/1)),
 		atan(double(3.0/-1)),atan(double(1.0/-3))};
 
 // CRPlayWnd
-IMPLEMENT_DYNAMIC(CPlRealWnd, CPlWnd)
+IMPLEMENT_DYNAMIC(CPlRealWnd, CWnd)
 CPlRealWnd::CPlRealWnd(HWND hParent,UINT nID)
 {
 	m_hParent = hParent;
@@ -47,7 +47,6 @@ BEGIN_MESSAGE_MAP(CPlRealWnd, CWnd)
 	ON_MESSAGE(WM_TRY_SET_MOUSE_HOOK, CPlWnd::SetMouseHook)
 	ON_MESSAGE(WM_OWN_SETFOCUS, CPlWnd::SetWndFocus)
 	ON_MESSAGE(WM_OWN_KILLFOCUS, CPlWnd::KillWndFocus)
-	ON_WM_MOUSEWHEEL()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()

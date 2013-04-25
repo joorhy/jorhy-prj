@@ -95,7 +95,7 @@ void CPlWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 			m_bFullScreen = TRUE;
 		}
 	}
-	PostMessage(WM_OWN_SETFOCUS);
+	SendMessage(WM_OWN_SETFOCUS);
 	CWnd::OnLButtonDblClk(nFlags, point);
 }
 
@@ -332,9 +332,10 @@ LRESULT CPlWnd::SetWndFocus(WPARAM wParam,LPARAM lParam)
 	DeleteObject(pen);
 
 	HWND hOld= ::GetDlgItem(GetParent()->m_hWnd, m_nFocus); 
+	::SetFocus(this->m_hWnd);
 	//»Øµ÷
 	int nIdWnd = GetWindowLong(this->m_hWnd, GWL_ID);
-	//if(nIdWnd != m_nFocus)
+	if(nIdWnd != m_nFocus)
 	{
 		m_nFocus = nIdWnd;
 		::SendMessage(hOld, WM_OWN_KILLFOCUS, 0, 0);
