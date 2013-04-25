@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\ui\vs_plugins\jo_player\include;..\..\src\ui\vs_plugins\pl_player"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_vlc\include\vlc;..\..\src\ui\vs_plugins\pl_vlc;..\..\src\ui\vs_plugins\pl_hik;..\..\src\ui\vs_plugins\pl_jo;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\ui\vs_plugins\pl_vlc\include;..\..\src\ui\vs_plugins\pl_ui;..\..\src\player\include;..\..\src\ui\vs_plugins\pl_player"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PL_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -484,11 +484,11 @@
 			Name="pl_jo"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_jo\BTKPlayer.cpp"
+				RelativePath="..\..\src\ui\vs_plugins\pl_jo\JoPlayer.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_jo\BTKPlayer.h"
+				RelativePath="..\..\src\ui\vs_plugins\pl_jo\JoPlayer.h"
 				>
 			</File>
 		</Filter>

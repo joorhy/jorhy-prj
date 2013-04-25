@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\jo_player\include\ffmpeg;..\..\src\ui\vs_plugins\jo_player\include;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
+				AdditionalIncludeDirectories="..\..\src\player\include\ffmpeg;..\..\src\player\include;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_PLAYER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -176,159 +176,175 @@
 			Name="input"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccess.cpp"
+				RelativePath="..\..\src\player\input\x_pl_access.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKAccess.h"
+				RelativePath="..\..\src\player\include\x_pl_access.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccessRYSP.cpp"
+				RelativePath="..\..\src\player\input\x_pl_access_josp.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKAccessRYSP.h"
+				RelativePath="..\..\src\player\input\x_pl_access_josp.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemux.cpp"
+				RelativePath="..\..\src\player\input\x_pl_demux.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKDemux.h"
+				RelativePath="..\..\src\player\include\x_pl_demux.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxRYSP.cpp"
+				RelativePath="..\..\src\player\input\x_pl_demux_josp.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKDemuxRYSP.h"
+				RelativePath="..\..\src\player\include\x_pl_demux_josp.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\BTKInput.cpp"
+				RelativePath="..\..\src\player\input\x_pl_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKInput.h"
+				RelativePath="..\..\src\player\include\x_pl_input.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="core"
+			Name="misc"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\AVIStruct.h"
+				RelativePath="..\..\src\player\include\x_pl_avi_struct.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKBase.cpp"
+				RelativePath="..\..\src\player\misc\x_pl_base.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKBase.h"
+				RelativePath="..\..\src\player\include\x_pl_base.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKCommon.h"
+				RelativePath="..\..\src\player\misc\x_pl_buffer.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKControl.cpp"
+				RelativePath="..\..\src\player\include\x_pl_buffer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKControl.h"
+				RelativePath="..\..\src\player\misc\x_pl_buffer_fifo.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKCpuUseage.cpp"
+				RelativePath="..\..\src\player\include\x_pl_buffer_fifo.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKCpuUseage.h"
+				RelativePath="..\..\src\player\include\x_pl_common.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKError.h"
+				RelativePath="..\..\src\player\misc\x_pl_control.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\file\BTKFile.cpp"
+				RelativePath="..\..\src\player\include\x_pl_control.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKFile.h"
+				RelativePath="..\..\src\player\misc\x_pl_cpu_useage.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\file\BTKLog.cpp"
+				RelativePath="..\..\src\player\include\x_pl_cpu_useage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKLog.h"
+				RelativePath="..\..\src\player\include\x_pl_data_def.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKMisc.h"
+				RelativePath="..\..\src\player\include\x_pl_data_struct.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKParser.cpp"
+				RelativePath="..\..\src\player\include\x_pl_default_config.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKParser.h"
+				RelativePath="..\..\src\player\include\x_pl_error.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\network\BTKSockt.cpp"
+				RelativePath="..\..\src\player\misc\x_pl_file.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKSockt.h"
+				RelativePath="..\..\src\player\include\x_pl_file.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKString.cpp"
+				RelativePath="..\..\src\player\include\x_pl_josp_data_struct.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKString.h"
+				RelativePath="..\..\src\player\misc\x_pl_log.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\win32\BTKThread.cpp"
+				RelativePath="..\..\src\player\include\x_pl_log.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKThread.h"
+				RelativePath="..\..\src\player\include\x_pl_misc.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKVariable.cpp"
+				RelativePath="..\..\src\player\misc\x_pl_parser.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKVariable.h"
+				RelativePath="..\..\src\player\include\x_pl_parser.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\DataDef.h"
+				RelativePath="..\..\src\player\misc\x_pl_socket.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\DataStruct.h"
+				RelativePath="..\..\src\player\include\x_pl_socket.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\DefaultConfig.h"
+				RelativePath="..\..\src\player\misc\x_pl_string.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\input\RYSPDataStruct.h"
+				RelativePath="..\..\src\player\include\x_pl_string.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\player\misc\x_pl_thread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\player\include\x_pl_thread.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\player\misc\x_pl_variable.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\player\include\x_pl_variable.h"
 				>
 			</File>
 		</Filter>
@@ -336,75 +352,51 @@
 			Name="output"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKAudioDecode.cpp"
+				RelativePath="..\..\src\player\output\x_pl_audio_output.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKAudioDecode.h"
+				RelativePath="..\..\src\player\include\x_pl_audio_output.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKAudioOutput.cpp"
+				RelativePath="..\..\src\player\output\x_pl_picture.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKAudioOutput.h"
+				RelativePath="..\..\src\player\include\x_pl_picture.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKDecodeH264.cpp"
+				RelativePath="..\..\src\player\output\x_pl_record.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKDecodeH264.h"
+				RelativePath="..\..\src\player\include\x_pl_record.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKPicture.cpp"
+				RelativePath="..\..\src\player\output\x_pl_render.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKPicture.h"
+				RelativePath="..\..\src\player\include\x_pl_render.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\src\BTKRecord.cpp"
+				RelativePath="..\..\src\player\output\x_pl_video_output.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKRecord.h"
+				RelativePath="..\..\src\player\include\x_pl_video_output.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKRender.cpp"
+				RelativePath="..\..\src\player\output\x_pl_vout_ddraw.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKRender.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKVideoDecode.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKVideoDecode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKVideoOutput.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKVideoOutput.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKVoutDDraw.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\output\BTKVoutDDraw.h"
+				RelativePath="..\..\src\player\include\x_pl_vout_ddraw.h"
 				>
 			</File>
 		</Filter>
@@ -412,27 +404,35 @@
 			Name="transform"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBuffer.cpp"
+				RelativePath="..\..\src\player\transform\x_pl_audio_decode.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKBuffer.h"
+				RelativePath="..\..\src\player\include\x_pl_audio_decode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferFIFO.cpp"
+				RelativePath="..\..\src\player\transform\x_pl_decode_h264.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\misc\BTKBufferFIFO.h"
+				RelativePath="..\..\src\player\include\x_pl_decode_h264.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\decode\BTKTransform.cpp"
+				RelativePath="..\..\src\player\transform\x_pl_transform.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\jo_player\include\BTKTransform.h"
+				RelativePath="..\..\src\player\include\x_pl_transform.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\player\transform\x_pl_video_decode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\player\include\x_pl_video_decode.h"
 				>
 			</File>
 		</Filter>
