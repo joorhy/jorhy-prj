@@ -185,7 +185,7 @@ void CXPlBufferFIFO::EraseBuffer()
 	m_pReadPoint = AddBuffer(m_pReadPoint, nDorpLen);
 	m_nDataLen -= nDorpLen;
 
-	j_pl_info("CXBuffer::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, m_streamHeader.extrasize, this);
+	//j_pl_info("CXBuffer::EraseBuffer() len = %d ex_len = %d, user = %u\n", m_Node.nLen, m_streamHeader.extrasize, this);
 	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
 }
 

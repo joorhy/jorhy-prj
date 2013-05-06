@@ -52,6 +52,23 @@ BOOL PlJsonParser::ParserLayout2(const char *pJsStr, PL_LayoutInfo &layoutInfo)
 	return TRUE;
 }
 
+BOOL PlJsonParser::ParserPath(const char *pJsStr, PL_LayoutInfo &layoutInfo)
+{
+	json_object *layout_obj = json_tokener_parse((char *)pJsStr);
+	if(is_error(layout_obj))
+		return FALSE;
+
+	char *tmpstr = json_object_get_string(json_object_object_get(layout_obj, "imgPath"));
+	if(tmpstr)
+		strcpy(layoutInfo.imgPath, tmpstr);
+	tmpstr = json_object_get_string(json_object_object_get(layout_obj, "videoPath"));
+	if(tmpstr)
+		strcpy(layoutInfo.mediaPath, tmpstr);
+	json_object_put(layout_obj);
+
+	return TRUE;
+}
+
 BOOL PlJsonParser::ParserPlay(const char *pJsStr, PL_PlayInfo &playInfo)
 {
 	json_object *play_obj = NULL;

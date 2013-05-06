@@ -1,5 +1,5 @@
 #pragma once
-#include "..\include\x_pl_buffer.h"
+#include "x_pl_buffer.h"
 
 struct J_MEMNODE
 {

@@ -218,8 +218,12 @@ void CPlToolBar::Stop()
 {
 	PlManager::Instance()->StatusCallBack(m_hPlWnd);
 	PlManager::Instance()->Stop(m_hPlWnd);
-	m_pPlayParm->pSound  = FALSE;
-	m_pPlayParm->pVolume = DEFAULT_VOLUME;
+	if (m_pPlayParm)
+	{
+		m_pPlayParm->pSound  = FALSE;
+		m_pPlayParm->pVolume = DEFAULT_VOLUME;
+	}
+
 	ShowControls(FALSE);
 }
 
@@ -273,14 +277,15 @@ void CPlToolBar::Record()
 		m_pPlayParm->bRecoder = !m_pPlayParm->bRecoder;
 		if(m_pPlayParm->bRecoder)
 		{
-			m_bnRecord->ChangePng(FALSE);
-			m_toolTip.AddTool(m_bnRecord,"¹Ø±ÕÂ¼Ïñ");
+			//m_bnRecord->ChangePng(FALSE);
+			m_toolTip.AddTool(m_bnRecord,"¿ªÆôÂ¼Ïñ");
 		}
 		else
 		{
-			m_bnRecord->ChangePng();
-			m_toolTip.AddTool(m_bnRecord,"¿ªÆôÂ¼Ïñ");
+			//m_bnRecord->ChangePng();
+			m_toolTip.AddTool(m_bnRecord,"¹Ø±ÕÂ¼Ïñ");
 		}
+		m_bnRecord->ChangePng(m_pPlayParm->bRecoder);
 		PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "Â¼Ïñ");
 	}
 }
@@ -392,6 +397,8 @@ BOOL CPlToolBar::AttachPlayer(PL_PlayParm *pPlayParm, void *parent)
 		m_bnSlider->SetPos(0);
 		m_toolTip.AddTool(m_bnSlider,0);
 	}
+	if (m_bnRecord)
+		m_bnRecord->ChangePng(m_pPlayParm->bRecoder);
 
 	return TRUE;
 }

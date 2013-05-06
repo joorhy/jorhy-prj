@@ -29,8 +29,17 @@ BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 		it->second.pPlayer->Stop();
 		CPlFactory::Instance()->DelPlayer(hWnd);
 		it->second.bPlay = FALSE;
-		//m_locker.Lock();
-		//return FALSE;
+
+		m_nPlayNum--;
+		m_nVodEndTime = 0;
+		if(m_nPlayNum == 0)
+		{
+			int args[2];
+			args[0] = 1;
+			args[1] = (int)"null";
+
+			NotifyNpn(hWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
+		}
 	}
 
 	BOOL bRet;
@@ -241,7 +250,7 @@ BOOL PlManager::IsPlaying(HWND hWnd)
 
 void PlManager::VodCallBack(HWND hWnd)
 {
-	m_locker.Lock();
+	//m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
@@ -249,14 +258,14 @@ void PlManager::VodCallBack(HWND hWnd)
 		if(it->second.dwPlayTime > m_nVodEndTime)
 		{
 			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
-			m_locker.Unlock();
+			//m_locker.Unlock();
 			return;
 		}
 		args[0] = (int)&it->second.dwPlayTime;
 		++it->second.dwPlayTime;
 		NotifyNpn(hWnd, CALLBACK_ONVOD, args, sizeof(args)/sizeof(int));
 	}
-	m_locker.Unlock();
+	//m_locker.Unlock();
 	return;
 }
 
@@ -272,19 +281,19 @@ BOOL PlManager::RegisterCallBack(NpnNotifyFunc funcAddr)
 
 void PlManager::NotifyNpn(HWND hWnd, UINT nType, int args[], UINT argCount)
 {
-	m_locker.Lock();
+	//m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		if(NULL == m_pFuncCallBk || NULL == it->second.pUser) 
 		{
-			m_locker.Unlock();
+			//m_locker.Unlock();
 			return;
 		}
 		else
 			m_pFuncCallBk(it->second.pUser, nType, args, argCount);
 	}
-	m_locker.Unlock();
+	//m_locker.Unlock();
 }
 
 BOOL PlManager::GetWndPlayParm(HWND hWnd, char *pPlayerParm)

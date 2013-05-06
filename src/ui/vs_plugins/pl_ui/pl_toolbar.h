@@ -6,10 +6,9 @@
 #include "pl_button.h"
 #include "pl_manager.h"
 #include "pl_err.h"
+#include "pl_tool_tip.h"
 
-#include "NewToolTip.h"
-
-// CFlootTool
+// CPlToolBar
 class CPlToolBar : public CWnd
 						 , public PlToolWin
 {
@@ -53,7 +52,7 @@ private:
 	CPlButton *m_bnDownload;
 	//player
 	BOOL m_bCreate;
-	CNewToolTip m_toolTip;
+	CPlToolTip m_toolTip;
 	PL_PlayParm *m_pPlayParm;
 
 public:

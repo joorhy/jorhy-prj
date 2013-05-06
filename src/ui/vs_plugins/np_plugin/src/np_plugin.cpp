@@ -266,6 +266,15 @@ bool CNPPlugin::ChangeLayout(char *js_layout,NPVariant *result)
 	return true;
 }
 
+bool CNPPlugin::ChangePath(char *js_path,NPVariant *result)
+{
+	if(CPlCtrl::CreateInstance(m_hWnd)->SetPath(js_path))
+		SetRetValue("{\"rst\":0}",result);
+
+	return true;
+}
+
+
 bool CNPPlugin::SetLayout()
 {
 	CPlCtrl::CreateInstance(m_hWnd)->SetLayout();

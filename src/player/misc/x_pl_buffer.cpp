@@ -1,4 +1,4 @@
-#include "..\include\x_pl_buffer.h"
+#include "x_pl_buffer.h"
 #include "x_pl_buffer_fifo.h"
 
 J_PlBuffer *J_PlBuffer::CreateInstance(buffer_type_e t,int size_buffer)

@@ -10,6 +10,7 @@ using namespace std;
 
 std::map<HWND, CPlCtrl*>	CPlCtrl::m_ctrlMap;
 PlLock	CPlCtrl::m_lock;
+int CPlCtrl::m_nIndex		= 0;
 
 CPlCtrl *CPlCtrl::CreateInstance(HWND pWnd)
 {
@@ -94,6 +95,14 @@ BOOL CPlCtrl::SetLayout(char *pJsUrl)
 		m_layoutInfo.nMax = layoutInfo.nMax;
 		return TRUE;
 	}
+	return FALSE;
+}
+
+BOOL CPlCtrl::SetPath(char *js_path)
+{
+	if (PlJsonParser::Instance()->ParserPath(js_path, m_layoutInfo))
+		return TRUE;
+
 	return FALSE;
 }
 

@@ -11,6 +11,7 @@ IMPLEMENT_DYNAMIC(CPlVodWnd, CWnd)
 CPlVodWnd::CPlVodWnd(HWND hParent, UINT nID)
 //: CPlWnd(hParent, nID)
 {
+	m_hParent = hParent;
 	LPCTSTR lpWndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 											NULL,
 											(HBRUSH)GetStockObject(BLACK_BRUSH),

@@ -25,6 +25,7 @@ public:
 public:
 	BOOL	InitDisPlay(HWND hParent,char* js_workMode);
 	BOOL	SetLayout(char *js_Layout);
+	BOOL	SetPath(char *js_path);
 	BOOL	SetLayout();
 	BOOL	Play(char *js_mrl);
 	BOOL	StopAll();
@@ -40,6 +41,7 @@ public:
 
 private:
 	HWND m_hParent;
+	static int m_nIndex;
 	//work model
 	PL_LayoutInfo m_layoutInfo;
 	typedef std::map<UINT, CPlWnd *> PlayWndMap;
