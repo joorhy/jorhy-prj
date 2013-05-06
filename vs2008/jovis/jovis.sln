@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jovis", "jovis.vcproj", "{10D8A791-BC01-4CE7-A4AA-5AE7EEF6C8EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10D8A791-BC01-4CE7-A4AA-5AE7EEF6C8EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{10D8A791-BC01-4CE7-A4AA-5AE7EEF6C8EC}.Debug|Win32.Build.0 = Debug|Win32
+		{10D8A791-BC01-4CE7-A4AA-5AE7EEF6C8EC}.Release|Win32.ActiveCfg = Release|Win32
+		{10D8A791-BC01-4CE7-A4AA-5AE7EEF6C8EC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
