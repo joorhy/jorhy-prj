@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo ----------Building project:[ DahuaHost - Debug ]----------
-	@"$(MAKE)" -f "DahuaHost.mk"
+	@echo ----------Building project:[ JoHost - Debug ]----------
+	@"$(MAKE)" -f "JoHost.mk"
 clean:
-	@echo ----------Cleaning project:[ DahuaHost - Debug ]----------
-	@"$(MAKE)" -f "DahuaHost.mk" clean
+	@echo ----------Cleaning project:[ JoHost - Debug ]----------
+	@"$(MAKE)" -f "JoHost.mk" clean

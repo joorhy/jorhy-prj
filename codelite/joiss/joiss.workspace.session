@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss/joiss.workspace">
-  <int Value="1" Name="m_selectedTab"/>
+  <int Value="4" Name="m_selectedTab"/>
   <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss/joiss.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/x_errtype.h" Name="FileName"/>
-      <int Value="23" Name="FirstVisibleLine"/>
-      <int Value="31" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/x_log.h" Name="FileName"/>
+      <int Value="8" Name="FirstVisibleLine"/>
+      <int Value="17" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaAdapter.cpp" Name="FileName"/>
-      <int Value="75" Name="FirstVisibleLine"/>
-      <int Value="82" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/j_type.h" Name="FileName"/>
+      <int Value="271" Name="FirstVisibleLine"/>
+      <int Value="282" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/dahua/DahuaAdapter.h" Name="FileName"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/j_module.h" Name="FileName"/>
+      <int Value="201" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_adapter_factory.cpp" Name="FileName"/>
       <int Value="33" Name="FirstVisibleLine"/>
-      <int Value="44" Name="CurrentLine"/>
+      <int Value="34" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/host/aipstar/AipstarAdapter.cpp" Name="FileName"/>
-      <int Value="74" Name="FirstVisibleLine"/>
-      <int Value="14" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/control/record/RecoderManager.cpp" Name="FileName"/>
-      <int Value="15" Name="FirstVisibleLine"/>
-      <int Value="29" Name="CurrentLine"/>
+      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/misc/x_adapter_factory.h" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>
