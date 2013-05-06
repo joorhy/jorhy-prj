@@ -18,6 +18,7 @@ public:
 	}
 
 public:
+	virtual int GetDeviceInfo(const char *pResid, J_DeviceInfo &devInfo) { return 0; }
 	virtual int ListDevices(std::vector<J_DeviceInfo> &devList);
 	virtual int GetChannelInfo(const char *channelId, J_ChannelInfo &channelInfo);
 	virtual int GetRecordInfo(J_RecordInfo &recordInfo);

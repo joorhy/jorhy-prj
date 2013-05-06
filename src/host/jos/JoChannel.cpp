@@ -1,6 +1,7 @@
 #include "JoChannel.h"
 #include "JoStream.h"
 #include "x_base64.h"
+#include "x_config.h"
 
 CJoChannel::CJoChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
 : m_pAdapter(NULL)
@@ -11,6 +12,7 @@ CJoChannel::CJoChannel(const char *pResid, void *pOwner, int nChannel, int nStre
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
+	m_resid = pResid;
 
 	m_recvSocket = NULL;
 }
@@ -18,87 +20,6 @@ CJoChannel::CJoChannel(const char *pResid, void *pOwner, int nChannel, int nStre
 CJoChannel::~CJoChannel()
 {
 
-}
-
-int CJoChannel::PtzControl(int nCmd, int nParam)
-{
-	char ptzCommand[1024] = {0};
-	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
-	{
-		char command[128] = {0};
-		char authorization[32] = {0};
-		char uname_pw[64] = {0};
-		sprintf(uname_pw, "%s:%s", m_pAdapter->GetUser(), m_pAdapter->GetPassword());
-		base64_in((unsigned char *)uname_pw, authorization, strlen(uname_pw));
-
-		switch (nCmd)
-		{
-		case jo_ptz_pre_set:
-			break;
-		case jo_ptz_goto_pre:
-			break;
-		}
-		//J_OS::LOGINFO(ptzCommand);
-	}
-	else
-	{
-		if (nParam > 0)
-		{
-			switch (nCmd)
-			{
-			case jo_ptz_up:
-				break;
-			case jo_ptz_down:
-				break;
-			case jo_ptz_left:
-				break;
-			case jo_ptz_right:
-				break;
-			case jo_ptz_up_left:
-				break;
-			case jo_ptz_up_right:
-				break;
-			case jo_ptz_down_left:
-				break;
-			case jo_ptz_down_right:
-				break;
-			case jo_ptz_zoom_in:
-				break;
-			case jo_ptz_room_out:
-				break;
-			case jo_ptz_focus_near:
-				break;
-			case jo_ptz_focus_far:
-				break;
-			case jo_ptz_iris_open:
-				break;
-			case jo_ptz_iris_close:
-				break;
-			}
-		}
-		else
-		{
-			switch (nCmd)
-			{
-			case jo_ptz_up:
-			case jo_ptz_down:
-			case jo_ptz_left:
-			case jo_ptz_right:
-			case jo_ptz_up_left:
-			case jo_ptz_up_right:
-			case jo_ptz_down_left:
-			case jo_ptz_down_right:
-				break;
-			case jo_ptz_zoom_in:
-			case jo_ptz_room_out:
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	return SendCommand(ptzCommand);
 }
 
 int CJoChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
@@ -165,42 +86,32 @@ int CJoChannel::StartView()
 		delete m_recvSocket;
 		m_recvSocket = NULL;
 	}
+	
+	J_DeviceInfo info = {0};
+	if (CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
+		return J_INVALID_DEV;
 	m_recvSocket = new J_OS::CTCPSocket();
-	m_recvSocket->Connect(m_pAdapter->GetRemoteIp(),
-			m_pAdapter->GetRemotePort());
+	m_recvSocket->Connect(info.devIp, info.devPort);
 
-	/*if (m_rtspHelper.OpenStream(m_recvSocket, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemotePort(), m_nChannel) != J_OK)
+	if (m_jospHelper.OpenStream(m_recvSocket, m_resid.c_str(), m_nStreamType) != J_OK)
 	{
 		delete m_recvSocket;
 		m_recvSocket = NULL;
 		
 		return J_INVALID_DEV;
-	}*/
+	}
 
 	return J_OK;
 }
 
 int CJoChannel::StopView()
 {
-	//m_rtspHelper.CloseStream(m_recvSocket, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemotePort(), m_nChannel);
+	m_jospHelper.CloseStream(m_recvSocket, m_resid.c_str());
 	if (m_recvSocket != NULL)
 	{
 		delete m_recvSocket;
 		m_recvSocket = NULL;
 	}
-
-	return J_OK;
-}
-
-int CJoChannel::SendCommand(const char *pCommand)
-{
-	J_OS::CTCPSocket cmdSocket(m_pAdapter->GetRemoteIp(),
-			m_pAdapter->GetRemotePort());
-	if (cmdSocket.GetHandle() == -1)
-		return J_INVALID_DEV;
-
-	if (cmdSocket.Write((char*)pCommand, strlen(pCommand)) < 0)
-		return J_INVALID_DEV;
 
 	return J_OK;
 }
