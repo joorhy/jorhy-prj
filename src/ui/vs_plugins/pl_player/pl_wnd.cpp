@@ -12,24 +12,24 @@
 // CPlayWnd
 IMPLEMENT_DYNAMIC(CPlWnd, CWnd)
 
-UINT CPlWnd::m_nFocus = 1;
+UINT CPlWnd::m_nFocus = 0;
 int CPlWnd::m_nNowShowWnd = 0;
 DWORD CPlWnd::m_MouseHookThreadId = 0;
 
 CPlWnd::CPlWnd(HWND hParent, UINT nID)
-: CWnd()
+//: CWnd()
 {
+	m_hParent = hParent;
 	m_hBkg.LoadBitmap(IDB_BACKGROUND);
 	m_bFullScreen		= FALSE;
 	m_nFullModel		= FULL_PLUGIN;
 	m_bTrack				= TRUE;
 	m_bOver				= FALSE;
 	m_Tool					= NULL;
+	m_FullWnd			= NULL;
 	m_Last_WM_MOUSEMOVE_Pos = 0;
 	bEraseOwn			= TRUE;
-	m_FullWnd = dynamic_cast<PlFullScreen *>(CPlFactoryWnd::Instance()->GetWindow("f_play", NULL, IDF_SCREEN));
-	ASSERT(m_FullWnd != NULL);
-	m_nFocus = 1;
+	m_nFocus = 0;
 
 	memset(&m_PlayerParm, 0, sizeof(m_PlayerParm));
 	m_PlayerParm.pSound					= FALSE;
@@ -41,13 +41,13 @@ CPlWnd::~CPlWnd()
 {
 	if(NULL != m_FullWnd)
 	{
-		CPlFactoryWnd::Instance()->DelWindow(IDF_SCREEN);
+		CPlFactoryWnd::Instance()->DelWindow(NULL, IDF_SCREEN);
 		m_FullWnd = NULL;
 	}
 
 	if(m_Tool != NULL)
 	{
-		CPlFactoryWnd::Instance()->DelWindow(IDT_TOOL);
+		CPlFactoryWnd::Instance()->DelWindow(m_hParent, (UINT)m_hParent);
 		m_Tool = NULL;
 	}
 }
@@ -95,7 +95,7 @@ void CPlWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 			m_bFullScreen = TRUE;
 		}
 	}
-	PostMessage(WM_OWN_SETFOCUS);
+	SendMessage(WM_OWN_SETFOCUS);
 	CWnd::OnLButtonDblClk(nFlags, point);
 }
 
@@ -142,6 +142,7 @@ void CPlWnd::DrawBorder(CPen *pen)
 	wndDC->LineTo(rect.left+1,rect.bottom+1);
 	wndDC->LineTo(rect.left+1,rect.top+1);
 	wndDC->SelectObject(oldpen);
+	oldpen->DeleteObject();
 	ReleaseDC(wndDC);
 }
 
@@ -221,7 +222,6 @@ HWND CPlWnd::GetFocusWnd()
 void CPlWnd::OnPaint()
 {
 	CPaintDC dc(this); 
-	
 	if(m_nFocus == GetWindowLong(this->m_hWnd,GWL_ID))
 	{
 		CPen pen = CPen(PS_SOLID,2,RGB(255,0,0));
@@ -252,10 +252,10 @@ void CPlWnd::OnMouseMove(UINT nFlags, CPoint point)
 	CWnd::OnMouseMove(nFlags, point);
 }
 
-void CPlWnd::OnMouseLeave()
+/*void CPlWnd::OnMouseLeave()
 {
 	m_Tool->ShowControls(m_PlayerParm.bNeedShowCTRL);
-}
+}*/
 
 //MouseHook
 void CPlWnd::MouseHook(bool bSetHook)
@@ -332,6 +332,7 @@ LRESULT CPlWnd::SetWndFocus(WPARAM wParam,LPARAM lParam)
 	DeleteObject(pen);
 
 	HWND hOld= ::GetDlgItem(GetParent()->m_hWnd, m_nFocus); 
+	::SetFocus(this->m_hWnd);
 	//»Øµ÷
 	int nIdWnd = GetWindowLong(this->m_hWnd, GWL_ID);
 	if(nIdWnd != m_nFocus)

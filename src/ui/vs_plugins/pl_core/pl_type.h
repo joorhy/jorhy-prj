@@ -76,7 +76,7 @@ typedef int BOOL;
 #define ALL_WINDOW 2
 
 //Reconnect Parameter 
-#define WAITSTATUS_TIME (2*1000)		//Time Interval
+#define WAITSTATUS_TIME (5000)		//Time Interval
 #define RESIZE_TIME		(100)		//Time Interval
 #define MAX_POINTNUM 3			//point number
 #define FONT_TYPE "宋体"		//字体
@@ -122,4 +122,19 @@ enum video_type
 {
 	HIK_VIDEO = 0,		//海康的视屏
 	VLC_VIDEO ,			//标准的视屏
+};
+
+struct WindowKey
+{
+	HWND hWnd;
+	UINT nId;
+	bool operator<(const WindowKey &other) const 
+	{
+		bool b_ret = true;
+		if (hWnd != other.hWnd)
+			b_ret = (hWnd < other.hWnd);
+		else
+			b_ret = (nId < other.nId);
+		return b_ret;
+	}
 };

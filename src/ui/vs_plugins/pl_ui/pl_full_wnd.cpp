@@ -54,7 +54,6 @@ void CPlFullWnd::onFullScreen(HWND hNeedFullWnd)
 		::ShowWindow(hNeedFullWnd,SW_SHOWMAXIMIZED);
 		::SetFocus(hNeedFullWnd);
 		ShowWindow(SW_SHOW);
-
 	}
 }
 

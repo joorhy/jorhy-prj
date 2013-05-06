@@ -87,7 +87,7 @@ VlcPlayer::VlcPlayer(int nWorkMode,  HWND hWnd)
 	m_Model		= nWorkMode;
 	m_manager	= NULL;
 	m_play		= NULL;
-	if(NULL == m_pInstance)
+	if (m_pInstance == NULL)
 		InitPlay();
 	m_nSpeedIndex = NORMALSPEED;
 	m_times		= 0;
@@ -97,6 +97,8 @@ VlcPlayer::VlcPlayer(int nWorkMode,  HWND hWnd)
 
 VlcPlayer::~VlcPlayer(void)
 {
+	//if (m_pInstance)
+	//	libvlc_free(m_pInstance);
 }
 
 void VlcPlayer::InitPlay()
@@ -104,19 +106,20 @@ void VlcPlayer::InitPlay()
 	if(m_Model == STREAME_REALTIME)
 		m_pInstance = libvlc_new(sizeof(real_args) / sizeof(char *), real_args);
 	else
-	{
 		m_pInstance = libvlc_new(sizeof(vod_args) / sizeof(char *), vod_args);
-	}
 }
 
 BOOL VlcPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 {
 	if(NULL == m_pInstance)
 		return FALSE;
+
+	m_pPlWnd = hPlayWnd;
 	if(m_play != NULL)
 	{
 		Stop();
 	}
+
 	libvlc_media_t *media= libvlc_media_new_location(m_pInstance, playInfo.pUrl);
 	m_play = libvlc_media_player_new_from_media(media);
 	libvlc_video_set_key_input(m_play,FALSE);
@@ -151,6 +154,9 @@ BOOL VlcPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 			break;
 		}
 	}	
+	//if (bRet)
+	//	SetPlayingState();
+
 	return bRet;
 }
 
@@ -162,6 +168,8 @@ void VlcPlayer::Stop()
 	libvlc_media_player_set_hwnd(m_play,NULL);
 	libvlc_media_player_stop(m_play);
 	libvlc_media_player_release(m_play);
+	//libvlc_free(m_pInstance);
+	//m_pInstance = NULL;
 	m_play = NULL;
 }
 
@@ -329,13 +337,14 @@ void VlcPlayer::SetWndStyle(BOOL bSetStyle)
 		PostMessage(hMPWnd,WM_TRY_SET_MOUSE_HOOK,bSetStyle,0);
 }
 
-void VlcPlayer::Play()
+BOOL VlcPlayer::RePlay()
 {
 	if(m_play != NULL)
 	{
 		libvlc_media_player_stop(m_play);
 		libvlc_media_player_play(m_play);
 	}
+	return TRUE;
 }
 
 void VlcPlayer::AspectRatio(int width,int height)

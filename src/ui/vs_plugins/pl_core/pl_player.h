@@ -54,7 +54,7 @@ struct PlPlayer : public PlObj
 {
 	///播放
 	virtual BOOL Play(HWND hPlayWnd, const PL_PlayInfo &playInfo) = 0;
-	virtual void	Play() = 0;								//断线重播
+	virtual BOOL	RePlay() = 0;								//断线重播
 	virtual void	Stop() = 0;							//如果在播放，会停止当前播放，并开始新的播放
 	virtual void	Pause() = 0;
 	virtual void	PlayOneByOne() = 0;

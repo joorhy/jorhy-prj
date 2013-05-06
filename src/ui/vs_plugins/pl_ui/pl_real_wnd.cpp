@@ -15,8 +15,8 @@ double CPlRealWnd::m_arrAreaAgl[4] = {atan(double(1.0/3)),atan(double(3.0/1)),
 // CRPlayWnd
 IMPLEMENT_DYNAMIC(CPlRealWnd, CWnd)
 CPlRealWnd::CPlRealWnd(HWND hParent,UINT nID)
-//: CPlWnd(hParent, nID)
 {
+	m_hParent = hParent;
 	LPCTSTR lpWndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 											NULL,
 											(HBRUSH)GetStockObject(BLACK_BRUSH),
@@ -26,7 +26,7 @@ CPlRealWnd::CPlRealWnd(HWND hParent,UINT nID)
 	CreateEx(NULL,lpWndClass,wndName,
 		WS_CHILD | WS_VISIBLE | WS_BORDER | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
 		0,0,0,0,hParent ,(HMENU)nID);	
-	InitParm();
+	//InitParm();
 }
 
 CPlRealWnd::~CPlRealWnd()
@@ -51,15 +51,27 @@ BEGIN_MESSAGE_MAP(CPlRealWnd, CWnd)
 	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
-void CPlRealWnd::InitParm()
+void CPlRealWnd::Init()
 {
 	m_nowCusID = -1;
+	if (m_FullWnd == NULL)
+	{
+		m_FullWnd = dynamic_cast<PlFullScreen *>(CPlFactoryWnd::Instance()->GetWindow("f_play", NULL, IDF_SCREEN));
+		ASSERT(m_FullWnd != NULL);
+	}
+
 	if (m_Tool == NULL)
 	{
-		m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
+		CWnd *pWnd = CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, (UINT)m_hParent);
+		m_Tool = dynamic_cast<PlToolWin *>(pWnd);
+		//m_Tool = (PlToolWin *)(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, (UINT)m_hParent));
 		ASSERT(m_Tool != NULL);
 		m_Tool->SetModel(STREAME_REALTIME);
-		//m_Tool->AttachPlayer(&m_PlayerParm, this);
+		m_Tool->AttachPlayer(NULL, this);
+	}
+	else
+	{
+		m_Tool->AttachPlayer(NULL, this);
 	}
 
 	m_DobWMTime = 0;

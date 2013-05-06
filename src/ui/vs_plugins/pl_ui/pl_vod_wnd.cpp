@@ -11,6 +11,7 @@ IMPLEMENT_DYNAMIC(CPlVodWnd, CWnd)
 CPlVodWnd::CPlVodWnd(HWND hParent, UINT nID)
 //: CPlWnd(hParent, nID)
 {
+	m_hParent = hParent;
 	LPCTSTR lpWndClass = AfxRegisterWndClass(CS_DBLCLKS, 
 											NULL,
 											(HBRUSH)GetStockObject(BLACK_BRUSH),
@@ -20,15 +21,19 @@ CPlVodWnd::CPlVodWnd(HWND hParent, UINT nID)
 	CreateEx(NULL,lpWndClass,wndName,
 		WS_CHILD | WS_VISIBLE | WS_BORDER | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
 		0,0,0,0, hParent ,(HMENU)nID);	
-
-	InitParm();
 }
 
-void CPlVodWnd::InitParm()
+void CPlVodWnd::Init()
 {
+	if (m_FullWnd == NULL)
+	{
+		m_FullWnd = dynamic_cast<PlFullScreen *>(CPlFactoryWnd::Instance()->GetWindow("f_play", NULL, IDF_SCREEN));
+		ASSERT(m_FullWnd != NULL);
+	}
+
 	if(NULL == m_Tool)
 	{
-		m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, IDT_TOOL));
+		m_Tool = dynamic_cast<PlToolWin *>(CPlFactoryWnd::Instance()->GetWindow("t_play", m_hWnd, (UINT)m_hParent));
 		ASSERT(m_Tool != NULL);
 		m_Tool->SetModel(STREAME_FILE);
 		//m_Tool->AttachPlayer(&m_PlayerParm, this);

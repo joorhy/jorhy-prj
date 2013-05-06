@@ -50,6 +50,7 @@ public:
 	bool SetWorkModel(char *js_workmodel,NPVariant *result);
 	bool Play(char *js_playInfo,NPVariant *result);
 	bool ChangeLayout(char *js_layout,NPVariant *result);
+	bool ChangePath(char *js_path,NPVariant *result);
 	bool SetLayout();
 	bool StopAllPlay(NPVariant *result);
 	bool VodPlayJump(char *js_time,NPVariant *result);

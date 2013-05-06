@@ -20,11 +20,9 @@ public:
 		pObj = new CPlVodWnd(hParent, nID);
 		return PL_OK;
 	}
+	void Init();
 protected:
 	DECLARE_MESSAGE_MAP()
-
-private:
-	void InitParm();
 
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

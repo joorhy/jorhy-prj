@@ -37,7 +37,7 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 		char *js_parm	= NULL;
 		switch (cmd)
 		{
-		case 1:case 2:case 21:case 23:case 11:
+		case 1:case 2:case 5:case 21:case 23:case 11:
 			{
 				NPString jsonStr= NPVARIANT_TO_STRING(args[1]);
 				js_parm		= new char[jsonStr.utf8length + 1];
@@ -53,6 +53,9 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 			break;
 		case 2:		//改变布局
 			bRet = pPlugin->ChangeLayout(js_parm,result);
+			break;
+		case 5:		//改变存储路径
+			bRet = pPlugin->ChangePath(js_parm,result);
 			break;
 		case 21:	//打开历史流
 			bRet = pPlugin->Play(js_parm,result);

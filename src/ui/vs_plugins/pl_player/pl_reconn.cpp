@@ -85,7 +85,8 @@ void CWaitStatus::OnTimer(UINT_PTR nIDEvent)
 		if(!(PlManager::Instance()->IsPlaying(m_pPlWnd)))
 		{
 			DrawStatus();
-			PlManager::Instance()->Play(m_pPlWnd);			//重连
+			if (PlManager::Instance()->RePlay(m_pPlWnd))
+				OnOK();//重连
 		}
 		else
 		{
@@ -129,6 +130,7 @@ void CWaitStatus::DrawStatus()
 			&rect,DT_LEFT | DT_VCENTER | DT_SINGLELINE);
 	}
 	dc.SelectObject(oldFont);
+	oldFont->DeleteObject();
 }
 void CWaitStatus::OnBnClickedOk()
 {

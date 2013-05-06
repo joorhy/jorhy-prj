@@ -20,15 +20,16 @@ CWnd *CPlFactoryWnd::GetWindow(const char *pType, HWND hParent, UINT nId)
 {
 	m_lock.Lock();
 	CWnd *hWnd = NULL;
-	WindowMap::iterator it = m_wndMap.find(nId);
+	m_key.hWnd = hParent;
+	m_key.nId = nId;
+	if (memcmp(pType, "t_play", 6) == 0)
+		m_key.hWnd = (HWND)nId;
+
+	WindowMap::iterator it = m_wndMap.find(m_key);
 	if (it == m_wndMap.end())
 	{
 		WindowRegistMap::iterator itWnd = m_wndRegistMap.find(pType);
-		if (itWnd == m_wndRegistMap.end())
-		{
-			//J_OS::LOGINFO("CFilterFactory::GetFilter Filter not registed, filterType = %s", pType);
-		}
-		else
+		if (itWnd != m_wndRegistMap.end())
 		{
 			itWnd->second(hWnd, hParent, nId);
 		}
@@ -38,7 +39,7 @@ CWnd *CPlFactoryWnd::GetWindow(const char *pType, HWND hParent, UINT nId)
 			PL_WndInfo info = {0};
 			info.pWnd = hWnd;
 			info.nRef = 1;
-			m_wndMap[nId] = info;
+			m_wndMap[m_key] = info;
 		}
 	}
 	else
@@ -52,10 +53,12 @@ CWnd *CPlFactoryWnd::GetWindow(const char *pType, HWND hParent, UINT nId)
 	return hWnd;
 }
 
-void CPlFactoryWnd::DelWindow(int nId)
+void CPlFactoryWnd::DelWindow(HWND hParent, UINT nId)
 {
 	m_lock.Lock();
-	WindowMap::iterator it = m_wndMap.find(nId);
+	m_key.hWnd = hParent;
+	m_key.nId = nId;
+	WindowMap::iterator it = m_wndMap.find(m_key);
 	if (it != m_wndMap.end())
 	{
 		--it->second.nRef;

@@ -16,6 +16,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	static UINT m_nFocus;		//目前的焦点窗口
+	HWND	m_hParent;
 	PlFullScreen *m_FullWnd;
 	PlToolWin *m_Tool;
 	static int m_nNowShowWnd;
@@ -45,10 +46,11 @@ public:
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	afx_msg void OnPaint();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnMouseLeave();
+	//afx_msg void OnMouseLeave();
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 public:
+	virtual void Init() = 0;
 	void DrawBorder(CPen *pen);
 	void SetFullModel(UINT nType);
 	void ShowAllWindowEpt(HWND hWnd,int nCmdShow);

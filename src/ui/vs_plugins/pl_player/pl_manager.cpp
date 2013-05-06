@@ -21,10 +21,25 @@ PlManager::~PlManager(void)
 
 BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end() && it->second.bPlay)
 	{
-		Stop(it->first);
+		SendMessage(hWnd, WM_OWN_ERASEBKGROUND,TRUE,0);
+		it->second.pPlayer->Stop();
+		CPlFactory::Instance()->DelPlayer(hWnd);
+		it->second.bPlay = FALSE;
+
+		m_nPlayNum--;
+		m_nVodEndTime = 0;
+		if(m_nPlayNum == 0)
+		{
+			int args[2];
+			args[0] = 1;
+			args[1] = (int)"null";
+
+			NotifyNpn(hWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
+		}
 	}
 
 	BOOL bRet;
@@ -44,7 +59,10 @@ BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 			it->second.pPlayer = CPlFactory::Instance()->GetPlayer("pl_vlc", playInfo.nPlayMode, this, hWnd);
 		break;
 	default:
-		return FALSE;
+		{
+			m_locker.Unlock();
+			return FALSE;
+		}
 	}
 
 	if(it->second.pPlayer)
@@ -66,6 +84,7 @@ BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 			VodCallBack(hWnd);
 		}
 	}
+	m_locker.Unlock();
 
 	return bRet;
 }
@@ -94,6 +113,8 @@ void PlManager::CreateMrl(const PL_PlayInfo &playInfo)
 
 BOOL PlManager::Capture(HWND hWnd, char *pPath)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
@@ -111,39 +132,48 @@ BOOL PlManager::Capture(HWND hWnd, char *pPath)
 			tm_locatime->tm_sec);
 		strcat(path_name, pPath);
 		strcat(path_name, locatime);
-
-		return it->second.pPlayer->Capture(path_name);
+		bRet = it->second.pPlayer->Capture(path_name);
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
 BOOL PlManager::SetSpeed(HWND hWnd, BOOL bSpeedUp)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		return it->second.pPlayer->SetSpeed(bSpeedUp);
+		bRet = it->second.pPlayer->SetSpeed(bSpeedUp);
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
 BOOL PlManager::Record(HWND hWnd, char *pPath)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		return it->second.pPlayer->Record(pPath);
+		bRet = it->second.pPlayer->Record(pPath);
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
 void PlManager::Stop(HWND hWnd)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end() && it->second.bPlay)
 	{
 		SendMessage(hWnd, WM_OWN_ERASEBKGROUND,TRUE,0);
 		it->second.pPlayer->Stop();
+		CPlFactory::Instance()->DelPlayer(hWnd);
+		it->second.bPlay = FALSE;
 
 		m_nPlayNum--;
 		m_nVodEndTime = 0;
@@ -155,64 +185,72 @@ void PlManager::Stop(HWND hWnd)
 
 			NotifyNpn(hWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
 		}
-		CPlFactory::Instance()->DelPlayer(hWnd);
-		it->second.bPlay = FALSE;
 	}
+	m_locker.Unlock();
 	return;
 }
 
 void PlManager::Pause(HWND hWnd)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
-	{
-		return it->second.pPlayer->Pause();
-	}
+		it->second.pPlayer->Pause();
+	
+	m_locker.Unlock();
 	return;
 }
 
 void PlManager::PlayOneByOne(HWND hWnd)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
-	{
-		return it->second.pPlayer->PlayOneByOne();
-	}
+		 it->second.pPlayer->PlayOneByOne();
+
+	m_locker.Unlock();
 	return;
 }
 
 int PlManager::GetVolume(HWND hWnd)
 {
+	m_locker.Lock();
+	int nRet = -1;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
-	{
-		return it->second.pPlayer->GetVolume();
-	}
-	return -1;
+		nRet = it->second.pPlayer->GetVolume();
+	
+	m_locker.Unlock();
+	return nRet;
 }
 
 BOOL PlManager::SetVolume(HWND hWnd, int nVolume)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
-	{
-		return it->second.pPlayer->SetVolume(nVolume);
-	}
-	return FALSE;
+		bRet = it->second.pPlayer->SetVolume(nVolume);
+
+	m_locker.Unlock();
+	return bRet;
 }
 
 BOOL PlManager::IsPlaying(HWND hWnd)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end() && it->second.bPlay)
-	{
-		return it->second.pPlayer->IsPlaying();
-	}
-	return FALSE;
+		bRet = it->second.pPlayer->IsPlaying();
+
+	m_locker.Unlock();
+	return bRet;
 }
 
 void PlManager::VodCallBack(HWND hWnd)
 {
+	//m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
@@ -220,12 +258,14 @@ void PlManager::VodCallBack(HWND hWnd)
 		if(it->second.dwPlayTime > m_nVodEndTime)
 		{
 			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
+			//m_locker.Unlock();
 			return;
 		}
 		args[0] = (int)&it->second.dwPlayTime;
 		++it->second.dwPlayTime;
 		NotifyNpn(hWnd, CALLBACK_ONVOD, args, sizeof(args)/sizeof(int));
 	}
+	//m_locker.Unlock();
 	return;
 }
 
@@ -241,45 +281,62 @@ BOOL PlManager::RegisterCallBack(NpnNotifyFunc funcAddr)
 
 void PlManager::NotifyNpn(HWND hWnd, UINT nType, int args[], UINT argCount)
 {
+	//m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		if(NULL == m_pFuncCallBk || NULL == it->second.pUser) 
+		{
+			//m_locker.Unlock();
 			return;
+		}
 		else
 			m_pFuncCallBk(it->second.pUser, nType, args, argCount);
 	}
+	//m_locker.Unlock();
 }
 
 BOOL PlManager::GetWndPlayParm(HWND hWnd, char *pPlayerParm)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		PlJsonParser::Instance()->MakeWndParam(it->second.playInfo, pPlayerParm);
-		return  TRUE;
+		bRet = TRUE;
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
 BOOL PlManager::GetPlayInfo(HWND hWnd, PL_PlayInfo &playInfo)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		playInfo = it->second.playInfo;
-		return  TRUE;
+		bRet = TRUE;
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
 BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		if(!IsPlaying(hWnd))
+		
+		if(!it->second.pPlayer->IsPlaying())
+		{
+			m_locker.Unlock();
 			return TRUE;
+		}
 		
 		if (playInfo.nStartTime > it->second.playInfo.nEndTime)		//超出结束时间就停止
 		{
@@ -289,31 +346,39 @@ BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 		it->second.playInfo.nStartTime = playInfo.nStartTime;
 		it->second.dwPlayTime = playInfo.nStartTime;
 		CreateMrl(it->second.playInfo);
-		return it->second.pPlayer->VodStreamJump(it->second.playInfo);
+		bRet = it->second.pPlayer->VodStreamJump(it->second.playInfo);
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
-void PlManager::Play(HWND hWnd)
+BOOL PlManager::RePlay(HWND hWnd)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
-	{
-		return it->second.pPlayer->Play();
-	}
+		bRet = it->second.pPlayer->RePlay();
+
+	m_locker.Unlock();
+	return bRet;
 }
 
 HWND PlManager::GetRecntWnd(HWND hWnd)
 {
+	m_locker.Lock();
+	HWND hRet = NULL;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
-	{
-		return it->second.pReconnWnd->m_hWnd;
-	}
+		hRet = it->second.pReconnWnd->m_hWnd;
+	
+	m_locker.Unlock();
+	return hRet;
 }
 
 void PlManager::StatusCallBack(HWND hPlayWnd)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hPlayWnd);
 	if (it != m_playerMap.end())
 	{
@@ -324,10 +389,12 @@ void PlManager::StatusCallBack(HWND hPlayWnd)
 		args[1] = (int)pJsStr;
 		NotifyNpn(hPlayWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
 	}
+	m_locker.Unlock();
 }
 
 BOOL PlManager::SetUserData(HWND hWnd, void *pUser)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
@@ -339,48 +406,59 @@ BOOL PlManager::SetUserData(HWND hWnd, void *pUser)
 		info.pUser = pUser;
 		m_playerMap[hWnd] = info;
 	}
+	m_locker.Unlock();
 
 	return TRUE;
 }
 
 BOOL PlManager::SetOsdText(HWND hWnd, int stime,char *osdtext)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		if (it->second.bPlay)
-			it->second.pPlayer->SetOSDText(stime,osdtext);
+			bRet = it->second.pPlayer->SetOSDText(stime,osdtext);
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
 BOOL PlManager::IsPaused(HWND hWnd)
 {
+	m_locker.Lock();
+	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		if (it->second.bPlay)
-			it->second.pPlayer->IsPaused();
+			bRet = it->second.pPlayer->IsPaused();
 	}
-	return FALSE;
+	m_locker.Unlock();
+	return bRet;
 }
 
 void PlManager::AspectRatio(HWND hWnd, int width,int height)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		if (it->second.bPlay)
 			it->second.pPlayer->AspectRatio(width,height);
 	}
+	m_locker.Unlock();
 }
 
 void PlManager::SleepPlayer(HWND hWnd, bool bSleep)
 {
+	m_locker.Lock();
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
 		if (it->second.bPlay)
 			it->second.pPlayer->SleepPlayer(bSleep);
 	}
+	m_locker.Unlock();
 }
