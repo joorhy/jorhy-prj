@@ -69,19 +69,24 @@ int CJoStream::OnRead(int nfd)
     }
 
     TLock(m_locker);
-    int	nLen = recv(nfd, m_pRecvBuff, 4, MSG_WAITALL);
+	J_DataHead head = {0};
+    int	nLen = recv(nfd, &head, sizeof(head), MSG_WAITALL);
     if (nLen < 0)
     {
         J_OS::LOGERROR("CJoStream::OnRead recv data error");
         TUnlock(m_locker);
         return J_SOCKET_ERROR;
     }
-	int nLength = ((m_pRecvBuff[2] & 0xFF) << 8) + (m_pRecvBuff[3] & 0xFF);
-	nLen = recv(nfd, m_pRecvBuff + 4, nLength, MSG_WAITALL);
+	int nLength = ntohl(head.data_len);
+	nLen = recv(nfd, m_pRecvBuff, nLength, MSG_WAITALL);
     if (nLen > 0)
     {
         int nRet = 0;
-		J_StreamHeader streamHeader;
+		J_StreamHeader streamHeader = {0};
+		streamHeader.timeStamp = head.time_stamp;
+		streamHeader.frameType = head.frame_type;
+		streamHeader.dataLen = nLength;
+		streamHeader.frameNum = head.frame_seq;
 		if (nRet == J_OK)
 		{
 			TLock(m_vecLocker);
