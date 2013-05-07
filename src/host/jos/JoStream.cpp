@@ -17,13 +17,11 @@ CJoStream::CJoStream(void *pTCPSocket, std::string resid)
 	if (NULL == m_pRecvBuff)
 		m_pRecvBuff = new char[RECV_SIZE];
 
-	//m_parser.Init();
 	J_OS::LOGINFO("CJoStream::CJoStream create this = %d", this);
 }
 
 CJoStream::~CJoStream()
 {
-	//m_parser.Deinit();
 	if (m_pRecvBuff != NULL)
 	{
 		delete m_pRecvBuff;
@@ -82,18 +80,14 @@ int CJoStream::OnRead(int nfd)
 	nLen = recv(nfd, m_pRecvBuff + 4, nLength, MSG_WAITALL);
     if (nLen > 0)
     {
-       // m_parser.InputData(m_pRecvBuff, nLength + 4);
         int nRet = 0;
 		J_StreamHeader streamHeader;
-		//nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
 		if (nRet == J_OK)
 		{
 			TLock(m_vecLocker);
 			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
 			for (; it != m_vecRingBuffer.end(); it++)
 			{
-				//J_OS::LOGINFO("begin %lld,%lld", streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
-				//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
 				(*it)->PushBuffer(m_pRecvBuff, streamHeader);
 			}
 			TUnlock(m_vecLocker);
@@ -117,7 +111,6 @@ int CJoStream::OnBroken(int nfd)
     std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
     for (; it != m_vecRingBuffer.end(); it++)
     {
-        //J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
         (*it)->PushBuffer(m_pRecvBuff, streamHeader);
     }
     TUnlock(m_vecLocker);
