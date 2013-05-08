@@ -32,6 +32,8 @@ char *HttpCommunicate(char *body,char *uri)
 	switch(ret_val)
 	{
 	case 200:	resrvdata = ghttp_get_body(conntoserv);
+				if (resrvdata == NULL)
+					return NULL;
 				ret_data = new char[strlen(resrvdata) + 1];
 				memset(ret_data, 0, strlen(resrvdata) + 1);
 				strncpy(ret_data, resrvdata, ghttp_get_body_len(conntoserv));

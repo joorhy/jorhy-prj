@@ -80,6 +80,20 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
         TUnlock(m_locker);
 		return J_OK;
 	}
+	else
+	{
+		//增加平台设备
+		J_DeviceInfo devInfo = {0};
+		strcpy(devInfo.devType, "joh");
+		devInfo.devStatus = jo_dev_broken;
+		devList.push_back(devInfo);
+
+		//free(regInfo);
+		//regInfo = NULL;
+
+        TUnlock(m_locker);
+		return J_OK;
+	}
 	TUnlock(m_locker);
 	return J_DB_ERROR;
 }

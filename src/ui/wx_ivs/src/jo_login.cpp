@@ -24,7 +24,7 @@ CLoginDlg::CLoginDlg(wxDialog *parent, const wxString &title)
     wxGridBagSizer *bCtrlSizer = new  wxGridBagSizer(3, 4);
     ///服务器信息
     m_staticTextServer = new wxStaticText(this, wxID_ANY, wxT("     服务器"), wxDefaultPosition, wxSize(100, -1), wxALIGN_RIGHT);
-    m_textServer = new wxTextCtrl(this, wxID_ANY, wxT("192.168.1.53"), wxDefaultPosition, wxSize(200, -1), wxALIGN_LEFT);
+    m_textServer = new wxTextCtrl(this, wxID_ANY, wxT("192.168.1.106"), wxDefaultPosition, wxSize(200, -1), wxALIGN_LEFT);
     bCtrlSizer->Add(m_staticTextServer, wxGBPosition(0, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
     bCtrlSizer->Add(m_textServer, wxGBPosition(0, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL |  wxALIGN_RIGHT);
 

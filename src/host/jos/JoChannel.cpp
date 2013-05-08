@@ -90,8 +90,12 @@ int CJoChannel::StartView()
 	J_DeviceInfo info = {0};
 	if (CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
 		return J_INVALID_DEV;
+	//strcpy(info.devIp, "192.168.1.6");
+	info.devPort = 8002;
+	
 	m_recvSocket = new J_OS::CTCPSocket();
 	m_recvSocket->Connect(info.devIp, info.devPort);
+	//m_recvSocket->Connect("192.168.1.6", 8002);
 
 	if (m_jospHelper.OpenStream(m_recvSocket, m_resid.c_str(), m_nStreamType) != J_OK)
 	{

@@ -135,7 +135,7 @@ int CXReciver::StartView(const char *pResid, int nStreamType)
 	char write_buff[1024] = {0};
 	MakeHeader(write_buff, NULL, jo_open_stream_req, jo_intact_pack, 0, sizeof(J_RealViewData));
 	J_RealViewData *pRealViewData = (J_RealViewData *)(write_buff + sizeof(J_CtrlHead));
-	memcpy(pRealViewData->res_id, pResid, strlen(pResid));
+	memcpy(pRealViewData->res_id, "49"/*pResid*/, 2/*strlen(pResid)*/);
 	pRealViewData->stream_type = nStreamType;
 	
 	m_sock->Write(write_buff, sizeof(J_CtrlHead) + sizeof(J_RealViewData));

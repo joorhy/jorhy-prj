@@ -4,6 +4,10 @@
 #include "x_msg_queue.h"
 #include "x_media_msg.h"
 #include "x_time.h"
+extern "C"
+{
+#include "x_inet.h"
+}
 
 #define RECV_SIZE (1024 * 1024)
 CJoStream::CJoStream(void *pTCPSocket, std::string resid)
@@ -83,10 +87,10 @@ int CJoStream::OnRead(int nfd)
     {
         int nRet = 0;
 		J_StreamHeader streamHeader = {0};
-		streamHeader.timeStamp = head.time_stamp;
-		streamHeader.frameType = head.frame_type;
+		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);//ntohll(head.time_stamp);
+		streamHeader.frameType = ntohl(head.frame_type);
 		streamHeader.dataLen = nLength;
-		streamHeader.frameNum = head.frame_seq;
+		streamHeader.frameNum = ntohl(head.frame_seq);
 		if (nRet == J_OK)
 		{
 			TLock(m_vecLocker);

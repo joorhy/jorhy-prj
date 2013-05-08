@@ -11,8 +11,8 @@ class CJospHelper
 		~CJospHelper();
 		
 	public:
-		int OpenStream(J_OS::CTCPSocket *m_recvSocket, const char *pResid, int nStreamType);
-		void CloseStream(J_OS::CTCPSocket *m_recvSocket, const char *pResid);
+		int OpenStream(J_OS::CTCPSocket *recvSocket, const char *pResid, int nStreamType);
+		void CloseStream(J_OS::CTCPSocket *recvSocket, const char *pResid);
 		
 	private:
 		int MakeHeader(char *pBuff, char *pUserID, unsigned char byCmd, unsigned char byFlag, unsigned short sqNum, unsigned short exLength, unsigned char byRet = 0x00);
