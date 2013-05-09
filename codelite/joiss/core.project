@@ -12,7 +12,6 @@
     <File Name="../../src/core/x_media_msg.cpp"/>
     <File Name="../../src/core/x_msg_queue.cpp"/>
     <File Name="../../src/core/x_ping.cpp"/>
-    <File Name="../../src/core/x_ringbuffer.cpp"/>
     <File Name="../../src/core/x_socket.cpp"/>
     <File Name="../../src/core/x_string.cpp"/>
     <File Name="../../src/core/x_thread_pool.cpp"/>

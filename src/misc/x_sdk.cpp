@@ -32,6 +32,8 @@ char *HttpCommunicate(char *body,char *uri)
 	switch(ret_val)
 	{
 	case 200:	resrvdata = ghttp_get_body(conntoserv);
+				if (resrvdata == NULL)
+					return NULL;
 				ret_data = new char[strlen(resrvdata) + 1];
 				memset(ret_data, 0, strlen(resrvdata) + 1);
 				strncpy(ret_data, resrvdata, ghttp_get_body_len(conntoserv));
@@ -193,15 +195,91 @@ r_register *StreamServerResgister(int ssid,char *uri)
 
 r_devconfig *GetDevConfigByResid(char *resid,char *uri)
 {
-	char *json_buf = NULL;
 	r_devconfig *r_data = NULL;
+	if (strstr(resid, ".") != NULL)
+	{
+		//平台相关处理
+		r_data = new r_devconfig;
+		r_data->parm.id 	= 0;
+		r_data->parm.cha	= 0;
+		r_data->rst 		= 0;
+	}
+	else
+	{
+		//站端相关处理
+		char *json_buf = NULL;
+		json_object *json_helper = NULL;
+
+		/*生成发送数据*/
+		json_object *jsojt = json_object_new_object();
+		json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(2));
+		json_object *helpjs = json_object_new_object();
+		json_object_object_add(helpjs,(char *)"id",json_object_new_string(resid));
+		json_object_object_add(jsojt,(char *)"parm",helpjs);
+
+		/*发送并接受数据*/
+		json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
+		json_object_put(jsojt);
+		if(json_buf == NULL)
+		{
+			assert(false);
+			return NULL;
+		}
+
+		/*解析数据*/
+		//json_helper = json_object_new_object();
+		json_helper = json_tokener_parse(json_buf);
+		if(is_error(json_helper))
+		{
+			J_OS::LOGINFO("GetDevConfigByResid json_tokener_parse error");
+			J_OS::LOGINFO("json_data = %s", json_buf);
+			clean_all();
+			return NULL;
+		}
+		r_data = new r_devconfig;
+		r_data->rst = get_int(json_helper, "rst");
+		if (r_data->rst != 0)
+		{
+			J_OS::LOGINFO("json_data = %s", json_buf);
+			clean_all();
+			return NULL;
+		}
+
+		json_helper = get_object(json_helper,(char *)"parm");
+		if(!json_helper)
+		{
+			clean_all();
+			delete r_data;
+			J_OS::LOGINFO("GetDevConfigByResid json_object_object_get error");
+			return NULL;
+		}
+		r_data->parm.id		= get_int(json_helper, "id");
+		r_data->parm.type	= get_string(json_helper, "type");
+		r_data->parm.ip		= get_string(json_helper, "ip");
+		r_data->parm.port	= get_int(json_helper, "port");
+		r_data->parm.user	= get_string(json_helper, "user");
+		r_data->parm.pass	= get_string(json_helper, "pass");
+		r_data->parm.cha	= get_int(json_helper, "cha");
+		r_data->parm.resid	= get_string(json_helper, "resid");
+		r_data->parm.ms		= get_int(json_helper, "ms");
+		r_data->parm.store	= get_int(json_helper, "store");
+		clean_all();
+	}
+
+	return r_data;
+}
+
+r_ssconfig *GetSSConfigByResid(char *resid,char *uri)
+{
+	r_ssconfig *r_data = NULL;
+	char *json_buf = NULL;
 	json_object *json_helper = NULL;
 
 	/*生成发送数据*/
 	json_object *jsojt = json_object_new_object();
-	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(2));
+	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(7));
 	json_object *helpjs = json_object_new_object();
-	json_object_object_add(helpjs,(char *)"id",json_object_new_string(resid));
+	json_object_object_add(helpjs,(char *)"resid",json_object_new_string(resid));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
 
 	/*发送并接受数据*/
@@ -209,25 +287,24 @@ r_devconfig *GetDevConfigByResid(char *resid,char *uri)
 	json_object_put(jsojt);
 	if(json_buf == NULL)
 	{
-	    assert(false);
-	    return NULL;
-    }
+		assert(false);
+		return NULL;
+	}
 
 	/*解析数据*/
-	//json_helper = json_object_new_object();
 	json_helper = json_tokener_parse(json_buf);
 	if(is_error(json_helper))
 	{
-		J_OS::LOGINFO("GetDevConfigByResid json_tokener_parse error");
+		J_OS::LOGINFO("GetSSConfigByResid json_tokener_parse error");
 		J_OS::LOGINFO("json_data = %s", json_buf);
 		clean_all();
 		return NULL;
 	}
-	r_data = new r_devconfig;
+	r_data = new r_ssconfig;
 	r_data->rst = get_int(json_helper, "rst");
 	if (r_data->rst != 0)
 	{
-        J_OS::LOGINFO("json_data = %s", json_buf);
+		J_OS::LOGINFO("json_data = %s", json_buf);
 		clean_all();
 		return NULL;
 	}
@@ -235,21 +312,13 @@ r_devconfig *GetDevConfigByResid(char *resid,char *uri)
 	json_helper = get_object(json_helper,(char *)"parm");
 	if(!json_helper)
 	{
-	    clean_all();
-	    delete r_data;
+		clean_all();
+		delete r_data;
 		J_OS::LOGINFO("GetDevConfigByResid json_object_object_get error");
 		return NULL;
 	}
-	r_data->parm.id		= get_int(json_helper, "id");
-	r_data->parm.type	= get_string(json_helper, "type");
-	r_data->parm.ip		= get_string(json_helper, "ip");
+	r_data->parm.ip		= get_string(json_helper, "ss");
 	r_data->parm.port	= get_int(json_helper, "port");
-	r_data->parm.user	= get_string(json_helper, "user");
-	r_data->parm.pass	= get_string(json_helper, "pass");
-	r_data->parm.cha	= get_int(json_helper, "cha");
-	r_data->parm.resid	= get_string(json_helper, "resid");
-	r_data->parm.ms		= get_int(json_helper, "ms");
-	r_data->parm.store	= get_int(json_helper, "store");
 	clean_all();
 
 	return r_data;

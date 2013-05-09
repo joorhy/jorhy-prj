@@ -274,6 +274,12 @@ struct J_FileReader : virtual public J_Obj
 
 struct J_JoManager : virtual public J_Obj
 {
+	///获取设备信息
+	///@param[in]	pResid 资源标示
+	///@param[out]	devInfo 设备信息
+	///@return 		参见x_error_type.h
+	virtual int GetDeviceInfo(const char *pResid, J_DeviceInfo &devInfo) = 0;
+	
 	///列举所有设备
 	///@param[out]	devList 全部设备信息
 	///@return 		参见x_error_type.h

@@ -36,6 +36,15 @@ r_register
 r_devconfig
 *GetDevConfigByResid(char *resid,char *uri);
 
+/*
+ *describe:获取SS的配置信息，返回值需要释放（delete）string）
+ *arguments:
+ *			resid:资源唯一编码
+ *			uri:通讯的地址
+ *return:配置信息
+ */
+r_ssconfig
+*GetSSConfigByResid(char *resid,char *uri);
 
 /*
  *describe:获取实时点播权

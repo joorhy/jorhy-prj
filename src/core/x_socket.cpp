@@ -280,7 +280,7 @@ int CTCPSocket::Read_n(char *pBuff, int nLen)
 		if (nRet <= 0)
 		{
 			J_OS::LOGERROR("CTCPSocket::Read_n nRead = %d", nRet);
-			if ((errno == EAGAIN && nRet < 0) || errno == EINTR)
+			if ((errno == EAGAIN && nRet < 0) || (errno == EINTR && nRet < 0))
 			{
 				J_OS::LOGERROR("CTCPSocket::Read_n nRead2 = %d", nRet);
 				usleep(10);

@@ -13,6 +13,23 @@ CRemoteManager::~CRemoteManager()
 		free(m_regInfo);
 }
 
+int CRemoteManager::GetDeviceInfo(const char *pResid, J_DeviceInfo &devInfo)
+{
+	r_ssconfig *ssConfig = GetSSConfigByResid((char *)pResid, CXConfig::GetUrl());
+	if (ssConfig == NULL)
+	{
+		J_OS::LOGINFO("CCmsConf::GetDeviceInfo error, resid = %s", pResid);
+		return J_DB_ERROR;
+	}
+
+	memset(&devInfo, 0, sizeof(J_DeviceInfo));
+	strcpy(devInfo.devIp, ssConfig->parm.ip.c_str());
+	devInfo.devPort = ssConfig->parm.port;
+
+	free(ssConfig);
+	return J_OK;
+}
+
 int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 {
     TLock(m_locker);
@@ -51,6 +68,25 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 			devInfo.devStatus = jo_dev_broken;
 			devList.push_back(devInfo);
 		}
+		//增加平台设备
+		J_DeviceInfo devInfo = {0};
+		strcpy(devInfo.devType, "joh");
+		devInfo.devStatus = jo_dev_broken;
+		devList.push_back(devInfo);
+
+		//free(regInfo);
+		//regInfo = NULL;
+
+        TUnlock(m_locker);
+		return J_OK;
+	}
+	else
+	{
+		//增加平台设备
+		J_DeviceInfo devInfo = {0};
+		strcpy(devInfo.devType, "joh");
+		devInfo.devStatus = jo_dev_broken;
+		devList.push_back(devInfo);
 
 		//free(regInfo);
 		//regInfo = NULL;
@@ -64,17 +100,17 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 
 int CRemoteManager::GetChannelInfo(const char *channelId, J_ChannelInfo &channelInfo)
 {
-	r_devconfig *defConfig = GetDevConfigByResid((char *)channelId, CXConfig::GetUrl());
-	if (defConfig == NULL)
+	r_devconfig *devConfig = GetDevConfigByResid((char *)channelId, CXConfig::GetUrl());
+	if (devConfig == NULL)
 	{
 		J_OS::LOGINFO("CCmsConf::GetChannelInfo error, resid = %s", channelId);
 		return J_DB_ERROR;
 	}
 
-	channelInfo.devId = defConfig->parm.id;
-	channelInfo.channelNum = defConfig->parm.cha;
+	channelInfo.devId = devConfig->parm.id;
+	channelInfo.channelNum = devConfig->parm.cha;
 
-	free(defConfig);
+	free(devConfig);
 
 	return J_OK;
 }

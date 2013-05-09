@@ -1,39 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/jorhy/WorkSpace/jorhy-prj/codelite/joies/joies.workspace">
-  <int Value="4" Name="m_selectedTab"/>
+  <int Value="0" Name="m_selectedTab"/>
   <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/codelite/joies/joies.workspace" Name="m_workspaceName"/>
-  <TabInfoArray Name="TabInfoArray">
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/event/joies.cpp" Name="FileName"/>
-      <int Value="10" Name="FirstVisibleLine"/>
-      <int Value="16" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/core/x_iconv.cpp" Name="FileName"/>
-      <int Value="148" Name="FirstVisibleLine"/>
-      <int Value="157" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/goose/gse_config.cpp" Name="FileName"/>
-      <int Value="39" Name="FirstVisibleLine"/>
-      <int Value="41" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/goose/x_gse_scd.cpp" Name="FileName"/>
-      <int Value="49" Name="FirstVisibleLine"/>
-      <int Value="54" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/jorhy/WorkSpace/jorhy-prj/src/goose/x_goose.cpp" Name="FileName"/>
-      <int Value="327" Name="FirstVisibleLine"/>
-      <int Value="329" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-  </TabInfoArray>
+  <TabInfoArray Name="TabInfoArray"/>
   <SerializedObject Name="m_breakpoints">
     <long Value="0" Name="Count"/>
   </SerializedObject>

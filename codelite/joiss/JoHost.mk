@@ -5,7 +5,7 @@
 ## Debug
 ProjectName            :=JoHost
 ConfigurationName      :=Debug
-IntermediateDirectory  :=./Debug
+IntermediateDirectory  :=./Debug/plugins
 OutDir                 := $(IntermediateDirectory)
 WorkspacePath          := "/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss"
 ProjectPath            := "/home/jorhy/WorkSpace/jorhy-prj/codelite/joiss"
@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=root
-Date                   :=05/06/2013
+Date                   :=05/08/2013
 CodeLitePath           :="/home/jorhy/.codelite"
 LinkerName             :=g++
 ArchiveTool            :=ar rcus
@@ -48,7 +48,7 @@ LibPath                := "$(LibraryPathSwitch)."
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects=$(IntermediateDirectory)/jos_JoAdapter$(ObjectSuffix) $(IntermediateDirectory)/jos_JoChannel$(ObjectSuffix) $(IntermediateDirectory)/jos_JoStream$(ObjectSuffix) 
+Objects=$(IntermediateDirectory)/jos_JoAdapter$(ObjectSuffix) $(IntermediateDirectory)/jos_JoChannel$(ObjectSuffix) $(IntermediateDirectory)/jos_JoStream$(ObjectSuffix) $(IntermediateDirectory)/jos_JospHelper$(ObjectSuffix) 
 
 ##
 ## Main Build Targets 
@@ -60,7 +60,7 @@ $(OutputFile): makeDirStep $(Objects)
 	$(SharedObjectLinkerName) $(OutputSwitch)$(OutputFile) $(Objects) $(LibPath) $(Libs) $(LinkOptions)
 
 makeDirStep:
-	@test -d ./Debug || $(MakeDirCommand) ./Debug
+	@test -d ./Debug/plugins || $(MakeDirCommand) ./Debug/plugins
 
 PreBuild:
 
@@ -92,6 +92,14 @@ $(IntermediateDirectory)/jos_JoStream$(DependSuffix): ../../src/host/jos/JoStrea
 $(IntermediateDirectory)/jos_JoStream$(PreprocessSuffix): ../../src/host/jos/JoStream.cpp
 	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/jos_JoStream$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/jos/JoStream.cpp"
 
+$(IntermediateDirectory)/jos_JospHelper$(ObjectSuffix): ../../src/host/jos/JospHelper.cpp $(IntermediateDirectory)/jos_JospHelper$(DependSuffix)
+	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/host/jos/JospHelper.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/jos_JospHelper$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/jos_JospHelper$(DependSuffix): ../../src/host/jos/JospHelper.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/jos_JospHelper$(ObjectSuffix) -MF$(IntermediateDirectory)/jos_JospHelper$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/host/jos/JospHelper.cpp"
+
+$(IntermediateDirectory)/jos_JospHelper$(PreprocessSuffix): ../../src/host/jos/JospHelper.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/jos_JospHelper$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/host/jos/JospHelper.cpp"
+
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
 ##
@@ -107,6 +115,9 @@ clean:
 	$(RM) $(IntermediateDirectory)/jos_JoStream$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/jos_JoStream$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/jos_JoStream$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/jos_JospHelper$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/jos_JospHelper$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/jos_JospHelper$(PreprocessSuffix)
 	$(RM) $(OutputFile)
 
 

@@ -70,6 +70,16 @@ struct r_devconfig
 	}parm;
 };
 
+struct r_ssconfig
+{
+	int rst;			/*命令返回值，0为成功，1资源错误， 2无权限, 3资源不满足, 4暂时锁定*/
+	struct
+	{
+		string ip;			/*编码器ip*/
+		int 	port;		/*编码器端口*/
+	}parm;
+};
+
 struct r_historyfile
 {
 	int rst;			/*命令返回值，0为成功，1资源错误， 2无权限, 3资源不满足, 4暂时锁定*/
