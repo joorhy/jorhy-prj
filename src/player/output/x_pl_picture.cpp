@@ -5,7 +5,6 @@
 #include "png.h"
 extern "C"
 {
-#include "libavcore\imgutils.h"
 #include "libswscale\swscale.h"
 };
 
@@ -46,13 +45,13 @@ J_PL_RESULT CXPlPicture::SavePNG(j_pl_video_format_t &ft,const char *data,j_pl_v
 	if(br != J_PL_NO_ERROR)
 		return br;
 
-	if(av_image_alloc(dst.data,dst.linesize,vt.width,vt.height,PIX_FMT_RGB24,1) < 0)
+	if(av_image_alloc(dst.data,dst.linesize,vt.width,vt.height,PIX_FMT_RGBA,1) < 0)
 	{
 		br = J_PL_ERROR_UNKNOW;
 		goto SavePNG_Error;
 	}
 
-	br = YUV2RGB24(src,dst,vt);
+	br = YUV2RGB32(src,dst,vt);
 	if(br != J_PL_NO_ERROR)
 		goto SavePNG_Error;
 
@@ -78,16 +77,17 @@ J_PL_RESULT CXPlPicture::SaveJPEG(j_pl_video_format_t &ft,const char *data,j_pl_
 	return J_PL_NO_ERROR;
 }
 
-J_PL_RESULT CXPlPicture::YUV2RGB24(AVPicture &src,AVPicture &dst,j_pl_video_out_t &vt)
+J_PL_RESULT CXPlPicture::YUV2RGB32(AVPicture &src,AVPicture &dst,j_pl_video_out_t &vt)
 {
 	SwsContext *sws_ctx = NULL;
 	enum PixelFormat src_pix_fmt = PIX_FMT_NONE;
-	enum PixelFormat dst_pix_fmt = PIX_FMT_RGB24;
+	enum PixelFormat dst_pix_fmt = PIX_FMT_RGBA;
 
 	switch(vt.FourCCType)
 	{
-	case J_PL_CODEC_YV12: src_pix_fmt = PIX_FMT_YUV420P; break;
-
+	case J_PL_CODEC_YV12: case J_PL_CODEC_RGB32:
+		src_pix_fmt = PIX_FMT_YUV420P; 
+		break;
 	default:
 		return J_PL_ERROR_PICTURE_SUPPORT;
 	}
@@ -145,7 +145,7 @@ J_PL_RESULT CXPlPicture::WritePNG(AVPicture &src,j_pl_video_out_t &vt,char *file
 	png_init_io(write_ptr, fp);
 
 	png_set_IHDR(write_ptr, info_ptr, vt.width, vt.height, 8,			//8bitÎ»Éî¶È
-				PNG_COLOR_TYPE_RGB,PNG_INTERLACE_NONE, 
+				PNG_COLOR_TYPE_RGB_ALPHA,PNG_INTERLACE_NONE, 
 				PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 	palette = (png_colorp)png_malloc(write_ptr, PNG_MAX_PALETTE_LENGTH * png_sizeof(png_color));
 	png_set_PLTE(write_ptr, info_ptr, palette, PNG_MAX_PALETTE_LENGTH);
@@ -168,7 +168,7 @@ J_PL_RESULT CXPlPicture::FillYuv(AVPicture &src,j_pl_video_out_t &vt,const char 
 {
 	switch(vt.FourCCType)
 	{
-	case J_PL_CODEC_YV12:
+	case J_PL_CODEC_YV12: case J_PL_CODEC_RGB32:
 		src.data[0]		= (uint8_t *)data;
 		src.linesize[0] = vt.width;
 

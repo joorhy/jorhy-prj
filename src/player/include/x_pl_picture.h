@@ -4,6 +4,7 @@
 extern "C"
 {
 #include "libavcodec\avcodec.h"
+#include "libavcore\imgutils.h"
 };
 
 class CXPlPicture : public J_PlBase
@@ -15,8 +16,8 @@ public:
 	static J_PL_RESULT SavePNG(j_pl_video_format_t &ft,const char *data,j_pl_video_out_t &vt,char *filename);
 	static J_PL_RESULT SaveJPEG(j_pl_video_format_t &ft,const char *data,j_pl_video_out_t &vt,char *filename);
 
-private:
-	static J_PL_RESULT YUV2RGB24(AVPicture &src,AVPicture &dst,j_pl_video_out_t &vt);
-	static J_PL_RESULT WritePNG(AVPicture &src,j_pl_video_out_t &vt,char *filename);
+	static J_PL_RESULT YUV2RGB32(AVPicture &src,AVPicture &dst,j_pl_video_out_t &vt);
 	static J_PL_RESULT FillYuv(AVPicture &src,j_pl_video_out_t &vt,const char *data);
+private:
+	static J_PL_RESULT WritePNG(AVPicture &src,j_pl_video_out_t &vt,char *filename);
 };

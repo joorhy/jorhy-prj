@@ -26,6 +26,7 @@ J_PL_RESULT CXPlRender::CreateVout(j_pl_video_out_t &vParm)
 	J_PL_RESULT br = J_PL_NO_ERROR;
 	m_vOut = CXPlVideoOutput::CreateInstance(vParm);
 	m_vOut->SetHwnd(m_hwnd);
+	//j_pl_info("VoutLoopPush::VoutLoopPush3() %d\n", m_vOut);
 	j_pl_info("Create Vout %d*%d \n",vParm.width,vParm.height);
 	return br;
 }
@@ -151,7 +152,7 @@ J_PL_RESULT CXPlRender::VoutLoopPush()
 	while(true)
 	{
 		ctl->m_state->GetVariable(&state);
-		//ctl->m_switch.Wait();
+		ctl->m_switch.Wait();
 		switch(state)
 		{
 		case J_PL_NORMAL: break;

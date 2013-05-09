@@ -2,6 +2,7 @@
 #include "x_pl_error.h"
 #include "x_pl_data_def.h"
 #include "x_pl_log.h"
+#include "x_pl_picture.h"
 
 CXPlVoutDDraw::CXPlVoutDDraw(j_pl_video_out_t &t)
 :CXPlVideoOutput(t)
@@ -14,7 +15,7 @@ CXPlVoutDDraw::CXPlVoutDDraw(j_pl_video_out_t &t)
 	m_oldProc	= NULL;
 	memset(&m_videoparm,0,sizeof(m_videoparm));
 	m_bShow		= TRUE;
-
+	j_pl_info("CXPlVoutDDraw::CXPlVoutDDraw()\n");
 }
 
 CXPlVoutDDraw::~CXPlVoutDDraw(void)
@@ -58,15 +59,24 @@ J_PL_RESULT CXPlVoutDDraw::CreateCliper(LPDIRECTDRAWSURFACE7 surface,HWND hwnd)
 	
 	hr = IDirectDraw7_CreateClipper(m_pDD,0,&m_pcClipper,NULL);
 	if (hr != DD_OK)
+	{
+		j_pl_info("IDirectDraw7_CreateClipper Error\n");
 		return J_PL_ERROR_NO_CLIPPER;
+	}
 
 	hr = IDirectDrawClipper_SetHWnd(m_pcClipper,0,hwnd);
 	if (hr != DD_OK)
+	{
+		j_pl_info("IDirectDrawClipper_SetHWnd Error\n");
 		return J_PL_ERROR_NO_CLIPPER;
+	}
 
 	hr = IDirectDrawSurface_SetClipper(surface, m_pcClipper);
 	if (hr != DD_OK)
+	{
+		j_pl_info("IDirectDrawSurface_SetClipper Error\n");
 		return J_PL_ERROR_NO_CLIPPER;
+	}
 	
 	return J_PL_NO_ERROR;
 }
@@ -109,19 +119,23 @@ J_PL_RESULT CXPlVoutDDraw::CreateSurface(j_pl_video_out_t &t)
 	ddsd.ddpfPixelFormat.dwFourCC	= t.FourCCType;
 
 	hr = IDirectDraw7_CreateSurface(m_pDD,&ddsd,&m_pSurface,NULL);
-	//if(hr == DDERR_OUTOFVIDEOMEMORY)
-	//{
-	//	ddsd.ddsCaps.dwCaps	= DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-	//	ddsd.ddpfPixelFormat.dwFlags		= DDPF_RGB | DDPF_PALETTEINDEXED8;
-	//	ddsd.ddpfPixelFormat.dwRGBBitCount	= 8;
-
-	//}
-
+	if(hr == DDERR_OUTOFVIDEOMEMORY || hr == DDERR_INVALIDPIXELFORMAT)
+	{
+		ddsd.dwFlags				= DDSD_HEIGHT | DDSD_WIDTH | DDSD_CAPS;
+		ddsd.ddsCaps.dwCaps	= DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
+		//ddsd.ddpfPixelFormat.dwFlags		= DDPF_RGB | DDPF_PALETTEINDEXED8;
+		//ddsd.ddpfPixelFormat.dwRGBBitCount	= 8;
+		hr = IDirectDraw7_CreateSurface(m_pDD,&ddsd,&m_pSurface,NULL);
+		t.FourCCType = J_PL_CODEC_RGB32;
+		j_pl_info("CXPlVoutDDraw::CreateSurface RGBA Mode\n");
+	}
 	if (hr != DD_OK)
 	{
+		j_pl_info("CXPlVoutDDraw::CreateSurface Error = %x\n", hr);
 		return J_PL_ERROR_CREATE_SURFACE;
 	}
 	m_videoparm = t;
+
 	return J_PL_NO_ERROR;
 }
 
@@ -201,7 +215,42 @@ J_PL_RESULT CXPlVoutDDraw::CopyData(char *buf,int len)
 			PtrU	+= width;
 			lpSurf	+= lPitch;
 		}
+		break;
+	case J_PL_CODEC_RGB32:
+		{
+			J_PL_RESULT br;
+			AVPicture src,dst;
+			
+			int img_len = 0;
+			memset(&src,0,sizeof(AVPicture));
+			memset(&dst,0,sizeof(AVPicture));
+			br = CXPlPicture::FillYuv(src,m_videoparm,buf);
+			if(br != J_PL_NO_ERROR)
+				return br;
 
+			if((img_len = av_image_alloc(dst.data,dst.linesize,m_videoparm.width,m_videoparm.height,PIX_FMT_RGBA,1)) < 0)
+			{
+				br = J_PL_ERROR_UNKNOW;
+				goto CopyRGBData_Error;
+			}
+
+			br = CXPlPicture::YUV2RGB32(src,dst,m_videoparm);
+			if(br != J_PL_NO_ERROR)
+				goto CopyRGBData_Error;
+			memcpy(lpSurf, dst.data[0], img_len);
+
+			//av_freep(&dst.data[0]);
+			//break;
+
+CopyRGBData_Error:
+			for(int i=0;i<4;i++)
+			{
+				if(dst.data[i])
+					av_freep(&dst.data[i]);
+			}
+			//m_pSurface->Unlock(NULL);
+			//return br;
+		}
 		break;
 	default:
 		m_pSurface->Unlock(NULL);
@@ -222,7 +271,7 @@ J_PL_RESULT CXPlVoutDDraw::ShowPicture()
 		ClientToScreen(m_hwnd,(LPPOINT)&DestRect.right);
 		
 		hRet = m_pDDSPrimary->Blt(&DestRect,m_pSurface,NULL,DDBLT_ALPHADEST,NULL);
-		//while(hRet == DDERR_WASSTILLDRAWING); 
+		while(hRet == DDERR_WASSTILLDRAWING); 
 		if(hRet != DD_OK) 
 			return J_PL_ERROR_SURFACE_BLT;
 	}
@@ -257,11 +306,27 @@ J_PL_RESULT CXPlVoutDDraw::SetHwnd(HWND hwnd)
 {
 	m_hwnd = hwnd;
 
-	OpenDDraw();
+	if (OpenDDraw() != J_PL_NO_ERROR)
+	{
+		j_pl_info("OpenDDraw Error\n");
+		return J_PL_ERROR_UNKNOW;
+	}
 
-	OpenDisplay();
-	CreateCliper(m_pDDSPrimary,m_hwnd);
-	CreateSurface(m_parm);
+	if (OpenDisplay() != J_PL_NO_ERROR)
+	{
+		j_pl_info("OpenDisplay Error\n");
+		return J_PL_ERROR_UNKNOW;
+	}
+	if (CreateCliper(m_pDDSPrimary,m_hwnd) != J_PL_NO_ERROR)
+	{
+		j_pl_info("CreateCliper Error\n");
+		return J_PL_ERROR_UNKNOW;
+	}
+	if (CreateSurface(m_parm) != J_PL_NO_ERROR)
+	{
+		j_pl_info("CreateSurface Error\n");
+		return J_PL_ERROR_UNKNOW;
+	}
 
 	m_oldProc = (WNDPROC)SetWindowLongPtr(m_hwnd,GWLP_WNDPROC,(LONG_PTR)ControlProc);
 	SetWindowLong(m_hwnd, GWL_USERDATA, (LONG)this);

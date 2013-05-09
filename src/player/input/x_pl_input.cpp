@@ -10,6 +10,7 @@ CXPlInput::CXPlInput(void)
 	m_control	= NULL;
 	m_demux		= NULL;
 	m_buffer	= NULL;
+	j_pl_info("CXPlInput::CXPlInput()\n");
 }
 
 CXPlInput::~CXPlInput(void)
