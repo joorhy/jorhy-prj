@@ -222,7 +222,8 @@ r_devconfig *GetDevConfigByResid(char *resid,char *uri)
 		json_object_put(jsojt);
 		if(json_buf == NULL)
 		{
-			assert(false);
+			//assert(false);
+			J_OS::LOGINFO("HttpCommunicate Faild");
 			return NULL;
 		}
 

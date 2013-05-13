@@ -94,7 +94,10 @@ int CHttpFilter::Parser(int nSocket)
 
 const char *CHttpFilter::GetResourceType()
 {
-		return "jofs";
+	if (strstr(m_strResid, ".") != NULL)
+		return "jorf";
+		
+	return "jofs";
 }
 
 int CHttpFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen)

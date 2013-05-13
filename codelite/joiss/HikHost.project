@@ -10,7 +10,6 @@
     <File Name="../../src/host/hik/HikStream.cpp"/>
     <File Name="../../src/host/hik/HikVodStream.cpp"/>
     <File Name="../../src/host/hik/HikParser2.cpp"/>
-    <File Name="../../src/core/x_ringbuffer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/host/hik/HikAdapter.h"/>

@@ -145,7 +145,7 @@ int CNvrFileReader::SetScale(float nScale)
 	return J_OK;
 }
 
-int CNvrFileReader::CNvrFileReader::SetTime(uint64_t s_time, uint64_t e_time)
+int CNvrFileReader::SetTime(uint64_t s_time, uint64_t e_time)
 {
 	//TLock(m_locker);
 	int nRet = J_OK;

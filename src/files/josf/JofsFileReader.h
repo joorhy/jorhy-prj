@@ -1,5 +1,5 @@
-#ifndef __NVR_H_
-#define __NVR_H_
+#ifndef __JOFS_FILE_READER_H_
+#define __JOFS_FILE_READER_H_
 #include "j_includes.h"
 #include "x_module_manager_def.h"
 #include "x_time.h"
@@ -65,4 +65,4 @@ FILEREADER_BEGIN_MAKER(jofs)
 	FILEREADER_ENTER_MAKER("jofs", CNvrFileReader::Maker)
 FILEREADER_END_MAKER()
 
-#endif //~__NVR_H_
+#endif //~__JOFS_FILE_READER_H_

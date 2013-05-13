@@ -17,6 +17,7 @@
     <File Name="../../src/core/x_thread_pool.cpp"/>
     <File Name="../../src/core/x_time.cpp"/>
     <File Name="../../src/core/x_timer.cpp"/>
+    <File Name="../../src/core/x_ringbuffer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/core/j_includes.h"/>

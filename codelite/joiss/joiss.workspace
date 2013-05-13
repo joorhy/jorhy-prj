@@ -27,6 +27,7 @@
   <Project Name="MCControl" Path="MCControl.project"/>
   <Project Name="OnvifHost" Path="OnvifHost.project"/>
   <Project Name="JoHost" Path="JoHost.project"/>
+  <Project Name="JorReader" Path="JorReader.project"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="joiss" ConfigName="Debug"/>
@@ -70,6 +71,7 @@
       <Project Name="MCControl" ConfigName="Debug"/>
       <Project Name="OnvifHost" ConfigName="Debug"/>
       <Project Name="JoHost" ConfigName="Debug"/>
+      <Project Name="JorReader" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="joiss" ConfigName="Release"/>
@@ -113,6 +115,7 @@
       <Project Name="MCControl" ConfigName="Release"/>
       <Project Name="OnvifHost" ConfigName="Release"/>
       <Project Name="JoHost" ConfigName="Release"/>
+      <Project Name="JorReader" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

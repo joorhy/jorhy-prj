@@ -379,6 +379,34 @@ struct J_RealViewRetData
 	//音频信息
 };
 
+///JOSP 历史视频点播
+struct J_VodPlayData
+{
+	j_char_t res_id[32];		//资源ID
+	j_time_t begin_time;		//开始时间
+	j_time_t end_time;			//结束时间
+};
+
+///JOSP 历史视频点播返回
+struct J_VodPlayRetData
+{
+	j_char_t media_code[4];		//媒体类型 JOMS
+	//视频信息
+	j_uint8_t i_frame_ival;		//I帧间隔
+	j_uint8_t fps;				//帧率
+	j_uint16_t width;			//视频宽度
+	j_uint16_t height;			//视频高度
+	//音频信息
+};
+
+///JOSP 请求数据
+struct J_RequestData
+{
+	j_char_t res_id[32];		//资源ID
+	j_time_t begin_time;		//开始时间
+	j_uint32_t time_ival;		//时间间隔
+};
+
 ///JOSP 数据头格式
 struct J_DataHead
 {
