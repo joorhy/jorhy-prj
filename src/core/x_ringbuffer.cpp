@@ -12,6 +12,7 @@ CRingBuffer::CRingBuffer(int nCacheFrameNum, int nBufferSize)
 	m_pEnd = m_pBuffer + nBufferSize;
 	m_pWritePoint = m_pReadPoint = m_pBegin;
 	m_nDataLen = 0;
+	m_nBufferSize = nBufferSize;
 	
 	pthread_mutex_init(&m_mutex, NULL);
 	pthread_cond_init(&m_cond, NULL);
@@ -133,7 +134,7 @@ int CRingBuffer::GetData(char *pData, int nLen, int nOffset)
 
 int CRingBuffer::GetIdleLength()
 {
-	return BUFFER_SIZE - m_nDataLen;
+	return m_nBufferSize - m_nDataLen;
 }
 
 void CRingBuffer::EraseBuffer()

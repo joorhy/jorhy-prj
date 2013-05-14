@@ -25,9 +25,6 @@ class CJospFilter : public J_RequestFilter
 		virtual int Complete(int nSocket);
 		
 	private:
-		int MakeHeader(char *pBuffer, uint8_t byCmd, uint16_t exLength, uint8_t byRet = 0x00);
-		
-	private:
 		J_MuxFilter *m_muxFilter;
 		int m_nRetLen;
 		char *m_pRetBuff;

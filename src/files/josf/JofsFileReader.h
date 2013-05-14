@@ -6,6 +6,7 @@
 #include "x_file.h"
 #include "x_lock.h"
 #include "x_timer.h"
+#include <pthread.h>
 
 class CNvrFileReader : public J_FileReader
 {
@@ -26,6 +27,7 @@ public:
 	virtual int SetScale(float nScale = 1);
 	virtual int SetTime(uint64_t s_time, uint64_t e_time);
 	virtual int SetPosition(int nPos);
+	virtual int GetMediaData(j_uint64_t beginTime, int nIval);
 
 private:
 	int ListRecord(uint64_t beginTime, uint64_t endTime);
@@ -40,6 +42,13 @@ private:
 			pThis->OnTimer();
 	}
 	void OnTimer();
+	static void *WorkThread(void *pUser)
+	{
+		CNvrFileReader *pThis = (CNvrFileReader *)pUser;
+			pThis->OnWork();
+		return (void *)0;
+	}
+	void OnWork();
 
 private:
 	typedef std::list<std::string> RecordMap;
@@ -59,6 +68,13 @@ private:
 	long m_fileEnd;
 	J_StreamHeader m_nextHeader;
 	volatile uint64_t m_nextTimeStamp;
+	
+	pthread_t m_thread;
+	pthread_mutex_t m_mux;
+	pthread_cond_t m_cond;
+	int m_lastTime;
+	CRingBuffer *m_buffer;
+	bool m_bRun;
 };
 
 FILEREADER_BEGIN_MAKER(jofs)

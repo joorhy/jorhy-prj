@@ -24,12 +24,12 @@ class CRingBuffer
 		int PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader);
 		int PopBuffer(char *pBuffer, J_StreamHeader &streamHeader);
 		void SetPreFrameNum(int nFrameNum) {}
+		int GetIdleLength();
 
 	private:
 		void Read(char *pData, int nLen);
 		void Write(const char *pData, int nLen);
 		int GetData(char *pData, int nLen, int nOffset = 0);
-		int GetIdleLength();
 		void EraseBuffer();
 		void MoveBuffer(int nOffset, int nLen);
 		char *AddBuffer(char *pBuffer, int nLen);
@@ -49,6 +49,7 @@ class CRingBuffer
 		J_MEMNODE m_Node;
 		J_StreamHeader m_streamHeader;
 		int m_nDiscardedFrameNum;		//非关键
+		int m_nBufferSize;
 };
 typedef std::vector<CRingBuffer *>	j_vec_buffer_t;
 

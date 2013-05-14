@@ -315,7 +315,7 @@ int CTCPSocket::Write_n(const char *pBuff, int nLen)
 
 		if (nRet <= 0)
 		{
-			if ((errno == EAGAIN && nRet == 0)|| errno == EINTR)
+			if ((errno == EAGAIN && nRet == 0) || (errno == EINTR && nRet < 0))
 			{
 			    J_OS::LOGERROR("CTCPSocket::Write_n");
 				usleep(1000);

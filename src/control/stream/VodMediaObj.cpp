@@ -58,12 +58,9 @@ int CVodMediaObj::Process(int nIoType)
 			case jo_setpos_vod:
 				nRet = SetScale();
 				break;
-			/*case NVR_STOP_FILE:
-			{
-				nRet = CloseFile();
-				J_OS::LOGINFO("CVodMediaObj::Process CloseFile socket =  %d ret = %d", m_nSocket, nRet);
+			case jo_read_data:
+				nRet = ReadData();
 				break;
-			}*/
 			default:
 				J_OS::LOGINFO("CVodMediaObj::Process CommandType unkown type =  %d", videoCommand->GetCommandType());
 				break;
@@ -169,6 +166,9 @@ int CVodMediaObj::OpenFile()
 	int nRet = m_pReader->SetTime(vodTimeCommand->GetBeginTime(), vodTimeCommand->GetEndTime());
 	if (nRet != J_OK)
 		return nRet;
+		
+	if (vodTimeCommand->GetMode() == jo_push_mode)
+		m_pReader->GetMediaData(0, 24*60*60*1000);
 
 	m_fileid = m_resid;
 
@@ -214,6 +214,14 @@ int CVodMediaObj::SetScale()
 {
 	J_VodCommandFilter *vodTimeCommand = dynamic_cast<J_VodCommandFilter *>(m_pObj);
 	m_pReader->SetScale(vodTimeCommand->GetScale());
+
+	return J_OK;
+}
+
+int CVodMediaObj::ReadData()
+{
+	J_VodCommandFilter *vodTimeCommand = dynamic_cast<J_VodCommandFilter *>(m_pObj);
+	m_pReader->GetMediaData(0, vodTimeCommand->GetEndTime() - vodTimeCommand->GetBeginTime());
 
 	return J_OK;
 }

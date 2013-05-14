@@ -74,6 +74,7 @@ int CHttpFilter::Parser(int nSocket)
 			x_string >> i_scale;
 			m_scale = i_scale();
 		}
+		m_mode = jo_push_mode;
 	}
 
 	if (strstr(read_buff, "stream=raw"))

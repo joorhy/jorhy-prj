@@ -14,6 +14,7 @@
     <File Name="../../src/misc/x_manager_factory.cpp"/>
     <File Name="../../src/misc/x_mux_factory.cpp"/>
     <File Name="../../src/misc/x_parser_factory.cpp"/>
+    <File Name="../../src/misc/x_jo_sdk.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/misc/x_config.h"/>
@@ -29,6 +30,7 @@
     <File Name="../../src/misc/x_parser_factory.h"/>
     <File Name="../../src/misc/x_filter_factory.h"/>
     <File Name="../../src/misc/x_adapter_factory.h"/>
+    <File Name="../../src/misc/x_jo_sdk.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

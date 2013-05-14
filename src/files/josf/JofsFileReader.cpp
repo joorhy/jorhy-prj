@@ -6,6 +6,7 @@
 
 #define RECORD_INTERVAL	(24 * 60 * 60)
 #define TIMER_INTERVAL	128
+#define RECORD_BUFF_SIZE 	(1024 * 1024 * 50)
 
 CNvrFileReader::CNvrFileReader(const char *pResid)
 {
@@ -16,13 +17,26 @@ CNvrFileReader::CNvrFileReader(const char *pResid)
 	m_pFileId = NULL;
 	memset(&m_nextHeader, 0, sizeof(m_nextHeader));
 	m_nextTimeStamp = 0;
-
+	
+	m_lastTime = 0;
+	m_buffer = new CRingBuffer(0, RECORD_BUFF_SIZE);
+	m_bRun = true;
+	pthread_mutex_init(&m_mux, NULL);
+	pthread_cond_init(&m_cond, NULL);
+	pthread_create(&m_thread, NULL, WorkThread, this);
 	//m_timer.Create(TIMER_INTERVAL, CNvrFileReader::TimerThread, (unsigned long)this);
 	J_OS::LOGINFO("CNvrFileReader::CNvrFileReader");
 }
 
 CNvrFileReader::~CNvrFileReader()
 {
+	m_bRun = false;
+	pthread_cancel(m_thread);
+	pthread_join(m_thread, NULL);
+	pthread_mutex_destroy(&m_mux);
+	pthread_cond_destroy(&m_cond);
+	if (m_buffer)
+		delete m_buffer;
 	CloseFile();
 	//m_timer.Destroy();
 	J_OS::LOGINFO("CNvrFileReader::~CNvrFileReader");
@@ -79,7 +93,7 @@ int CNvrFileReader::GetContext(J_MediaContext *&mediaContext)
 
 int CNvrFileReader::GetPacket(char *pBuffer, J_StreamHeader &streamHeader)
 {
-	//TLock(m_locker);
+	TLock(m_locker);
 	int nRet = J_OK;
 	if (m_bPaused)
 	{
@@ -90,45 +104,17 @@ int CNvrFileReader::GetPacket(char *pBuffer, J_StreamHeader &streamHeader)
 	}
 	else
 	{
-		if (m_pFileId == NULL || ftell(m_pFileId) >= m_fileEnd)
+		nRet = m_buffer->PopBuffer(pBuffer, streamHeader);
+		if (nRet != J_OK)
 		{
-			nRet = OpenFile();
-			if (nRet != J_OK)
-			{
-				//TLock(m_locker);
-				return nRet;
-			}
+			streamHeader.dataLen = 0;
+			streamHeader.frameType = jo_media_unknow;
+			streamHeader.timeStamp = 0;
+			streamHeader.frameNum = 0;
 		}
-
-		int nReadLen = 0;
-		if (m_bGoNext)
-		{
-			nReadLen = fread(&m_nextHeader, 1, sizeof(m_nextHeader), m_pFileId);
-			if (nReadLen == 0)
-			{
-				//J_OS::LOGINFO("offset = %d", ftell(m_pFileId));
-				return J_OK;
-			}
-			m_bGoNext = false;
-		}
-
-		if (m_nextTimeStamp != 0
-				&& m_nextHeader.timeStamp > m_nextTimeStamp
-				&& m_nextHeader.timeStamp - m_nextTimeStamp > 120000)
-			return J_FILE_END;
-
-		m_nextTimeStamp = m_nextHeader.timeStamp;
-		//if (m_nextTimeStamp >= m_nextHeader.timeStamp)
-		{
-			streamHeader = m_nextHeader;
-			//streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
-			nReadLen = fread(pBuffer, 1, streamHeader.dataLen, m_pFileId);
-
-			m_bGoNext = true;
-		}
-		//TUnlock(m_locker);
 	}
-	return nRet;
+	TUnlock(m_locker);
+	return J_OK;
 }
 
 int CNvrFileReader::Pause()
@@ -174,9 +160,19 @@ int CNvrFileReader::SetPosition(int nPos)
 	return J_OK;
 }
 
+int CNvrFileReader::GetMediaData(j_uint64_t beginTime, int nIval)
+{
+	TLock(m_locker);
+	m_lastTime += nIval;
+	pthread_cond_signal(&m_cond);
+	TUnlock(m_locker);
+	
+	return J_OK;
+}
+
 int CNvrFileReader::ListRecord(uint64_t beginTime, uint64_t endTime)
 {
-	r_historyfile *p_historyfile = GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
+	/*r_historyfile *p_historyfile = GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
 	if (p_historyfile == NULL)
 	{
 	    J_OS::LOGINFO("CNvrFileReader::ListRecord GetHistoryFile Error");
@@ -193,7 +189,10 @@ int CNvrFileReader::ListRecord(uint64_t beginTime, uint64_t endTime)
 		//J_OS::LOGINFO(it->c_str());
 		m_fileVec.push_back(*it);
 	}
-	delete p_historyfile;
+	delete p_historyfile;*/
+	//测试用
+	m_fileVec.push_back("3_20130327100136908_20130327100338003.josf");
+	m_fileVec.push_back("3_20130327100629504_20130327100830028.josf");
 
 	return J_OK;
 }
@@ -281,7 +280,7 @@ int CNvrFileReader::CalcPosition(uint64_t timeStamp, uint32_t interval)
 		return nRet;
 
 	FrameMap::iterator it = m_iFrameMap.begin();
-	if (it->second.timeStamp > ((timeStamp + interval) * 1000))
+	/*if (it->second.timeStamp > ((timeStamp + interval) * 1000))
 	{
 	    J_OS::LOGINFO("CFileReader::CalcPosition J_OUT_RANGE");
 		return J_OUT_RANGE;
@@ -302,7 +301,7 @@ int CNvrFileReader::CalcPosition(uint64_t timeStamp, uint32_t interval)
 		return CalcPosition(timeStamp, interval);
 	}
 
-	fseek(m_pFileId, it->second.offset, SEEK_SET);
+	fseek(m_pFileId, it->second.offset, SEEK_SET);*/
 	//printf("offset = %d %llu %llu\n", it->second.offset, it->second.timeStamp, timeStamp);
 	//TLock(m_locker);
 	m_nextTimeStamp = it->second.timeStamp;
@@ -316,4 +315,76 @@ void CNvrFileReader::OnTimer()
 	//TLock(m_locker);
 	m_nextTimeStamp += (uint32_t)(TIMER_INTERVAL / m_nScale);
 	//TUnlock(m_locker);
+}
+
+void CNvrFileReader::OnWork()
+{
+	int nRet = J_OK;
+	J_StreamHeader streamHeader;
+	//bool bLock = false;
+	char *pBuffer = new char[1024 * 1024 * 5];
+	while (m_bRun)
+	{
+		if (m_lastTime == 0)
+		{
+			pthread_mutex_lock(&m_mux);
+			pthread_cond_wait(&m_cond, &m_mux);
+			//bLock = true;
+			pthread_mutex_unlock(&m_mux);
+		}
+		if (m_buffer->GetIdleLength() <= (RECORD_BUFF_SIZE / 2))
+		{
+			usleep(40000);
+			continue;
+		}
+		//usleep(20000);
+		TLock(m_locker);
+		if (m_pFileId == NULL || ftell(m_pFileId) >= m_fileEnd)
+		{
+			nRet = OpenFile();
+			if (nRet != J_OK)
+			{
+				//TLock(m_locker);
+				//return nRet;
+				//未处理
+				J_OS::LOGINFO("error 1");
+			}
+		}
+
+		int nReadLen = 0;
+		if (m_bGoNext)
+		{
+			nReadLen = fread(&m_nextHeader, 1, sizeof(m_nextHeader), m_pFileId);
+			if (nReadLen == 0)
+			{
+				//J_OS::LOGINFO("offset = %d", ftell(m_pFileId));
+				//return J_OK;
+				continue;
+			}
+			//J_OS::LOGINFO("len = %d", m_nextHeader.dataLen);
+			m_bGoNext = false;
+		}
+
+		if (m_nextTimeStamp != 0
+				&& m_nextHeader.timeStamp > m_nextTimeStamp
+				&& m_nextHeader.timeStamp - m_nextTimeStamp > 120000)
+		{
+			//return J_FILE_END;
+			//未处理
+			J_OS::LOGINFO("error 2");
+		}
+
+		m_nextTimeStamp = m_nextHeader.timeStamp;
+		//if (m_nextTimeStamp >= m_nextHeader.timeStamp)
+		{
+			streamHeader = m_nextHeader;
+			//streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+			nReadLen = fread(pBuffer, 1, streamHeader.dataLen, m_pFileId);
+			m_buffer->PushBuffer(pBuffer, streamHeader);
+			m_lastTime -= 40;
+			//TUnlock(m_locker);
+			m_bGoNext = true;
+		}
+		TUnlock(m_locker);
+	}
 }

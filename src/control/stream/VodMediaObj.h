@@ -23,6 +23,7 @@ private:
 	int PauseFile();
 	int SetTime();
 	int SetScale();
+	int ReadData();
 
 private:
 	int m_nSocket;

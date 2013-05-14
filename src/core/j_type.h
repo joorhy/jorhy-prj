@@ -113,6 +113,7 @@ enum J_CommandType
 	jo_settime_vod,			//设置播放时间
 	jo_setpos_vod,			//设置播放位置
 	jo_setscale_vod,		//设置播放速度
+	jo_read_data,			//读取数据
 	jo_start_voice,			//启动对讲
 	jo_stop_voice			//关闭对讲
 };
@@ -138,6 +139,13 @@ enum J_DevStatus
 {
 	jo_dev_ready = 1,
 	jo_dev_broken,
+};
+
+///回放数据模式
+enum J_GetDataMode
+{
+	jo_pull_mode = 1,
+	jo_push_mode,
 };
 
 typedef bool 				j_boolean_t;

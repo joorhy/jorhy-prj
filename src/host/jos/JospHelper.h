@@ -15,9 +15,6 @@ class CJospHelper
 		void CloseStream(J_OS::CTCPSocket *recvSocket, const char *pResid);
 		
 	private:
-		int MakeHeader(char *pBuff, char *pUserID, unsigned char byCmd, unsigned char byFlag, unsigned short sqNum, unsigned short exLength, unsigned char byRet = 0x00);
-	
-	private:
 		int m_nSeq;
 		int m_nVideoTrackId;
 };

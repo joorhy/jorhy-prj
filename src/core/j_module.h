@@ -264,12 +264,18 @@ struct J_FileReader : virtual public J_Obj
 	///@param[in]	s_time绝对开始时间或者相对开始时间
 	///@param[in]	e_time绝对结束时间或者相对结束时间
 	///@return 		参见x_error_type.h
-	virtual int SetTime(uint64_t s_time, uint64_t e_time) = 0;
+	virtual int SetTime(j_uint64_t s_time, j_uint64_t e_time) = 0;
 
 	///设置位置
 	///@param[in]	nPos相对开始位置的偏移
 	///@return 		参见x_error_type.h
 	virtual int SetPosition(int nPos) = 0;
+	
+	///获取视频数据
+	///@param[in]	beginTime开始时间
+	///@param[in]	nIval时间间隔
+	///@return 		参见x_error_type.h
+	virtual int GetMediaData(j_uint64_t beginTime, int nIval) = 0;
 };
 
 struct J_JoManager : virtual public J_Obj
@@ -338,11 +344,16 @@ struct J_VodCommandFilter : public J_CommandFilter
 	///获得播放速度
 	///@return 		播放速度
 	virtual int32_t GetScale() const { return m_scale; }
+	
+	///获得播放模式
+	///@return 		播放模式
+	virtual int32_t GetMode() const { return m_mode; }
 
 protected:
 	uint64_t m_beginTime;
 	uint64_t m_endTime;
 	int32_t m_scale;
+	int32_t m_mode;
 };
 
 struct J_RequestFilter : virtual public J_Obj
