@@ -127,7 +127,8 @@ enum J_MediaType
 	jo_video_b_frame,			//视频B帧
 	jo_video_p_frame,			//视频P帧
 	jo_audio_frame,				//音频帧
-	jo_media_broken,
+	jo_media_broken,			//视频断线
+	jo_file_end,
 	
 	jo_video_normal = 100,
 	jo_video_yuyv,

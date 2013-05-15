@@ -41,7 +41,7 @@ int CJospFilter::Parser(int nSocket)
 					return J_SOCKET_ERROR;
 					
 				m_nCommandType = jo_start_real;
-				m_nStreamType = realViewData.stream_type;
+				m_nStreamType = ntohl(realViewData.stream_type);
 				memcpy(m_strResid, realViewData.res_id, strlen(realViewData.res_id));
 				
 				CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
@@ -64,8 +64,8 @@ int CJospFilter::Parser(int nSocket)
 					
 				m_nCommandType = jo_start_vod;
 				m_mode = jo_push_mode;
-				m_beginTime = vodPlayData.begin_time;
-				m_endTime = vodPlayData.end_time;
+				m_beginTime = ntohl(vodPlayData.begin_time);
+				m_endTime = ntohl(vodPlayData.end_time);
 				memcpy(m_strResid, vodPlayData.res_id, strlen(vodPlayData.res_id));
 				
 				CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_file_rep, sizeof(J_VodPlayRetData));
@@ -87,11 +87,11 @@ int CJospFilter::Parser(int nSocket)
 					return J_SOCKET_ERROR;
 					
 				m_nCommandType = jo_read_data;
-				m_beginTime = requestData.begin_time;
-				m_endTime = requestData.begin_time + requestData.time_ival;
+				m_beginTime = ntohl(requestData.begin_time);
+				m_endTime = m_beginTime + ntohl(requestData.time_ival);
 				
 				CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_req_data_rep, 0);
-				m_nRetLen = sizeof(J_CtrlHead);
+				m_nRetLen = 0;//sizeof(J_CtrlHead);
 			}
 			break;
 	}

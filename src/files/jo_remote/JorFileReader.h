@@ -29,7 +29,7 @@ public:
 	virtual int GetMediaData(j_uint64_t beginTime, int nIval);
 
 private:
-	int OpenFile();
+	int OpenFile(uint64_t s_time, uint64_t e_time);
 	void CloseFile();
 	static void *WorkThread(void *pUser)
 	{

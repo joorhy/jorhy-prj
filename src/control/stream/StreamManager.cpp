@@ -70,7 +70,7 @@ int CStreamManager::OnWrite(int nSocket)
 	{
 		nRet = pClient->Process(jo_io_write);
 		if (nRet < 0)
-			J_OS::LOGERROR("CStreamManager::OnWrite Error");
+			J_OS::LOGERROR("CStreamManager::OnWrite Error nRet = %d", nRet);
 	}
 	else
 	{

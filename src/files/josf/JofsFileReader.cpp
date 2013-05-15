@@ -6,7 +6,7 @@
 
 #define RECORD_INTERVAL	(24 * 60 * 60)
 #define TIMER_INTERVAL	128
-#define RECORD_BUFF_SIZE 	(1024 * 1024 * 50)
+#define RECORD_BUFF_SIZE 	(1024 * 1024 * 5)
 
 CNvrFileReader::CNvrFileReader(const char *pResid)
 {
@@ -94,6 +94,12 @@ int CNvrFileReader::GetContext(J_MediaContext *&mediaContext)
 int CNvrFileReader::GetPacket(char *pBuffer, J_StreamHeader &streamHeader)
 {
 	TLock(m_locker);
+	if (!m_bRun)
+	{
+		TUnlock(m_locker);
+		return J_UNKNOW;
+	}
+		
 	int nRet = J_OK;
 	if (m_bPaused)
 	{
@@ -135,7 +141,7 @@ int CNvrFileReader::SetTime(uint64_t s_time, uint64_t e_time)
 {
 	//TLock(m_locker);
 	int nRet = J_OK;
-	nRet = ListRecord(s_time, e_time);
+	nRet = ListRecord(s_time, s_time + RECORD_INTERVAL);
 	if (nRet != J_OK)
 	{
 		//TUnlock(m_locker);
@@ -172,16 +178,20 @@ int CNvrFileReader::GetMediaData(j_uint64_t beginTime, int nIval)
 
 int CNvrFileReader::ListRecord(uint64_t beginTime, uint64_t endTime)
 {
-	/*r_historyfile *p_historyfile = GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
+	r_historyfile *p_historyfile = GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
 	if (p_historyfile == NULL)
 	{
 	    J_OS::LOGINFO("CNvrFileReader::ListRecord GetHistoryFile Error");
 	    return J_DB_ERROR;
 	}
 	m_fileVec.clear();
+	J_OS::LOGINFO("CNvrFileReader::ListRecord No Files start=%d end=%d", beginTime, endTime);
 
 	if (p_historyfile->parm.files.empty())
+	{
+		J_OS::LOGINFO("CNvrFileReader::ListRecord No Files start=%d end=%d", beginTime, endTime);
 		return J_OK;
+	}
 
 	std::vector<std::string>::iterator it = p_historyfile->parm.files.begin();
 	for(;it != p_historyfile->parm.files.end(); it++)
@@ -189,10 +199,10 @@ int CNvrFileReader::ListRecord(uint64_t beginTime, uint64_t endTime)
 		//J_OS::LOGINFO(it->c_str());
 		m_fileVec.push_back(*it);
 	}
-	delete p_historyfile;*/
+	delete p_historyfile;
 	//测试用
-	m_fileVec.push_back("3_20130327100136908_20130327100338003.josf");
-	m_fileVec.push_back("3_20130327100629504_20130327100830028.josf");
+	//m_fileVec.push_back("3_20130327100136908_20130327100338003.josf");
+	//m_fileVec.push_back("3_20130327100629504_20130327100830028.josf");
 
 	return J_OK;
 }
@@ -280,7 +290,7 @@ int CNvrFileReader::CalcPosition(uint64_t timeStamp, uint32_t interval)
 		return nRet;
 
 	FrameMap::iterator it = m_iFrameMap.begin();
-	/*if (it->second.timeStamp > ((timeStamp + interval) * 1000))
+	if (it->second.timeStamp > ((timeStamp + interval) * 1000))
 	{
 	    J_OS::LOGINFO("CFileReader::CalcPosition J_OUT_RANGE");
 		return J_OUT_RANGE;
@@ -301,7 +311,7 @@ int CNvrFileReader::CalcPosition(uint64_t timeStamp, uint32_t interval)
 		return CalcPosition(timeStamp, interval);
 	}
 
-	fseek(m_pFileId, it->second.offset, SEEK_SET);*/
+	fseek(m_pFileId, it->second.offset, SEEK_SET);
 	//printf("offset = %d %llu %llu\n", it->second.offset, it->second.timeStamp, timeStamp);
 	//TLock(m_locker);
 	m_nextTimeStamp = it->second.timeStamp;
@@ -332,9 +342,9 @@ void CNvrFileReader::OnWork()
 			//bLock = true;
 			pthread_mutex_unlock(&m_mux);
 		}
-		if (m_buffer->GetIdleLength() <= (RECORD_BUFF_SIZE / 2))
+		if (m_buffer->GetIdleLength() != RECORD_BUFF_SIZE)
 		{
-			usleep(40000);
+			usleep(10000);
 			continue;
 		}
 		//usleep(20000);
@@ -347,7 +357,10 @@ void CNvrFileReader::OnWork()
 				//TLock(m_locker);
 				//return nRet;
 				//未处理
-				J_OS::LOGINFO("error 1");
+				J_OS::LOGINFO("error %d", nRet);
+				m_bRun = false;
+				TUnlock(m_locker);
+				break;
 			}
 		}
 
@@ -371,7 +384,11 @@ void CNvrFileReader::OnWork()
 		{
 			//return J_FILE_END;
 			//未处理
-			J_OS::LOGINFO("error 2");
+			//J_OS::LOGINFO("error 2");
+			streamHeader.dataLen = 0;
+			streamHeader.frameType = jo_file_end;
+			streamHeader.timeStamp = 0;
+			streamHeader.frameNum = 0;
 		}
 
 		m_nextTimeStamp = m_nextHeader.timeStamp;

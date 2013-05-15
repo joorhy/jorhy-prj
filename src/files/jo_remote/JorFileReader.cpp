@@ -1,11 +1,14 @@
 #include "JorFileReader.h"
 #include "x_sdk.h"
 #include "x_config.h"
+extern "C"
+{
 #include "x_inet.h"
+}
 
 #define RECORD_INTERVAL	(24 * 60 * 60)
 #define TIMER_INTERVAL	128
-#define RECORD_BUFF_SIZE (1024 * 1024 * 50)
+#define RECORD_BUFF_SIZE (1024 * 1024 * 5)
 
 CJorFileReader::CJorFileReader(const char *pResid)
 {
@@ -14,18 +17,23 @@ CJorFileReader::CJorFileReader(const char *pResid)
 	m_bPaused = false;
 	
 	m_lastTime = 0;
+	m_bRun = false;
 	m_buffer = new CRingBuffer(0, RECORD_BUFF_SIZE);
-	m_bRun = true;
+	
 	pthread_mutex_init(&m_mux, NULL);
 	pthread_cond_init(&m_cond, NULL);
+	m_bRun = true;
 	pthread_create(&m_thread, NULL, WorkThread, this);
 }
 
 CJorFileReader::~CJorFileReader()
 {
-	m_bRun = false;
-	pthread_cancel(m_thread);
-	pthread_join(m_thread, NULL);
+	if (m_bRun)
+	{
+		m_bRun = false;
+		pthread_cancel(m_thread);
+		pthread_join(m_thread, NULL);
+	}
 	pthread_mutex_destroy(&m_mux);
 	pthread_cond_destroy(&m_cond);
 	if (m_buffer)
@@ -82,6 +90,7 @@ int CJorFileReader::SetScale(float nScale)
 
 int CJorFileReader::SetTime(uint64_t s_time, uint64_t e_time)
 {
+	OpenFile(s_time, e_time);
 	return J_OK;
 }
 
@@ -93,14 +102,14 @@ int CJorFileReader::SetPosition(int nPos)
 int CJorFileReader::GetMediaData(j_uint64_t beginTime, int nIval)
 {
 	TLock(m_locker);
-	m_lastTime += nIval;
+	m_lastTime += 24*60*60*1000;
 	pthread_cond_signal(&m_cond);
 	TUnlock(m_locker);
 	
 	return J_OK;
 }
 
-int CJorFileReader::OpenFile()
+int CJorFileReader::OpenFile(uint64_t s_time, uint64_t e_time)
 {
 	J_DeviceInfo info = {0};
 	//if (CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
@@ -111,7 +120,7 @@ int CJorFileReader::OpenFile()
 	m_recvSocket = new J_OS::CTCPSocket();
 	m_recvSocket->Connect(info.devIp, info.devPort);
 	
-	if (m_jorHelper.OpenFile(m_recvSocket, m_resid.c_str(), 0, 0) != J_OK)
+	if (m_jorHelper.OpenFile(m_recvSocket, m_resid.c_str(), s_time, e_time) != J_OK)
 	{
 		delete m_recvSocket;
 		m_recvSocket = NULL;
@@ -137,7 +146,7 @@ void CJorFileReader::OnWork()
 	int nRet = J_OK;
 	J_StreamHeader streamHeader;
 	char *pBuffer = new char[1024 * 1024 * 5];
-	int nfd = m_recvSocket->GetHandle();
+	int nfd = 0;
 	while (m_bRun)
 	{
 		if (m_lastTime == 0)
@@ -145,26 +154,31 @@ void CJorFileReader::OnWork()
 			pthread_mutex_lock(&m_mux);
 			pthread_cond_wait(&m_cond, &m_mux);
 			m_jorHelper.ReadFile(m_recvSocket, m_resid.c_str(), 0, 2*60*1000);
+			//m_lastTime += 2*60*1000;
+			//nfd = m_recvSocket->GetHandle();
 			pthread_mutex_unlock(&m_mux);
 		}
-		if (m_buffer->GetIdleLength() <= (RECORD_BUFF_SIZE / 2))
+		if (m_buffer->GetIdleLength() != RECORD_BUFF_SIZE)
 		{
-			usleep(40000);
+			usleep(10000);
 			continue;
 		}
 
 		TLock(m_locker);
 		J_DataHead head = {0};
-		int	nLen = recv(nfd, &head, sizeof(head), MSG_WAITALL);
+		int	nLen = m_recvSocket->Read_n((char *)&head, sizeof(head));
 		if (nLen < 0)
 		{
 			J_OS::LOGERROR("CJorFileReader::OnRead recv data error");
 			//TUnlock(m_locker);
 			//return J_SOCKET_ERROR;
 			//未处理
+			m_bRun = false;
+			TUnlock(m_locker);
+			break;
 		}
 		int nLength = ntohl(head.data_len);
-		nLen = recv(nfd, pBuffer, nLength, MSG_WAITALL);
+		nLen = m_recvSocket->Read_n(pBuffer, nLength);
 		if (nLen > 0)
 		{
 			int nRet = 0;

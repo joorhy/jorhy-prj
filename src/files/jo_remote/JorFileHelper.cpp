@@ -22,8 +22,8 @@ int CJorFileHelper::OpenFile(J_OS::CTCPSocket *recvSocket, const char *pResid, j
 		memcpy(pVodPlayData->res_id, pNextId + 1, strlen(pNextId + 1));
 	else
 		memcpy(pVodPlayData->res_id, pResid, strlen(pResid));
-	pVodPlayData->begin_time = begin;
-	pVodPlayData->end_time = end;
+	pVodPlayData->begin_time = htonl(begin);
+	pVodPlayData->end_time = htonl(end);
 	recvSocket->Write_n(temp_buff, sizeof(J_CtrlHead) + sizeof(J_VodPlayData));
 	
 	J_CtrlHead ctrlHead = {0};
@@ -55,11 +55,12 @@ int CJorFileHelper::ReadFile(J_OS::CTCPSocket *recvSocket, const char *pResid, j
 		memcpy(pRequestData->res_id, pNextId + 1, strlen(pNextId + 1));
 	else
 		memcpy(pRequestData->res_id, pResid, strlen(pResid));
-	pRequestData->begin_time = begin;
-	pRequestData->time_ival = nIval;
+	pRequestData->begin_time = htonl(begin);
+	pRequestData->time_ival = htonl(nIval);
 	recvSocket->Write_n(temp_buff, sizeof(J_CtrlHead) + sizeof(J_RequestData));
 	
-	J_CtrlHead ctrlHead = {0};
+	return J_OK;
+	/*J_CtrlHead ctrlHead = {0};
 	recvSocket->Read_n((char *)&ctrlHead, sizeof(J_CtrlHead));
 	if (ctrlHead.ret == 0)
 	{
@@ -69,5 +70,5 @@ int CJorFileHelper::ReadFile(J_OS::CTCPSocket *recvSocket, const char *pResid, j
 			
 		return J_OK;
 	}
-	return J_SOCKET_ERROR;
+	return J_SOCKET_ERROR;*/
 }

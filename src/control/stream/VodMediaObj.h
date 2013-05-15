@@ -24,6 +24,7 @@ private:
 	int SetTime();
 	int SetScale();
 	int ReadData();
+	int WriteData();
 
 private:
 	int m_nSocket;

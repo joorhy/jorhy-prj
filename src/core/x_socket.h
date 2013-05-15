@@ -30,7 +30,7 @@ public:
 
 	int SetNonblocking(int &nSock);
 	int SetKeepAlive(int &nSock);
-	int GetHandle() const { return m_handle; };
+	int GetHandle() const { return m_handle; }
 	int Init(int nSocket);
 
 private:

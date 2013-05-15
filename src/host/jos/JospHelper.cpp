@@ -24,7 +24,7 @@ int CJospHelper::OpenStream(J_OS::CTCPSocket *recvSocket, const char *pResid, in
 	
 	const char *pNextId = strstr(pResid, ".");
 	memcpy(pRealViewData->res_id, pNextId + 1, strlen(pNextId + 1));
-	pRealViewData->stream_type = nStreamType;
+	pRealViewData->stream_type = htonl(nStreamType);
 	recvSocket->Write_n(temp_buff, sizeof(J_CtrlHead) + sizeof(J_RealViewData));
 	
 	J_CtrlHead ctrlHead = {0};

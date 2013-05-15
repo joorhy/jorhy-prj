@@ -86,63 +86,67 @@ int CRealMediaObj::Process(int nIoType)
 
 int CRealMediaObj::OnWriteData()
 {
-	//TLock(m_locker);
+	int nRet = J_OK;
 	J_RequestFilter *pAccess = dynamic_cast<J_RequestFilter *>(m_pObj);
-	memset(&m_streamHeader, 0, sizeof(m_streamHeader));
-	int nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, m_streamHeader);
-	if (nRet == J_OK && m_streamHeader.dataLen > 0)
+	while (true)
 	{
-		int nDataLen = 0;
-		pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
-		if (nDataLen > 0)
+		memset(&m_streamHeader, 0, sizeof(m_streamHeader));
+		nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, m_streamHeader);
+		if (nRet == J_OK && m_streamHeader.dataLen > 0)
 		{
-			int nRet = 0;
-			if (m_nextFrameTime <= 40)
+			int nDataLen = 0;
+			pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
+			if (nDataLen > 0)
 			{
-				m_lastFrameTime = m_streamHeader.timeStamp;
-				if (m_streamHeader.frameType == jo_video_i_frame ||
-					((m_streamHeader.frameType == jo_video_p_frame) && (m_streamHeader.frameNum == ++m_lastFrameNum)))
+				int nRet = 0;
+				if (m_nextFrameTime <= 40)
 				{
-					if (m_streamHeader.frameType == jo_video_i_frame)
-						m_lastFrameNum = m_streamHeader.frameNum;
-						
-					if ((nRet = m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen)) < 0)
+					m_lastFrameTime = m_streamHeader.timeStamp;
+					if (m_streamHeader.frameType == jo_video_i_frame ||
+						((m_streamHeader.frameType == jo_video_p_frame) && (m_streamHeader.frameNum == ++m_lastFrameNum)))
 					{
-						J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
-						//TUnlock(m_locker);
-						return J_SOCKET_ERROR;
+						if (m_streamHeader.frameType == jo_video_i_frame)
+							m_lastFrameNum = m_streamHeader.frameNum;
+							
+						m_nextFrameTime = CTime::Instance()->GetLocalTime(0);
+						if ((nRet = m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen)) < 0)
+						{
+							J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
+							return J_SOCKET_ERROR;
+						}
+						m_nextFrameTime = CTime::Instance()->GetLocalTime(0) - m_nextFrameTime;
+						//J_OS::LOGINFO("m_nextFrameTime = %d", m_nextFrameTime);
+						break;
+					}
+					else
+					{
+						m_nextFrameTime -= 40;
+						continue;
 					}
 				}
-				m_nextFrameTime = 0;
+				else
+				{
+					m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
+					//return J_OK;
+					continue;
+				}
 			}
 			else
 			{
-				m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
 				return J_OK;
 			}
-			//printf("send time = %d\n", m_streamHeader.timeStamp - m_lastFrameTime);
+		}
+		else if (nRet == J_OK && m_streamHeader.frameType == jo_media_broken)
+		{
+			J_OS::LOGERROR("CRealMediaObj::OnWrite Source Broken");
+			return J_SOCKET_ERROR;
 		}
 		else
 		{
-			//TUnlock(m_locker);
+			usleep(1);
 			return J_OK;
 		}
 	}
-	else if (m_streamHeader.frameType == jo_media_broken)
-	{
-		J_OS::LOGERROR("CRealMediaObj::OnWrite Source Broken");
-		//TUnlock(m_locker);
-		return J_SOCKET_ERROR;
-	}
-	else
-	{
-		usleep(1);
-		//J_OS::LOGERROR("CRealMediaObj::OnWrite Source Error");
-		//TUnlock(m_locker);
-		return J_OK;
-	}
-	//--m_taskNum;
-	//TUnlock(m_locker);
 	
 	return nRet;
 }
