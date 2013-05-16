@@ -18,6 +18,7 @@
     <File Name="../../src/core/x_time.cpp"/>
     <File Name="../../src/core/x_timer.cpp"/>
     <File Name="../../src/core/x_ringbuffer.cpp"/>
+    <File Name="../../src/core/x_thread.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/core/j_includes.h"/>
@@ -47,6 +48,7 @@
     <File Name="../../src/core/x_timer.h"/>
     <File Name="../../src/core/x_thread_pool.h"/>
     <File Name="../../src/core/j_common.h"/>
+    <File Name="../../src/core/x_thread.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
