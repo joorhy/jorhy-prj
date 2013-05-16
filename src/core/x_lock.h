@@ -37,6 +37,7 @@ public:
 
 	void Single();
 	void Wait();
+	void Wait(CTLock &mutex);
 
 private:
 	j_cond_t m_cond;

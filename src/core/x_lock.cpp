@@ -79,6 +79,19 @@ void CXCond::Wait()
 #endif
 }
 
+void CXCond::Wait(CTLock &mutex)
+{
+		mutex._Unlock();
+#ifdef WIN32
+		WaitForSingleObject(m_cond.handle,INFINITE);
+#else
+		pthread_mutex_lock(&m_cond.mutex);
+		pthread_cond_wait(&m_cond.handle, &m_cond.mutex);
+		pthread_mutex_unlock(&m_cond.mutex);
+#endif
+		mutex._Lock();
+}
+
 CPLock::CPLock()
 {
 	m_lock.hFile = j_invalid_filemap_val;
@@ -142,7 +155,7 @@ void CRWLock::_RLock()
 	while(m_writer != 0)
 	{
 		assert(m_readers == 0);
-		m_wait.Wait();
+		m_wait.Wait(m_mutex);
 	}
 
 	if(m_readers == ULONG_MAX)
@@ -170,7 +183,7 @@ void CRWLock::_WLock()
 	m_writers++;
 	/* Wait until nobody owns the lock in either way. */
 	while(m_readers > 0 || m_writer != 0)
-		m_wait.Wait();
+		m_wait.Wait(m_mutex);
 	m_writers--;
 	assert (m_writer == 0);
 #ifdef WIN32
