@@ -25,6 +25,7 @@
 #include <netinet/if_ether.h>
 #include <net/if.h>
 #include <arpa/inet.h>
+#include <dirent.h>
 #endif
 
 #include <math.h>
@@ -46,6 +47,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <algorithm>
 
 #include "x_errtype.h"
 
