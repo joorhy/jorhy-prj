@@ -5,75 +5,196 @@ namespace J_OS
 
 CTLock::CTLock()
 {
-    pthread_mutex_init(&m_mut, NULL);
+#ifdef WIN32
+	InitializeCriticalSection (&m_mutex.mutex);
+#else
+    pthread_mutex_init(&m_mutex.mutex, NULL);
+#endif
 }
 
 CTLock::~CTLock()
 {
-    pthread_mutex_destroy(&m_mut);
+#ifdef WIN32
+	DeleteCriticalSection(&m_mutex.mutex);
+#else
+    pthread_mutex_destroy(&m_mutex.mutex);
+#endif
 }
 
 void CTLock::_Lock()
 {
-    pthread_mutex_lock(&m_mut);
+#ifdef WIN32
+	EnterCriticalSection (&m_mutex.mutex);
+#else
+    pthread_mutex_lock(&m_mutex.mutex);
+#endif
 }
 
 void CTLock::_Unlock()
 {
-    pthread_mutex_unlock(&m_mut);
+#ifdef WIN32
+	LeaveCriticalSection (&m_mutex.mutex);
+#else
+    pthread_mutex_unlock(&m_mutex.mutex);
+#endif
+}
+
+CXCond::CXCond()
+{
+#ifdef WIN32
+	m_cond.handle = CreateEvent(NULL, FALSE, FALSE, NULL);
+#else
+	pthread_mutex_init(&m_cond.mutex, NULL);
+	pthread_cond_init(&m_cond.handle, NULL);
+#endif
+}
+
+CXCond::~CXCond()
+{
+#ifdef WIN32
+	CloseHandle(m_cond.handle);
+#else
+	pthread_mutex_destroy(&m_cond.mutex);
+	pthread_cond_destroy(&m_cond.handle);
+#endif
+}
+
+void CXCond::Single()
+{
+#ifdef WIN32
+	SetEvent(m_cond.handle);
+#else
+	pthread_cond_signal(&m_cond.handle);
+#endif
+}
+
+void CXCond::Wait()
+{
+#ifdef WIN32
+	WaitForSingleObject(m_cond.handle, INFINITE);
+#else
+	pthread_mutex_lock(&m_cond.mutex);
+	pthread_cond_wait(&m_cond.handle, &m_cond.mutex);
+	pthread_mutex_unlock(&m_cond.mutex);
+#endif
 }
 
 CPLock::CPLock()
-: m_lockfd(-1)
+: m_lock.hFile(j_invalid_filemap_val)
 {
-	m_lockfd = open("p.txt", O_WRONLY|O_CREAT, 0777);
+#ifdef WIN32
+	m_lock.hFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, "p.txt");
+	if (m_lock.hFile == j_invalid_filemap_val)
+		m_lock.hFile  = ::CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 256, "p.txt");
+#else
+	m_lock.hFile = open("p.txt", O_WRONLY|O_CREAT, 0777);
+#endif
 }
 
 CPLock::~CPLock()
 {
-	if (m_lockfd > 0)
-		close(m_lockfd);
+	if (m_lock.hFile != j_invalid_filemap_val)
+#ifdef WIN32
+#else
+		close(m_lock.hFile);
+#endif
 }
 
 void CPLock::_Lock()
 {
-	m_flock.l_type = F_WRLCK;
-	m_flock.l_whence = SEEK_SET;
-	m_flock.l_start = 0;
+#ifdef WIN32
+	m_lock.flock = reinterpret_cast<char *>(MapViewOfFile(m_lock.hFile, FILE_MAP_ALL_ACCESS, 0, 0, 0));
+#else
+	m_lock->flock.l_type = F_WRLCK;
+	m_lock->flock.l_whence = SEEK_SET;
+	m_lock->flock.l_start = 0;
 	m_flock.l_len = 0;
-	m_flock.l_pid = getpid();
+	m_lock.flock.l_pid = getpid();
 
-	fcntl(m_lockfd, F_SETLKW, &m_flock);
+	fcntl(m_lock.hFile, F_SETLKW, &m_lock.flock);
+#endif
 }
 
 void CPLock::_Unlock()
 {
-	fcntl(m_lockfd, F_SETLKW, F_UNLCK);
+#ifdef WIN32
+	UnmapViewOfFile(m_lock.flock);
+#else
+	fcntl(m_lock.hFile, F_SETLKW, F_UNLCK);
+#endif
 }
 
 CRWLock::CRWLock()
 {
-	pthread_rwlock_init(&m_rwlock, NULL);
+	m_readers	= 0;
+	m_writers	= 0;
+	m_writer	= 0;
 }
 
 CRWLock::~CRWLock()
 {
-	pthread_rwlock_destroy(&m_rwlock);
+
 }
 
 void CRWLock::_RLock()
 {
-	pthread_rwlock_rdlock(&m_rwlock);;
+	m_mutex._Lock();
+	while(m_writer != 0)
+	{
+		assert(m_readers == 0);
+		m_wait.Wait(m_mutex);
+	}
+
+	if(m_readers == ULONG_MAX)
+		abort();
+	m_readers++;
+	m_mutex._Unlock();
+}
+
+void CRWLock::_RUnlock()
+{
+	m_mutex._Lock();
+	assert (m_readers > 0);
+
+	if(--m_readers == 0 && m_writers > 0)
+		m_wait.Single();
+	m_mutex._Unlock();
 }
 
 void CRWLock::_WLock()
 {
-	pthread_rwlock_wrlock(&m_rwlock);
+	m_mutex._Lock();
+	if(m_writers == ULONG_MAX)
+		abort();
+
+	m_writers++;
+	/* Wait until nobody owns the lock in either way. */
+	while(m_readers > 0 || m_writer != 0)
+		m_wait.Wait(m_mutex);
+	m_writers--;
+	assert (m_writer == 0);
+	m_writer = GetCurrentThreadId();
+	m_mutex._Unlock()
+}
+
+void CRWLock::_WUnlock()
+{
+	m_mutex._Lock();
+	assert (m_writer == GetCurrentThreadId ());
+	assert (m_readers == 0);
+	m_writer = 0;
+
+	/* Let reader and writer compete. Scheduler decides who wins. */
+	m_wait.Single();
+	m_mutex._Unlock();
 }
 
 void CRWLock::_Unlock()
 {
-	pthread_rwlock_unlock(&m_rwlock);
+	if(m_writer != 0)
+		_WUnlock();
+	else
+		_RUnlock();
 }
 
 CRECLock::CRECLock()

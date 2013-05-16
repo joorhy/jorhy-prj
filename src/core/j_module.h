@@ -7,9 +7,12 @@
 #include <semaphore.h>
 #include <stdint.h>
 
-#include "x_lock.h"
 #include "j_obj.h"
 #include "j_type.h"
+#include "x_ringbuffer.h"
+#include "x_log.h"
+#include "x_errtype.h"
+#include "x_lock.h"
 
 ///任务
 class J_Task : virtual public J_Obj
@@ -451,6 +454,55 @@ struct J_EventParser : public J_Obj
 	///@param[in]	pEventData 事件数据
 	///@return		见x_error_type.h
 	virtual int AnalyzePacket(const unsigned char *pEventData) = 0;
+};
+
+template <typename CBase>
+class J_BaseVideoStream : public CBase
+{
+protected:
+	J_BaseVideoStream() {}
+	~J_BaseVideoStream() {}
+
+public:
+	int AddRingBuffer(CRingBuffer *pRingBuffer)
+	{
+		TLock(m_vecLocker);
+		m_vecRingBuffer.push_back(pRingBuffer);
+		TUnlock(m_vecLocker);
+
+		return J_OK;
+	}
+
+	int DelRingBuffer(CRingBuffer *pRingBuffer)
+	{
+		TLock(m_vecLocker);
+		std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+		for (; it != m_vecRingBuffer.end(); it++)
+		{
+			if (*it == pRingBuffer)
+			{
+				m_vecRingBuffer.erase(it);
+				TUnlock(m_vecLocker);
+
+				return J_OK;
+			}
+		}
+		TUnlock(m_vecLocker);
+		return J_NOT_EXIST;
+	}
+
+	int RingBufferCount()
+	{
+		TLock(m_vecLocker);
+		int count = m_vecRingBuffer.size();
+		TUnlock(m_vecLocker);
+
+		return  count;
+	}
+
+public:
+	J_OS::TLocker_t m_vecLocker;
+	std::vector<CRingBuffer *> m_vecRingBuffer;
 };
 
 ///全局标识

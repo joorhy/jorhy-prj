@@ -1,10 +1,6 @@
 #ifndef __J_OBJ_H_
 #define __J_OBJ_H_
 
-#include "x_errtype.h"
-#include "x_ringbuffer.h"
-#include "x_log.h"
-
 struct J_Obj
 {
 	virtual ~J_Obj() {}
@@ -13,13 +9,21 @@ struct J_Obj
 ///原子操作 long型数据
 inline long atomic_inc(long volatile *v)
 {
+#ifdef WIN32
+	InterlockedExchangeAdd(v, 1);
+#else
 	__asm__ __volatile__("lock incl %0" : "+m"(*v));
+#endif
 	return *v;
 }
 
 inline long atomic_dec(long volatile *v)
 {
+#ifdef WIN32
+	InterlockedExchangeAdd(v, -1);
+#else
 	__asm__ __volatile__("lock decl %0" : "+m"(*v));
+#endif
 	return *v;
 }
 
@@ -57,54 +61,5 @@ protected:
 			impl->DecRef();\
 		else\
 			delete impl;
-
-template <typename CBase>
-class J_BaseVideoStream : public CBase
-{
-protected:
-	J_BaseVideoStream() {}
-	~J_BaseVideoStream() {}
-
-public:
-	int AddRingBuffer(CRingBuffer *pRingBuffer)
-	{
-		TLock(m_vecLocker);
-		m_vecRingBuffer.push_back(pRingBuffer);
-		TUnlock(m_vecLocker);
-
-		return J_OK;
-	}
-
-	int DelRingBuffer(CRingBuffer *pRingBuffer)
-	{
-		TLock(m_vecLocker);
-		std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-		for (; it != m_vecRingBuffer.end(); it++)
-		{
-			if (*it == pRingBuffer)
-			{
-				m_vecRingBuffer.erase(it);
-				TUnlock(m_vecLocker);
-
-				return J_OK;
-			}
-		}
-		TUnlock(m_vecLocker);
-		return J_NOT_EXIST;
-	}
-
-	int RingBufferCount()
-	{
-		TLock(m_vecLocker);
-		int count = m_vecRingBuffer.size();
-		TUnlock(m_vecLocker);
-
-		return  count;
-	}
-
-public:
-	J_OS::TLocker_t m_vecLocker;
-	std::vector<CRingBuffer *> m_vecRingBuffer;
-};
 
 #endif //~__J_OBJ_H_

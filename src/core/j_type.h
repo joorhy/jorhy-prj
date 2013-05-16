@@ -1,10 +1,6 @@
 #ifndef __J_TYPE_H_
 #define __J_TYPE_H_
-#include <sys/types.h>
-#include <stdint.h>
-#include <string>
-#include <vector>
-#include <map>
+#include "j_common.h"
 
 #define JO_MAKE_FORCC(ch0, ch1, ch2, ch3) 	((ch0 & 0xFF) | ((ch1 & 0xFF) << 8) | ((ch2 & 0xFF) << 16) | ((ch3 & 0xFF) << 24))
 
@@ -148,25 +144,6 @@ enum J_GetDataMode
 	jo_pull_mode = 1,
 	jo_push_mode,
 };
-
-typedef bool 				j_boolean_t;
-typedef unsigned int		j_time_t;
-typedef char				j_char_t;
-typedef int					j_result_t;
-typedef long				j_long_t;
-typedef void				j_void_t;
-
-typedef char 				j_int8_t;
-typedef unsigned char 		j_uint8_t;
-typedef short 				j_int16_t;
-typedef unsigned short 		j_uint16_t;
-typedef int 				j_int32_t;
-typedef unsigned int 		j_uint32_t;
-typedef long long 			j_int64_t;
-typedef unsigned long long 	j_uint64_t;
-
-typedef std::string					j_string_t;	
-typedef std::vector<j_string_t>		j_vec_str_t;
 
 ///帧头结构
 struct J_StreamHeader
