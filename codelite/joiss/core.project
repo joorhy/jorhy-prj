@@ -29,7 +29,6 @@
     <File Name="../../src/core/x_errtype.h"/>
     <File Name="../../src/core/x_file.h"/>
     <File Name="../../src/core/x_iconv.h"/>
-    <File Name="../../src/core/x_include.h"/>
     <File Name="../../src/core/x_loadso.h"/>
     <File Name="../../src/core/x_lock.h"/>
     <File Name="../../src/core/x_log.h"/>
@@ -47,6 +46,7 @@
     <File Name="../../src/core/x_time.h"/>
     <File Name="../../src/core/x_timer.h"/>
     <File Name="../../src/core/x_thread_pool.h"/>
+    <File Name="../../src/core/j_common.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

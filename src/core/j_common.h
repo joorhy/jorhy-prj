@@ -84,7 +84,7 @@ typedef std::vector<j_string_t>		j_vec_str_t;
 #ifdef WIN32
 typedef unsigned (X_JO_API *j_thread_entry_t)(void*);
 #else
-typedef (void *j_thread_entry_t)(void *); 
+typedef void *(*j_thread_entry_t)(void *); 
 #endif 
 
 #ifdef WIN32
@@ -126,6 +126,7 @@ typedef struct
 	pthread_cond_t   handle;
 	pthread_mutex_t mutex;
 }j_cond_t;
+#define ULONG_MAX 0xffffffffUL
 #endif
 
 #endif //~__JO_COMMON_H_

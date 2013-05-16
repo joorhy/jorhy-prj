@@ -80,8 +80,8 @@ void CXCond::Wait()
 }
 
 CPLock::CPLock()
-: m_lock.hFile(j_invalid_filemap_val)
 {
+	m_lock.hFile = j_invalid_filemap_val;
 #ifdef WIN32
 	m_lock.hFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, "p.txt");
 	if (m_lock.hFile == j_invalid_filemap_val)
@@ -105,10 +105,10 @@ void CPLock::_Lock()
 #ifdef WIN32
 	m_lock.flock = reinterpret_cast<char *>(MapViewOfFile(m_lock.hFile, FILE_MAP_ALL_ACCESS, 0, 0, 0));
 #else
-	m_lock->flock.l_type = F_WRLCK;
-	m_lock->flock.l_whence = SEEK_SET;
-	m_lock->flock.l_start = 0;
-	m_flock.l_len = 0;
+	m_lock.flock.l_type = F_WRLCK;
+	m_lock.flock.l_whence = SEEK_SET;
+	m_lock.flock.l_start = 0;
+	m_lock.flock.l_len = 0;
 	m_lock.flock.l_pid = getpid();
 
 	fcntl(m_lock.hFile, F_SETLKW, &m_lock.flock);
@@ -142,7 +142,7 @@ void CRWLock::_RLock()
 	while(m_writer != 0)
 	{
 		assert(m_readers == 0);
-		m_wait.Wait(m_mutex);
+		m_wait.Wait();
 	}
 
 	if(m_readers == ULONG_MAX)
@@ -170,17 +170,25 @@ void CRWLock::_WLock()
 	m_writers++;
 	/* Wait until nobody owns the lock in either way. */
 	while(m_readers > 0 || m_writer != 0)
-		m_wait.Wait(m_mutex);
+		m_wait.Wait();
 	m_writers--;
 	assert (m_writer == 0);
+#ifdef WIN32
 	m_writer = GetCurrentThreadId();
-	m_mutex._Unlock()
+#else
+	m_writer = pthread_self();
+#endif
+	m_mutex._Unlock();
 }
 
 void CRWLock::_WUnlock()
 {
 	m_mutex._Lock();
+#ifdef WIN32
 	assert (m_writer == GetCurrentThreadId ());
+#else 
+	assert (m_writer == pthread_self());
+#endif
 	assert (m_readers == 0);
 	m_writer = 0;
 

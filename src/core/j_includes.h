@@ -3,7 +3,7 @@
 
 #include "x_errtype.h"
 #include "x_log.h"
-#include "x_common.h"
+#include "j_common.h"
 #include "j_type.h"
 #include "j_module.h"
 
