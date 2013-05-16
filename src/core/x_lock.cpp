@@ -108,6 +108,7 @@ CPLock::~CPLock()
 {
 	if (m_lock.hFile != j_invalid_filemap_val)
 #ifdef WIN32
+		CloseHandle(m_lock.hFile);
 #else
 		close(m_lock.hFile);
 #endif
@@ -231,19 +232,31 @@ CRECLock::~CRECLock()
 
 void CRECLock::_Lock()
 {
+#ifdef WIN32
+	if (m_info.current_thread_locker == GetCurrentThread())
+#else
 	if (m_info.current_thread_locker == pthread_self())
+#endif
 		++m_info.locker_count;
 	else
 	{
 		m_info.locker._Lock();
 		m_info.locker_count = 1;
+#ifdef WIN32
+		m_info.current_thread_locker = GetCurrentThread();
+#else
 		m_info.current_thread_locker = pthread_self();
+#endif
 	}
 }
 
 void CRECLock::_Unlock()
 {
+#ifdef WIN32
+	if (m_info.current_thread_locker == GetCurrentThread())
+#else
 	if (m_info.current_thread_locker == pthread_self())
+#endif
 	{
 		if (m_info.locker_count == 1)
 		{

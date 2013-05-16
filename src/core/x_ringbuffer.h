@@ -1,6 +1,7 @@
 #ifndef __X_RINGBUFFER_H_
 #define __X_RINGBUFFER_H_
 #include "j_type.h"
+#include "x_lock.h"
 
 ///环形流队列
 #define CACHE_FRAME_NUM 100
@@ -35,8 +36,7 @@ class CRingBuffer
 		char *AddBuffer(char *pBuffer, int nLen);
 		
 	private:
-		pthread_mutex_t m_mutex;
-		pthread_cond_t m_cond;
+		J_OS::CTLock m_mutex;
 	
 		char *m_pBuffer;
 		char *m_pBegin;

@@ -32,6 +32,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include <signal.h>
 #include <fcntl.h>		/* low-level i/o */

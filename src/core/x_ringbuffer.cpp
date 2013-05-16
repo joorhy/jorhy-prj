@@ -13,22 +13,16 @@ CRingBuffer::CRingBuffer(int nCacheFrameNum, int nBufferSize)
 	m_pWritePoint = m_pReadPoint = m_pBegin;
 	m_nDataLen = 0;
 	m_nBufferSize = nBufferSize;
-	
-	pthread_mutex_init(&m_mutex, NULL);
-	pthread_cond_init(&m_cond, NULL);
 }
 CRingBuffer::~CRingBuffer()
 {
-	pthread_mutex_lock(&m_mutex);
+	m_mutex._Lock();
 	if (m_pBuffer)
 	{
 		delete m_pBuffer;
 		m_pBuffer = NULL;
 	}
-	pthread_mutex_unlock(&m_mutex);
-	
-	pthread_mutex_destroy(&m_mutex);
-	pthread_cond_destroy(&m_cond);
+	m_mutex._Unlock();
 }
 
 int CRingBuffer::ResetBufferSize(int nBufferSize)
@@ -38,7 +32,7 @@ int CRingBuffer::ResetBufferSize(int nBufferSize)
 
 int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 {
-	pthread_mutex_lock(&m_mutex);
+	m_mutex._Lock();
 	if (streamHeader.frameType != jo_video_i_frame)
 	{
 		++m_nDiscardedFrameNum;
@@ -50,7 +44,7 @@ int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 		if (m_nDataLen < 0)
 		{
 			J_OS::LOGINFO("CRingBuffer::PushBuffer Buffer Error");
-			pthread_mutex_unlock(&m_mutex);
+			m_mutex._Unlock();
 			return J_UNKNOW;
 		}
 			
@@ -63,18 +57,14 @@ int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 	Write((const char *)&m_Node, J_MEMNODE_LEN);
 	Write((const char *)&streamHeader, sizeof(J_StreamHeader));
 	Write(pBuffer, nLen);
-	pthread_mutex_unlock(&m_mutex);
-	//pthread_cond_signal(&m_cond);
+	m_mutex._Unlock();
 	
 	return J_UNKNOW;
 }
 
 int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 {
-	pthread_mutex_lock(&m_mutex);
-	//if (m_nDataLen == 0)
-	//	pthread_cond_wait(&m_cond, &m_mutex);
-		
+	m_mutex._Lock();
 	if (m_nDataLen > 0)
 	{
 		memset(&m_Node, 0, sizeof(m_Node));
@@ -84,10 +74,10 @@ int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 		if (streamHeader.frameType != jo_video_i_frame)
 			--m_nDiscardedFrameNum;
 			
-		pthread_mutex_unlock(&m_mutex);
+		m_mutex._Unlock();
 		return J_OK;
 	}
-	pthread_mutex_unlock(&m_mutex);
+	m_mutex._Unlock();
 
 	return J_NOT_COMPLATE;
 }

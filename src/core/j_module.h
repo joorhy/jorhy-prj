@@ -1,11 +1,5 @@
 #ifndef __J_VIDEOADAPTER_H_
 #define __J_VIDEOADAPTER_H_
-#include <queue>
-#include <vector>
-#include <string>
-#include <time.h>
-#include <semaphore.h>
-#include <stdint.h>
 
 #include "j_obj.h"
 #include "j_type.h"
@@ -338,25 +332,25 @@ struct J_VodCommandFilter : public J_CommandFilter
 {
 	///获得开始时间
 	///@return		开始时间
-	virtual uint64_t GetBeginTime() const { return m_beginTime; }
+	virtual j_uint64_t GetBeginTime() const { return m_beginTime; }
 
 	///获得结束时间
 	///@return		结束时间
-	virtual uint64_t GetEndTime() const { return m_endTime; }
+	virtual j_uint64_t GetEndTime() const { return m_endTime; }
 
 	///获得播放速度
 	///@return 		播放速度
-	virtual int32_t GetScale() const { return m_scale; }
+	virtual j_int32_t GetScale() const { return m_scale; }
 	
 	///获得播放模式
 	///@return 		播放模式
-	virtual int32_t GetMode() const { return m_mode; }
+	virtual j_int32_t GetMode() const { return m_mode; }
 
 protected:
-	uint64_t m_beginTime;
-	uint64_t m_endTime;
-	int32_t m_scale;
-	int32_t m_mode;
+	j_uint64_t m_beginTime;
+	j_uint64_t m_endTime;
+	j_int32_t m_scale;
+	j_int32_t m_mode;
 };
 
 struct J_RequestFilter : virtual public J_Obj
@@ -364,11 +358,11 @@ struct J_RequestFilter : virtual public J_Obj
 	///命令解析
 	///@param[in]	nSocket	
 	///@return		见x_error_type.h
-	virtual int Parser(int nSocket) = 0;
+	virtual j_result_t Parser(int nSocket) = 0;
 	
 	///获取资源类型
 	///@return	成功-资源类型,失败-NULL
-	virtual const char *GetResourceType() = 0;
+	virtual const j_char_t *GetResourceType() = 0;
 
 	///数据转换
 	///@param[in]	pInputData 		输入数据
@@ -376,22 +370,22 @@ struct J_RequestFilter : virtual public J_Obj
 	///@param[out] 	pOutputData		输出数据
 	///@param[out]	nOutputLen		输出数据长度
 	///@return		见x_error_type.h
-	virtual int Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen) = 0;
+	virtual j_result_t Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen) = 0;
 
 	///完成会话
 	///@param[in]	nSocket	
 	///@return		见x_error_type.h
-	virtual int Complete(int nSocket) = 0;
+	virtual j_result_t Complete(int nSocket) = 0;
 };
 
 struct J_MuxFilter : virtual public J_Obj
 {
 	///初始化
 	///@return	见x_error_type.h
-	virtual int Init() = 0;
+	virtual j_result_t Init() = 0;
 
 	///逆初始化
-	virtual void Deinit() = 0;
+	virtual j_void_t Deinit() = 0;
 
 	///数据转换
 	///@param[in]	pInputData 		输入数据
@@ -400,7 +394,7 @@ struct J_MuxFilter : virtual public J_Obj
 	///@param[out]	nOutputLen		输出数据长度
 	///@param[in]	pExtdata			扩展数据
 	///@return		见x_error_type.h
-	virtual int Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0) = 0;
+	virtual j_result_t Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0) = 0;
 };
 
 struct J_AsioUser : public J_Obj
@@ -408,22 +402,22 @@ struct J_AsioUser : public J_Obj
 	///连接事件触发(用于网络IO)
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual int OnAccept(int nfd) = 0;
+	virtual j_result_t OnAccept(int nfd) = 0;
 
 	///读事件触发
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual int OnRead(int nfd) = 0;
+	virtual j_result_t OnRead(int nfd) = 0;
 
 	///写事件触发
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual int OnWrite(int nfd) = 0;
+	virtual j_result_t OnWrite(int nfd) = 0;
 
 	///断线事件触发(用于网络IO)
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual int OnBroken(int nfd) = 0;
+	virtual j_result_t OnBroken(int nfd) = 0;
 };
 
 struct J_CommandParser : public J_Obj
@@ -433,19 +427,19 @@ struct J_CommandParser : public J_Obj
 	///@param[in]	pAddr 用户Address
 	///@param[in]	nPort 用户Port
 	///@return		见x_error_type.h
-	virtual int AddUser(int nSocket, const char *pAddr, short nPort) = 0;
+	virtual j_result_t AddUser(int nSocket, const char *pAddr, short nPort) = 0;
 	
 	///解析命令
 	///@param[in]	nSocket 用户ID
 	///@param[in]	pResponse 返回数据
 	///@param[out]	nRespLen 返回数据长度
 	///@return		见x_error_type.h
-	virtual int ProcessRequest(int nSocket, char *&pResponse, int &nRespLen) = 0;
+	virtual j_result_t ProcessRequest(int nSocket, char *&pResponse, int &nRespLen) = 0;
 	
 	///删除用户
 	///@param[in]	nSocket 用户ID
 	///@return		见x_error_type.h
-	virtual int DelUser(int nSocket) = 0;
+	virtual j_result_t DelUser(int nSocket) = 0;
 };
 
 struct J_EventParser : public J_Obj
@@ -453,7 +447,7 @@ struct J_EventParser : public J_Obj
 	///事件解析
 	///@param[in]	pEventData 事件数据
 	///@return		见x_error_type.h
-	virtual int AnalyzePacket(const unsigned char *pEventData) = 0;
+	virtual j_result_t AnalyzePacket(const unsigned char *pEventData) = 0;
 };
 
 template <typename CBase>
