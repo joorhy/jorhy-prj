@@ -18,10 +18,10 @@ class CHttpFilter : public J_RequestFilter
 
 	public:
 		///J_ProtocolFilter
-		virtual int Parser(int nSocket);
+		virtual int Parser(j_socket_t nSocket);
 		const char *GetResourceType();
-		virtual int Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen);
-		virtual int Complete(int nSocket);
+		virtual int Convert(const j_char_t *pInputData, J_StreamHeader &streamHeader, j_char_t *pOutputData, j_int32_t &nOutLen);
+		virtual int Complete(j_socket_t nSocket);
 
 	private:
 		J_MuxFilter *m_muxFilter;

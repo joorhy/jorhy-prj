@@ -31,13 +31,13 @@ public:
     virtual int OnBroken(int nfd);
 
 private:
-	int m_nSocket;
-	bool m_bStartup;
-	char *m_pRecvBuff;//[100 * 1024];
-	void *m_pTCPSocket;
+	j_socket_t m_nSocket;
+	j_boolean_t m_bStartup;
+	j_char_t *m_pRecvBuff;//[100 * 1024];
+	j_void_t *m_pTCPSocket;
 
 	COnvifParser m_parser;
-	std::string m_resid;
+	j_string_t m_resid;
 
 	J_OS::TLocker_t m_locker;
 };

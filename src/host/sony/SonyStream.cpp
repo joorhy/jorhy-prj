@@ -6,8 +6,7 @@
 
 #define RECV_SIZE (1024 * 1024)
 CSonyStream::CSonyStream(void *pTCPSocket, std::string resid)
-: m_nSocket(0)
-, m_bStartup(false)
+: m_bStartup(false)
 , m_pRecvBuff(NULL)
 , m_resid(resid)
 {
@@ -40,7 +39,7 @@ int CSonyStream::Startup()
     TLock(m_locker);
     m_bStartup = true;
     CRdAsio::Instance()->Init();
-    CRdAsio::Instance()->AddUser(m_nSocket, this);
+    CRdAsio::Instance()->AddUser(m_nSocket.sock, this);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Startup Startup this = %d", this);
 
@@ -54,7 +53,7 @@ int CSonyStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    CRdAsio::Instance()->DelUser(m_nSocket);
+    CRdAsio::Instance()->DelUser(m_nSocket.sock);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Shutdown Shutdown this = %d", this);
 

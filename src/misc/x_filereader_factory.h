@@ -9,8 +9,8 @@ typedef int (*J_MakeFileReaderFun)(J_Obj *&, const char *pResid);
 
 class CFileReaderFactory : public SingletonTmpl<CFileReaderFactory>
 {
-	typedef std::map<std::string, J_MakeFileReaderFun> FileReaderRegistMap;
-	typedef std::map<int, J_FileReader *> FileReaderMap;
+	typedef std::map<j_string_t, J_MakeFileReaderFun> FileReaderRegistMap;
+	typedef std::map<j_socket_t, J_FileReader *> FileReaderMap;
 public:
 	CFileReaderFactory(int) {}
 	~CFileReaderFactory() {}
@@ -25,8 +25,8 @@ public:
 	///@return 		参考x_error_type.h
 	int RegisterFileReader(const char *fileReaderType, J_MakeFileReaderFun pFun);
 
-	J_FileReader *GetFileReader(int nSocket, const char *pType, const char *pResid);
-	void DelFileReader(int nSocket);
+	J_FileReader *GetFileReader(j_socket_t nSocket, const char *pType, const char *pResid);
+	void DelFileReader(j_socket_t nSocket);
 
 private:
 	FileReaderRegistMap m_fileReaderRegistMap;

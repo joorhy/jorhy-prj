@@ -5,7 +5,7 @@
 
 #define CLIENT_BUFFER_SIZE (1024 * 1024)
 
-CVodMediaObj::CVodMediaObj(int nSocket, J_Obj *pObj)
+CVodMediaObj::CVodMediaObj(j_socket_t nSocket, J_Obj *pObj)
 {
 	m_nSocket = nSocket;
 	m_bStart = false;

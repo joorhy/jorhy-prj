@@ -23,7 +23,7 @@ CJospFilter::~CJospFilter()
 		delete m_pRetBuff;
 }
 
-int CJospFilter::Parser(int nSocket)
+int CJospFilter::Parser(j_socket_t nSocket)
 {
 	J_OS::CTCPSocket readSocket(nSocket);
 	J_CtrlHead ctrlHead = {0};
@@ -114,7 +114,7 @@ int CJospFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, c
 	return m_muxFilter->Convert((const char *)pInputData, streamHeader, pOutputData, nOutLen, (void *)&RATE);
 }
 
-int CJospFilter::Complete(int nSocket)
+int CJospFilter::Complete(j_socket_t nSocket)
 {
 	J_OS::CTCPSocket writeSocket(nSocket);
 	if (writeSocket.Write_n((char *)m_pRetBuff, m_nRetLen) < 0)

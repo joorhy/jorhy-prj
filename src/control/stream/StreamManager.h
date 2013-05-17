@@ -20,19 +20,19 @@ class CStreamManager : public CXService<CStreamManager>
 
 	public:
 		///CXService
-		virtual int OnAccept(int nSocket, const char *pAddr, short nPort);
-		virtual int OnRead(int nSocket);
-		virtual int OnWrite(int nSocket);
-		virtual int OnBroken(int nSocket);
-		virtual int GetSocketByResid(const char *pResid);
+		virtual int OnAccept(j_socket_t nSocket, const char *pAddr, short nPort);
+		virtual int OnRead(j_socket_t nSocket);
+		virtual int OnWrite(j_socket_t nSocket);
+		virtual int OnBroken(j_socket_t nSocket);
+		virtual j_socket_t GetSocketByResid(const char *pResid);
 
 		///CStreamManager
 		int StartService(int nPort, const char *pType);
 		int StopService();
 
 	private:
-		int ParserRequest(int nSocket, J_MediaObj *pClient);
-		int ProcessCommand(int nSocket, J_Obj *pObj, J_MediaObj *pClient);
+		int ParserRequest(j_socket_t nSocket, J_MediaObj *pClient);
+		int ProcessCommand(j_socket_t nSocket, J_Obj *pObj, J_MediaObj *pClient);
 		static void OnMessage(void *user, BaseMessage *pMessage)
 		{
 			(static_cast<CStreamManager *>(user))->ProcMessage(pMessage);
@@ -40,11 +40,11 @@ class CStreamManager : public CXService<CStreamManager>
 		void ProcMessage(BaseMessage *pMessage);
 
 	private:
-		std::map<int, J_MediaObj *> m_clientMap;			//socket 与 Client对象的映射关系
+		std::map<j_socket_t, J_MediaObj *> m_clientMap;			//socket 与 Client对象的映射关系
 
-		typedef std::map<std::string, std::vector<int> >  ResidMap;
+		typedef std::map<std::string, std::vector<j_socket_t> >  ResidMap;
 		ResidMap m_residMap;
-		std::vector<int> m_vecClient;						//存放所有相同Resid请求的socket
+		std::vector<j_socket_t> m_vecClient;						//存放所有相同Resid请求的socket
 		std::string m_serviceType;
 };
 

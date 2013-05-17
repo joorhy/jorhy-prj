@@ -14,12 +14,12 @@ CRymcParser::~CRymcParser()
 
 }
 
-int CRymcParser::AddUser(int nSocket, const char *pAddr, short nPort)
+int CRymcParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
 {
 	return J_OK;
 }
 
-int CRymcParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
+int CRymcParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nRespLen)
 {
 	J_OS::CTCPSocket ReadSocket(nSocket);
 	char read_buff[2048] = {0};
@@ -138,7 +138,7 @@ int CRymcParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
 	return J_OK;
 }
 
-int CRymcParser::DelUser(int nSocket)
+int CRymcParser::DelUser(j_socket_t nSocket)
 {
 	return J_OK;
 }

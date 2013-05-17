@@ -31,7 +31,7 @@ public:
     virtual int OnBroken(int nfd);
 
 private:
-	int m_nSocket;
+	j_socket_t m_nSocket;
 	bool m_bStartup;
 	char *m_pRecvBuff;//[100 * 1024];
 	void *m_pTCPSocket;

@@ -9,7 +9,7 @@ typedef int (*J_MakeFilterFun)(J_Obj *&);
 class CFilterFactory : public SingletonTmpl<CFilterFactory>
 {
 	typedef std::map<std::string, J_MakeFilterFun> FilterRegistMap;
-	typedef std::map<int, J_RequestFilter *> FilterMap;
+	typedef std::map<j_socket_t, J_RequestFilter *> FilterMap;
 public:
 	CFilterFactory(int) {}
 	~CFilterFactory() {}
@@ -24,8 +24,8 @@ public:
 	///@return 		参考x_error_type.h
 	int RegisterFilter(const char *filterType, J_MakeFilterFun pFun);
 
-	J_RequestFilter *GetFilter(int nSocket, const char *pType);
-	void DelFilter(int nSocket);
+	J_RequestFilter *GetFilter(j_socket_t nSocket, const char *pType);
+	void DelFilter(j_socket_t nSocket);
 
 private:
 	FilterRegistMap m_filterRegistMap;

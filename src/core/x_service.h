@@ -39,11 +39,11 @@ public:
 		Stop();
 	}
 
-	virtual int OnAccept(int nSocket, const char *pAddr, short nPort) = 0;
-	virtual int OnRead(int nSocket) = 0;
-	virtual int OnWrite(int nSocket) = 0;
-	virtual int OnBroken(int nSocket) = 0;
-	virtual int GetSocketByResid(const char *pResid) = 0;
+	virtual int OnAccept(j_socket_t nSocket, const char *pAddr, short nPort) = 0;
+	virtual int OnRead(j_socket_t nSocket) = 0;
+	virtual int OnWrite(j_socket_t nSocket) = 0;
+	virtual int OnBroken(j_socket_t nSocket) = 0;
+	virtual j_socket_t GetSocketByResid(const char *pResid) = 0;
 
 public:
 	void Init()
@@ -63,15 +63,15 @@ public:
 		m_nPort = nPort;
 		m_tcpSocket = new J_OS::CTCPSocket();
 		int retval;
-		setsockopt(m_tcpSocket->GetHandle(), SOL_SOCKET, SO_REUSEADDR, &retval, sizeof(int));
+		setsockopt(m_tcpSocket->GetHandle().sock, SOL_SOCKET, SO_REUSEADDR, &retval, sizeof(int));
 		if (m_tcpSocket->Listen(nPort, 1024, false) != J_OK)
 			return J_UNKNOW;
 
 		m_epoll_fd = epoll_create(MAX_EPOLLSIZE);
 		m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
-		m_evListen.data.fd = m_tcpSocket->GetHandle();
+		m_evListen.data.fd = m_tcpSocket->GetHandle().sock;
 
-		if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_tcpSocket->GetHandle(), &m_evListen) < 0)
+		if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_tcpSocket->GetHandle().sock, &m_evListen) < 0)
 		{
 			J_OS::LOGERROR("CXService::Start epoll set insertion error");
 			return J_UNKNOW;
@@ -114,20 +114,20 @@ public:
 		return J_OK;
 	}
 
-	void Broken(int nSocket, struct epoll_event &evBroken)
+	void Broken(j_socket_t nSocket, struct epoll_event &evBroken)
 	{
 		OnBroken(nSocket);
-		epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, nSocket, &evBroken);
-		close(nSocket);
+		epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, nSocket.sock, &evBroken);
+		close(nSocket.sock);
 		--m_nCurfds;
 	}
 
 	void ModifyListen()
 	{
 		m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
-		m_evListen.data.fd = m_tcpSocket->GetHandle();
+		m_evListen.data.fd = m_tcpSocket->GetHandle().sock;
 
-		if (epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, m_tcpSocket->GetHandle(), &m_evListen) < 0)
+		if (epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, m_tcpSocket->GetHandle().sock, &m_evListen) < 0)
 		{
 			J_OS::LOGERROR("CXService::ModifyListen epoll set insertion error");
 		}
@@ -183,10 +183,10 @@ private:
 
 			for (i = 0; i < nfds; i++)
 			{
-				if (m_evConnect[i].data.fd == m_tcpSocket->GetHandle())
+				if (m_evConnect[i].data.fd == m_tcpSocket->GetHandle().sock)
 				{
 					connLen = sizeof(struct sockaddr_in);
-					connSocket = accept(m_tcpSocket->GetHandle(), (struct sockaddr *)&sonnAddr, &connLen);
+					connSocket = accept(m_tcpSocket->GetHandle().sock, (struct sockaddr *)&sonnAddr, &connLen);
 					if (connSocket < 0)
 					{
 						J_OS::LOGERROR("CXService::OnThread accept error");
@@ -195,7 +195,9 @@ private:
 					//J_OS::LOGINFO("CXService::OnThread connect from ip = %s, port = %d, socket = %d, socket2 = %d"
 					//		, inet_ntoa(sonnAddr.sin_addr), ntohs(sonnAddr.sin_port), connSocket, m_evConnect[i].data.fd);
 					EnableKeepalive(connSocket);
-					m_tcpSocket->SetNonblocking(connSocket);
+					j_socket_t sock;
+					sock.sock = connSocket;
+					m_tcpSocket->SetNonblocking(sock);
 					m_evListen.events = EPOLLIN /*| EPOLLOUT*/ | EPOLLRDHUP | EPOLLERR | EPOLLHUP | EPOLLPRI/* | EPOLLET*/;
 					m_evListen.data.fd = connSocket;
 
@@ -212,7 +214,8 @@ private:
 					RECUnlock(m_locker);
 
 					++m_nCurfds;
-					OnAccept(connSocket, inet_ntoa(sonnAddr.sin_addr), ntohs(sonnAddr.sin_port));
+					sock.sock = connSocket;
+					OnAccept(sock, inet_ntoa(sonnAddr.sin_addr), ntohs(sonnAddr.sin_port));
 
 					m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
 					m_evListen.data.fd = m_evConnect[i].data.fd;
@@ -223,7 +226,9 @@ private:
 					if ((m_evConnect[i].events & EPOLLIN) && (m_evConnect[i].events & EPOLLRDHUP))
 					{
 						RECLock(m_locker);
-						Broken(m_evConnect[i].data.fd, m_evConnect[i]);
+						j_socket_t sock;
+						sock.sock = m_evConnect[i].data.fd;
+						Broken(sock, m_evConnect[i]);
 						VecSocket::iterator it = m_vecSocket.begin();
 						for (; it != m_vecSocket.end(); it++)
 						{
@@ -248,12 +253,13 @@ private:
 							RECUnlock(m_locker);
 							continue;*/
 						//}
-
-						if (OnRead(m_evConnect[i].data.fd) < 0)
+						j_socket_t sock;
+						sock.sock = m_evConnect[i].data.fd;
+						if (OnRead(sock) < 0)
 						{
 							//J_OS::LOGINFO("ERROR %x", nRet);
 
-							Broken(m_evConnect[i].data.fd, m_evConnect[i]);
+							Broken(sock, m_evConnect[i]);
 							VecSocket::iterator it = m_vecSocket.begin();
 							for (; it != m_vecSocket.end(); it++)
 							{
@@ -275,9 +281,11 @@ private:
 					else if (m_evConnect[i].events & EPOLLOUT)
 					{
 						RECLock(m_locker);
-						if (OnWrite(m_evConnect[i].data.fd) < 0)
+						j_socket_t sock;
+						sock.sock = m_evConnect[i].data.fd;
+						if (OnWrite(sock) < 0)
 						{
-							Broken(m_evConnect[i].data.fd, m_evConnect[i]);
+							Broken(sock, m_evConnect[i]);
 							VecSocket::iterator it = m_vecSocket.begin();
 							for (; it != m_vecSocket.end(); it++)
 							{
@@ -308,7 +316,7 @@ private:
 			}
 		}
 		J_OS::LOGINFO("CXService::OnThread thread exit errno = %d", errno);
-		epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, m_tcpSocket->GetHandle(), &m_evListen);
+		epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, m_tcpSocket->GetHandle().sock, &m_evListen);
 		close(m_epoll_fd);
 		m_epoll_fd = 0;
 

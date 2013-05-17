@@ -24,7 +24,7 @@ public:
 	virtual int OnWrite(int nfd) { return J_OK; }
 	virtual int OnBroken(int nfd);
 private:
-	int m_nSocket;
+	j_socket_t m_nSocket;
 
 	pthread_t m_recvThread;
 	bool m_bStartup;

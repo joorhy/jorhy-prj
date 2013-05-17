@@ -7,7 +7,7 @@
 class CVodMediaObj : public J_MediaObj
 {
 public:
-	CVodMediaObj(int nSocket, J_Obj *pObj);
+	CVodMediaObj(j_socket_t nSocket, J_Obj *pObj);
 	~CVodMediaObj();
 
 public:
@@ -27,16 +27,16 @@ private:
 	int WriteData();
 
 private:
-	int m_nSocket;
-	bool m_bStart;
-	char *m_pDataBuff;
-	char *m_pConvetBuff;
-	std::string m_resid;
+	j_socket_t m_nSocket;
+	j_boolean_t m_bStart;
+	j_char_t *m_pDataBuff;
+	j_char_t *m_pConvetBuff;
+	j_string_t m_resid;
 
-	std::string m_fileid;
-	bool m_bPaused;
-	char *m_pHeader;
-	bool m_bSendHeader;
+	j_string_t m_fileid;
+	j_boolean_t m_bPaused;
+	j_char_t *m_pHeader;
+	j_boolean_t m_bSendHeader;
 	J_StreamHeader m_streamHeader;
 
 	J_OS::CTCPSocket m_sendSocket;

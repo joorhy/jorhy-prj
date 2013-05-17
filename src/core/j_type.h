@@ -321,7 +321,7 @@ struct J_NetWorkInfo
     j_char_t ip_addr[16];
     j_int16_t port;
 };
-typedef std::map<int, J_NetWorkInfo> j_map_network_info_t;
+typedef std::map<j_socket_t, J_NetWorkInfo> j_map_network_info_t;
 
 ///JOSP 登录数据
 struct J_LoginData

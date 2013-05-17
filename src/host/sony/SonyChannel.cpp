@@ -252,7 +252,7 @@ int CSonyChannel::SendCommand(const char *pCommand)
 {
 	J_OS::CTCPSocket cmdSocket(m_pAdapter->GetRemoteIp(),
 			m_pAdapter->GetRemotePort());
-	if (cmdSocket.GetHandle() == -1)
+	if (cmdSocket.GetHandle().sock == j_invalid_socket_val)
 		return J_INVALID_DEV;
 
 	if (cmdSocket.Write((char*)pCommand, strlen(pCommand)) < 0)

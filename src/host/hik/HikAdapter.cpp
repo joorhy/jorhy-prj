@@ -72,7 +72,7 @@ int CHikAdapter::EnableAlarm()
 		m_pAlarmSock = new J_OS::CTCPSocket();
 
 	m_pAlarmSock->Connect(m_remoteIP, m_remotePort);
-	if (m_pAlarmSock->GetHandle() == -1)
+	if (m_pAlarmSock->GetHandle().sock == j_invalid_socket_val)
 		return J_INVALID_DEV;
 
 	HikCommHead commHead;
@@ -133,7 +133,7 @@ int CHikAdapter::MakeVoice(const char *pResid, void *&pObj, void *pOwner, int nC
 int CHikAdapter::Login()
 {
 	J_OS::CTCPSocket loginSocket(m_remoteIP, m_remotePort);
-	if (loginSocket.GetHandle() == -1)
+	if (loginSocket.GetHandle().sock == j_invalid_socket_val)
 		return J_INVALID_DEV;
 
 	struct LoginBuf
@@ -216,7 +216,7 @@ int CHikAdapter::Logout()
 int CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 {
 	J_OS::CTCPSocket cmdSocket(m_remoteIP, m_remotePort);
-	if (cmdSocket.GetHandle() == -1)
+	if (cmdSocket.GetHandle().sock == j_invalid_socket_val)
 		return J_INVALID_DEV;
 
 	HikCommHead commHead;

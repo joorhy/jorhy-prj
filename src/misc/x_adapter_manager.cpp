@@ -10,7 +10,7 @@ CAdapterManager::~CAdapterManager()
 
 }
 
-int CAdapterManager::StartVideo(const char *pResId, int nStreamType, const int nSocket)
+int CAdapterManager::StartVideo(const char *pResId, int nStreamType, const j_socket_t nSocket)
 {
 	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(CAdapterFactory::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pChannelStream == NULL)
@@ -51,7 +51,7 @@ int CAdapterManager::StartVideo(const char *pResId, int nStreamType, const int n
 	return nRet;
 }
 
-int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const int nSocket)
+int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_socket_t nSocket)
 {
     J_ChannelKey key;
 	key.resid = pResId;
@@ -80,7 +80,7 @@ int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const int nS
 	return J_OK;
 }
 
-int CAdapterManager::StartVoice(const char *pResId, const int nSocket)
+int CAdapterManager::StartVoice(const char *pResId, const j_socket_t nSocket)
 {
     int nStreamType = 0;
 	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(CAdapterFactory::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
@@ -113,7 +113,7 @@ int CAdapterManager::StartVoice(const char *pResId, const int nSocket)
 	return nRet;
 }
 
-int CAdapterManager::StopVoice(const char *pResId, const int nSocket)
+int CAdapterManager::StopVoice(const char *pResId, const j_socket_t nSocket)
 {
     J_ChannelKey key;
 	key.resid = pResId;
@@ -204,7 +204,7 @@ int CAdapterManager::OnAlarm(int nDvrId, int nChannel, int nAlarmType)
 	return J_OK;
 }
 
-int CAdapterManager::GetVodStream(int nSocket, const char *pResId, J_RemoteVod *&pObj)
+int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_RemoteVod *&pObj)
 {
     int nStreamType = 0;
 	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(CAdapterFactory::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
@@ -214,7 +214,7 @@ int CAdapterManager::GetVodStream(int nSocket, const char *pResId, J_RemoteVod *
 		return J_NOT_EXIST;
 	}
 
-	std::map<int, void *>::iterator it = m_vodMap.find(nSocket);
+	std::map<j_socket_t, void *>::iterator it = m_vodMap.find(nSocket);
 	if (it == m_vodMap.end())
 	{
 		void *pVodStream = NULL;
@@ -226,7 +226,7 @@ int CAdapterManager::GetVodStream(int nSocket, const char *pResId, J_RemoteVod *
 	return J_OK;
 }
 
-int CAdapterManager::DelVodStream(int nSocket, const char *pResId)
+int CAdapterManager::DelVodStream(j_socket_t nSocket, const char *pResId)
 {
     int nStreamType = 0;
 	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(CAdapterFactory::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
@@ -236,7 +236,7 @@ int CAdapterManager::DelVodStream(int nSocket, const char *pResId)
 		return J_NOT_EXIST;
 	}
 
-	std::map<int, void *>::iterator it = m_vodMap.find(nSocket);
+	std::map<j_socket_t, void *>::iterator it = m_vodMap.find(nSocket);
 	if (it == m_vodMap.end())
 	{
 		J_OS::LOGINFO("CAdapterManager::DelVodStream vodStream not exist, id = %d", nSocket);
@@ -248,7 +248,7 @@ int CAdapterManager::DelVodStream(int nSocket, const char *pResId)
 	return J_OK;
 }
 
-int CAdapterManager::GetRingBuffer(const char *pResid, int nStreamType, const int nSocket, CRingBuffer *&pRingBuffer)
+int CAdapterManager::GetRingBuffer(const char *pResid, int nStreamType, const j_socket_t nSocket, CRingBuffer *&pRingBuffer)
 {
     J_ChannelKey key;
 	key.resid = pResid;
@@ -275,7 +275,7 @@ int CAdapterManager::GetRingBuffer(const char *pResid, int nStreamType, const in
 	return J_OK;
 }
 
-int CAdapterManager::DelRingBuffer(const char *pResid, int nStreamType, const int nSocket)
+int CAdapterManager::DelRingBuffer(const char *pResid, int nStreamType, const j_socket_t nSocket)
 {
     J_ChannelKey key;
 	key.resid = pResid;

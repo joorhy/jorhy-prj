@@ -19,13 +19,13 @@ class CJospParser : public J_CommandParser
 		}
 
 	public:
-		virtual int AddUser(int nSocket, const char *pAddr, short nPort);
-		virtual	int ProcessRequest(int nSocket, char *&pResponse, int &nRespLen);
-		virtual	int DelUser(int nSocket);
+		virtual int AddUser(j_socket_t nSocket, const char *pAddr, short nPort);
+		virtual	int ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nRespLen);
+		virtual	int DelUser(j_socket_t nSocket);
 
     private:
         int MakeHeader(char *pBuffer, char *pUserID, unsigned char byCmd, unsigned char byFlag, unsigned short sqNum, unsigned short exLength, unsigned char byRet = 0x00);
-        int OnLogin(int nSocket, const char *pRequest, char *&pResponse, int &nRespLen);
+        int OnLogin(j_socket_t nSocket, const char *pRequest, char *&pResponse, int &nRespLen);
         int OnLogout(const char *pRequest, char *&pResponse, int &nRespLen);
         int OnGetResList(const char *pRequest, char *&pResponse, int &nRespLen);
         int OnPtzControl(const char *pRequest, char *&pResponse, int &nRespLen);

@@ -7,8 +7,7 @@
 
 #define RECV_SIZE (1024 * 1024)
 CSamsungStream::CSamsungStream(j_void_t *pTCPSocket, j_string_t resid)
-    : m_nSocket(0)
-    , m_bStartup(false)
+    : m_bStartup(false)
     , m_pRecvBuff(NULL)
     , m_resid(resid)
 {
@@ -41,7 +40,7 @@ j_result_t CSamsungStream::Startup()
     TLock(m_locker);
     m_bStartup = true;
     CRdAsio::Instance()->Init();
-    CRdAsio::Instance()->AddUser(m_nSocket, this);
+    CRdAsio::Instance()->AddUser(m_nSocket.sock, this);
     TUnlock(m_locker);
 
     J_OS::LOGINFO("CSamsungStream::Startup Startup this = %d", this);
@@ -56,7 +55,7 @@ j_result_t CSamsungStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    CRdAsio::Instance()->DelUser(m_nSocket);
+    CRdAsio::Instance()->DelUser(m_nSocket.sock);
     TUnlock(m_locker);
 
     J_OS::LOGINFO("CSamsungStream::Shutdown Shutdown this = %d", this);

@@ -14,7 +14,7 @@ CJospParser::~CJospParser()
 
 }
 
-int CJospParser::AddUser(int nSocket, const char *pAddr, short nPort)
+int CJospParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
 {
 	J_NetWorkInfo info = {0};
     memcpy(info.ip_addr, pAddr, strlen(pAddr));
@@ -22,7 +22,7 @@ int CJospParser::AddUser(int nSocket, const char *pAddr, short nPort)
     m_networkMap[nSocket] = info;
 }
 
-int CJospParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
+int CJospParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nRespLen)
 {
 	J_OS::CTCPSocket ReadSocket(nSocket);
 	char read_buff[1500] = {0};
@@ -54,7 +54,7 @@ int CJospParser::ProcessRequest(int nSocket, char *&pResponse, int &nRespLen)
     return nRet;
 }
 
-int CJospParser::DelUser(int nSocket)
+int CJospParser::DelUser(j_socket_t nSocket)
 {
 	J_NetWorkInfo netInfo = m_networkMap[nSocket];
     std::map<std::string, J_UserInfo>::iterator it = m_userMap.begin();
@@ -72,7 +72,7 @@ int CJospParser::DelUser(int nSocket)
     return J_OK;
 }
 
-int CJospParser::OnLogin(int nSocket, const char *pRequest, char *&pResponse, int &nRespLen)
+int CJospParser::OnLogin(j_socket_t nSocket, const char *pRequest, char *&pResponse, int &nRespLen)
 {
     J_CtrlPacket *ctrlHead = (J_CtrlPacket *)pRequest;
     J_LoginData *loninData = (J_LoginData *)(ctrlHead->data);

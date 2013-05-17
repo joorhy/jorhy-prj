@@ -32,7 +32,7 @@ private:
 	void ParserAndSave(const char *pData, J_StreamHeader &streamHeader);
 
 private:
-	int m_nSocket;			//录像时,m_nSocket恒为0
+	j_socket_t m_nSocket;			//录像时,m_nSocket恒为0
 	CRingBuffer *m_pRingBuffer;
 	bool m_bStart;
 	char *m_pDataBuff;

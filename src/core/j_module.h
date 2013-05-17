@@ -358,7 +358,7 @@ struct J_RequestFilter : virtual public J_Obj
 	///命令解析
 	///@param[in]	nSocket	
 	///@return		见x_error_type.h
-	virtual j_result_t Parser(int nSocket) = 0;
+	virtual j_result_t Parser(j_socket_t nSocket) = 0;
 	
 	///获取资源类型
 	///@return	成功-资源类型,失败-NULL
@@ -375,7 +375,7 @@ struct J_RequestFilter : virtual public J_Obj
 	///完成会话
 	///@param[in]	nSocket	
 	///@return		见x_error_type.h
-	virtual j_result_t Complete(int nSocket) = 0;
+	virtual j_result_t Complete(j_socket_t nSocket) = 0;
 };
 
 struct J_MuxFilter : virtual public J_Obj
@@ -427,19 +427,19 @@ struct J_CommandParser : public J_Obj
 	///@param[in]	pAddr 用户Address
 	///@param[in]	nPort 用户Port
 	///@return		见x_error_type.h
-	virtual j_result_t AddUser(int nSocket, const char *pAddr, short nPort) = 0;
+	virtual j_result_t AddUser(j_socket_t nSocket, const char *pAddr, short nPort) = 0;
 	
 	///解析命令
 	///@param[in]	nSocket 用户ID
 	///@param[in]	pResponse 返回数据
 	///@param[out]	nRespLen 返回数据长度
 	///@return		见x_error_type.h
-	virtual j_result_t ProcessRequest(int nSocket, char *&pResponse, int &nRespLen) = 0;
+	virtual j_result_t ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nRespLen) = 0;
 	
 	///删除用户
 	///@param[in]	nSocket 用户ID
 	///@return		见x_error_type.h
-	virtual j_result_t DelUser(int nSocket) = 0;
+	virtual j_result_t DelUser(j_socket_t nSocket) = 0;
 };
 
 struct J_EventParser : public J_Obj

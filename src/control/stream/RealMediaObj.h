@@ -8,7 +8,7 @@ class CRealMediaObj : public J_MediaObj
                      , public J_RealMediaObj
 {
 public:
-	CRealMediaObj(int nSocket, int nStreamType, J_Obj *pObj);
+	CRealMediaObj(j_socket_t nSocket, int nStreamType, J_Obj *pObj);
 	~CRealMediaObj();
 
 public:
@@ -28,12 +28,12 @@ private:
 	int StopVideo();
 
 private:
-	int m_nSocket;
-	int m_nStreamType;
+	j_socket_t m_nSocket;
+	j_int32_t m_nStreamType;
 	CRingBuffer *m_pRingBuffer;
-	bool m_bStart;
-	char *m_pDataBuff;
-	char *m_pConvetBuff;
+	j_boolean_t m_bStart;
+	j_char_t *m_pDataBuff;
+	j_char_t *m_pConvetBuff;
 
 	j_string_t m_resid;
 
@@ -42,7 +42,7 @@ private:
 	J_StreamHeader m_streamHeader;
 
 	J_Obj *m_pObj;
-	int m_taskNum;
+	j_int32_t m_taskNum;
 	j_int64_t m_nextFrameTime;
 	j_int64_t m_lastFrameTime;
 	j_uint32_t m_lastFrameNum;

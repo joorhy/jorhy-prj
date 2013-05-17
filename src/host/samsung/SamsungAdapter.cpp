@@ -129,7 +129,7 @@ j_void_t CSamsungAdapter::Logout()
 
 j_result_t CSamsungAdapter::SendCommand(const j_char_t *pCommand, j_int32_t nLen, j_int32_t nRespLen)
 {
-    if (m_loginSocket.GetHandle() == -1)
+    if (m_loginSocket.GetHandle().sock == j_invalid_socket_val)
         return J_SOCKET_ERROR;
 
     if (m_loginSocket.Write((j_char_t*)pCommand, nLen) < 0)

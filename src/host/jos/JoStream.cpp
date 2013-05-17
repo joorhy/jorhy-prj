@@ -11,8 +11,7 @@ extern "C"
 
 #define RECV_SIZE (1024 * 1024)
 CJoStream::CJoStream(void *pTCPSocket, std::string resid)
-: m_nSocket(0)
-, m_bStartup(false)
+: m_bStartup(false)
 , m_pRecvBuff(NULL)
 , m_resid(resid)
 {
@@ -43,7 +42,7 @@ int CJoStream::Startup()
     TLock(m_locker);
     m_bStartup = true;
     CRdAsio::Instance()->Init();
-    CRdAsio::Instance()->AddUser(m_nSocket, this);
+    CRdAsio::Instance()->AddUser(m_nSocket.sock, this);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -57,7 +56,7 @@ int CJoStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    CRdAsio::Instance()->DelUser(m_nSocket);
+    CRdAsio::Instance()->DelUser(m_nSocket.sock);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CJoStream::Shutdown Shutdown this = %d", this);
 

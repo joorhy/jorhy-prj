@@ -15,7 +15,7 @@ int CFileReaderFactory::RegisterFileReader(const char *fileReaderType, J_MakeFil
 	return J_EXIST;
 }
 
-J_FileReader *CFileReaderFactory::GetFileReader(int nSocket, const char *pType, const char *pResid)
+J_FileReader *CFileReaderFactory::GetFileReader(j_socket_t nSocket, const char *pType, const char *pResid)
 {
 	TLock(m_lock);
 	J_Obj *fileReader = NULL;
@@ -42,7 +42,7 @@ J_FileReader *CFileReaderFactory::GetFileReader(int nSocket, const char *pType, 
 	return dynamic_cast<J_FileReader *>(fileReader);
 }
 
-void CFileReaderFactory::DelFileReader(int nSocket)
+void CFileReaderFactory::DelFileReader(j_socket_t nSocket)
 {
 	TLock(m_lock);
 	FileReaderMap::iterator it = m_fileReaderMap.find(nSocket);

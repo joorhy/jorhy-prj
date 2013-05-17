@@ -14,11 +14,11 @@ class CControlManager : public CXService<CControlManager>
 
 	public:
 		///CXService
-		virtual int OnAccept(int nSocket, const char *pAddr, short nPort);
-		virtual int OnRead(int nSocket);
-		virtual int OnWrite(int nSocket);
-		virtual int OnBroken(int nSocket);
-		virtual int GetSocketByResid(const char *pResid){ return 0; }
+		virtual int OnAccept(j_socket_t nSocket, const char *pAddr, short nPort);
+		virtual int OnRead(j_socket_t nSocket);
+		virtual int OnWrite(j_socket_t nSocket);
+		virtual int OnBroken(j_socket_t nSocket);
+		virtual j_socket_t GetSocketByResid(const char *pResid){ return j_socket_t(); }
 
 		///CStreamManager
 		int StartService(int nPort, const char *pCommandType);

@@ -496,7 +496,7 @@ int CHikChannel::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 {
 	J_OS::CTCPSocket cmdSocket(m_pAdapter->GetRemoteIp(),
 			m_pAdapter->GetRemotePort());
-	if (cmdSocket.GetHandle() == -1)
+	if (cmdSocket.GetHandle().sock == j_invalid_socket_val)
 		return J_INVALID_DEV;
 
 	HikCommHead commHead;

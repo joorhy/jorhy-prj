@@ -157,13 +157,23 @@ typedef struct
 #endif
 } j_module_t; 
 
-typedef struct 
+typedef struct j_socket
 {
+	j_socket()
+	{
+		sock = j_invalid_socket_val;
+	}
 #ifdef WIN32
 	SOCKET sock;
 #else
 	int sock;
 #endif
+	j_boolean_t operator < (const j_socket &other) const
+	{
+		return (sock < other.sock);
+	}
 } j_socket_t;
+
+#define j_invalid_socket j_socket_t
 
 #endif //~__JO_COMMON_H_

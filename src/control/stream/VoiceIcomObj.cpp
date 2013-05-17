@@ -1,7 +1,7 @@
 #include "VoiceIcomObj.h"
 #include "x_socket.h"
 
-CVoiceIcomObj::CVoiceIcomObj(int nSocket, J_Obj *pObj)
+CVoiceIcomObj::CVoiceIcomObj(j_socket_t nSocket, J_Obj *pObj)
 {
 	m_pObj = pObj;
 }

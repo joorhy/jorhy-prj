@@ -7,7 +7,7 @@
 #define CLIENT_BUFFER_SIZE (2 * 1024 * 1024)
 #define MAX_SEND_BUFF	8100
 
-CRealMediaObj::CRealMediaObj(int nSocket, int nStreamType, J_Obj *pObj)
+CRealMediaObj::CRealMediaObj(j_socket_t nSocket, int nStreamType, J_Obj *pObj)
 {
 	m_nSocket = nSocket;
 	m_nStreamType = nStreamType;

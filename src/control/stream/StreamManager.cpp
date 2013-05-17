@@ -32,16 +32,16 @@ int CStreamManager::StopService()
 	return Stop();
 }
 
-int CStreamManager::OnAccept(int nSocket, const char *pAddr, short nPort)
+int CStreamManager::OnAccept(j_socket_t nSocket, const char *pAddr, short nPort)
 {
 	m_clientMap[nSocket] = NULL;
 
 	return J_OK;
 }
 
-int CStreamManager::OnRead(int nSocket)
+int CStreamManager::OnRead(j_socket_t nSocket)
 {
-	std::map<int, J_MediaObj *>::iterator it = m_clientMap.find(nSocket);
+	std::map<j_socket_t, J_MediaObj *>::iterator it = m_clientMap.find(nSocket);
 	if (it == m_clientMap.end())
 	{
 		J_OS::LOGINFO("CStreamManager::OnRead No Client");
@@ -56,9 +56,9 @@ int CStreamManager::OnRead(int nSocket)
 	return J_OK;
 }
 
-int CStreamManager::OnWrite(int nSocket)
+int CStreamManager::OnWrite(j_socket_t nSocket)
 {
-	std::map<int, J_MediaObj *>::iterator it = m_clientMap.find(nSocket);
+	std::map<j_socket_t, J_MediaObj *>::iterator it = m_clientMap.find(nSocket);
 	if (it == m_clientMap.end())
 	{
 		return J_NOT_EXIST;
@@ -83,9 +83,9 @@ int CStreamManager::OnWrite(int nSocket)
 	return nRet;
 }
 
-int CStreamManager::OnBroken(int nSocket)
+int CStreamManager::OnBroken(j_socket_t nSocket)
 {
-	std::map<int, J_MediaObj *>::iterator it = m_clientMap.find(nSocket);
+	std::map<j_socket_t, J_MediaObj *>::iterator it = m_clientMap.find(nSocket);
 	if (it == m_clientMap.end())
 	{
 		return J_NOT_EXIST;
@@ -103,14 +103,14 @@ int CStreamManager::OnBroken(int nSocket)
 	return J_OK;
 }
 
-int CStreamManager::GetSocketByResid(const char *pResid)
+j_socket_t CStreamManager::GetSocketByResid(const char *pResid)
 {
 	ResidMap::iterator it = m_residMap.find(pResid);
 	if (it != m_residMap.end())
 	{
 		if (!it->second.empty())
 		{
-			int nSocket = it->second.back();
+			j_socket_t nSocket = it->second.back();
 			it->second.pop_back();
 
 			if (it->second.empty())
@@ -118,13 +118,13 @@ int CStreamManager::GetSocketByResid(const char *pResid)
 
 			return nSocket;
 		}
-		return 0;
+		return j_invalid_socket();
 	}
 
-	return 0;
+	return j_invalid_socket();
 }
 
-int CStreamManager::ParserRequest(int nSocket, J_MediaObj *pClient)
+int CStreamManager::ParserRequest(j_socket_t nSocket, J_MediaObj *pClient)
 {
 	int nRet = J_OK;
 	J_RequestFilter *protocolFilter = CFilterFactory::Instance()->GetFilter(nSocket, m_serviceType.c_str());
@@ -141,7 +141,7 @@ int CStreamManager::ParserRequest(int nSocket, J_MediaObj *pClient)
 	return nRet;
 }
 
-int CStreamManager::ProcessCommand(int nSocket, J_Obj *pObj, J_MediaObj *pClient)
+int CStreamManager::ProcessCommand(j_socket_t nSocket, J_Obj *pObj, J_MediaObj *pClient)
 {
 	int nRet = J_OK;
 	J_CommandFilter *videoCommand = dynamic_cast<J_CommandFilter *>(pObj);
@@ -156,7 +156,7 @@ int CStreamManager::ProcessCommand(int nSocket, J_Obj *pObj, J_MediaObj *pClient
 				ResidMap::iterator it = m_residMap.find(resid);
 				if (it == m_residMap.end())
 				{
-					std::vector<int> vecResid;
+					std::vector<j_socket_t> vecResid;
 					m_residMap[resid] = vecResid;
 					m_residMap[resid].push_back(nSocket);
 				}
@@ -205,17 +205,17 @@ void CStreamManager::ProcMessage(BaseMessage *pMessage)
 	MessageImpl<std::string> *pMsgImpl = dynamic_cast<MessageImpl<std::string> *>(pMessage);
 	if (pMsgImpl != NULL)
 	{
-		int nSocket = 0;
+		j_socket_t nSocket;
 		CMediaConvert mediaConvert;
 		while ((nSocket = GetSocketByResid(
-				pMsgImpl->OnMessage(mediaConvert).c_str())) > 0)
+				pMsgImpl->OnMessage(mediaConvert).c_str())).sock > 0)
 		{
 			RECLock(m_locker);
 			Broken(nSocket, m_evListen);
 			VecSocket::iterator it = m_vecSocket.begin();
 			for (; it != m_vecSocket.end(); it++)
 			{
-				if ((*it).fd == nSocket)
+				if ((*it).fd == nSocket.sock)
 				{
 					m_vecSocket.erase(it);
 					break;

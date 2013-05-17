@@ -23,9 +23,9 @@ class CRymcParser : public J_CommandParser
 		}
 
 	public:
-		virtual int AddUser(int nSocket, const char *pAddr, short nPort);
-		virtual	int ProcessRequest(int nSocket, char *&pResponse, int &nRespLen);
-		virtual	int DelUser(int nSocket);
+		virtual int AddUser(j_socket_t nSocket, const j_char_t *pAddr, j_int16_t nPort);
+		virtual	int ProcessRequest(j_socket_t nSocket, j_char_t *&pResponse, j_int32_t &nRespLen);
+		virtual	int DelUser(j_socket_t nSocket);
 
 	private:
 		int PtzControl(const char *pResid, int nCmd, int nParam);

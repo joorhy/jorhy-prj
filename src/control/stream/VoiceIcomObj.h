@@ -7,7 +7,7 @@
 class CVoiceIcomObj : public J_MediaObj
 {
 public:
-	CVoiceIcomObj(int nSocket, J_Obj *pObj);
+	CVoiceIcomObj(j_socket_t nSocket, J_Obj *pObj);
 	~CVoiceIcomObj();
 
 public:
@@ -22,7 +22,7 @@ private:
 	int StopVoice();
 
 private:
-	int m_nSocket;
+	j_socket_t m_nSocket;
 	CRingBuffer *m_pRingBuffer;
 	bool m_bStart;
 	char *m_pDataBuff;

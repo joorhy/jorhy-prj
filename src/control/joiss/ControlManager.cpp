@@ -39,13 +39,13 @@ int CControlManager::StopService()
 }
 
 ///CXService
-int CControlManager::OnAccept(int nSocket, const char *pAddr, short nPort)
+int CControlManager::OnAccept(j_socket_t nSocket, const char *pAddr, short nPort)
 {
 	m_pCommandParser->AddUser(nSocket, pAddr, nPort);
 	return J_OK;
 }
 
-int CControlManager::OnRead(int nSocket)
+int CControlManager::OnRead(j_socket_t nSocket)
 {
 	int write_len = 0;
 	char *write_buff = NULL;
@@ -60,13 +60,13 @@ int CControlManager::OnRead(int nSocket)
 	return J_OK;
 }
 
-int CControlManager::OnWrite(int nSocket)
+int CControlManager::OnWrite(j_socket_t nSocket)
 {
 	usleep(1000);
 	return J_OK;
 }
 
-int CControlManager::OnBroken(int nSocket)
+int CControlManager::OnBroken(j_socket_t nSocket)
 {
     m_pCommandParser->DelUser(nSocket);
 	return J_OK;

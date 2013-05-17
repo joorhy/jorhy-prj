@@ -15,7 +15,7 @@ int CFilterFactory::RegisterFilter(const char *filterType, J_MakeFilterFun pFun)
 	return J_EXIST;
 }
 
-J_RequestFilter *CFilterFactory::GetFilter(int nSocket, const char *pType)
+J_RequestFilter *CFilterFactory::GetFilter(j_socket_t nSocket, const char *pType)
 {
 	TLock(m_lock);
 	J_Obj *protocolFilter = NULL;
@@ -43,7 +43,7 @@ J_RequestFilter *CFilterFactory::GetFilter(int nSocket, const char *pType)
 	return dynamic_cast<J_RequestFilter *>(protocolFilter);
 }
 
-void CFilterFactory::DelFilter(int nSocket)
+void CFilterFactory::DelFilter(j_socket_t nSocket)
 {
 	TLock(m_lock);
 	FilterMap::iterator it = m_filterMap.find(nSocket);

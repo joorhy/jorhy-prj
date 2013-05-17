@@ -25,7 +25,7 @@ CHttpFilter::~CHttpFilter()
 		CMuxFactory::Instance()->DelMux(this);
 }
 
-int CHttpFilter::Parser(int nSocket)
+int CHttpFilter::Parser(j_socket_t nSocket)
 {
 	J_OS::CTCPSocket readSocket(nSocket);
 	char read_buff[1024] = {0};
@@ -106,7 +106,7 @@ int CHttpFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, c
 	return m_muxFilter->Convert((const char *)pInputData, streamHeader, pOutputData, nOutLen, (void *)&RATE);
 }
 
-int CHttpFilter::Complete(int nSocket)
+int CHttpFilter::Complete(j_socket_t nSocket)
 {
 	J_OS::CTCPSocket writeSocket(nSocket);
 	if (writeSocket.Write_n((char *)res_buff, strlen(res_buff)) < 0)

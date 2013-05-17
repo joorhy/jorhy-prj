@@ -30,7 +30,7 @@ public:
     virtual j_result_t OnBroken(j_int32_t nfd);
 
 private:
-    j_int32_t m_nSocket;
+    j_socket_t m_nSocket;
     j_boolean_t m_bStartup;
     j_char_t *m_pRecvBuff;//[100 * 1024];
     j_void_t *m_pTCPSocket;

@@ -114,7 +114,7 @@ CRtspFilter::~CRtspFilter()
 		CMuxFactory::Instance()->DelMux(this);
 }
 
-int CRtspFilter::Parser(int nSocket)
+int CRtspFilter::Parser(j_socket_t nSocket)
 {
 	J_OS::CTCPSocket readSocket(nSocket);
 	char read_buff[1024] = {0};
@@ -225,7 +225,7 @@ int CRtspFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, c
 	return J_OK;
 }
 
-int CRtspFilter::Complete(int nSocket)
+int CRtspFilter::Complete(j_socket_t nSocket)
 {
 	J_OS::CTCPSocket writeSocket(nSocket);
 	char send_buff[1024] = {0};

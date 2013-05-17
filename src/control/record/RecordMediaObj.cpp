@@ -9,7 +9,6 @@ extern CThreadPool g_thread_pool;
 #define HEAD_BUFF_SIZE (1024 * 1024)
 CStreamRecord::CStreamRecord()
 {
-	m_nSocket = 1;
 	m_bStart = false;
 	m_fdHead = NULL;
 	m_fdBody = NULL;
