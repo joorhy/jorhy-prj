@@ -1,0 +1,14 @@
+prefix=/home/jorhy/WorkSpace/ffmpeg/libs
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavdevice
+Description: FFmpeg device handling library
+Version: 54.3.102
+Requires: libavfilter = 3.33.100, libavformat = 54.61.103
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -lavdevice -ldl -lva -ljack -lasound -lSDL -lcrystalhd -lm -pthread -lz -lrt
+Libs.private: 
+Cflags: -I${includedir}

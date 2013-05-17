@@ -1,0 +1,14 @@
+prefix=/home/jorhy/WorkSpace/ffmpeg/libs
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavfilter
+Description: FFmpeg video filtering library
+Version: 3.33.100
+Requires: libswresample = 0.17.102, libswscale = 2.2.100, libavformat = 54.61.103, libavcodec = 54.90.100, libavutil = 52.15.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -lavfilter -ldl -lva -ljack -lasound -lSDL -lcrystalhd -lm -pthread -lz -lrt
+Libs.private: 
+Cflags: -I${includedir}
