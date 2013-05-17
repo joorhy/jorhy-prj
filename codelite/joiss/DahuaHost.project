@@ -30,7 +30,7 @@
         <IncludePath Value="../../src/utils"/>
       </Compiler>
       <Linker Options="-Wl,-rpath,./plugins/libs" Required="yes">
-        <LibraryPath Value="../../libs/dahua"/>
+        <LibraryPath Value="../../libs/linux/dahua"/>
         <Library Value="dhnetsdk"/>
         <Library Value="StreamAnalyzer"/>
       </Linker>

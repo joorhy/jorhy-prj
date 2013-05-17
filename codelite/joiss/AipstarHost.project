@@ -29,7 +29,7 @@
         <IncludePath Value="../../src/utils"/>
       </Compiler>
       <Linker Options="-Wl,-rpath,./plugins/libs" Required="yes">
-        <LibraryPath Value="../../libs/aipstar"/>
+        <LibraryPath Value="../../libs/linux/aipstar"/>
         <Library Value="tmControlClient"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>

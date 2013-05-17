@@ -30,7 +30,7 @@
         <IncludePath Value="../../src/utils"/>
       </Compiler>
       <Linker Options="-Wl,-rpath,./plugins/libs" Required="yes">
-        <LibraryPath Value="../../libs/aironix"/>
+        <LibraryPath Value="../../libs/linux/aironix"/>
         <Library Value="dvrnetsdk"/>
         <Library Value="asound"/>
       </Linker>
