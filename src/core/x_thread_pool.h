@@ -4,6 +4,7 @@
 #include "x_lock.h"
 #include "j_module.h"
 #include "x_singleton.h"
+#include "x_thread.h"
 
 class CThreadPool : public SingletonTmpl<CThreadPool>
 {
@@ -30,21 +31,26 @@ public:
 	int Destroy();
 
 private:
+#ifdef WIN32
+	static unsigned X_JO_API ThreadFunc(void *param)
+#else
 	static void *ThreadFunc(void *param)
+#endif
 	{
 		while (true)
 		{
 			CThreadPool *pThis = static_cast<CThreadPool *>(param);
 			pThis->OnThreadFunc();
 		}
-		return (void *)0;
+		return 0;
 	}
 	void OnThreadFunc();
 
 private:
 	j_queue_task m_taskQueue;
-	pthread_mutex_t m_threadMutex;
-	pthread_cond_t m_threadCond;
+	J_OS::CTLock m_threadMutex;
+	J_OS::CXCond m_threadCond;
+	CJoThread m_thread;
 	bool m_bShutDown; 
 };
 
