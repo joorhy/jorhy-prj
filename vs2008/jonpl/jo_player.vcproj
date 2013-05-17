@@ -64,7 +64,7 @@
 				AdditionalDependencies="ws2_32.lib Ddraw.lib dxguid.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib libpng.lib"
 				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\libs\ffmpeg;..\..\libs\libpng;..\..\libs\DirectX"
+				AdditionalLibraryDirectories="..\..\libs\windows\ffmpeg;..\..\libs\windows\libpng;..\..\libs\windows\DirectX"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
