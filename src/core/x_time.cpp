@@ -1,8 +1,5 @@
 #include "x_time.h"
-#include <sys/time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include "j_common.h"
 
 j_string_t CTime::GetLocalTime()
 {
@@ -10,8 +7,16 @@ j_string_t CTime::GetLocalTime()
 	curTime = time(0);
 	tm *pCurTime = localtime(&curTime);
 
+	int nMilliseconds = 0;
+#ifdef WIN32
+	SYSTEMTIME st;  
+	::GetLocalTime(&st);
+	nMilliseconds = st.wMilliseconds;
+#else
 	struct timeval nowtimeval;
 	gettimeofday(&nowtimeval,0);
+	nMilliseconds = nowtimeval.tv_usec / 1000;
+#endif
 
 	j_char_t pBuff[128] = {0};
 	sprintf(pBuff, "%04d%02d%02d%02d%02d%02d%03ld",
@@ -21,7 +26,7 @@ j_string_t CTime::GetLocalTime()
 			pCurTime->tm_hour,
 			pCurTime->tm_min,
 			pCurTime->tm_sec,
-			nowtimeval.tv_usec / 1000);
+			nMilliseconds);
 
 	return j_string_t(pBuff);
 }
@@ -32,8 +37,19 @@ j_uint64_t CTime::GetLocalTime(j_string_t &strTime)
 	curTime = time(0);
 	tm *pCurTime = localtime(&curTime);
 
+	j_int32_t nMilliseconds = 0;
+	j_uint64_t nSecondsOfDay = 0;
+#ifdef WIN32
+	SYSTEMTIME st;  
+	::GetLocalTime(&st);
+	nMilliseconds = st.wMilliseconds;
+	nSecondsOfDay = (st.wHour*3600 + st.wMinute*60 + st.wSecond);
+#else
 	struct timeval nowtimeval;
 	gettimeofday(&nowtimeval,0);
+	nMilliseconds = nowtimeval.tv_usec / 1000;
+	nSecondsOfDay = ((uint64_t)nowtimeval.tv_sec + (uint64_t)nowtimeval.tv_usec / 1000000);
+#endif
 
 	char pBuff[128] = {0};
 	sprintf(pBuff, "%04d%02d%02d%02d%02d%02d%03ld",
@@ -43,18 +59,26 @@ j_uint64_t CTime::GetLocalTime(j_string_t &strTime)
 			pCurTime->tm_hour,
 			pCurTime->tm_min,
 			pCurTime->tm_sec,
-			nowtimeval.tv_usec / 1000);
+			nMilliseconds);
 	strTime = pBuff;
 
-	return ((uint64_t)nowtimeval.tv_sec + (uint64_t)nowtimeval.tv_usec / 1000000);
+	return nSecondsOfDay;
 }
 
 j_uint64_t CTime::GetLocalTime(int) const
 {
+	j_uint64_t nMilliSecondsOfDay = 0;
+#ifdef WIN32
+	SYSTEMTIME st;  
+	::GetLocalTime(&st);
+	nMilliSecondsOfDay = (st.wHour*3600 + st.wMinute*60 + st.wSecond) * 1000 + st.wMilliseconds;
+#else
 	struct timeval nowtimeval;
-	gettimeofday(&nowtimeval, 0);
+	gettimeofday(&nowtimeval,0);
+	nMilliSecondsOfDay = ((uint64_t)nowtimeval.tv_sec * 1000 + (uint64_t)nowtimeval.tv_usec / 1000);
+#endif
 
-	return ((uint64_t)nowtimeval.tv_sec * 1000 + (uint64_t)nowtimeval.tv_usec / 1000);
+	return nMilliSecondsOfDay;
 }
 
 j_string_t CTime::GetLocalTimeASC()
