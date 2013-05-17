@@ -5,7 +5,6 @@
   <VirtualDirectory Name="src">
     <File Name="../../src/core/x_asio.cpp"/>
     <File Name="../../src/core/x_file.cpp"/>
-    <File Name="../../src/core/x_iconv.cpp"/>
     <File Name="../../src/core/x_loadso.cpp"/>
     <File Name="../../src/core/x_lock.cpp"/>
     <File Name="../../src/core/x_log.cpp"/>
@@ -29,7 +28,6 @@
     <File Name="../../src/core/x_convert.h"/>
     <File Name="../../src/core/x_errtype.h"/>
     <File Name="../../src/core/x_file.h"/>
-    <File Name="../../src/core/x_iconv.h"/>
     <File Name="../../src/core/x_loadso.h"/>
     <File Name="../../src/core/x_lock.h"/>
     <File Name="../../src/core/x_log.h"/>

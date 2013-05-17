@@ -23,10 +23,14 @@
 
 #define _LIBICONV_VERSION 0x0109    /* version number: (major<<8) + minor */
 
+#ifdef WIN32
 #ifdef BUILDING_LIBICONV
 #define LIBICONV_DLL_EXPORTED __declspec(dllexport)
 #else
 #define LIBICONV_DLL_EXPORTED __declspec(dllimport)
+#endif
+#else
+#define LIBICONV_DLL_EXPORTED
 #endif
 extern LIBICONV_DLL_EXPORTED int _libiconv_version;       /* Likewise */
 

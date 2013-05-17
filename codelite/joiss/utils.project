@@ -61,6 +61,7 @@
     <File Name="../../src/utils/common/x_crc32.cpp"/>
     <File Name="../../src/utils/common/x_md5.cpp"/>
     <File Name="../../src/utils/common/x_sha1.cpp"/>
+    <File Name="../../src/utils/common/x_iconv.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="faac">
     <File Name="../../src/utils/faac/aacquant.c"/>
