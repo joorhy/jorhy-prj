@@ -4,14 +4,8 @@
 #include "x_errtype.h"
 #include "x_message.h"
 #include "x_lock.h"
-
-#include <map>
-#include <queue>
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/msg.h>
-#include <sys/ipc.h>
-#include <unistd.h>
+#include "x_thread.h"
+#include "j_common.h"
 
 typedef BaseMessage MessageType;
 typedef struct MessageInfo
@@ -63,10 +57,14 @@ public:
 	int PostMessage(unsigned int nMsgType, MessageType *pMessage);
 
 private:
+#ifdef WIN32
+	static unsigned X_JO_API RouteMessage(void *pUser)
+#else
 	static void *RouteMessage(void *pUser)
+#endif
 	{
 		(static_cast<CXMessageQueue *>(pUser))->OnRouteMessage();
-		return (void *)0;
+		return 0;
 	}
 	void OnRouteMessage();
 
@@ -75,7 +73,7 @@ private:
 	std::queue<MessageInfo_t> m_msgQue;
 
 	int m_msgId;
-	pthread_t m_msgThread;
+	CJoThread m_msgThread;
 	J_OS::CTLock m_locker;
 };
 

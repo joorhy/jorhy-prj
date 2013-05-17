@@ -7,9 +7,11 @@
 #include <queue>
 
 #ifdef WIN32
-#include <windows.h>
 #include <process.h>
 #include <io.h>
+#include <Winsock2.h>
+#include <Mstcpip.h>
+#include <windows.h>
 #else
 #include <stdint.h>
 #include <pthread.h>
@@ -28,6 +30,14 @@
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <dlfcn.h>
+#include <sys/msg.h>
+#include <sys/ipc.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <netdb.h>
+#include <setjmp.h>
+#include <netinet/tcp.h>
 #endif
 
 #include <math.h>
@@ -77,12 +87,22 @@ typedef std::vector<j_string_t>		j_vec_str_t;
 #define j_invalid_thread_val		NULL
 #define j_invalid_filemap_val		NULL
 #define j_invalid_module_val		NULL
+#define j_invalid_socket_val		INVALID_SOCKET
 #else
 #define ULONG_MAX				0xffffffffUL
 #define j_thread_t	 pthread_t
 #define j_invalid_thread_val		0
 #define j_invalid_filemap_val		-1
 #define j_invalid_module_val		NULL
+#define j_invalid_socket_val		-1
+#endif
+
+#ifdef WIN32
+#define j_sleep(x)	Sleep(x)
+#define j_close_socket(x)	closesocket(x)
+#else
+#define j_sleep(x)	usleep(x*1000)
+#define j_close_socket(x)	close(x)
 #endif
 
 #ifdef WIN32
@@ -137,6 +157,13 @@ typedef struct
 #endif
 } j_module_t; 
 
-
+typedef struct 
+{
+#ifdef WIN32
+	SOCKET sock;
+#else
+	int sock;
+#endif
+} j_socket_t;
 
 #endif //~__JO_COMMON_H_

@@ -1,18 +1,6 @@
 #ifndef __X_PING_H_
 #define __X_PING_H_
-#include <stdio.h>
-#include <signal.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip_icmp.h>
-#include <netdb.h>
-#include <setjmp.h>
-#include <errno.h>
-#include <string>
+#include "j_common.h"
 
 #define PACKET_SIZE 4096
 

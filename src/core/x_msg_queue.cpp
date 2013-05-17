@@ -3,14 +3,17 @@
 
 CXMessageQueue::CXMessageQueue(int)
 {
-	pthread_create(&m_msgThread, NULL, CXMessageQueue::RouteMessage, this);
+	j_thread_parm threadParm = {0};
+	threadParm.entry = CXMessageQueue::RouteMessage;
+	threadParm.data = this;
+	m_msgThread.Create(threadParm);
 
 	J_OS::LOGINFO("CXMessageQueue::CXMessageQueue created");
 }
 
 CXMessageQueue::~CXMessageQueue()
 {
-	pthread_cancel(m_msgThread);
+	m_msgThread.Release();
 
 	J_OS::LOGINFO("CXMessageQueue::~CXMessageQueue detroyed");
 }
@@ -58,7 +61,11 @@ void CXMessageQueue::OnRouteMessage()
 	{
 		if(m_msgQue.empty())
 		{
+#ifdef WIN32
+			Sleep(1);
+#else
 			usleep(10);
+#endif
 			continue;
 		}
 
