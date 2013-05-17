@@ -24,7 +24,6 @@ int CRdAsio::Init()
 		m_epoll_fd = 0;
 		m_epoll_fd = epoll_create(JO_MAX_ASIOSIZE);
 
-		m_workThread = 0;
 		m_bStarted = true;
 		j_thread_parm parm = {0};
 		parm.entry = CRdAsio::WorkThread;
@@ -39,10 +38,7 @@ void CRdAsio::Deinit()
 	if (m_bStarted)
 	{
 		m_bStarted = false;
-		if (m_workThread != 0)
-		{
-			m_workThread.Release();
-		}
+		m_workThread.Release();
 
 		if (m_epoll_fd != 0)
 		{
