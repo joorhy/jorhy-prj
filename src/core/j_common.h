@@ -27,6 +27,7 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <dirent.h>
+#include <dlfcn.h>
 #endif
 
 #include <math.h>
@@ -72,11 +73,16 @@ typedef std::string							j_string_t;
 typedef std::vector<j_string_t>		j_vec_str_t;
 
 #ifdef WIN32
-#define j_thread_t					HANDLE
+#define j_thread_t						HANDLE
 #define j_invalid_thread_val		NULL
+#define j_invalid_filemap_val		NULL
+#define j_invalid_module_val		NULL
 #else
+#define ULONG_MAX				0xffffffffUL
 #define j_thread_t	 pthread_t
-#define j_invalid_thread_val 0
+#define j_invalid_thread_val		0
+#define j_invalid_filemap_val		-1
+#define j_invalid_module_val		NULL
 #endif
 
 #ifdef WIN32
@@ -91,46 +97,46 @@ typedef unsigned (X_JO_API *j_thread_entry_t)(void*);
 typedef void *(*j_thread_entry_t)(void *); 
 #endif 
 
-#ifdef WIN32
-typedef struct
-{
-	CRITICAL_SECTION mutex;
-}j_mutex_t;
-#else
-typedef struct  
-{
-	pthread_mutex_t mutex;
-}j_mutex_t;
-#endif
 
-#ifdef WIN32
 typedef struct
 {
+#ifdef WIN32
+	CRITICAL_SECTION mutex;
+#else
+	pthread_mutex_t mutex;
+#endif
+}j_mutex_t;
+
+typedef struct
+{
+#ifdef WIN32
 	HANDLE  hFile;
 	char *flock;
-}j_filemap_t;
-#define j_invalid_filemap_val		NULL
 #else
-typedef struct  
-{
 	int hFile;
 	struct flock flock;
-}j_filemap_t;
-#define j_invalid_filemap_val		-1
 #endif
+}j_filemap_t;
 
+typedef struct
+{
 #ifdef WIN32
-typedef struct
-{
 	HANDLE   handle;
-}j_cond_t;
 #else
-typedef struct
-{
 	pthread_cond_t   handle;
 	pthread_mutex_t mutex;
-}j_cond_t;
-#define ULONG_MAX 0xffffffffUL
 #endif
+}j_cond_t;
+
+typedef struct  
+{
+#ifdef WIN32
+	HMODULE handle;
+#else
+	void *handle;
+#endif
+} j_module_t; 
+
+
 
 #endif //~__JO_COMMON_H_

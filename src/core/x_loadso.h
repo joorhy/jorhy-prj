@@ -1,6 +1,6 @@
 #ifndef __X_LOADSO_H_
 #define __X_LOADSO_H_
-#include <vector>
+#include "j_common.h"
 
 class CXLoadso
 {
@@ -16,7 +16,7 @@ private:
     int LoadSo(const char *pPath, const char *subPath);
 
 private:
-    typedef std::vector<void *> VecHandle;
+    typedef std::vector<j_module_t> VecHandle;
     VecHandle m_vecHandle;
 };
 

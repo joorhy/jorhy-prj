@@ -127,7 +127,7 @@ int CXFile::ListFiles(j_char_t *pDir, j_vec_str_t &fileVec, const j_char_t *pRes
 	
 	j_char_t file_name[256] = {0};
 	sprintf(file_name, "%s/%s*.*", pDir, pResid);
-	hFind = FindFirstFile("file_name", &FindFileData);  
+	hFind = FindFirstFile(file_name, &FindFileData);  
 	if (hFind == INVALID_HANDLE_VALUE)   
 	{  
 		J_OS::LOGERROR("CXFile::ListFiles FindFirstFile failed\n");  
@@ -146,6 +146,7 @@ int CXFile::ListFiles(j_char_t *pDir, j_vec_str_t &fileVec, const j_char_t *pRes
 				fileVec.push_back(FindFileData.cFileName);
 		}
 	} while (FindNextFile(hFind, &FindFileData));  
+	CloseHandle(hFind);
 #else
 	DIR *dirPointer = NULL;
 	struct dirent *entry;
