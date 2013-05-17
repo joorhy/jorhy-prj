@@ -173,7 +173,15 @@ typedef struct j_socket
 		return (sock < other.sock);
 	}
 } j_socket_t;
-
 #define j_invalid_socket j_socket_t
+
+typedef struct 
+{
+#ifdef WIN32
+	DWORD id;
+#else
+	pid_t id;
+#endif
+}j_pid_t;
 
 #endif //~__JO_COMMON_H_

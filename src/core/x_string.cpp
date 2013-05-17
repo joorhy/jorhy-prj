@@ -236,7 +236,11 @@ CXString &CXString::operator >> (CXInteger64U &c) throw(std::out_of_range)
 		{
 			assert((unsigned int)(p2 - p) < sizeof(c.u_data.c_data));
 			memcpy(c.u_data.c_data, p, p2 - p);
+#ifdef WIN32
+			c.u_data.i_data = _atoi64(c.u_data.c_data);
+#else
 			c.u_data.i_data = atoll(c.u_data.c_data);
+#endif
 		}
 		else
 		{
@@ -245,7 +249,11 @@ CXString &CXString::operator >> (CXInteger64U &c) throw(std::out_of_range)
 			{
 				assert((unsigned int)(p2 - p) < sizeof(c.u_data.c_data));
 				memcpy(c.u_data.c_data, p, p2 - p);
+#ifdef WIN32
+				c.u_data.i_data = _atoi64(c.u_data.c_data);
+#else
 				c.u_data.i_data = atoll(c.u_data.c_data);
+#endif
 			}
 		}
 	}

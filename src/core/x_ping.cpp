@@ -1,8 +1,6 @@
 #include "x_ping.h"
 #include "x_errtype.h"
 #include "x_log.h"
-#include <string.h>
-#include <sys/time.h>
 
 static unsigned short cal_chksum(unsigned short *addr, int len)
 {
@@ -74,7 +72,7 @@ int CXPing::SendPacket()
 int CXPing::RecvPacket()
 {
     struct sockaddr_in from;
-    socklen_t from_len = sizeof(from);
+    j_int32_t from_len = sizeof(from);
     int n = 0;
     if ((n = recvfrom(m_socket, m_recvPacket, sizeof(m_recvPacket), 0,
             (struct sockaddr *)&from, &from_len)) < 0)
@@ -108,11 +106,14 @@ int CXPing::Init()
     }
 
     //回收root权限,设置当前用户权限
+#ifdef WIN32
+#else
     setuid(getuid());
+	bzero(&m_destAddr, sizeof(m_destAddr));
+#endif
     //扩大套接字接收缓存区
     int size = 50 * 1024;
-    setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
-    bzero(&m_destAddr, sizeof(m_destAddr));
+    setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, (const char *)&size, sizeof(size));
     m_destAddr.sin_family = AF_INET;
 
     //判断是主机名还是IP地址
@@ -133,7 +134,11 @@ int CXPing::Init()
         //是IP地址
         m_destAddr.sin_addr.s_addr = indaddr;
     }
-    m_pid = getpid();
+#ifdef WIN32
+    m_pid.id = GetCurrentProcessId();
+#else
+	m_pid.id = getpid();
+#endif
 
     return J_OK;
 }
@@ -141,32 +146,35 @@ int CXPing::Init()
 int CXPing::Pack(int nPackNo, int nDataLen)
 {
     int packet_size = 0;
-    struct icmp *icmp;
-    struct timeval *tval;
+    icmp *icmp_head;
 
-    icmp = (struct icmp *)m_sendPacket;
-    icmp->icmp_type = ICMP_ECHO;
-    icmp->icmp_code = 0;
-    icmp->icmp_cksum = 0;
-    icmp->icmp_seq = nPackNo;
-    icmp->icmp_id = m_pid;
+    icmp_head = (icmp *)m_sendPacket;
+    icmp_head->icmp_type = ICMP_ECHO;
+    icmp_head->icmp_code = 0;
+    icmp_head->icmp_cksum = 0;
+    icmp_head->icmp_seq = nPackNo;
+    icmp_head->icmp_id = m_pid.id;
     packet_size = 8 + nDataLen;
-    tval = (struct timeval *)icmp->icmp_data;
+#ifdef WIN32
+#else
+	struct timeval *tval;
+    tval = (struct timeval *)icmp_head->icmp_data;
     gettimeofday(tval, NULL);
-    icmp->icmp_cksum = cal_chksum((unsigned short *)icmp, packet_size);
+#endif
+    icmp_head->icmp_cksum = cal_chksum((unsigned short *)icmp_head, packet_size);
     return packet_size;
 }
 
 int CXPing::UnPack(int nLen)
 {
     int iphdrlen;
-    struct ip *ip;
-    struct icmp *icmp;
+    ip *ip_head;
+    icmp *icmp_head;
     int rtt = 0;
 
-    ip = (struct ip *)m_recvPacket;
-    iphdrlen = ip->ip_hl << 2;  //ip报长度为IP报头的长度标志*4
-    icmp = (struct icmp *)(m_recvPacket + iphdrlen);
+    ip_head = (ip *)m_recvPacket;
+    iphdrlen = ip_head->ip_hl << 2;  //ip报长度为IP报头的长度标志*4
+    icmp_head = (icmp *)(m_recvPacket + iphdrlen);
     nLen -= iphdrlen;
     if (nLen < 8)
     {
@@ -174,15 +182,18 @@ int CXPing::UnPack(int nLen)
         return J_SOCKET_ERROR;
     }
 
-    if (icmp->icmp_id == m_pid)
+    if (icmp_head->icmp_id == m_pid.id)
     {
-         if (icmp->icmp_type == ICMP_ECHOREPLY)
+         if (icmp_head->icmp_type == ICMP_ECHOREPLY)
         {
+#ifdef WIN32
+#else
             struct timeval tvRecv;
             gettimeofday(&tvRecv, NULL);
             struct timeval *tvSend = (struct timeval *)icmp->icmp_data;
             rtt = (tvRecv.tv_sec - tvSend->tv_sec) * 1000
                 + (tvRecv.tv_usec - tvSend->tv_usec) / 1000;
+#endif
         }
         else
         {
