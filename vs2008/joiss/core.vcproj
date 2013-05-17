@@ -179,10 +179,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\core\x_iconv.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\core\x_loadso.cpp"
 				>
 			</File>
@@ -274,10 +270,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\core\x_file.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\core\x_iconv.h"
 				>
 			</File>
 			<File

@@ -430,6 +430,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\utils\x_iconv.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\utils\x_md5.h"
 				>
 			</File>
@@ -449,6 +453,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\utils\common\x_crc32.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\utils\common\x_iconv.cpp"
 				>
 			</File>
 			<File
