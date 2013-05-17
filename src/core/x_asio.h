@@ -5,6 +5,7 @@
 #include "x_singleton.h"
 #include "x_lock.h"
 #include "x_socket.h"
+#include "x_thread.h"
 
 class CRdAsio : public SingletonTmpl<CRdAsio>
 {
@@ -34,7 +35,7 @@ private:
 	typedef std::map<int, J_AsioUser *> AsioMap;
 	AsioMap m_asioMap;
 
-	pthread_t m_workThread;
+	CJoThread m_workThread;
 	J_OS::CTLock m_locker;
 
 	int m_epoll_fd;

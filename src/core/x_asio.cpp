@@ -9,7 +9,6 @@
 
 CRdAsio::CRdAsio(int)
 {
-	m_workThread = 0;
 	m_bStarted = false;
 }
 
@@ -27,8 +26,10 @@ int CRdAsio::Init()
 
 		m_workThread = 0;
 		m_bStarted = true;
-		pthread_create(&m_workThread, NULL, WorkThread, this);
-		pthread_detach(m_workThread);
+		j_thread_parm parm = {0};
+		parm.entry = CRdAsio::WorkThread;
+		parm.data = this;
+		m_workThread.Create(parm);
 	}
 	return J_OK;
 }
@@ -40,8 +41,7 @@ void CRdAsio::Deinit()
 		m_bStarted = false;
 		if (m_workThread != 0)
 		{
-			pthread_cancel(m_workThread);
-			m_workThread = 0;
+			m_workThread.Release();
 		}
 
 		if (m_epoll_fd != 0)
