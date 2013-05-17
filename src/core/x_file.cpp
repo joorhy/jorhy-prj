@@ -16,6 +16,9 @@ CXFile::~CXFile()
 
 char *CXFile::GetVodDir(const char *pFrl, char *pDir)
 {
+#ifdef WIN32
+	return "C:\\vod";
+#else
 	char *p = NULL;
 	char *p2 = NULL;
 	FILE *fCheck = NULL;
@@ -67,10 +70,15 @@ char *CXFile::GetVodDir(const char *pFrl, char *pDir)
 		pclose(fCreate);
 
 	return pDir;
+#endif
 }
 
 int CXFile::CreateDir(char *pDir)
 {
+#ifdef WIN32
+	if (_access(pDir, 0) != 0)
+		CreateDirectory(pDir, NULL);
+#else
 	char *p = strstr(pDir, "/");
 	char *p2 = p;
 
@@ -106,12 +114,39 @@ int CXFile::CreateDir(char *pDir)
 			break;
 		}
 	}
+#endif
 
 	return J_OK;
 }
 
-int CXFile::ListFiles(char *pDir, j_vec_str_t &fileVec, const char *pResid)
+int CXFile::ListFiles(j_char_t *pDir, j_vec_str_t &fileVec, const j_char_t *pResid)
 {
+#ifdef WIN32
+	WIN32_FIND_DATA FindFileData;  
+	HANDLE hFind;  
+	
+	j_char_t file_name[256] = {0};
+	sprintf(file_name, "%s/%s*.*", pDir, pResid);
+	hFind = FindFirstFile("file_name", &FindFileData);  
+	if (hFind == INVALID_HANDLE_VALUE)   
+	{  
+		J_OS::LOGERROR("CXFile::ListFiles FindFirstFile failed\n");  
+		return J_UNKNOW;  
+	}  
+ 
+	do  
+	{   
+		if (pResid == NULL)
+		{
+			fileVec.push_back(FindFileData.cFileName);
+		}
+		else
+		{
+			if (memcmp(FindFileData.cFileName, pResid, strlen(pResid)) == 0)
+				fileVec.push_back(FindFileData.cFileName);
+		}
+	} while (FindNextFile(hFind, &FindFileData));  
+#else
 	DIR *dirPointer = NULL;
 	struct dirent *entry;
 
@@ -134,6 +169,7 @@ int CXFile::ListFiles(char *pDir, j_vec_str_t &fileVec, const char *pResid)
 		}
 	}
 	closedir(dirPointer);
+#endif
 
 	sort(fileVec.begin(), fileVec.end());
 	return J_OK;
@@ -141,24 +177,49 @@ int CXFile::ListFiles(char *pDir, j_vec_str_t &fileVec, const char *pResid)
 
 int CXFile::RenameFile(const char *oldName, const char *newName)
 {
+#ifdef WIN32
+	if(_access(oldName, 0) != 0)
+	{ 
+		if(rename(oldName, newName) != 0)
+		{ 
+			J_OS::LOGINFO("CXFile::RenameFile Error");
+			return J_FILE_ERROR;
+		} 
+	}  
+#else
     FILE *fRename = NULL;
     char cmdBuff[1024] = {0};
     sprintf(cmdBuff, "mv %s %s", oldName, newName);
     fRename = popen(cmdBuff, "r");
     if (fRename)
         pclose(fRename);
+#endif
 
     return J_OK;
 }
 
-int CXFile::DelFile(const char *filePath, const char *fileName)
+int CXFile::DelFile(const j_char_t *filePath, const j_char_t *fileName)
 {
+#ifdef WIN32
+	j_char_t full_name[256] = {0};
+	sprintf(full_name, "%s/%s", filePath, fileName);
+	if(_access(full_name, 0) != 0)
+	{ 
+		SetFileAttributes(full_name, 0); 
+		if(!DeleteFile(full_name))
+		{
+			J_OS::LOGINFO("CXFile::DelFile ERROR");
+			return J_FILE_ERROR;
+		}
+	}
+#else
     FILE *fRename = NULL;
     char cmdBuff[1024] = {0};
     sprintf(cmdBuff, "rm %s/%s", filePath, fileName);
     fRename = popen(cmdBuff, "r");
     if (fRename)
         pclose(fRename);
+#endif
 
     return J_OK;
 }

@@ -19,6 +19,6 @@ public:
 
 private:
     int DelFile(const char *filePath, const char *fileName);
-    int ListFiles(char *pDir, j_vec_str_t &fileVec, const char *pResid = NULL);
+    int ListFiles(j_char_t *pDir, j_vec_str_t &fileVec, const j_char_t *pResid = NULL);
 };
 #endif //~__X_FILE_H_
