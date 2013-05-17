@@ -72,7 +72,11 @@ int CXPing::SendPacket()
 int CXPing::RecvPacket()
 {
     struct sockaddr_in from;
+#ifdef WIN32
     j_int32_t from_len = sizeof(from);
+#else
+	socklen_t from_len = sizeof(from);
+#endif
     int n = 0;
     if ((n = recvfrom(m_socket, m_recvPacket, sizeof(m_recvPacket), 0,
             (struct sockaddr *)&from, &from_len)) < 0)
@@ -190,7 +194,7 @@ int CXPing::UnPack(int nLen)
 #else
             struct timeval tvRecv;
             gettimeofday(&tvRecv, NULL);
-            struct timeval *tvSend = (struct timeval *)icmp->icmp_data;
+            struct timeval *tvSend = (struct timeval *)icmp_head->icmp_data;
             rtt = (tvRecv.tv_sec - tvSend->tv_sec) * 1000
                 + (tvRecv.tv_usec - tvSend->tv_usec) / 1000;
 #endif
