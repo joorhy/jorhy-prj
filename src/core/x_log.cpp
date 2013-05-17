@@ -101,19 +101,31 @@ int CLog::WriteLogError(const char *format, ...)
 int CLog::CreateFile()
 {
 	char vodDir[512] = {0};
+#ifdef WIN32
+	GetCurrentDirectory(512, vodDir);
+	sprintf(vodDir, "%s/log", vodDir);
+#else
 	sprintf(vodDir, "%s/log", get_current_dir_name());
+#endif
 
 	char fileName[256] = {0};
 	sprintf(fileName, "%s/%s.log", vodDir, CTime::Instance()->GetLocalTime().c_str());
 
+#ifdef WIN32
+	if (_access(vodDir, 0) != 0)
+	{
+		if (!CreateDirectory(vodDir, NULL))
+#else
 	if (access(vodDir, F_OK) != 0)
 	{
 		if (mkdir(vodDir, S_IRWXU | S_IRWXG | S_IRWXO) < 0)
+#endif
 		{
 			J_OS::LOGERROR("CLog::CreateFile mkdir error");
 			return J_FILE_ERROR;
 		}
 	}
+
 	m_pFile = fopen(fileName, "wb+");
 
 	return J_OK;
