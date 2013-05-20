@@ -155,7 +155,7 @@ void CRingBuffer::EraseBuffer()
 	m_pReadPoint = AddBuffer(m_pReadPoint, m_Node.nLen + sizeof(m_Node));
 	m_nDataLen -= m_Node.nLen + sizeof(m_Node);
 	
-	J_OS::LOGINFO("CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
+	//J_OS::LOGINFO("CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
 	//fprintf(stderr, "CXBuffer::EraseBuffer() len = %d\n", m_Node.nLen);
 }
 

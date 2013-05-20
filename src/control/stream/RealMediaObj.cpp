@@ -120,7 +120,8 @@ int CRealMediaObj::OnWriteData()
 					}
 					else
 					{
-						m_nextFrameTime -= 40;
+						//m_nextFrameTime -= 40;
+						m_nextFrameTime = 0;
 						continue;
 					}
 				}
