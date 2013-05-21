@@ -199,6 +199,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\core\x_mem_pool.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\core\x_msg_queue.cpp"
 				>
 			</File>
@@ -294,6 +298,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\core\x_media_msg.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\x_mem_pool.h"
 				>
 			</File>
 			<File
