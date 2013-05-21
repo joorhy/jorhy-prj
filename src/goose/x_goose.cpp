@@ -4,7 +4,6 @@
 #include "x_gse_scd.h"
 #include "gse_config.h"
 #include "json.h"
-#include "ghttp.h"
 #include "assert.h"
 #include "errno.h"
 
@@ -326,18 +325,18 @@ int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
     }
     json_object_object_add(alm_body, (char *)"parm", alm_json);
     printf("%s\n", json_object_to_json_string(alm_body));
-    ghttp_request *p_conn = ghttp_request_new();
-	ghttp_set_uri(p_conn, GetMCUrl());
+    
+	m_httpHelper.SetUri(GetMCUrl());
 	printf("%s\n", GetMCUrl());
-	ghttp_set_type(p_conn, ghttp_type_post);
-	ghttp_set_body(p_conn, json_object_to_json_string(alm_body), strlen(json_object_to_json_string(alm_body)));
-	ghttp_prepare(p_conn);
-	if (ghttp_process(p_conn) == ghttp_error)
+	m_httpHelper.SetType(x_http_type_post);
+	m_httpHelper.SetBody(json_object_to_json_string(alm_body), strlen(json_object_to_json_string(alm_body)));
+	m_httpHelper.Prepare();
+	if (m_httpHelper.Process() != J_OK)
 	{
 	    assert(false);
 	}
 
-    int i_state = ghttp_status_code(p_conn);
+    int i_state = m_httpHelper.GetStatusCode();
 	switch(i_state)
 	{
 	case 200:
@@ -346,8 +345,6 @@ int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
         assert(false);
 		break;
 	}
-    ghttp_close(p_conn);
-	ghttp_request_destroy(p_conn);
 
     json_object_put(alm_body);
     return J_OK;

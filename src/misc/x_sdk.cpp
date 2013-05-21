@@ -1,11 +1,9 @@
 #include "x_sdk.h"
+#include "x_http.h"
+
+CXHttp httpHelper;
 
 #define clean_all() \
-    if (json_buf != NULL)\
-    {\
-        delete json_buf;\
-        json_buf = NULL;\
-    }\
     if (!is_error(json_helper) && json_helper != NULL)\
     {\
         json_object_put(json_helper);\
@@ -14,38 +12,31 @@
 
 char *HttpCommunicate(char *body,char *uri)
 {
-	char *resrvdata = NULL;
-	char *ret_data = NULL;
-	ghttp_request *conntoserv = ghttp_request_new();
-	ghttp_set_uri(conntoserv,uri);
-	ghttp_set_type(conntoserv, ghttp_type_post); 		//在set body前必须这样
-	ghttp_set_body(conntoserv,body,strlen(body));
-	ghttp_prepare(conntoserv);
-	if(ghttp_process(conntoserv) == ghttp_error)
+	j_char_t *resrvdata = NULL;
+	j_char_t *ret_data = NULL;
+	httpHelper.SetUri(uri);
+	httpHelper.SetType(x_http_type_post);
+	httpHelper.SetBody(body,strlen(body));
+	httpHelper.Prepare();
+	if(httpHelper.Process() != J_OK)
 	{
-	    J_OS::LOGINFO("HttpCommunicate MC Error, ghttp_process = %d", ghttp_error);
-	    ghttp_close(conntoserv);
-	    ghttp_request_destroy(conntoserv);
+	    J_OS::LOGINFO("HttpCommunicate MC Error");
 		return NULL;
 	}
-	int ret_val = ghttp_status_code(conntoserv);
+	j_int32_t ret_val = httpHelper.GetStatusCode();
 	switch(ret_val)
 	{
-	case 200:	resrvdata = ghttp_get_body(conntoserv);
+	case 200:	resrvdata = httpHelper.GetBody();
 				if (resrvdata == NULL)
 					return NULL;
 				ret_data = new char[strlen(resrvdata) + 1];
 				memset(ret_data, 0, strlen(resrvdata) + 1);
-				strncpy(ret_data, resrvdata, ghttp_get_body_len(conntoserv));
+				strncpy(ret_data, resrvdata, httpHelper.GetBodyLen());
 				break;
 	default:
         J_OS::LOGINFO("HttpCommunicate MC Error, code = %d", ret_val);
-        ghttp_request_destroy(conntoserv);
         return NULL;
 	}
-
-	ghttp_close(conntoserv);
-	ghttp_request_destroy(conntoserv);
 
 	return ret_data;
 }

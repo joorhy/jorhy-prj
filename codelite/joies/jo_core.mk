@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=root
-Date                   :=03/26/2013
+Date                   :=05/21/2013
 CodeLitePath           :="/home/jorhy/.codelite"
 LinkerName             :=g++
 ArchiveTool            :=ar rcus
@@ -48,8 +48,8 @@ LibPath                := "$(LibraryPathSwitch)."
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects=$(IntermediateDirectory)/core_x_asio$(ObjectSuffix) $(IntermediateDirectory)/core_x_file$(ObjectSuffix) $(IntermediateDirectory)/core_x_iconv$(ObjectSuffix) $(IntermediateDirectory)/core_x_loadso$(ObjectSuffix) $(IntermediateDirectory)/core_x_lock$(ObjectSuffix) $(IntermediateDirectory)/core_x_log$(ObjectSuffix) $(IntermediateDirectory)/core_x_media_msg$(ObjectSuffix) $(IntermediateDirectory)/core_x_msg_queue$(ObjectSuffix) $(IntermediateDirectory)/core_x_ping$(ObjectSuffix) $(IntermediateDirectory)/core_x_ringbuffer$(ObjectSuffix) \
-	$(IntermediateDirectory)/core_x_socket$(ObjectSuffix) $(IntermediateDirectory)/core_x_string$(ObjectSuffix) $(IntermediateDirectory)/core_x_thread_pool$(ObjectSuffix) $(IntermediateDirectory)/core_x_time$(ObjectSuffix) $(IntermediateDirectory)/core_x_timer$(ObjectSuffix) 
+Objects=$(IntermediateDirectory)/core_x_asio$(ObjectSuffix) $(IntermediateDirectory)/core_x_file$(ObjectSuffix) $(IntermediateDirectory)/core_x_loadso$(ObjectSuffix) $(IntermediateDirectory)/core_x_lock$(ObjectSuffix) $(IntermediateDirectory)/core_x_log$(ObjectSuffix) $(IntermediateDirectory)/core_x_media_msg$(ObjectSuffix) $(IntermediateDirectory)/core_x_msg_queue$(ObjectSuffix) $(IntermediateDirectory)/core_x_ping$(ObjectSuffix) $(IntermediateDirectory)/core_x_ringbuffer$(ObjectSuffix) $(IntermediateDirectory)/core_x_socket$(ObjectSuffix) \
+	$(IntermediateDirectory)/core_x_string$(ObjectSuffix) $(IntermediateDirectory)/core_x_thread_pool$(ObjectSuffix) $(IntermediateDirectory)/core_x_time$(ObjectSuffix) $(IntermediateDirectory)/core_x_timer$(ObjectSuffix) $(IntermediateDirectory)/core_x_http$(ObjectSuffix) $(IntermediateDirectory)/core_x_thread$(ObjectSuffix) 
 
 ##
 ## Main Build Targets 
@@ -84,14 +84,6 @@ $(IntermediateDirectory)/core_x_file$(DependSuffix): ../../src/core/x_file.cpp
 
 $(IntermediateDirectory)/core_x_file$(PreprocessSuffix): ../../src/core/x_file.cpp
 	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/core_x_file$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_file.cpp"
-
-$(IntermediateDirectory)/core_x_iconv$(ObjectSuffix): ../../src/core/x_iconv.cpp $(IntermediateDirectory)/core_x_iconv$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_iconv.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/core_x_iconv$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/core_x_iconv$(DependSuffix): ../../src/core/x_iconv.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/core_x_iconv$(ObjectSuffix) -MF$(IntermediateDirectory)/core_x_iconv$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_iconv.cpp"
-
-$(IntermediateDirectory)/core_x_iconv$(PreprocessSuffix): ../../src/core/x_iconv.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/core_x_iconv$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_iconv.cpp"
 
 $(IntermediateDirectory)/core_x_loadso$(ObjectSuffix): ../../src/core/x_loadso.cpp $(IntermediateDirectory)/core_x_loadso$(DependSuffix)
 	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_loadso.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/core_x_loadso$(ObjectSuffix) $(IncludePath)
@@ -189,6 +181,22 @@ $(IntermediateDirectory)/core_x_timer$(DependSuffix): ../../src/core/x_timer.cpp
 $(IntermediateDirectory)/core_x_timer$(PreprocessSuffix): ../../src/core/x_timer.cpp
 	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/core_x_timer$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_timer.cpp"
 
+$(IntermediateDirectory)/core_x_http$(ObjectSuffix): ../../src/core/x_http.cpp $(IntermediateDirectory)/core_x_http$(DependSuffix)
+	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_http.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/core_x_http$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/core_x_http$(DependSuffix): ../../src/core/x_http.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/core_x_http$(ObjectSuffix) -MF$(IntermediateDirectory)/core_x_http$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_http.cpp"
+
+$(IntermediateDirectory)/core_x_http$(PreprocessSuffix): ../../src/core/x_http.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/core_x_http$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_http.cpp"
+
+$(IntermediateDirectory)/core_x_thread$(ObjectSuffix): ../../src/core/x_thread.cpp $(IntermediateDirectory)/core_x_thread$(DependSuffix)
+	$(CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_thread.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/core_x_thread$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/core_x_thread$(DependSuffix): ../../src/core/x_thread.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/core_x_thread$(ObjectSuffix) -MF$(IntermediateDirectory)/core_x_thread$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_thread.cpp"
+
+$(IntermediateDirectory)/core_x_thread$(PreprocessSuffix): ../../src/core/x_thread.cpp
+	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/core_x_thread$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/core/x_thread.cpp"
+
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
 ##
@@ -201,9 +209,6 @@ clean:
 	$(RM) $(IntermediateDirectory)/core_x_file$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/core_x_file$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/core_x_file$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/core_x_iconv$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/core_x_iconv$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/core_x_iconv$(PreprocessSuffix)
 	$(RM) $(IntermediateDirectory)/core_x_loadso$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/core_x_loadso$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/core_x_loadso$(PreprocessSuffix)
@@ -240,6 +245,12 @@ clean:
 	$(RM) $(IntermediateDirectory)/core_x_timer$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/core_x_timer$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/core_x_timer$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/core_x_http$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/core_x_http$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/core_x_http$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/core_x_thread$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/core_x_thread$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/core_x_thread$(PreprocessSuffix)
 	$(RM) $(OutputFile)
 
 

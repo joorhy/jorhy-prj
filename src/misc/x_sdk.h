@@ -1,7 +1,6 @@
 #ifndef _X_SDK_H_
 #define _X_SDK_H_
 #include "j_includes.h"
-#include "ghttp.h"
 #include "json.h"
 #include "x_sdk_def.h"
 /*

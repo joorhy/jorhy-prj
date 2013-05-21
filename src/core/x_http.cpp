@@ -8,6 +8,33 @@ const char *x_http_type_str[] =
 {"GET", "", "", "POST", "", "", "", "", "", "", "", "", "", "", ""};
 const char *x_http_end_tag = "\r\n\r\n";
 
+int x_atoh(char *src)
+{
+	int nRetVal = 0;
+	if (src != NULL)
+	{
+		for (int i=0; (src[i]>='0'&&src[i]<='9') 
+					|| (src[i]>='A'&&src[i]<='F') 
+					|| (src[i]>='a'&&src[i]<='f'); ++i)
+		{
+			nRetVal *= 16;
+			if (src[i]>='0' && src[i]<='9') 
+			{
+				nRetVal += (src[i] - '0');
+			}
+			else if (src[i]>='A'&&src[i]<='F')
+			{
+				nRetVal += (src[i] - 'A' + 10);
+			}
+			else
+			{
+				nRetVal += (src[i] - 'a' + 10);
+			}
+		}
+	}
+	return nRetVal;
+}
+
 CXHttp::CXHttp()
 {
 	m_pBody = new char[X_HTTP_BODY_LEN];
@@ -30,6 +57,7 @@ j_result_t CXHttp::SetUri(j_char_t *pUri)
 	char *p = strstr(pUri, "http://");
 	if (p != NULL)
 	{
+		p += strlen("http://");
 		char *p2 = strstr(p, ":");
 		char *p3 = NULL;
 		if (p2 != NULL)
@@ -99,10 +127,12 @@ j_result_t CXHttp::Process()
 		return J_SOCKET_ERROR;
 
 	int nRet = 0;
+	memset (m_pResponse, 0, sizeof(m_pResponse));
 	m_nRespHeadLen = 0;
+	m_pRespBodyLen = 0;
 	while (1)
 	{
-		if ((nRet = sock.Read_n(m_pResponse, 1)) < 0)
+		if ((nRet = sock.Read_n(m_pResponse + m_nRespHeadLen, 1)) < 0)
 			return J_SOCKET_ERROR;
 
 		++m_nRespHeadLen;
@@ -112,12 +142,41 @@ j_result_t CXHttp::Process()
 	char *p = strstr(m_pResponse, "Content-Length: ");
 	if (p == NULL)
 		p = strstr(m_pResponse, "CONTENT-LENGTH: ");
-
+		
 	if (p != NULL)
 	{
 		m_pRespBodyLen = atoi(p);
 		if (sock.Read_n(m_pResponse + m_nRespHeadLen, m_pRespBodyLen) < 0)
 			return J_SOCKET_ERROR;
+	}
+	else
+	{
+		p = strstr(m_pResponse, "Transfer-Encoding: chunked");
+		if (p != NULL)
+		{
+			//chunk编码
+			j_int32_t nReadLen = 0; 
+			j_char_t strChunkSize[32] = {0};
+			
+			while (1)
+			{
+				if ((nRet = sock.Read_n(strChunkSize + nReadLen, 1)) < 0)
+					return J_SOCKET_ERROR;
+
+				++nReadLen;
+				if (memcmp(strChunkSize + (nReadLen - 2), "\r\n", strlen("\r\n")) == 0)
+				{
+					j_int32_t nChunkSize = x_atoh(strChunkSize);
+					if (nChunkSize == 0)
+						break;
+					if (sock.Read_n(m_pResponse + m_nRespHeadLen, nChunkSize) < 0)
+						return J_SOCKET_ERROR;
+					m_pRespBodyLen += nChunkSize;
+					nReadLen = 0;
+					memset(strChunkSize, 0, sizeof(strChunkSize));
+				}
+			}
+		}
 	}
 
 	return J_OK;
@@ -136,4 +195,9 @@ j_int32_t CXHttp::GetStatusCode()
 j_char_t *CXHttp::GetBody()
 {
 	return (m_pRespBodyLen > 0 ? m_pResponse + m_nRespHeadLen : NULL);
+}
+
+j_int32_t CXHttp::GetBodyLen()
+{
+	return (m_pRespBodyLen > 0 ? m_pRespBodyLen : 0);
 }

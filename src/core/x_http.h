@@ -35,6 +35,7 @@ public:
 	j_result_t Process();
 	j_int32_t GetStatusCode();
 	j_char_t *GetBody();
+	j_int32_t GetBodyLen();
 
 private:
 	j_int32_t m_nType;

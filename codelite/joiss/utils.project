@@ -18,16 +18,6 @@
     <File Name="../../src/utils/filtbank.h"/>
     <File Name="../../src/utils/frame.h"/>
     <File Name="../../src/utils/G722_1_1C_Float.h"/>
-    <File Name="../../src/utils/ghttp.h"/>
-    <File Name="../../src/utils/ghttp_constants.h"/>
-    <File Name="../../src/utils/http_base64.h"/>
-    <File Name="../../src/utils/http_date.h"/>
-    <File Name="../../src/utils/http_global.h"/>
-    <File Name="../../src/utils/http_hdrs.h"/>
-    <File Name="../../src/utils/http_req.h"/>
-    <File Name="../../src/utils/http_resp.h"/>
-    <File Name="../../src/utils/http_trans.h"/>
-    <File Name="../../src/utils/http_uri.h"/>
     <File Name="../../src/utils/huff_defs.h"/>
     <File Name="../../src/utils/huffman.h"/>
     <File Name="../../src/utils/hufftab.h"/>
@@ -111,16 +101,6 @@
   <VirtualDirectory Name="sqlite3">
     <File Name="../../src/utils/sqlite3/shell.c"/>
     <File Name="../../src/utils/sqlite3/sqlite3.c"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="ghttp">
-    <File Name="../../src/utils/ghttp/ghttp.c"/>
-    <File Name="../../src/utils/ghttp/http_base64.c"/>
-    <File Name="../../src/utils/ghttp/http_date.c"/>
-    <File Name="../../src/utils/ghttp/http_hdrs.c"/>
-    <File Name="../../src/utils/ghttp/http_req.c"/>
-    <File Name="../../src/utils/ghttp/http_resp.c"/>
-    <File Name="../../src/utils/ghttp/http_trans.c"/>
-    <File Name="../../src/utils/ghttp/http_uri.c"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

@@ -5,6 +5,7 @@
 #include "x_goose_def.h"
 #include "x_scd.h"
 #include "j_module.h"
+#include "x_http.h"
 
 class CXGooseCap : public J_EventParser
 {
@@ -32,6 +33,7 @@ class CXGooseCap : public J_EventParser
         GSE_PacketMap m_packetMap;
 
         int m_stNum;
+		CXHttp m_httpHelper;
         //CXSdl m_sdlParser;
 };
 

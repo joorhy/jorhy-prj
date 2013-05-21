@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=root
-Date                   :=03/26/2013
+Date                   :=05/21/2013
 CodeLitePath           :="/home/jorhy/.codelite"
 LinkerName             :=g++
 ArchiveTool            :=ar rcus
@@ -49,10 +49,10 @@ LibPath                := "$(LibraryPathSwitch)."
 ##
 CodeLiteDir:=/usr/share/codelite
 Objects=$(IntermediateDirectory)/common_x_base64$(ObjectSuffix) $(IntermediateDirectory)/common_x_crc32$(ObjectSuffix) $(IntermediateDirectory)/common_x_md5$(ObjectSuffix) $(IntermediateDirectory)/common_x_sha1$(ObjectSuffix) $(IntermediateDirectory)/faac_aacquant$(ObjectSuffix) $(IntermediateDirectory)/faac_backpred$(ObjectSuffix) $(IntermediateDirectory)/faac_bitstream$(ObjectSuffix) $(IntermediateDirectory)/faac_channels$(ObjectSuffix) $(IntermediateDirectory)/faac_fft$(ObjectSuffix) $(IntermediateDirectory)/faac_filtbank$(ObjectSuffix) \
-	$(IntermediateDirectory)/faac_frame$(ObjectSuffix) $(IntermediateDirectory)/faac_huffman$(ObjectSuffix) $(IntermediateDirectory)/faac_ltp$(ObjectSuffix) $(IntermediateDirectory)/faac_midside$(ObjectSuffix) $(IntermediateDirectory)/faac_psychkni$(ObjectSuffix) $(IntermediateDirectory)/faac_tns$(ObjectSuffix) $(IntermediateDirectory)/faac_util$(ObjectSuffix) $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(ObjectSuffix) $(IntermediateDirectory)/ghttp_ghttp$(ObjectSuffix) $(IntermediateDirectory)/ghttp_http_base64$(ObjectSuffix) \
-	$(IntermediateDirectory)/ghttp_http_date$(ObjectSuffix) $(IntermediateDirectory)/ghttp_http_hdrs$(ObjectSuffix) $(IntermediateDirectory)/ghttp_http_req$(ObjectSuffix) $(IntermediateDirectory)/ghttp_http_resp$(ObjectSuffix) $(IntermediateDirectory)/ghttp_http_trans$(ObjectSuffix) $(IntermediateDirectory)/ghttp_http_uri$(ObjectSuffix) $(IntermediateDirectory)/json_c_arraylist$(ObjectSuffix) $(IntermediateDirectory)/json_c_debug$(ObjectSuffix) $(IntermediateDirectory)/json_c_json_object$(ObjectSuffix) $(IntermediateDirectory)/json_c_json_tokener$(ObjectSuffix) \
-	$(IntermediateDirectory)/json_c_json_util$(ObjectSuffix) $(IntermediateDirectory)/json_c_linkhash$(ObjectSuffix) $(IntermediateDirectory)/json_c_printbuf$(ObjectSuffix) $(IntermediateDirectory)/sqlite3_shell$(ObjectSuffix) $(IntermediateDirectory)/sqlite3_sqlite3$(ObjectSuffix) $(IntermediateDirectory)/tinyxml_tinystr$(ObjectSuffix) $(IntermediateDirectory)/tinyxml_tinyxml$(ObjectSuffix) $(IntermediateDirectory)/tinyxml_tinyxmlerror$(ObjectSuffix) $(IntermediateDirectory)/tinyxml_tinyxmlparser$(ObjectSuffix) $(IntermediateDirectory)/uuid_clear$(ObjectSuffix) \
-	$(IntermediateDirectory)/uuid_compare$(ObjectSuffix) $(IntermediateDirectory)/uuid_copy$(ObjectSuffix) $(IntermediateDirectory)/uuid_gen_uuid$(ObjectSuffix) $(IntermediateDirectory)/uuid_isnull$(ObjectSuffix) $(IntermediateDirectory)/uuid_pack$(ObjectSuffix) $(IntermediateDirectory)/uuid_parse$(ObjectSuffix) $(IntermediateDirectory)/uuid_unpack$(ObjectSuffix) $(IntermediateDirectory)/uuid_unparse$(ObjectSuffix) $(IntermediateDirectory)/uuid_uuid_time$(ObjectSuffix) 
+	$(IntermediateDirectory)/faac_frame$(ObjectSuffix) $(IntermediateDirectory)/faac_huffman$(ObjectSuffix) $(IntermediateDirectory)/faac_ltp$(ObjectSuffix) $(IntermediateDirectory)/faac_midside$(ObjectSuffix) $(IntermediateDirectory)/faac_psychkni$(ObjectSuffix) $(IntermediateDirectory)/faac_tns$(ObjectSuffix) $(IntermediateDirectory)/faac_util$(ObjectSuffix) $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(ObjectSuffix) $(IntermediateDirectory)/json_c_arraylist$(ObjectSuffix) $(IntermediateDirectory)/json_c_debug$(ObjectSuffix) \
+	$(IntermediateDirectory)/json_c_json_object$(ObjectSuffix) $(IntermediateDirectory)/json_c_json_tokener$(ObjectSuffix) $(IntermediateDirectory)/json_c_json_util$(ObjectSuffix) $(IntermediateDirectory)/json_c_linkhash$(ObjectSuffix) $(IntermediateDirectory)/json_c_printbuf$(ObjectSuffix) $(IntermediateDirectory)/sqlite3_shell$(ObjectSuffix) $(IntermediateDirectory)/sqlite3_sqlite3$(ObjectSuffix) $(IntermediateDirectory)/tinyxml_tinystr$(ObjectSuffix) $(IntermediateDirectory)/tinyxml_tinyxml$(ObjectSuffix) $(IntermediateDirectory)/tinyxml_tinyxmlerror$(ObjectSuffix) \
+	$(IntermediateDirectory)/tinyxml_tinyxmlparser$(ObjectSuffix) $(IntermediateDirectory)/uuid_clear$(ObjectSuffix) $(IntermediateDirectory)/uuid_compare$(ObjectSuffix) $(IntermediateDirectory)/uuid_copy$(ObjectSuffix) $(IntermediateDirectory)/uuid_gen_uuid$(ObjectSuffix) $(IntermediateDirectory)/uuid_isnull$(ObjectSuffix) $(IntermediateDirectory)/uuid_pack$(ObjectSuffix) $(IntermediateDirectory)/uuid_parse$(ObjectSuffix) $(IntermediateDirectory)/uuid_unpack$(ObjectSuffix) $(IntermediateDirectory)/uuid_unparse$(ObjectSuffix) \
+	$(IntermediateDirectory)/uuid_uuid_time$(ObjectSuffix) 
 
 ##
 ## Main Build Targets 
@@ -215,70 +215,6 @@ $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(DependSuffix): ../../src/utils/
 
 $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(PreprocessSuffix): ../../src/utils/g722_1/G722_1_1C_Float.c
 	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/g722_1/G722_1_1C_Float.c"
-
-$(IntermediateDirectory)/ghttp_ghttp$(ObjectSuffix): ../../src/utils/ghttp/ghttp.c $(IntermediateDirectory)/ghttp_ghttp$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/ghttp.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_ghttp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_ghttp$(DependSuffix): ../../src/utils/ghttp/ghttp.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_ghttp$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_ghttp$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/ghttp.c"
-
-$(IntermediateDirectory)/ghttp_ghttp$(PreprocessSuffix): ../../src/utils/ghttp/ghttp.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_ghttp$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/ghttp.c"
-
-$(IntermediateDirectory)/ghttp_http_base64$(ObjectSuffix): ../../src/utils/ghttp/http_base64.c $(IntermediateDirectory)/ghttp_http_base64$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_base64.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_http_base64$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_http_base64$(DependSuffix): ../../src/utils/ghttp/http_base64.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_http_base64$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_http_base64$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_base64.c"
-
-$(IntermediateDirectory)/ghttp_http_base64$(PreprocessSuffix): ../../src/utils/ghttp/http_base64.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_http_base64$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_base64.c"
-
-$(IntermediateDirectory)/ghttp_http_date$(ObjectSuffix): ../../src/utils/ghttp/http_date.c $(IntermediateDirectory)/ghttp_http_date$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_date.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_http_date$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_http_date$(DependSuffix): ../../src/utils/ghttp/http_date.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_http_date$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_http_date$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_date.c"
-
-$(IntermediateDirectory)/ghttp_http_date$(PreprocessSuffix): ../../src/utils/ghttp/http_date.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_http_date$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_date.c"
-
-$(IntermediateDirectory)/ghttp_http_hdrs$(ObjectSuffix): ../../src/utils/ghttp/http_hdrs.c $(IntermediateDirectory)/ghttp_http_hdrs$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_hdrs.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_http_hdrs$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_http_hdrs$(DependSuffix): ../../src/utils/ghttp/http_hdrs.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_http_hdrs$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_http_hdrs$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_hdrs.c"
-
-$(IntermediateDirectory)/ghttp_http_hdrs$(PreprocessSuffix): ../../src/utils/ghttp/http_hdrs.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_http_hdrs$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_hdrs.c"
-
-$(IntermediateDirectory)/ghttp_http_req$(ObjectSuffix): ../../src/utils/ghttp/http_req.c $(IntermediateDirectory)/ghttp_http_req$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_req.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_http_req$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_http_req$(DependSuffix): ../../src/utils/ghttp/http_req.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_http_req$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_http_req$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_req.c"
-
-$(IntermediateDirectory)/ghttp_http_req$(PreprocessSuffix): ../../src/utils/ghttp/http_req.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_http_req$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_req.c"
-
-$(IntermediateDirectory)/ghttp_http_resp$(ObjectSuffix): ../../src/utils/ghttp/http_resp.c $(IntermediateDirectory)/ghttp_http_resp$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_resp.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_http_resp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_http_resp$(DependSuffix): ../../src/utils/ghttp/http_resp.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_http_resp$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_http_resp$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_resp.c"
-
-$(IntermediateDirectory)/ghttp_http_resp$(PreprocessSuffix): ../../src/utils/ghttp/http_resp.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_http_resp$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_resp.c"
-
-$(IntermediateDirectory)/ghttp_http_trans$(ObjectSuffix): ../../src/utils/ghttp/http_trans.c $(IntermediateDirectory)/ghttp_http_trans$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_trans.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_http_trans$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_http_trans$(DependSuffix): ../../src/utils/ghttp/http_trans.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_http_trans$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_http_trans$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_trans.c"
-
-$(IntermediateDirectory)/ghttp_http_trans$(PreprocessSuffix): ../../src/utils/ghttp/http_trans.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_http_trans$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_trans.c"
-
-$(IntermediateDirectory)/ghttp_http_uri$(ObjectSuffix): ../../src/utils/ghttp/http_uri.c $(IntermediateDirectory)/ghttp_http_uri$(DependSuffix)
-	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_uri.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/ghttp_http_uri$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/ghttp_http_uri$(DependSuffix): ../../src/utils/ghttp/http_uri.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/ghttp_http_uri$(ObjectSuffix) -MF$(IntermediateDirectory)/ghttp_http_uri$(DependSuffix) -MM "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_uri.c"
-
-$(IntermediateDirectory)/ghttp_http_uri$(PreprocessSuffix): ../../src/utils/ghttp/http_uri.c
-	@$(C_CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ghttp_http_uri$(PreprocessSuffix) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/ghttp/http_uri.c"
 
 $(IntermediateDirectory)/json_c_arraylist$(ObjectSuffix): ../../src/utils/json_c/arraylist.c $(IntermediateDirectory)/json_c_arraylist$(DependSuffix)
 	$(C_CompilerName) $(SourceSwitch) "/home/jorhy/WorkSpace/jorhy-prj/src/utils/json_c/arraylist.c" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/json_c_arraylist$(ObjectSuffix) $(IncludePath)
@@ -524,30 +460,6 @@ clean:
 	$(RM) $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/g722_1_G722_1_1C_Float$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_ghttp$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_ghttp$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_ghttp$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_base64$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_base64$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_base64$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_date$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_date$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_date$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_hdrs$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_hdrs$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_hdrs$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_req$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_req$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_req$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_resp$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_resp$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_resp$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_trans$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_trans$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_trans$(PreprocessSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_uri$(ObjectSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_uri$(DependSuffix)
-	$(RM) $(IntermediateDirectory)/ghttp_http_uri$(PreprocessSuffix)
 	$(RM) $(IntermediateDirectory)/json_c_arraylist$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/json_c_arraylist$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/json_c_arraylist$(PreprocessSuffix)
