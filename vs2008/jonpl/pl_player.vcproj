@@ -141,7 +141,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="libvlc.lib PlayCtrl.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\libs\vlc;..\..\libs\hik"
+				AdditionalLibraryDirectories="..\..\libs\windows\vlc;..\..\libs\windows\hik"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="1"
