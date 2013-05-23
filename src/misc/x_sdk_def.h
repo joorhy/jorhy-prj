@@ -10,8 +10,6 @@
 #include "j_includes.h"
 
 using namespace std;
-
-
 struct _cha						/*通道描述*/
 {
 	int cha;						/*通道号,enc_cha的id*/

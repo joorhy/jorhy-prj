@@ -65,7 +65,7 @@
 				AdditionalDependencies="libvlc.lib PlayCtrl.lib"
 				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\libs\vlc;..\..\libs\hik"
+				AdditionalLibraryDirectories="..\..\libs\windows\vlc;..\..\libs\windows\hik"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
