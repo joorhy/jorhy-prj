@@ -25,6 +25,37 @@ CXGooseCap::~CXGooseCap()
 
 }
 
+int CXGooseCap::TestGoose()
+{
+    struct pcap_pkthdr packet_header = {0};
+    FILE *f_gsecap = fopen("goose.cap_2", "rb");
+    assert(f_gsecap != NULL);
+    u_char packet_data[1500] = {0};
+    u_char *test = packet_data;
+    int nReadRet = 0;
+    int nHeaderLen = sizeof(GSE_Ether_Header) + sizeof (GSE_MAC_Header);
+    while (true)
+    {
+        memset(packet_data, 0, sizeof(packet_data));
+        nReadRet = fread(packet_data, 1, nHeaderLen, f_gsecap);
+        if (nReadRet != nHeaderLen)
+        {
+            break;
+        }
+        GSE_Ether_Header *pHeader = (GSE_Ether_Header *)(packet_data + sizeof(GSE_MAC_Header));
+        int asduLength = (pHeader->ether_length[0] << 8) + pHeader->ether_length[1] - 8;
+        nReadRet = fread(packet_data + nHeaderLen, 1, asduLength, f_gsecap);
+        if (nReadRet != asduLength)
+        {
+            break;
+        }
+        AnalyzePacket(packet_data);
+        //usleep(20 * 1000);
+    }
+
+    return J_OK;
+}
+
 int CXGooseCap::AnalyzePacket(const unsigned char *pEventData)
 {
     //static FILE *fp = NULL;
@@ -213,11 +244,12 @@ void CXGooseCap::GSE_NotifyManager(const u_char *old, const u_char *cur)
                 }
                 break;
             case GSE_TAG_DBPOS:
-                /*if ((gse_old_ptr[2] != gse_cur_ptr[2]) || (gse_old_ptr[3] != gse_cur_ptr[3]))
+                if ((gse_old_ptr[2] != gse_cur_ptr[2]) || (gse_old_ptr[3] != gse_cur_ptr[3]))
                 {
                     printf("cid = %d, node = %d, type = 2, data = %02X%02X\n"
                            , m_gseHeader.gse_appid, i, gse_cur_ptr[2], gse_cur_ptr[3]);
-                }*/
+					GSE_SendJson(m_gseHeader.gse_appid, i + 1, GSE_TAG_DBPOS, gse_cur_ptr + 3);
+                }
                 break;
             case GSE_TAG_INT32:
             case GSE_TAG_UTC_TIME:
@@ -306,7 +338,7 @@ u_short CXGooseCap::GSE_GetDataLen(const u_char *data)
 
 int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
 {
-	printf("type = %d\n", type);
+	printf("cid = %d nid = %d type = %d\n", cid, nid, type);
 	//return 0;
     json_object *alm_body = json_object_new_object();
     json_object_object_add(alm_body, (char *)"cmd", json_object_new_int(103));
@@ -316,11 +348,22 @@ int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
     switch (type)
     {
         case GSE_TAG_BOOL:
-            json_object_object_add(alm_json, (char *)"type", json_object_new_int(1));
+            json_object_object_add(alm_json, (char *)"type", json_object_new_int(11));
             json_object_object_add(alm_json, (char *)"ext", json_object_new_int(data[0]));
             break;
+		case GSE_TAG_DBPOS:
+			{
+				json_object_object_add(alm_json, (char *)"type", json_object_new_int(11));
+				int dbpos = data[0] >> 6;
+				printf("dbpos = %d\n", dbpos);
+				if (dbpos == 0 || dbpos == 1)
+					json_object_object_add(alm_json, (char *)"ext", json_object_new_int(0));
+				else
+					json_object_object_add(alm_json, (char *)"ext", json_object_new_int(1));
+			}
+			break;
         default:
-            assert(false);
+            //assert(false);
             break;
     }
     json_object_object_add(alm_body, (char *)"parm", alm_json);
@@ -333,7 +376,8 @@ int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
 	m_httpHelper.Prepare();
 	if (m_httpHelper.Process() != J_OK)
 	{
-	    assert(false);
+	    //assert(false);
+		return J_SOCKET_ERROR;
 	}
 
     int i_state = m_httpHelper.GetStatusCode();
@@ -342,7 +386,7 @@ int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
 	case 200:
         break;
 	default:
-        assert(false);
+        //assert(false);
 		break;
 	}
 

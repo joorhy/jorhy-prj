@@ -27,6 +27,9 @@ class CXGooseCap : public J_EventParser
         u_short GSE_GetBoolean(const u_char *src, bool &dst);
         u_short GSE_GetDataLen(const u_char *data);
         int GSE_SendJson(int cid, int nid, int type, const u_char *data);
+		
+	public:
+		int TestGoose();
 
     private:
         GSE_Goose_Header m_gseHeader;

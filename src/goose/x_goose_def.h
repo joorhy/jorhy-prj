@@ -43,6 +43,12 @@
 #define GSE_TAG_BOOLEAN_ARRAY       0x8D
 #define GSE_TAG_UTC_TIME            0x91
 
+struct GSE_MAC_Header
+{
+    u_char ether_dhost[ETHER_ADDR_LEN];     //MAC目的地址
+    u_char ether_shost[ETHER_ADDR_LEN];     //MAC源地址
+};
+
 struct GSE_Ether_Header
 {
     //u_char ether_tpid[2];                   //0x8100

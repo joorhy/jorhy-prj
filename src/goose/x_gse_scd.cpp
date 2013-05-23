@@ -52,7 +52,7 @@ int CXGseScd::Init()
 {
     if (!m_xmlDoc.LoadFile(GetSCDName()))
     {
-        assert(false);
+        //assert(false);
         printf("CXGseScd::Init faild, file = %s\n", GetSCDName());
         return J_XML_FLIE_ERROR;
     }
@@ -102,29 +102,33 @@ int CXGseScd::GetAllCtrlBlock()
     GSE_GocbMap::iterator it = m_gocbMap.begin();
     for (; it!=m_gocbMap.end(); it++)
     {
-        json_object *gocb_json = json_object_new_object();
-        json_object_object_add(gocb_json, (char *)"cid", json_object_new_int(it->first));
-        char str_appid[4] = {0};
-        sprintf(str_appid, "%02x%02x", ((it->first-1000) >> 8) &0xFF, (it->first-1000) & 0xFF);
-        json_object_object_add(gocb_json, (char *)"appid", json_object_new_string(str_appid));
-        json_object_object_add(gocb_json, (char *)"desc", json_object_new_string((char *)it->second->desc.c_str()));
-        json_object *gocb_array = json_object_new_array();
-        int n = it->second->all_data.size();
-        for (int i=0; i<n; i++)
-        {
-            if (it->second->all_data[i]->data_type == "BOOLEAN"
-                && it->second->all_data[i]->fc == "ST")
-            {
-                json_object *data_json = json_object_new_object();
-                json_object_object_add(data_json, (char *)"node", json_object_new_int(i + 1));
-                json_object_object_add(data_json, (char *)"desc", json_object_new_string((char *)it->second->all_data[i]->desc.c_str()));
-                //json_object_object_add(data_json, (char *)"type", json_object_new_string((char *)it->second->all_data[i]->data_type.c_str()));
-                //json_object_object_add(data_json, (char *)"fc", json_object_new_string((char *)it->second->all_data[i]->fc.c_str()));
-                json_object_array_add(gocb_array, data_json);
-            }
-        }
-        json_object_object_add(gocb_json, (char *)"allData", gocb_array);
-        json_object_array_add(gse_json, gocb_json);
+		if (it->first == 1337 || it->first == 1338 || 
+			it->first == 1339 || it->first == 1340 || it->first == 1341)
+		{
+			json_object *gocb_json = json_object_new_object();
+			json_object_object_add(gocb_json, (char *)"cid", json_object_new_int(it->first));
+			char str_appid[4] = {0};
+			sprintf(str_appid, "%02x%02x", ((it->first-1000) >> 8) &0xFF, (it->first-1000) & 0xFF);
+			json_object_object_add(gocb_json, (char *)"appid", json_object_new_string(str_appid));
+			json_object_object_add(gocb_json, (char *)"desc", json_object_new_string((char *)it->second->desc.c_str()));
+			json_object *gocb_array = json_object_new_array();
+			int n = it->second->all_data.size();
+			for (int i=0; i<n; i++)
+			{
+				if ((it->second->all_data[i]->data_type == "Dbpos" || it->second->all_data[i]->data_type == "BOOLEAN")
+					&& it->second->all_data[i]->fc == "ST")
+				{
+					json_object *data_json = json_object_new_object();
+					json_object_object_add(data_json, (char *)"node", json_object_new_int(i + 1));
+					json_object_object_add(data_json, (char *)"desc", json_object_new_string((char *)it->second->all_data[i]->desc.c_str()));
+					//json_object_object_add(data_json, (char *)"type", json_object_new_string((char *)it->second->all_data[i]->data_type.c_str()));
+					//json_object_object_add(data_json, (char *)"fc", json_object_new_string((char *)it->second->all_data[i]->fc.c_str()));
+					json_object_array_add(gocb_array, data_json);
+				}
+			}
+			json_object_object_add(gocb_json, (char *)"allData", gocb_array);
+			json_object_array_add(gse_json, gocb_json);
+		}
     }
 
     FILE *fp = fopen("gse_config.json", "wb+");

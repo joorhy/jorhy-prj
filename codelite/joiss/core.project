@@ -19,6 +19,7 @@
     <File Name="../../src/core/x_ringbuffer.cpp"/>
     <File Name="../../src/core/x_thread.cpp"/>
     <File Name="../../src/core/x_http.cpp"/>
+    <File Name="../../src/core/x_mem_pool.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/core/j_includes.h"/>
@@ -49,6 +50,7 @@
     <File Name="../../src/core/j_common.h"/>
     <File Name="../../src/core/x_thread.h"/>
     <File Name="../../src/core/x_http.h"/>
+    <File Name="../../src/core/x_mem_pool.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

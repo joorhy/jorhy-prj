@@ -15,6 +15,8 @@
       <Compiler Options="-g" Required="yes" PreCompiledHeader="">
         <IncludePath Value="../../src/core"/>
         <IncludePath Value="../../src/pcap"/>
+        <IncludePath Value="../../src/goose"/>
+        <IncludePath Value="../../src/utils"/>
       </Compiler>
       <Linker Options="-Wl,-rpath,./" Required="yes">
         <LibraryPath Value="./Debug"/>
