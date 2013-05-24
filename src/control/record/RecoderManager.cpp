@@ -168,6 +168,7 @@ void CRecoderManager::OnWork()
 
 void CRecoderManager::OnTimer()
 {
+	//m_cond.Wait();
 	TLock(m_locker);
 	while (!m_recordVec.empty())
 	{
@@ -186,6 +187,7 @@ void CRecoderManager::OnTimer()
 
 		//usleep(1000);
 	}
+	//m_cond.Single();
 	//J_OS::LOGINFO("CControlManager::OnTimer() %d %d", m_recordVec.size(), m_recordVec.empty());
 	TUnlock(m_locker);
 }

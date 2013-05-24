@@ -190,5 +190,4 @@ void CAdapterFactory::OnTimer()
 		m_bRegiste = true;
 		CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->StartRecord();
 	}
-
 }

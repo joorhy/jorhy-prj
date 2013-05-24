@@ -23,6 +23,14 @@ CDahuaChannel::~CDahuaChannel()
 
 int CDahuaChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 {
+	if (m_pAdapter->GetStatus() != jo_dev_ready)
+	{
+		m_pAdapter->Broken();
+		m_pAdapter->Relogin();
+		m_bOpened = false;
+		return J_DEV_BROKEN;
+	}
+	
 	if (m_bOpened && pObj != NULL)
 	{
 		(static_cast<CDahuaStream *> (pObj))->AddRingBuffer(pRingBuffer);

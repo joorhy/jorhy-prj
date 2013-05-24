@@ -15,6 +15,7 @@ class CRecoderManager : public SingletonTmpl<CRecoderManager>
         ///CRecoderManager
         int AddRecord(const char *pResid);
         int DelRecord(const char *pResid);
+		void Single() { m_cond.Single(); } 
 
     protected:
         CRecoderManager() {}
@@ -56,6 +57,7 @@ class CRecoderManager : public SingletonTmpl<CRecoderManager>
         RecordVec m_recordVec;
         J_OS::CTLock m_locker;
         J_OS::CTLock m_locker2;
+		J_OS::CXCond m_cond;
 };
 
 #endif //~__RECODERMANAGER_H_

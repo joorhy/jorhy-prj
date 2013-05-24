@@ -30,7 +30,7 @@ extern char *json_number_chars;
 extern char *json_hex_chars;
 
 /* forward structure definitions */
-#ifndef __cplusplus
+#ifndef _cplusplus
 typedef int boolean;
 #endif
 struct printbuf;

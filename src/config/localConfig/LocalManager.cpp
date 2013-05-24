@@ -1,4 +1,5 @@
 #include "LocalManager.h"
+#include "RecoderManager.h"
 
 CLocalManager::CLocalManager()
 {
@@ -112,6 +113,7 @@ int CLocalManager::StartRecord()
 			}
 		}
 	}
+	CRecoderManager::Instance()->Single();
 	
 	return J_OK;
 }

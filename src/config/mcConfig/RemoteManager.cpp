@@ -1,4 +1,5 @@
 #include "RemoteManager.h"
+#include "RecoderManager.h"
 #include "x_config.h"
 #include "x_sdk.h"
 
@@ -129,4 +130,10 @@ int CRemoteManager::GetRecordInfo(J_RecordInfo &recordInfo)
     TUnlock(m_locker);
 
 	return J_OK;
+}
+
+int CRemoteManager::StartRecord()
+{ 
+	CRecoderManager::Instance()->Single();
+	return J_OK; 
 }

@@ -24,7 +24,7 @@
   <Project Name="JospRequest" Path="JospRequest.project" Active="No"/>
   <Project Name="JosStream" Path="JosStream.project" Active="No"/>
   <Project Name="JospControl" Path="JospControl.project"/>
-  <Project Name="MCControl" Path="MCControl.project"/>
+  <Project Name="MCControl" Path="MCControl.project" Active="No"/>
   <Project Name="OnvifHost" Path="OnvifHost.project" Active="No"/>
   <Project Name="JoHost" Path="JoHost.project"/>
   <Project Name="JorReader" Path="JorReader.project"/>

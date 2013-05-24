@@ -17,6 +17,7 @@
         <IncludePath Value="../../src/core"/>
         <IncludePath Value="../../src/misc"/>
         <IncludePath Value="../../src/utils"/>
+        <IncludePath Value="../../src/control/record"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
