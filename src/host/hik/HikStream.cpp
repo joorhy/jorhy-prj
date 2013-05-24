@@ -46,7 +46,7 @@ int CHikStream::Startup()
 	TLock(m_locker);
 	m_bStartup = true;
 	CRdAsio::Instance()->Init();
-	CRdAsio::Instance()->AddUser(m_nSocket.sock, this);
+	CRdAsio::Instance()->AddUser(m_nSocket, this);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", this);
@@ -61,7 +61,7 @@ int CHikStream::Shutdown()
 
 	TLock(m_locker);
 	m_bStartup = false;
-	CRdAsio::Instance()->DelUser(m_nSocket.sock);
+	CRdAsio::Instance()->DelUser(m_nSocket);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Shutdown Shutdown this = %d", this);

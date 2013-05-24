@@ -39,7 +39,7 @@ int CSonyStream::Startup()
     TLock(m_locker);
     m_bStartup = true;
     CRdAsio::Instance()->Init();
-    CRdAsio::Instance()->AddUser(m_nSocket.sock, this);
+    CRdAsio::Instance()->AddUser(m_nSocket, this);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Startup Startup this = %d", this);
 
@@ -53,7 +53,7 @@ int CSonyStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    CRdAsio::Instance()->DelUser(m_nSocket.sock);
+    CRdAsio::Instance()->DelUser(m_nSocket);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Shutdown Shutdown this = %d", this);
 

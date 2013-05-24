@@ -119,7 +119,7 @@ typedef std::vector<j_string_t>		j_vec_str_t;
 #define   JO_API           __declspec(dllimport) 
 #endif 
 #else
-define JO_API
+#define JO_API  
 #endif
 
 #ifdef WIN32

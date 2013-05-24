@@ -12,10 +12,16 @@
 #ifndef _json_object_h_
 #define _json_object_h_
 
+#ifdef WIN32
+
 #ifdef JSON_LIB_EXPORTS
 #define DLLAPI	_declspec(dllexport)
 #else
 #define DLLAPI	_declspec(dllimport)
+#endif
+
+#else
+#define DLLAPI
 #endif
 
 #define JSON_OBJECT_DEF_HASH_ENTIRES 16

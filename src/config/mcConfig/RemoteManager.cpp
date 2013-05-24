@@ -39,7 +39,7 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 
 	if (m_regInfo)
 	{
-		vector<_res>::iterator itDvr = m_regInfo->parm.resnum.begin();
+		std::vector<_res>::iterator itDvr = m_regInfo->parm.resnum.begin();
 		for (; itDvr != m_regInfo->parm.resnum.end(); itDvr++)
 		{
 			J_DeviceInfo devInfo = {0};

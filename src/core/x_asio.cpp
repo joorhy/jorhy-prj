@@ -101,7 +101,7 @@ void CRdAsio::OnWork()
 #else
 	int nfds = 0;
 	int i = 0;
-	int active_fd = 0;
+	j_socket_t active_fd;
 	pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
 	while (m_bStarted)
 	{
@@ -124,16 +124,16 @@ void CRdAsio::OnWork()
 			{
 				//broken
 				TLock(m_locker);
-				active_fd = m_evConnect[i].data.fd;
+				active_fd.sock = m_evConnect[i].data.fd;
 				AsioMap::iterator it = m_asioMap.find(active_fd);
 				if (it != m_asioMap.end())
 				{
                     J_AsioUser *pAsioUser = static_cast<J_AsioUser *>(it->second);
 					if (pAsioUser)
-						pAsioUser->OnBroken(active_fd);
+						pAsioUser->OnBroken(active_fd.sock);
 
 					m_asioMap.erase(it);
-					epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, active_fd, &m_evConnect[i]);
+					epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, active_fd.sock, &m_evConnect[i]);
 				}
 				TUnlock(m_locker);
 			}
@@ -141,18 +141,18 @@ void CRdAsio::OnWork()
 			{
 				//read
 				TLock(m_locker);
-				active_fd = m_evConnect[i].data.fd;
+				active_fd.sock = m_evConnect[i].data.fd;
 				AsioMap::iterator it = m_asioMap.find(active_fd);
 				if (it != m_asioMap.end())
 				{
 					J_AsioUser *pAsioUser = static_cast<J_AsioUser *>(it->second);
 					if (pAsioUser)
-						pAsioUser->OnRead(active_fd);
+						pAsioUser->OnRead(active_fd.sock);
 				}
 
 				m_evAsio.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP;
-				m_evAsio.data.fd = active_fd;
-				epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, active_fd, &m_evAsio);
+				m_evAsio.data.fd = active_fd.sock;
+				epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, active_fd.sock, &m_evAsio);
 				TUnlock(m_locker);
 			}
 		}
