@@ -89,13 +89,12 @@ r_register *StreamServerResgister(int ssid,char *uri)
 	r_register *r_data = NULL;
 	json_object *json_helper = NULL;
 
-	/*生成发送数据*/
 	json_object *jsojt = json_object_new_object();
 	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(1));
 	json_object *helpjs = json_object_new_object();
 	json_object_object_add(helpjs,(char *)"id",json_object_new_int(ssid));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
-	/*发送并接受数据*/
+
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)
@@ -103,7 +102,7 @@ r_register *StreamServerResgister(int ssid,char *uri)
 	    //assert(false);
 		return NULL;
 	}
-	/*解析数据*/
+
 	//json_helper = json_object_new_object();
 	json_helper = json_tokener_parse(json_buf);
 	//J_OS::LOGINFO(json_buf);
@@ -201,14 +200,14 @@ r_devconfig *GetDevConfigByResid(char *resid,char *uri)
 		char *json_buf = NULL;
 		json_object *json_helper = NULL;
 
-		/*生成发送数据*/
+		//生成发送数据
 		json_object *jsojt = json_object_new_object();
 		json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(2));
 		json_object *helpjs = json_object_new_object();
 		json_object_object_add(helpjs,(char *)"id",json_object_new_string(resid));
 		json_object_object_add(jsojt,(char *)"parm",helpjs);
 
-		/*发送并接受数据*/
+		//发送并接受数据
 		json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 		json_object_put(jsojt);
 		if(json_buf == NULL)
@@ -218,7 +217,7 @@ r_devconfig *GetDevConfigByResid(char *resid,char *uri)
 			return NULL;
 		}
 
-		/*解析数据*/
+		//解析数据
 		//json_helper = json_object_new_object();
 		json_helper = json_tokener_parse(json_buf);
 		if(is_error(json_helper))
@@ -267,14 +266,14 @@ r_ssconfig *GetSSConfigByResid(char *resid,char *uri)
 	char *json_buf = NULL;
 	json_object *json_helper = NULL;
 
-	/*生成发送数据*/
+	//生成发送数据
 	json_object *jsojt = json_object_new_object();
 	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(7));
 	json_object *helpjs = json_object_new_object();
 	json_object_object_add(helpjs,(char *)"resid",json_object_new_string(resid));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
 
-	/*发送并接受数据*/
+	//发送并接受数据
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)
@@ -283,7 +282,7 @@ r_ssconfig *GetSSConfigByResid(char *resid,char *uri)
 		return NULL;
 	}
 
-	/*解析数据*/
+	//解析数据
 	json_helper = json_tokener_parse(json_buf);
 	if(is_error(json_helper))
 	{
@@ -322,7 +321,7 @@ int GetRealTimePermission(char *resid,char *uid,char *uri)
 	int r_data = -1;
 	json_object *json_helper = NULL;
 
-	/*生成发送数据*/
+	//生成发送数据
 	json_object *jsojt = json_object_new_object();
 	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(3));
 	json_object *helpjs = json_object_new_object();
@@ -330,7 +329,7 @@ int GetRealTimePermission(char *resid,char *uid,char *uri)
 	json_object_object_add(helpjs,(char *)"uid",json_object_new_string(uid));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
 
-	/*发送并接受数据*/
+	//发送并接受数据
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)
@@ -339,7 +338,7 @@ int GetRealTimePermission(char *resid,char *uid,char *uri)
 	    return r_data;
     }
 
-	/*解析数据*/
+	//解析数据
 	//json_helper = json_object_new_object();
 	json_helper = json_tokener_parse(json_buf);
 	if(is_error(json_helper))
@@ -361,7 +360,7 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 	r_historyfile *r_data = NULL;
 	json_object *json_helper = NULL;
 
-	/*生成发送数据*/
+	//生成发送数据
 	json_object *jsojt = json_object_new_object();
 	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(4));
 	json_object *helpjs = json_object_new_object();
@@ -371,7 +370,7 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 	json_object_object_add(helpjs,(char *)"etime",json_object_new_double(etime));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
 
-	/*发送并接受数据*/
+	//发送并接受数据
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)
@@ -380,7 +379,7 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 	    return NULL;
     }
 
-	/*解析数据*/
+	//解析数据
 	//json_helper = json_object_new_object();
 	json_helper = json_tokener_parse(json_buf);
 	if(is_error(json_helper))
@@ -420,7 +419,7 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 	}
 
 	int arrlen = json_object_array_length(json_helper);
-	string tmp;
+	j_string_t tmp;
 	for(int i=0; i<arrlen; i++)
 	{
 		tmp = json_object_get_string(json_object_array_get_idx(json_helper, i));
@@ -437,7 +436,7 @@ int GetWarningMsg(char *resid,int type,char *uri)
 	int r_data = -1;
 	json_object *json_helper = NULL;
 
-	/*生成发送数据*/
+	//生成发送数据
 	json_object *jsojt = json_object_new_object();
 	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(5));
 	json_object *helpjs = json_object_new_object();
@@ -445,7 +444,7 @@ int GetWarningMsg(char *resid,int type,char *uri)
 	json_object_object_add(helpjs,(char *)"type",json_object_new_int(type));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
 
-	/*发送并接受数据*/
+	//发送并接受数据
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)
@@ -454,7 +453,7 @@ int GetWarningMsg(char *resid,int type,char *uri)
 	    return r_data;
     }
 
-	/*解析数据*/
+	//解析数据
 	//json_helper = json_object_new_object();
 	json_helper = json_tokener_parse(json_buf);
 	if(is_error(json_helper))
@@ -476,7 +475,7 @@ int GetRecordNotice(s_record &record,char *uri)
 	int r_data = -1;
 	json_object *json_helper = NULL;
 
-	/*生成发送数据*/
+	//生成发送数据
 	json_object *jsojt = json_object_new_object();
 	json_object *helpjs = json_object_new_object();
 	json_object *jsonarr = json_object_new_array();
@@ -484,7 +483,7 @@ int GetRecordNotice(s_record &record,char *uri)
 	json_object_object_add(helpjs,(char *)"resid",json_object_new_string((char *)record.resid.c_str()));
 	json_object_object_add(helpjs,(char *)"files",jsonarr);
 	//J_OS::LOGINFO("NUM = %d", record.filenum.size());
-	for(vector<s_fileinfo>::iterator iter = record.filenum.begin();
+	for(std::vector<s_fileinfo>::iterator iter = record.filenum.begin();
 			iter != record.filenum.end();
 			iter++)
 	{
@@ -497,7 +496,7 @@ int GetRecordNotice(s_record &record,char *uri)
 	json_object_object_add(jsojt,(char *)"parm", helpjs);
 
 
-	/*发送并接受数据*/
+	//发送并接受数据
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
     json_object_put(jsojt);
 	if(json_buf == NULL)
@@ -506,7 +505,7 @@ int GetRecordNotice(s_record &record,char *uri)
 	    return -1;
     }
 
-	/*解析数据*/
+	//解析数据
 	//json_helper = json_object_new_object();
 	json_helper = json_tokener_parse(json_buf);
 	if(is_error(json_helper))
@@ -521,11 +520,3 @@ int GetRecordNotice(s_record &record,char *uri)
 
 	return r_data;
 }
-
-
-
-
-
-
-
-

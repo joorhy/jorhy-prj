@@ -31,7 +31,7 @@ extern char *json_hex_chars;
 
 /* forward structure definitions */
 #ifndef _cplusplus
-typedef int boolean;
+typedef int js_boolean;
 #endif
 struct printbuf;
 struct lh_table;
@@ -57,13 +57,13 @@ enum json_type {
  * Increment the reference count of json_object
  * @param obj the json_object instance
  */
-/*extern */struct json_object* json_object_get(struct json_object *obj);
+/*extern */DLLAPI struct json_object* json_object_get(struct json_object *obj);
 
 /**
  * Decrement the reference count of json_object and free if it reaches zero
  * @param obj the json_object instance
  */
-/*extern */void json_object_put(struct json_object *obj);
+/*extern */DLLAPI void json_object_put(struct json_object *obj);
 
 
 /**
@@ -77,7 +77,7 @@ enum json_type {
      json_type_array,
      json_type_string,
  */
-/*extern */int json_object_is_type(struct json_object *obj, enum json_type type);
+/*extern */DLLAPI int json_object_is_type(struct json_object *obj, enum json_type type);
 
 /**
  * Get the type of the json_object
@@ -90,14 +90,14 @@ enum json_type {
      json_type_array,
      json_type_string,
  */
-/*extern */enum json_type json_object_get_type(struct json_object *obj);
+/*extern */DLLAPI enum json_type json_object_get_type(struct json_object *obj);
 
 
 /** Stringify object to json format
  * @param obj the json_object instance
  * @returns a string in JSON format
  */
-/*extern */char* json_object_to_json_string(struct json_object *obj);
+/*extern */DLLAPI char* json_object_to_json_string(struct json_object *obj);
 
 
 /* object type methods */
@@ -105,13 +105,13 @@ enum json_type {
 /** Create a new empty object
  * @returns a json_object of type json_type_object
  */
-/*extern */struct json_object* json_object_new_object(void);
+/*extern */DLLAPI struct json_object* json_object_new_object(void);
 
 /** Get the hashtable of a json_object of type json_type_object
  * @param obj the json_object instance
  * @returns a linkhash
  */
-/*extern */struct lh_table* json_object_get_object(struct json_object *obj);
+/*extern */DLLAPI struct lh_table* json_object_get_object(struct json_object *obj);
 
 /** Add an object field to a json_object of type json_type_object
  *
@@ -123,7 +123,7 @@ enum json_type {
  * @param key the object field name (a private copy will be duplicated)
  * @param val a json_object or NULL member to associate with the given field
  */
-/*extern */void json_object_object_add(struct json_object* obj, char *key,
+/*extern */DLLAPI void json_object_object_add(struct json_object* obj, char *key,
 				   struct json_object *val);
 
 /** Get the json_object associate with a given object field
@@ -131,7 +131,7 @@ enum json_type {
  * @param key the object field name
  * @returns the json_object associated with the given field name
  */
-/*extern */struct json_object* json_object_object_get(struct json_object* obj,
+/*extern */DLLAPI struct json_object* json_object_object_get(struct json_object* obj,
 						  char *key);
 
 /** Delete the given json_object field
@@ -141,7 +141,7 @@ enum json_type {
  * @param obj the json_object instance
  * @param key the object field name
  */
-/*extern */void json_object_object_del(struct json_object* obj, char *key);
+/*extern */DLLAPI void json_object_object_del(struct json_object* obj, char *key);
 
 /** Iterate through all keys and values of an object
  * @param obj the json_object instance
@@ -174,19 +174,19 @@ enum json_type {
 /** Create a new empty json_object of type json_type_array
  * @returns a json_object of type json_type_array
  */
-/*extern */struct json_object* json_object_new_array(void);
+/*extern */DLLAPI struct json_object* json_object_new_array(void);
 
 /** Get the arraylist of a json_object of type json_type_array
  * @param obj the json_object instance
  * @returns an arraylist
  */
-/*extern */struct array_list* json_object_get_array(struct json_object *obj);
+/*extern */DLLAPI struct array_list* json_object_get_array(struct json_object *obj);
 
 /** Get the length of a json_object of type json_type_array
  * @param obj the json_object instance
  * @returns an int
  */
-/*extern */int json_object_array_length(struct json_object *obj);
+/*extern */DLLAPI int json_object_array_length(struct json_object *obj);
 
 /** Add an element to the end of a json_object of type json_type_array
  *
@@ -197,7 +197,7 @@ enum json_type {
  * @param obj the json_object instance
  * @param val the json_object to be added
  */
-/*extern */int json_object_array_add(struct json_object *obj,
+/*extern */DLLAPI int json_object_array_add(struct json_object *obj,
 				 struct json_object *val);
 
 /** Insert or replace an element at a specified index in an array (a json_object of type json_type_array)
@@ -215,7 +215,7 @@ enum json_type {
  * @param idx the index to insert the element at
  * @param val the json_object to be added
  */
-/*extern */int json_object_array_put_idx(struct json_object *obj, int idx,
+/*extern */DLLAPI int json_object_array_put_idx(struct json_object *obj, int idx,
 				     struct json_object *val);
 
 /** Get the element at specificed index of the array (a json_object of type json_type_array)
@@ -223,7 +223,7 @@ enum json_type {
  * @param idx the index to get the element at
  * @returns the json_object at the specified index (or NULL)
  */
-/*extern */struct json_object* json_object_array_get_idx(struct json_object *obj,
+/*extern */DLLAPI struct json_object* json_object_array_get_idx(struct json_object *obj,
 						     int idx);
 
 /* boolean type methods */
@@ -232,7 +232,7 @@ enum json_type {
  * @param b a boolean TRUE or FALSE (0 or 1)
  * @returns a json_object of type json_type_boolean
  */
-/*extern */struct json_object* json_object_new_boolean(boolean b);
+/*extern */DLLAPI struct json_object* json_object_new_boolean(js_boolean b);
 
 /** Get the boolean value of a json_object
  *
@@ -245,7 +245,7 @@ enum json_type {
  * @param obj the json_object instance
  * @returns a boolean
  */
-/*extern */boolean json_object_get_boolean(struct json_object *obj);
+/*extern */DLLAPI js_boolean json_object_get_boolean(struct json_object *obj);
 
 
 /* int type methods */
@@ -254,7 +254,7 @@ enum json_type {
  * @param i the integer
  * @returns a json_object of type json_type_int
  */
-/*extern */struct json_object* json_object_new_int(int i);
+/*extern */DLLAPI struct json_object* json_object_new_int(int i);
 
 /** Get the int value of a json_object
  *
@@ -265,7 +265,7 @@ enum json_type {
  * @param obj the json_object instance
  * @returns an int
  */
-/*extern */int json_object_get_int(struct json_object *obj);
+/*extern */DLLAPI int json_object_get_int(struct json_object *obj);
 
 
 /* double type methods */
@@ -274,7 +274,7 @@ enum json_type {
  * @param d the double
  * @returns a json_object of type json_type_double
  */
-/*extern */struct json_object* json_object_new_double(double d);
+/*extern */DLLAPI struct json_object* json_object_new_double(double d);
 
 /** Get the double value of a json_object
  *
@@ -285,7 +285,7 @@ enum json_type {
  * @param obj the json_object instance
  * @returns an double
  */
-/*extern */double json_object_get_double(struct json_object *obj);
+/*extern */DLLAPI double json_object_get_double(struct json_object *obj);
 
 
 /* string type methods */
@@ -297,9 +297,9 @@ enum json_type {
  * @param s the string
  * @returns a json_object of type json_type_string
  */
-/*extern */struct json_object* json_object_new_string(char *s);
+/*extern */DLLAPI struct json_object* json_object_new_string(char *s);
 
-/*extern */struct json_object* json_object_new_string_len(char *s, int len);
+/*extern */DLLAPI struct json_object* json_object_new_string_len(char *s, int len);
 
 /** Get the string value of a json_object
  *
@@ -312,6 +312,6 @@ enum json_type {
  * @param obj the json_object instance
  * @returns a string
  */
-/*extern */char* json_object_get_string(struct json_object *obj);
+/*extern */DLLAPI char* json_object_get_string(struct json_object *obj);
 
 #endif

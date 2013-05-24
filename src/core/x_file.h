@@ -2,7 +2,7 @@
 #define __X_FILE_H_
 #include "j_type.h"
 
-class CXFile
+class JO_API CXFile
 {
 public:
 	CXFile();

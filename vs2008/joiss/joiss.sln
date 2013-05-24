@@ -10,6 +10,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StreamManager", "StreamManager.vcproj", "{34F0B6C3-BD56-47D9-8DD2-F53458F5314F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "misc", "misc.vcproj", "{1FA8F0EE-76AC-483C-898F-8257039FC262}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7B307C2E-F663-449C-BC87-A69E1E267D0D} = {7B307C2E-F663-449C-BC87-A69E1E267D0D}
+		{1661EC8A-0BC3-492A-A3BB-71557CF5E3D3} = {1661EC8A-0BC3-492A-A3BB-71557CF5E3D3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

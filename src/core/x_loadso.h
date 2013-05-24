@@ -2,7 +2,7 @@
 #define __X_LOADSO_H_
 #include "j_common.h"
 
-class CXLoadso
+class JO_API CXLoadso
 {
 public:
     CXLoadso();

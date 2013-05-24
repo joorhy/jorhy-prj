@@ -2,7 +2,7 @@
 #define __J_OBJ_H_
 #include "j_common.h"
 
-struct J_Obj
+struct JO_API J_Obj
 {
 	virtual ~J_Obj() {}
 };

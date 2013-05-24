@@ -8,7 +8,7 @@
 namespace J_OS
 {
 
-class CTCPSocket
+class JO_API CTCPSocket
 {
 public:
 	CTCPSocket();

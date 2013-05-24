@@ -14,7 +14,7 @@ struct J_MEMNODE
 };
 #define J_MEMNODE_LEN (sizeof(J_MEMNODE))
 
-class CRingBuffer
+class JO_API CRingBuffer
 {
 	public:
 		CRingBuffer(int nCacheFrameNum = BUFFER_SIZE, int nBufferSize = BUFFER_SIZE);

@@ -7,7 +7,7 @@ namespace J_OS
 
 typedef void (*J_TimerFunc)(void *pUser);
 
-class CTimer
+class JO_API CTimer
 {
 public:
 	CTimer();

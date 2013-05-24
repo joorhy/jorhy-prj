@@ -1,6 +1,6 @@
 #include "x_jo_sdk.h"
 
-int CXJoSdk::MakeReqHeader(char *pBuffer, char *pUserID, unsigned char byCmd, unsigned char byFlag, unsigned short sqNum, unsigned short exLength, unsigned char byRet)
+int CXJoSdk::MakeReqHeader(j_char_t *pBuffer, j_char_t *pUserID, j_uint8_t byCmd, j_uint8_t byFlag, j_uint16_t sqNum, j_uint16_t exLength, j_uint8_t byRet)
 {
     J_CtrlHead *ctrlHeader = (J_CtrlHead *)pBuffer;
     memset(ctrlHeader, 0, sizeof(J_CtrlHead));
@@ -22,7 +22,7 @@ int CXJoSdk::MakeReqHeader(char *pBuffer, char *pUserID, unsigned char byCmd, un
     return J_OK;
 }
 
-int CXJoSdk::MakeRespHeader(char *pBuffer, uint8_t byCmd, uint16_t exLength, uint8_t byRet)
+int CXJoSdk::MakeRespHeader(j_char_t *pBuffer, j_uint8_t byCmd, j_uint16_t exLength, j_uint8_t byRet)
 {
 	J_CtrlHead *ctrlHeader = (J_CtrlHead *)pBuffer;
     memset(ctrlHeader, 0, sizeof(J_CtrlHead));

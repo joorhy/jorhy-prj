@@ -36,7 +36,7 @@ typedef struct _icmphdr
 #define ICMP_ECHOREPLY	0
 #endif
 
-class CXPing
+class JO_API CXPing
 {
     public:
         CXPing();

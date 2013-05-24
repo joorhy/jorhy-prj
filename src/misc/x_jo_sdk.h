@@ -13,8 +13,8 @@ protected:
 	CXJoSdk() {}
 	
 public:
-	int MakeReqHeader(char *pBuff, char *pUserID, unsigned char byCmd, unsigned char byFlag, unsigned short sqNum, unsigned short exLength, unsigned char byRet = 0x00);
-	int MakeRespHeader(char *pBuffer, uint8_t byCmd, uint16_t exLength, uint8_t byRet = 0x00);
+	int MakeReqHeader(j_char_t *pBuff, j_char_t *pUserID, j_uint8_t byCmd, j_uint8_t byFlag, j_uint16_t sqNum, j_uint16_t exLength, j_uint8_t byRet = 0x00);
+	int MakeRespHeader(j_char_t *pBuffer, j_uint8_t byCmd, j_uint16_t exLength, j_uint8_t byRet = 0x00);
 };
 
 #endif //~__X_JO_SDK_H_

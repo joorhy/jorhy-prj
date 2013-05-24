@@ -10,7 +10,7 @@ namespace J_OS
 #define TLock(x) ((x)._Lock())
 #define TUnlock(x) ((x)._Unlock())
 
-class CTLock
+class JO_API CTLock
 {
 public:
 	CTLock();
@@ -29,7 +29,7 @@ private:
 };
 
 ///条件变量
-class CXCond
+class JO_API CXCond
 {
 public:
 	CXCond();
@@ -48,7 +48,7 @@ private:
 #define PLock(x) (x)._Lock()
 #define PUnlock(x) (x)._Unlock()
 
-class CPLock
+class JO_API CPLock
 {
 public:
 	CPLock();
@@ -69,7 +69,7 @@ private:
 #define WUnlock(x) (x)._WUnlock()
 #define RWUnlock(x) (x)._Unlock()
 
-class CRWLock
+class JO_API CRWLock
 {
 public:
 	CRWLock();
@@ -93,7 +93,7 @@ private:
 #define RECLocker_t CRECLock
 #define RECLock(x) (x)._Lock()
 #define RECUnlock(x) (x)._Unlock()
-class CRECLock
+class JO_API CRECLock
 {
 public:
 	CRECLock();

@@ -29,7 +29,7 @@ typedef struct RegistInfo
 	}
 }RegistInfo_t;
 
-class CXMessageQueue : public SingletonTmpl<CXMessageQueue>
+class JO_API CXMessageQueue : public SingletonTmpl<CXMessageQueue>
 {
 public:
 	CXMessageQueue(int);

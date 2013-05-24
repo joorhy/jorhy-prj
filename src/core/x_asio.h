@@ -7,7 +7,7 @@
 #include "x_socket.h"
 #include "x_thread.h"
 
-class CRdAsio : public SingletonTmpl<CRdAsio>
+class JO_API CRdAsio : public SingletonTmpl<CRdAsio>
 {
 public:
 	CRdAsio(int);
@@ -19,29 +19,38 @@ private:
 public:
 	int Init();
 	void Deinit();
-	int AddUser(int nSocket, J_AsioUser *pUser);
-	void DelUser(int nSocket);
+	int AddUser(j_socket_t nSocket, J_AsioUser *pUser);
+	void DelUser(j_socket_t nSocket);
 
 private:
+#ifdef WIN32
+	static unsigned X_JO_API WorkThread(void *param)
+#else
 	static void *WorkThread(void *param)
+#endif
 	{
 		(static_cast<CRdAsio *>(param))->OnWork();
-		return (void *)0;
+		return 0;
 	}
 	void OnWork();
-	void EnableKeepalive(int nSocket);
+	void EnableKeepalive(j_socket_t nSocket);
 
 private:
-	typedef std::map<int, J_AsioUser *> AsioMap;
+	typedef std::map<j_socket_t, J_AsioUser *> AsioMap;
 	AsioMap m_asioMap;
 
 	CJoThread m_workThread;
 	J_OS::CTLock m_locker;
 
+	j_boolean_t m_bStarted;
+#ifdef WIN32
+	fd_set m_fdSet;
+	struct timeval m_timeout;
+#else
 	int m_epoll_fd;
-	bool m_bStarted;
 	struct epoll_event m_evAsio;
 	struct epoll_event m_evConnect[JO_MAX_ASIOSIZE];
+#endif
 };
 
 #endif //~__X_RD_ASIO_H_

@@ -1,10 +1,5 @@
 #ifndef __JO_COMMON_H_
 #define __JO_COMMON_H_
-#include <map>
-#include <list>
-#include <string>
-#include <vector>
-#include <queue>
 
 #ifdef WIN32
 #include <process.h>
@@ -61,6 +56,12 @@
 #include <sys/types.h>
 #include <algorithm>
 
+#include <map>
+#include <list>
+#include <string>
+#include <vector>
+#include <queue>
+
 #include "x_errtype.h"
 
 typedef bool 								j_boolean_t;
@@ -109,6 +110,16 @@ typedef std::vector<j_string_t>		j_vec_str_t;
 #define X_JO_API __stdcall
 #else
 #define X_JO_API 
+#endif
+
+#ifdef WIN32
+#ifdef   JO_EXPORTS 
+#define   JO_API           __declspec(dllexport) 
+#else 
+#define   JO_API           __declspec(dllimport) 
+#endif 
+#else
+define JO_API
 #endif
 
 #ifdef WIN32

@@ -21,7 +21,7 @@ enum X_HTTP_TYPE
 	x_http_type_unlock
 };
 
-class CXHttp
+class JO_API CXHttp
 {
 public:
 	CXHttp();

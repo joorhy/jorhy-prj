@@ -11,7 +11,7 @@ typedef struct
 	int priority;
 }j_thread_parm;
 
-class CJoThread : public J_Obj
+class JO_API CJoThread : public J_Obj
 {
 public:
 	CJoThread();

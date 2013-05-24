@@ -6,7 +6,7 @@
 #include "x_singleton.h"
 #include "x_thread.h"
 
-class CThreadPool : public SingletonTmpl<CThreadPool>
+class JO_API CThreadPool : public SingletonTmpl<CThreadPool>
 {
 public:
 	CThreadPool(int);

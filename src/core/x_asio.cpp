@@ -2,11 +2,6 @@
 #include "x_errtype.h"
 #include "j_module.h"
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-
 CRdAsio::CRdAsio(int)
 {
 	m_bStarted = false;
@@ -21,8 +16,14 @@ int CRdAsio::Init()
 {
 	if (!m_bStarted)
 	{
+#ifdef WIN32
+		FD_ZERO(&m_fdSet); 
+		m_timeout.tv_sec = 1;
+		m_timeout.tv_usec = 0;
+#else
 		m_epoll_fd = 0;
 		m_epoll_fd = epoll_create(JO_MAX_ASIOSIZE);
+#endif
 
 		m_bStarted = true;
 		j_thread_parm parm = {0};
@@ -40,35 +41,43 @@ void CRdAsio::Deinit()
 		m_bStarted = false;
 		m_workThread.Release();
 
+#ifdef WIN32
+		FD_ZERO(&m_fdSet); 
+#else
 		if (m_epoll_fd != 0)
 		{
 			close (m_epoll_fd);
 			m_epoll_fd = 0;
 		}
+#endif
 	}
 }
 
-int CRdAsio::AddUser(int nSocket, J_AsioUser *pUser)
+int CRdAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 {
 	TLock(m_locker);
 	m_asioMap[nSocket] = pUser;
+#ifdef WIN32
+	FD_SET(nSocket.sock, &m_fdSet);
+#else
 	m_evAsio.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP;
-	m_evAsio.data.fd = nSocket;
+	m_evAsio.data.fd = nSocket.sock;
 
-	if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, nSocket, &m_evAsio) < 0)
+	if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, nSocket.sock, &m_evAsio) < 0)
 	{
 		J_OS::LOGERROR("CRdAsio::AddUser epoll set insertion error");
 		return J_SOCKET_ERROR;
 	}
+#endif
 	EnableKeepalive(nSocket);
 
-	J_OS::LOGINFO("CRdAsio::AddUser epoll set insertion sucess fd = %d", nSocket);
+	J_OS::LOGINFO("CRdAsio::AddUser epoll set insertion sucess fd = %d", nSocket.sock);
 	TUnlock(m_locker);
 
 	return J_OK;
 }
 
-void CRdAsio::DelUser(int nSocket)
+void CRdAsio::DelUser(j_socket_t nSocket)
 {
 	TLock(m_locker);
 	AsioMap::iterator it = m_asioMap.find(nSocket);
@@ -76,15 +85,20 @@ void CRdAsio::DelUser(int nSocket)
 	{
 		m_asioMap.erase(it);
 	}
+#ifdef WIN32
+#else
 	m_evAsio.events = EPOLLIN | EPOLLRDHUP;
-	m_evAsio.data.fd = nSocket;
-	epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, nSocket, &m_evAsio);
-	J_OS::LOGINFO("CRdAsio::DelUser epoll set insertion sucess fd = %d", nSocket);
+	m_evAsio.data.fd = nSocket.sock;
+	epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, nSocket.sock, &m_evAsio);
+#endif
+	J_OS::LOGINFO("CRdAsio::DelUser epoll set insertion sucess fd = %d", nSocket.sock);
 	TUnlock(m_locker);
 }
 
 void CRdAsio::OnWork()
 {
+#ifdef WIN32
+#else
 	int nfds = 0;
 	int i = 0;
 	int active_fd = 0;
@@ -143,18 +157,28 @@ void CRdAsio::OnWork()
 			}
 		}
 	}
+#endif
 }
 
-void CRdAsio::EnableKeepalive(int nSocket)
+void CRdAsio::EnableKeepalive(j_socket_t sock)
 {
-    //开启tcp探测
-    int keepAlive = 1; 		// 开启keepalive属性
-    int keepIdle = 3; 		// 如该连接在3秒内没有任何数据往来,则进行探测
-    int keepInterval = 1;	// 探测时发包的时间间隔为2秒
-    int keepCount = 3; 		// 探测尝试的次数.如果第1次探测包就收到响应了,则后2次的不再发.
-    setsockopt(nSocket, SOL_SOCKET, SO_KEEPALIVE, (void *)&keepAlive, sizeof(keepAlive));
-    setsockopt(nSocket, SOL_TCP, TCP_KEEPIDLE, (void*)&keepIdle, sizeof(keepIdle));
-    setsockopt(nSocket, SOL_TCP, TCP_KEEPINTVL, (void *)&keepInterval, sizeof(keepInterval));
-    setsockopt(nSocket, SOL_TCP, TCP_KEEPCNT, (void *)&keepCount, sizeof(keepCount));
+	//开启tcp探测
+	int keepAlive = 1; 		// 开启keepalive属性
+	setsockopt(sock.sock, SOL_SOCKET, SO_KEEPALIVE, (const char *)&keepAlive, sizeof(keepAlive));
+#ifdef WIN32
+	tcp_keepalive alive_in                = {0};
+	tcp_keepalive alive_out              = {0};
+	alive_in.keepalivetime                = 3000;                // 开始首次KeepAlive探测前的TCP空闭时间
+	alive_in.keepaliveinterval			 = 1000;				// 两次KeepAlive探测间的时间间隔
+	alive_in.onoff                             = TRUE;
+	unsigned long ulBytesReturn = 0;
+	WSAIoctl(sock.sock, SIO_KEEPALIVE_VALS, &alive_in, sizeof(alive_in), &alive_out, sizeof(alive_out), &ulBytesReturn, NULL, NULL);
+#else
+	int keepIdle = 3; 				// 如该连接在3秒内没有任何数据往来,则进行探测
+	int keepInterval = 1;			// 探测时发包的时间间隔为2秒
+	//int keepCount = 3; 		// 探测尝试的次数.如果第1次探测包就收到响应了,则后2次的不再发.
+	setsockopt(sock.sock, SOL_TCP, TCP_KEEPIDLE, (void*)&keepIdle, sizeof(keepIdle));
+	setsockopt(sock.sock, SOL_TCP, TCP_KEEPINTVL, (void *)&keepInterval, sizeof(keepInterval));
+#endif
 }
 

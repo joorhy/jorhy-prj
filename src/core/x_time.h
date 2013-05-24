@@ -3,7 +3,7 @@
 #include "j_type.h"
 #include "x_singleton.h"
 
-class CTime : public SingletonTmpl<CTime>
+class JO_API CTime : public SingletonTmpl<CTime>
 {
 public:
     CTime(int) {}
