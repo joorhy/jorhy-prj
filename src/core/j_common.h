@@ -168,17 +168,19 @@ typedef struct
 #endif
 } j_module_t; 
 
+#ifdef WIN32
+typedef SOCKET j_asio_handle;
+#else
+typedef int j_asio_handle;
+#endif
+
 typedef struct j_socket
 {
 	j_socket()
 	{
 		sock = j_invalid_socket_val;
 	}
-#ifdef WIN32
-	SOCKET sock;
-#else
-	int sock;
-#endif
+	j_asio_handle sock;
 	j_boolean_t operator < (const j_socket &other) const
 	{
 		return (sock < other.sock);
