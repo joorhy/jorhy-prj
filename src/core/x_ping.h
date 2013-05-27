@@ -60,7 +60,8 @@ class JO_API CXPing
         struct sockaddr_in m_destAddr;
         std::string m_addr;
         j_pid_t m_pid;
-        char m_sendPacket[PACKET_SIZE];
-        char m_recvPacket[PACKET_SIZE];
+        j_char_t m_sendPacket[PACKET_SIZE];
+        j_char_t m_recvPacket[PACKET_SIZE];
+		j_int32_t m_timeOutNum;
 };
 #endif // __X_PING_H_

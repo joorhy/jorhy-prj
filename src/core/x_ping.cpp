@@ -2,6 +2,8 @@
 #include "x_errtype.h"
 #include "x_log.h"
 
+#define RETRY_TIMES 2
+
 static unsigned short cal_chksum(unsigned short *addr, int len)
 {
     int nLeft = len;
@@ -39,6 +41,7 @@ CXPing::CXPing(const char *pAddr)
     memset(m_sendPacket, 0, sizeof(m_sendPacket));
     memset(m_recvPacket, 0, sizeof(m_recvPacket));
     m_addr = pAddr;
+	m_timeOutNum = RETRY_TIMES;
 
     Init();
 }
@@ -62,7 +65,12 @@ int CXPing::SendPacket()
     if (sendto(m_socket, m_sendPacket, packet_size, 0,
               (struct sockaddr *)&m_destAddr, sizeof(m_destAddr)) < 0)
     {
-        J_OS::LOGINFO("CXPing::SendPacket() sendto error");
+		if (errno == EAGAIN && m_timeOutNum > 0)
+		{
+			--m_timeOutNum;
+			return J_OK;
+		}
+        J_OS::LOGERROR("CXPing::SendPacket() sendto error fd = %d", m_socket);
         return J_SOCKET_ERROR;
     }
 
@@ -81,9 +89,12 @@ int CXPing::RecvPacket()
     if ((n = recvfrom(m_socket, m_recvPacket, sizeof(m_recvPacket), 0,
             (struct sockaddr *)&from, &from_len)) < 0)
     {
-		if (errno == EAGAIN)
+		if (errno == EAGAIN && m_timeOutNum > 0)
+		{
+			--m_timeOutNum;
 			return J_OK;
-			
+		}
+		
         J_OS::LOGERROR("CXPing::RecvPacket() sendto error");
         return J_SOCKET_ERROR;
     }
@@ -92,6 +103,7 @@ int CXPing::RecvPacket()
         return J_UNKNOW;
     }
 
+	m_timeOutNum = RETRY_TIMES;
     return J_OK;
 }
 
@@ -105,9 +117,9 @@ int CXPing::Init()
     }
 
     //生成使用ICMP的原始套接字,这种套接字只有root才能生成
-    if ((m_socket = socket(AF_INET, SOCK_RAW, protocol->p_proto)) < 0)
+    if ((m_socket = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
     {
-        J_OS::LOGINFO("CXPing::Init() socket error");
+        J_OS::LOGERROR("CXPing::Init() socket error");
         return J_UNKNOW;
     }
 
@@ -118,8 +130,8 @@ int CXPing::Init()
 	bzero(&m_destAddr, sizeof(m_destAddr));
 #endif
     //扩大套接字接收缓存区
-    int size = 50 * 1024;
-    setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, (const char *)&size, sizeof(size));
+    //int size = 50 * 1024;
+    //setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, (const char *)&size, sizeof(size));
     m_destAddr.sin_family = AF_INET;
 	
 	SetTTL(255);
@@ -142,6 +154,7 @@ int CXPing::Init()
     else
     {
         //是IP地址
+		//J_OS::LOGINFO("%s", m_addr.c_str());
         m_destAddr.sin_addr.s_addr = indaddr;
     }
 #ifdef WIN32
