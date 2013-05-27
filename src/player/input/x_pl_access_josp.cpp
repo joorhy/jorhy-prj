@@ -19,8 +19,8 @@ CXPlJospAccess::CXPlJospAccess(j_pl_cfg_t &cfg)
 	m_bForward		= true;
 	memset(&m_RequstData,0,sizeof(m_RequstData));
 	memset(&m_demuxParm,0,sizeof(m_demuxParm));
-	//if(m_netWork->NonblockConnect(cfg.psz_ip,cfg.i_port,1) != J_PL_NO_ERROR)
-	if(m_netWork->BlockConnect(cfg.psz_ip,cfg.i_port) != J_PL_NO_ERROR)
+	if(m_netWork->NonblockConnect(cfg.psz_ip,cfg.i_port,1) != J_PL_NO_ERROR)
+	//if(m_netWork->BlockConnect(cfg.psz_ip,cfg.i_port) != J_PL_NO_ERROR)
 		m_bUsable = false;
 }
 

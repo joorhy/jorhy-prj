@@ -121,6 +121,7 @@ J_PL_RESULT J_PlSocket::BlockConnect(const char *pAddr, int nPort)
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(nPort);
 	sin.sin_addr.S_un.S_addr = inet_addr(pAddr);
+	//SetTimeOut(3000,3000);
 	if(connect( m_hSocket, (sockaddr *)&sin, sizeof(sin)) < 0)
 		return J_PL_ERROR_CONNECT;
 
@@ -187,17 +188,19 @@ J_PL_RESULT J_PlSocket::NonblockConnect(const char *pAddr, int nPort,unsigned in
 	sin.sin_addr.S_un.S_addr = inet_addr(pAddr);
 	connect( m_hSocket, (sockaddr *)&sin, sizeof(sin));
 
-	timeval	timeout;
+	timeval	timeout = {0};
 	fd_set	fd;
 	FD_ZERO(&fd);
 	FD_SET(m_hSocket,&fd);
 	timeout.tv_sec = unTimeout;
-	if(select(0,0,&fd,0,&timeout) < 0)
+	int nRet = 0;
+	if((nRet = select(1,0,&fd,0,&timeout)) <= 0)
 	{
 		closesocket(m_hSocket);
 		m_hSocket = INVALID_SOCKET;
 		return J_PL_ERROR_SOCKET;
 	}
+	nRet = GetLastError();
 
 	ul = 0;
 	if(ioctlsocket(m_hSocket,FIONBIO,(unsigned long*)&ul) == SOCKET_ERROR)
