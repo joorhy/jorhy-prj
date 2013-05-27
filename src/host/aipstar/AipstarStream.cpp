@@ -51,7 +51,7 @@ j_void_t CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 			J_OS::LOGINFO("CAipstarStream::OnRecv Data type");
 			return;
 		}
-
+		//J_OS::LOGINFO("CAipstarStream::OnRecv Data type = %d", streamInfo->byFrameType);
 		TLock(m_vecLocker);
 		j_vec_buffer_t::iterator it = m_vecRingBuffer.begin();
 		for (; it != m_vecRingBuffer.end(); it++)
@@ -60,4 +60,18 @@ j_void_t CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 		}
 		TUnlock(m_vecLocker);
 	}
+}
+
+int CAipstarStream::Broken()
+{
+	TLock(m_vecLocker);
+	J_StreamHeader streamHeader = {0};
+	streamHeader.frameType = jo_media_broken;
+	j_vec_buffer_t::iterator it = m_vecRingBuffer.begin();
+	for (; it != m_vecRingBuffer.end(); it++)
+	{
+		(*it)->PushBuffer(NULL, streamHeader);
+	}
+	TUnlock(m_vecLocker);
+	return J_OK;
 }

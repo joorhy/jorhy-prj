@@ -12,14 +12,15 @@ CAipstarChannel::CAipstarChannel(const j_char_t *pResid, j_void_t *pOwner, j_int
 	m_nProtocol = nMode;
 
 	m_resid = pResid;
-	TMCC_PtzOpen(m_pAdapter->GetClientHandle(), m_nChannel - 1);
+	m_pStream = NULL;
+	//TMCC_PtzOpen(m_pAdapter->GetClientHandle(), m_nChannel - 1);
 	m_hStream = TMCC_Init(TMCC_INITTYPE_REALSTREAM);
 }
 
 CAipstarChannel::~CAipstarChannel()
 {
-	int nRet = TMCC_PtzClose(m_pAdapter->GetClientHandle());
-	assert(nRet == TMCC_ERR_SUCCESS);
+	//int nRet = TMCC_PtzClose(m_pAdapter->GetClientHandle());
+	//assert(nRet == TMCC_ERR_SUCCESS);
 
 	TMCC_Done(m_hStream);
 }
@@ -48,7 +49,7 @@ j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 	{
 		m_pAdapter->Broken();
 		//m_pAdapter->Relogin();
-		delete pObj;
+		delete (CAipstarStream *)pObj;
 		J_OS::LOGINFO("CAipstarChannel::OpenStream StartView error, ret = %d", nRet);
 		return J_STREAM_ERROR;
 	}
@@ -56,6 +57,7 @@ j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 	m_bOpened = true;
 	(static_cast<CAipstarStream *> (pObj))->AddRingBuffer(pRingBuffer);
 	(static_cast<CAipstarStream *> (pObj))->Startup();
+	m_pStream = pObj;
 
 	return J_OK;
 }
@@ -91,6 +93,7 @@ j_result_t CAipstarChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 {
 	j_int32_t ptzCmd = 0;
 	int nRet = TMCC_ERR_SUCCESS;
+	TMCC_PtzOpen(m_pAdapter->GetClientHandle(), m_nChannel - 1);
 	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		switch (nCmd)
@@ -169,6 +172,7 @@ j_result_t CAipstarChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 	    J_OS::LOGINFO("CAipstarChannel::PtzControl Error %d", nRet);
 	    //m_pAdapter->Relogin();
 	}
+	TMCC_PtzClose(m_pAdapter->GetClientHandle());
 
 	return (nRet == TMCC_ERR_SUCCESS ? J_OK : J_UNKNOW);
 }
@@ -209,4 +213,16 @@ j_result_t CAipstarChannel::StopView()
 	}
 
 	return J_OK;
+}
+
+int CAipstarChannel::Broken()
+{
+	if (m_pStream != NULL)
+	{
+		(static_cast<CAipstarStream *> (m_pStream))->Broken();
+		m_pStream = NULL;
+		return J_OK;
+	}
+		
+	return J_UNKNOW;
 }

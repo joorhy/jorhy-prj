@@ -21,6 +21,9 @@ public:
 	virtual j_boolean_t HasMultiStream() { return true; }
 	///J_PtzControl
 	virtual j_result_t PtzControl(int nCmd, int nParam);
+	
+public:
+	int Broken();
 
 private:
 	j_result_t StartView();
@@ -41,6 +44,7 @@ private:
 	j_char_t *m_pDataBuff;
 	j_boolean_t m_bOpened;
 	HANDLE m_hStream;
+	void *m_pStream;
 };
 
 #endif //~__AIPSTARCHANNEL_H_

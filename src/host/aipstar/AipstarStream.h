@@ -21,6 +21,9 @@ public:
 	///J_VideoStream
 	virtual j_result_t Startup();
 	virtual j_result_t Shutdown();
+	
+public:
+	int Broken();
 
 protected:
 	static int OnStreamCallBack(HANDLE hHandle, tmRealStreamInfo_t *streamInfo, void *context)

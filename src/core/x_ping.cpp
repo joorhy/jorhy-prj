@@ -81,10 +81,12 @@ int CXPing::RecvPacket()
     if ((n = recvfrom(m_socket, m_recvPacket, sizeof(m_recvPacket), 0,
             (struct sockaddr *)&from, &from_len)) < 0)
     {
-        J_OS::LOGINFO("CXPing::RecvPacket() sendto error");
+		if (errno == EAGAIN)
+			return J_OK;
+			
+        J_OS::LOGERROR("CXPing::RecvPacket() sendto error");
         return J_SOCKET_ERROR;
     }
-
     if (UnPack(n) < 0)
     {
         return J_UNKNOW;
@@ -119,6 +121,10 @@ int CXPing::Init()
     int size = 50 * 1024;
     setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, (const char *)&size, sizeof(size));
     m_destAddr.sin_family = AF_INET;
+	
+	SetTTL(255);
+	SetTimeOut(1, true);
+	SetTimeOut(1, false);
 
     //判断是主机名还是IP地址
     unsigned long indaddr = 0L;
@@ -186,9 +192,9 @@ int CXPing::UnPack(int nLen)
         return J_SOCKET_ERROR;
     }
 
-    if (icmp_head->icmp_id == m_pid.id)
+    if (icmp_head->icmp_type == ICMP_ECHOREPLY)
     {
-         if (icmp_head->icmp_type == ICMP_ECHOREPLY)
+		if (icmp_head->icmp_id == m_pid.id)
         {
 #ifdef WIN32
 #else
@@ -197,13 +203,25 @@ int CXPing::UnPack(int nLen)
             struct timeval *tvSend = (struct timeval *)icmp_head->icmp_data;
             rtt = (tvRecv.tv_sec - tvSend->tv_sec) * 1000
                 + (tvRecv.tv_usec - tvSend->tv_usec) / 1000;
+			return rtt;
 #endif
-        }
-        else
-        {
-            return -1;
         }
     }
 
-    return rtt;
+    return -1;
+}
+
+int CXPing::SetTTL(int nValue)
+{
+	setsockopt(m_socket, IPPROTO_IP, IP_TTL, (char *)&nValue, sizeof(nValue));
+	return J_OK;
+}
+
+int CXPing::SetTimeOut(int nTime, bool bRecv)
+{
+	struct timeval timeout;
+	timeout.tv_sec = nTime;
+	timeout.tv_usec = 0;
+	setsockopt(m_socket, SOL_SOCKET, bRecv ? SO_RCVTIMEO : SO_SNDTIMEO, (char *)&timeout, sizeof(struct timeval));
+	return J_OK;
 }

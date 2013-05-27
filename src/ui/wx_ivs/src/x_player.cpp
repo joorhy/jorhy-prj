@@ -51,7 +51,7 @@ int CXPlayer::Start(const char *pResid, const XWindowInfo &winInfo)
 	if (m_nMode == 1)
 	{
 		m_pRender->Start(winInfo.window);
-		m_pReciver->Connect("192.168.1.6"/*m_svrAddr.c_str()*/, 8002);
+		m_pReciver->Connect(m_svrAddr.c_str(), 8002);
 		m_pDecoder->Start();
 		m_pReciver->StartView(pResid, 0);
 	}

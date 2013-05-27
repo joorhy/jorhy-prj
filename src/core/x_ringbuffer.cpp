@@ -91,18 +91,21 @@ void CRingBuffer::Read(char *pData, int nLen)
 
 void CRingBuffer::Write(const char *pData, int nLen)
 {
-	if (m_pEnd - m_pWritePoint <= nLen)
+	if (nLen > 0)
 	{
-		int nLastLen = m_pEnd - m_pWritePoint;
-		memcpy(m_pWritePoint, pData, nLastLen);
-		memcpy(m_pBegin, pData + nLastLen, nLen - nLastLen);
+		if (m_pEnd - m_pWritePoint <= nLen)
+		{
+			int nLastLen = m_pEnd - m_pWritePoint;
+			memcpy(m_pWritePoint, pData, nLastLen);
+			memcpy(m_pBegin, pData + nLastLen, nLen - nLastLen);
+		}
+		else
+		{
+			memcpy(m_pWritePoint, pData, nLen);
+		}
+		m_pWritePoint = AddBuffer(m_pWritePoint, nLen);
+		m_nDataLen += nLen;
 	}
-	else
-	{
-		memcpy(m_pWritePoint, pData, nLen);
-	}
-	m_pWritePoint = AddBuffer(m_pWritePoint, nLen);
-	m_nDataLen += nLen;
 	//fprintf(stderr, "CXBuffer::Write len = %d\n", m_nDataLen);
 }
 

@@ -52,6 +52,8 @@ class JO_API CXPing
         int Init();
         int Pack(int nPackNo, int nDataLen);
         int UnPack(int nLen);
+		int SetTTL(int nValue);
+		int SetTimeOut(int nTime, bool bRecv);
 
     private:
         int m_socket;

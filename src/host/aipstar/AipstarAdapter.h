@@ -2,6 +2,7 @@
 #define __AIPSTARADAPTER_H_
 #include "j_includes.h"
 #include "x_module_manager_def.h"
+#include "x_ping.h"
 #include "config.h"
 #include "tmTransDefine.h"
 #include "tmControlClient.h"
@@ -40,6 +41,7 @@ private:
 
 	static BOOL OnConnectCallBack(HANDLE hHandle, BOOL bConnect, unsigned int dResult, void *context)
 	{
+		printf("connect = %d\n", bConnect);
 		CAipstarAdapter *pThis = static_cast<CAipstarAdapter *>(context);
 		if (pThis != NULL)
 			pThis->OnConnect(hHandle, bConnect);
@@ -51,6 +53,11 @@ private:
 private:
 	j_result_t Login();
 	j_result_t Logout();
+	static void OnTimer(void *pUser)
+	{
+		(static_cast<CAipstarAdapter *>(pUser))->UserExchange();
+	}
+	void UserExchange();
 
 private:
 	j_char_t m_remoteIP[16];
@@ -59,7 +66,10 @@ private:
 	j_char_t m_password[64];
 
 	J_DevStatus m_status;
+	J_OS::CTimer m_timer;
 	HANDLE m_devHandle;
+	CXPing m_ping;
+	void *m_pChannel;
 };
 
 ADAPTER_BEGIN_MAKER(Aipstar)
