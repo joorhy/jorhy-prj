@@ -56,7 +56,7 @@ BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 		if (playInfo.nPlayMode == STREAME_REALTIME)
 			it->second.pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", playInfo.nPlayMode, this, hWnd);
 		else
-			it->second.pPlayer = CPlFactory::Instance()->GetPlayer("pl_vlc", playInfo.nPlayMode, this, hWnd);
+			it->second.pPlayer = CPlFactory::Instance()->GetPlayer("pl_jo", playInfo.nPlayMode, this, hWnd);
 		break;
 	default:
 		{

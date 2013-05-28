@@ -18,6 +18,7 @@ public:
 	virtual J_PL_RESULT GetDemuxType(j_pl_demux_t &t) = 0;				//read some data,
 	virtual J_PL_RESULT ReadBlock(char *OUT_buf,int &OUT_len) = 0;
 	virtual J_PL_RESULT Control(int type,va_list args) = 0;
+	virtual J_PL_RESULT RequestData(int interval) = 0;
 	virtual int GuessBufferSize()= 0;
 
 protected:

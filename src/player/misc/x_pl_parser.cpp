@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <string>
 
+const char *flag_begin = "start=";
+const char *flag_end = "end=";
+
 J_PL_RESULT J_PlParser::ParseUrl(char *psz_mrl,j_pl_cfg_t &OUT_cfg)
 {
 	memset(&OUT_cfg,0,sizeof(OUT_cfg));
@@ -41,8 +44,25 @@ J_PL_RESULT J_PlParser::ParseUrl(char *psz_mrl,j_pl_cfg_t &OUT_cfg)
 
 	beg = end;
 	beg += 1;
-	end = strchr(beg,'\0');
-	strncpy(OUT_cfg.psz_resource,beg,end-beg);
+	end = strchr(beg,'?');
+	if (end != NULL)
+	{
+		strncpy(OUT_cfg.psz_resource,beg,end-beg);
+
+		beg = strstr(beg, flag_begin);
+		if (beg != NULL)
+			OUT_cfg.begin_time = atoi(beg + strlen(flag_begin));
+
+		beg = strstr(beg, flag_end);
+		if (beg != NULL)
+			OUT_cfg.end_time = atoi(beg + strlen(flag_end));
+	}
+	else
+	{
+		end = strchr(beg,'\0');
+		strncpy(OUT_cfg.psz_resource,beg,end-beg);
+	}
+
 
 	return J_PL_NO_ERROR;
 }

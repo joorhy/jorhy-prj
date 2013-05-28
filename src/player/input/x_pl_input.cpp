@@ -195,6 +195,17 @@ J_PL_RESULT CXPlInput::InitDecoder()
 	return br;
 }
 
+J_PL_RESULT CXPlInput::RequestData()
+{
+	J_PL_RESULT br = J_PL_NO_ERROR;
+	br = m_access->RequestData(24 * 60 * 60 * 1000);
+	if (br != J_PL_NO_ERROR)
+		return br;
+
+	m_pullSwitch.Single();
+	return br;
+}
+
 J_PL_RESULT CXPlInput::ControlAccess(int type,va_list args)
 {
 	if(!m_access)
@@ -210,12 +221,21 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
 	char *accessdata = new char[m_access->GuessBufferSize()];
 	int readlen = 0;
-	int state = J_PL_NORMAL;
-	++(*ctl->m_ThreadNumer);
+	int state = J_PL_PALYING;
+	if (RequestData() == J_PL_NO_ERROR)
+	{
+		++(*ctl->m_ThreadNumer);
+		ctl->m_state->SetVariable(&state);
+	}
+	else
+	{
+		state = J_PL_ERROR;
+		ctl->m_state->SetVariable(&state);
+	}
 
 	while(true)
 	{
-		m_pullSwitch.Wait();
+		//m_pullSwitch.Wait();
 		ctl->m_state->GetVariable(&state);
 
 		switch(state)

@@ -38,41 +38,31 @@ JoPlayer::~JoPlayer(void)
 BOOL JoPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 {
 	J_PL_RESULT br;
-	char *beg = strstr((char *)playInfo.pUrl, "//");
-	char *end = NULL;
-	int len = 0;
 	char mrl[128] = {0};
-	char ip[16] = {0};
-	char resid[16] = {0};
-	if(beg)
+	if (playInfo.nPlayMode == STREAME_REALTIME)
 	{
-		beg += strlen("//");
-		end = strchr(beg,':');
-		memcpy(ip,beg,end-beg);
-		
-		beg = end;
-		beg = strstr(beg,"resid=");
-		beg += strlen("resid=");
-		end = strchr(beg,'&');
-		memcpy(resid,beg,end-beg);
-
 		sprintf(mrl,"RYSP://%s:%d/%s", playInfo.strIpaddr, 8002, playInfo.strResid);
 		m_lastMrl = mrl;
-		//sprintf(mrl,"RYSP://192.168.1.10:8002/44");
 		br = m_player->InitPlayByNetwork(mrl);
-		if(br != J_PL_NO_ERROR)
-			return FALSE;
-		br = m_player->SetHwnd(hPlayWnd);
-		if(br != J_PL_NO_ERROR)
-			return FALSE;
-		br = m_player->Run();
-		if(br != J_PL_NO_ERROR)
-			return FALSE;
-		
-		m_pPlWnd = hPlayWnd;
-
-		m_player->SetEndCBK(EndCBK,this);
 	}
+	else
+	{
+		sprintf(mrl,"RYSP://%s:%d/%s?start=%d&end=%d", playInfo.strIpaddr, 8002, playInfo.strResid, playInfo.nStartTime, playInfo.nEndTime);
+		br = m_player->InitPlayByNetwork(mrl, J_PL_PLAY_FILE);
+	}
+	if(br != J_PL_NO_ERROR)
+		return FALSE;
+	br = m_player->SetHwnd(hPlayWnd);
+	if(br != J_PL_NO_ERROR)
+		return FALSE;
+	br = m_player->Run();
+	if(br != J_PL_NO_ERROR)
+		return FALSE;
+	
+	m_pPlWnd = hPlayWnd;
+
+	m_player->SetEndCBK(EndCBK,this);
+	
 	return TRUE;
 }
 

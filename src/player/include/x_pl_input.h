@@ -19,6 +19,7 @@ public:
 private:
 	J_PL_RESULT InitDemux();				//init demux
 	J_PL_RESULT InitDecoder();			//init decoder
+	J_PL_RESULT RequestData();
 
 	static unsigned X_PL_API Thread(void *pdata);			//main loop
 	J_PL_RESULT ThreadLoopPush();						//线程执行函数(推模式)

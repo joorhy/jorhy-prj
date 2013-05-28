@@ -28,14 +28,14 @@ struct JOSP_CtrlHead
 	unsigned char crc[4];           //校验码(循环冗余校验)
 };
 
-//RYSP 打开视频  
+//JOSP 打开实时视频  
 struct JOSP_OpenData 
 { 
 	char res_id[32];		//资源ID
 	int stream_type;		//码流类型 0-主码流,1-子码流
 }; 
 
-//RYSP 打开视频返回 
+//JOSP 打开实时视频返回 
 struct JOSP_OpenRetData 
 { 
 	unsigned char media_code[4];	//媒体类型 JOMS
@@ -48,21 +48,43 @@ struct JOSP_OpenRetData
 	//音频信息
 }; 
 
-//RYSP 请求媒体数据 
-struct JOSP_RequestData 
+//JOSP 打开历史视频
+struct JOSP_OpenVod
+{
+	char res_id[32];						//资源ID
+	unsigned int begin_time;		//开始时间
+	unsigned int end_time;			//结束时间
+};
+
+//JOSP 打开历史视频返回 
+struct JOSP_OpenVodRet 
 { 
-	long long time_stamp;		//开始时间(0-无效)
-	int time_interval;			//时间间隔(ms),视频有多长
+	unsigned char media_code[4];	//媒体类型 JOMS
+	//视频信息
+	unsigned char iframe_interval;	//I帧间隔
+	unsigned char fps;				//帧率
+	unsigned short width;
+	unsigned short height;
+
+	//音频信息
 }; 
 
-//RYSP 请求媒体数据应答 
+//JOSP 请求媒体数据 
+struct JOSP_RequestData 
+{ 
+	char res_id[32];						//资源ID
+	unsigned int time_stamp;		//开始时间(0-无效)
+	int time_interval;					//时间间隔(ms),视频有多长
+}; 
+
+//JOSP 请求媒体数据应答 
 struct JOSP_RequestRetData
 { 
 	int ret;					//返回码(0-成功)
 }; 
 
 
-//RYSP 数据头格式 
+//JOSP 数据头格式 
 struct JOSP_DataHead 
 { 
 	unsigned char start_code[4];	//魔术字段 JOAV

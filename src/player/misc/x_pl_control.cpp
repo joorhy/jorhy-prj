@@ -70,7 +70,7 @@ J_PL_RESULT J_PlControl::InitPlayByNetwork(const char *psz_mrl,j_pl_work_type mo
 		return br;
 	cfg.i_real	= m_WorkModel;
 
-		m_input = new CXPlInput();
+	m_input = new CXPlInput();
 	br = m_input->Init(cfg,this);
 	if(br != J_PL_NO_ERROR)
 	{

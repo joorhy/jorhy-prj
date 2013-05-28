@@ -77,8 +77,8 @@ unsigned CXPlTransform::VideoThread(void *parm)
 			}
 			else
 			{
-				pThis->m_vbuffer	= J_PlBuffer::CreateInstance(BUFFER_LIST,BUFFER_VIDEO_OUTPUT);		//参见m_decoders动态生成大小
-				pThis->m_vbufferEX	= J_PlBuffer::CreateInstance(BUFFER_LIST,BUFFER_VIDEO_OUTPUT);
+				pThis->m_vbuffer	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);		//参见m_decoders动态生成大小
+				pThis->m_vbufferEX	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);
 				br = pThis->VideoLoopPull();
 			}
 		}
@@ -356,40 +356,37 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 
 		case J_PL_PALYING:
 		case J_PL_PAUSE:
-			while(framenum < m_decoders.iframe_interval)
+			ctl->m_input->m_buffer->WaitData();
+			br = ctl->m_input->m_buffer->Read(srcData,(char*)&format,head);
+			if(br == J_PL_NO_ERROR)
 			{
-				ctl->m_input->m_buffer->WaitData();
-				br = ctl->m_input->m_buffer->Read(srcData,(char*)&format,head);
-				if(br == J_PL_NO_ERROR)
-				{
-					if(format.type != DECODE_AUDIO)
-					{	
-						br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen);
-						if(br == J_PL_NO_ERROR)
+				if(format.type != DECODE_AUDIO)
+				{	
+					br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen);
+					if(br == J_PL_NO_ERROR)
+					{
+						if(bFirst)
 						{
-							if(bFirst)
-							{
-								InitVideo();
-								bFirst = false;
-							}
-							vout.size		= dstlen;
-							vout.timestamp	= format.timestamp;
-							vout.fps		= format.fps;
-							head.datasize	= dstlen;
-							head.extrasize	= sizeof(j_pl_audio_format_t);
-							head.datatype	= 1;
-							br = m_vbufferEX->Write(dstData,(char*)&vout,head);
+							InitVideo();
+							bFirst = false;
 						}
-						ctl->m_input->m_buffer->MoveNext();
-						framenum++;
+						vout.size		= dstlen;
+						vout.timestamp	= format.timestamp;
+						vout.fps		= format.fps;
+						head.datasize	= dstlen;
+						head.extrasize	= sizeof(j_pl_audio_format_t);
+						head.datatype	= 1;
+						br = m_vbufferEX->Write(dstData,(char*)&vout,head);
 					}
-					else
-						Sleep(1);
+					ctl->m_input->m_buffer->MoveNext();
+					//framenum++;
 				}
-				else if(br == J_PL_ERROR_EMPTY_BUFFER)
-				{
-					break;
-				}
+				else
+					Sleep(1);
+			}
+			else if(br == J_PL_ERROR_EMPTY_BUFFER)
+			{
+				break;
 			}
 			m_sem.Post();
 			break;

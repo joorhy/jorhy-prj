@@ -77,50 +77,39 @@ J_PL_RESULT CXPlJospDemux::DemuxBlock(char *data,J_PlBuffer *pIO)
 	}
 	else
 	{
-		int num = *(int*)data;
-		char *pos = data + sizeof(num);
-		for(int i=0;i<num;i++)
+		decHead.fps			= m_demuxID.fps;
+		decHead.size		= ntohl(head->data_len);
+		decHead.timestamp	= j_pl_ntohll(head->time_stamp);
+		unsigned int frametype = ntohl(head->frame_type);
+
+		switch(frametype)
 		{
-			if(m_bFlush)
-			{
-				pIO->Flush();
-				break;
-			}
-			head = (JOSP_DataHead*)pos;
+		case 3:
+			decHead.type = DECODE_I_FRAME;
+			break;
 
-			decHead.fps			= m_demuxID.fps;
-			decHead.size		= ntohl(head->data_len);
-			decHead.timestamp	= j_pl_ntohll(head->time_stamp);
-			unsigned short frametype = ntohl(head->frame_type);
-			switch(frametype)
-			{
-			case 3:
-				decHead.type = DECODE_I_FRAME;
-				break;
+		case 4:
+			decHead.type = DECODE_B_FRAME;
+			break;
 
-			case 4:
-				decHead.type = DECODE_B_FRAME;
-				break;
+		case 5:
+			decHead.type = DECODE_P_FRAME;
+			break;
 
-			case 5:
-				decHead.type = DECODE_P_FRAME;
-				break;
-
-			case 6:
-				return J_PL_NO_ERROR;			//暂时不处理音频
-				break;
-			}
-
-			bufHead.datasize	= decHead.size;
-			bufHead.extrasize	= sizeof(j_pl_decode_t);
-			bufHead.datatype = 0;
-			br = pIO->Write(pos+sizeof(JOSP_DataHead),(char*)&decHead,bufHead);
-			if(br != J_PL_NO_ERROR)
-				return br;
-
-			pos += (sizeof(JOSP_DataHead) + decHead.size);
+		case 6:
+			return J_PL_NO_ERROR;			//暂时不处理音频
+			break;
 		}
-		m_bFlush = false;
+
+		bufHead.datasize	= decHead.size;
+		bufHead.extrasize	= sizeof(j_pl_decode_t);
+		bufHead.datatype = 0;
+		br = pIO->Write(data+sizeof(JOSP_DataHead),(char*)&decHead,bufHead);
+		if(br == J_PL_ERROR_FULL_BUFFER)
+		{
+			pIO->Flush();			//decode 处理不过来
+			m_bNeedIframe = true;
+		}
 	}
 	return br;
 }

@@ -32,7 +32,9 @@ struct j_pl_cfg_t
 	int i_port;
 	char psz_ip[16];
 
-	char psz_resource[256];		//file path or net resource 
+	char psz_resource[256];		//file path or net resource
+	unsigned int begin_time;
+	unsigned int end_time;
 };
 
 

@@ -68,19 +68,62 @@ J_PL_RESULT CXPlJospAccess::RequestServer(j_pl_work_type type)
 	struct RequestData
 	{
 		JOSP_CtrlHead head;
-		JOSP_OpenData data;
+		union
+		{
+			JOSP_OpenData real_data;
+			JOSP_OpenVod vod_data;
+		} data;
 	} req_data;
 
 	memset(&req_data.head,0,sizeof(JOSP_CtrlHead));
 	strcpy((char*)req_data.head.start_code,"JOSP");
 	req_data.head.version	= 2;
-	req_data.head.cmd		= (type == J_PL_PLAY_REALTIME ? JOSP_OPEN_STREAM : JOSP_OPEN_FILE);
-	req_data.head.ex_length	= htons(sizeof(JOSP_OpenData));
 
+	if (type == J_PL_PLAY_REALTIME)
+	{
+		req_data.head.cmd = JOSP_OPEN_STREAM;
+		req_data.head.ex_length	= htons(sizeof(JOSP_OpenData));
+		strncpy_s(req_data.data.real_data.res_id,m_cfg.psz_resource,sizeof(req_data.data.real_data.res_id));
+		req_data.data.real_data.stream_type= 0;		//主码流
+	}
+	else
+	{
+		req_data.head.cmd = JOSP_OPEN_FILE;
+		req_data.head.ex_length	= htons(sizeof(JOSP_OpenVod));
+		strncpy_s(req_data.data.vod_data.res_id,m_cfg.psz_resource,sizeof(req_data.data.vod_data.res_id));
+		req_data.data.vod_data.begin_time = htonl(m_cfg.begin_time);
+		req_data.data.vod_data.end_time = htonl(m_cfg.end_time);
+	}
+
+	br = m_netWork->NWrite((const char*)&req_data,sizeof(JOSP_CtrlHead) + ntohs(req_data.head.ex_length));
+	J_PL_FAILED(br);
+
+	return br;
+}
+
+J_PL_RESULT CXPlJospAccess::RequestData(int interval)
+{
+	J_PL_RESULT br;
+	if(!m_netWork)
+		return J_PL_ERROR_NO_NETWORK;
+
+	struct RequestData
+	{
+		JOSP_CtrlHead head;
+		JOSP_RequestData data;
+	} req_data;
+
+	memset(&req_data.head,0,sizeof(JOSP_CtrlHead));
+	strcpy((char*)req_data.head.start_code,"JOSP");
+	req_data.head.version	= 2;
+
+	req_data.head.cmd = JOSP_REQ_DATA;
+	req_data.head.ex_length	= htons(sizeof(JOSP_RequestData));
 	strncpy_s(req_data.data.res_id,m_cfg.psz_resource,sizeof(req_data.data.res_id));
-	req_data.data.stream_type= 0;		//主码流
+	req_data.data.time_stamp = htonl(m_cfg.begin_time);		
+	req_data.data.time_interval = htonl(interval);
 
-	br = m_netWork->NWrite((const char*)&req_data,sizeof(RequestData));
+	br = m_netWork->NWrite((const char*)&req_data,sizeof(JOSP_CtrlHead) + ntohs(req_data.head.ex_length));
 	J_PL_FAILED(br);
 
 	return br;
@@ -90,7 +133,12 @@ J_PL_RESULT CXPlJospAccess::ReadHeader(j_pl_demux_t &t)
 {
 	J_PL_RESULT br;
 	JOSP_CtrlHead head;
-	JOSP_OpenRetData data;
+
+	union 
+	{
+		JOSP_OpenRetData real_data;
+		JOSP_OpenVodRet vod_data;
+	} data;
 	
 	if(!m_netWork)
 		return J_PL_NO_ERROR;
@@ -100,19 +148,35 @@ J_PL_RESULT CXPlJospAccess::ReadHeader(j_pl_demux_t &t)
 	unsigned char cmd = (m_cfg.i_real == J_PL_PLAY_REALTIME ? JOSP_OPEN_STREAM_RET : JOSP_OPEN_FILE_RET);
 	if(head.cmd == cmd)
 	{
-		br = m_netWork->NRead((char*)&data,sizeof(data));
-		m_demuxParm.fps	= data.fps;
-		if(_strnicmp((const char*)data.media_code,"JOMS",sizeof(data.media_code)) == 0)
-			m_demuxParm.media_type	= DEMUX_RYSP;
-		else
-			m_demuxParm.media_type	= DEMUX_TS;
-		m_demuxParm.i_real	= m_cfg.i_real;
+		br = m_netWork->NRead((char*)&data,ntohs(head.ex_length));
 
-		//后面动态添加
-		m_demuxParm.width		= data.width;
-		m_demuxParm.height		= data.height;
-		m_demuxParm.iframe_interval = data.iframe_interval;
-		
+		m_demuxParm.i_real	= m_cfg.i_real;
+		if (m_cfg.i_real == J_PL_PLAY_REALTIME)
+		{
+			m_demuxParm.fps	= data.real_data.fps;
+			if(_strnicmp((const char*)data.real_data.media_code,"JOMS",sizeof(data.real_data.media_code)) == 0)
+				m_demuxParm.media_type	= DEMUX_RYSP;
+			else
+				m_demuxParm.media_type	= DEMUX_TS;
+
+			//后面动态添加
+			m_demuxParm.width		= data.real_data.width;
+			m_demuxParm.height		= data.real_data.height;
+			m_demuxParm.iframe_interval = data.real_data.iframe_interval;
+		}
+		else
+		{
+			m_demuxParm.fps	= data.vod_data.fps;
+			if(_strnicmp((const char*)data.vod_data.media_code,"JOMS",sizeof(data.vod_data.media_code)) == 0)
+				m_demuxParm.media_type	= DEMUX_RYSP;
+			else
+				m_demuxParm.media_type	= DEMUX_TS;
+
+			//后面动态添加
+			m_demuxParm.width		= data.vod_data.width;
+			m_demuxParm.height		= data.vod_data.height;
+			m_demuxParm.iframe_interval = data.vod_data.iframe_interval;
+		}
 		m_RequstData.time_interval = (1000 * m_demuxParm.iframe_interval / m_demuxParm.fps);
 
 		t = m_demuxParm;
@@ -201,146 +265,34 @@ J_PL_RESULT CXPlJospAccess::ReadBlockReal(char *OUT_buf,int &OUT_len)
 J_PL_RESULT CXPlJospAccess::ReadBlockFile(char *OUT_buf,int &OUT_len)
 {
 	J_PL_RESULT br;
-	JOSP_DataHead head;
-	int framenum = 0;
-	int datalen = 0;
-	char *tmpBuf = OUT_buf + sizeof(framenum);
+	JOSP_DataHead head = {0};
 
 	if(!m_netWork)
 		return J_PL_NO_ERROR;
 
-	if(NeedRequest())
+	br = m_netWork->NRead((char*)&head,sizeof(head));
+	if(br == J_PL_ERROR_RECEIVE)
+		return J_PL_ERROR_ACCESS_END;
+	if(br == J_PL_ERROR_RECEIVE_TIMEOUT)
+		return J_PL_ERROR_ACCESS_ERROR;
+
+	if(_strnicmp((char*)head.start_code,"JOAV",4) == 0)
 	{
-		br = RequestData();
-		J_PL_FAILED(br);
-	}
-	while(!m_bEnd)
-	{
-		if(m_nNeedRequst)	//for set time；
-		{
-			framenum = 0;
-			break;
-		}
+		int datalen = ntohl(head.data_len);
+		memcpy(OUT_buf,(char*)&head,sizeof(head));
 
-		br = m_netWork->NRead((char*)&head,sizeof(head));
-		J_PL_FAILED(br);
+		br = m_netWork->NRead(OUT_buf+sizeof(head),datalen);
+		if(br == J_PL_ERROR_RECEIVE)
+			return J_PL_ERROR_ACCESS_END;
+		if(br == J_PL_ERROR_RECEIVE_TIMEOUT)
+			return J_PL_ERROR_ACCESS_ERROR;
 
-		if(_strnicmp((char*)head.start_code,"JOAV",4) == 0)
-		{
-			if(ntohl(head.b_last_frame))
-			{
-				m_bEnd = true;
-			}
+		OUT_len = sizeof(head) + datalen;
 
-			datalen = ntohl(head.data_len);
-			memcpy(OUT_buf,(char*)&head,sizeof(head));
-
-			br = m_netWork->NRead(tmpBuf+sizeof(head),datalen);
-			J_PL_FAILED(br);
-
-			OUT_len += (sizeof(head) + datalen);
-			tmpBuf +=(sizeof(head) + datalen);
-			framenum++;
-		}
-		if(ntohl(head.b_last_frame))
-		{
-			m_bEnd = true;
-		}
-	}
-	memcpy(OUT_buf,&framenum,sizeof(framenum));			//告诉demux有多少帧
-	m_nNeedRequst = true;
-
-	return J_PL_NO_ERROR;
-}
-
-J_PL_RESULT CXPlJospAccess::FindTime(j_pl_mtime_t &time)
-{
-	char *pos = strstr(m_cfg.psz_resource,"start=");
-	if(!pos)
-		return J_PL_ERROR_PTR;
-	pos += strlen("start=");
-	time = _atoi64(pos);
-	return J_PL_NO_ERROR;
-}
-
-bool CXPlJospAccess::NeedRequest()
-{
-	bool ret;
-	if(m_nNeedRequst)
-	{
-		if(m_bFirst)
-		{
-			if(FindTime(m_RequstData.time_stamp) != J_PL_NO_ERROR)
-				return false;
-			m_llRequesttime = m_RequstData.time_stamp;
-			m_bFirst = false;
-		}
-		else
-		{
-			if(m_bForward)
-			{
-				m_llRequesttime += m_RequstData.time_interval;
-			}
-			else
-			{
-				m_llRequesttime -= m_RequstData.time_interval;
-			}
-		}
-		m_RequstData.time_stamp = m_llRequesttime;
-		ret = true;
-		m_nNeedRequst = false;
-	}
-	else
-	{
-		ret = false;
-		m_nNeedRequst = false;
-	}
-
-	return ret;
-}
-
-J_PL_RESULT CXPlJospAccess::RequestData()
-{
-	J_PL_RESULT br;
-	JOSP_DataHead head;
-	JOSP_RequestRetData headRet;
-	char *tmpbuf = NULL;
-
-	if(!m_netWork)
 		return J_PL_NO_ERROR;
-
-	while(!m_bEnd)
-	{
-		if(tmpbuf == NULL)
-		{
-			tmpbuf = new char[1024*50];
-		}
-		br = m_netWork->NRead((char*)&head,sizeof(head));
-		J_PL_FAILED(br);
-
-		if(_strnicmp((char*)head.start_code,"JOAV",4) == 0)
-		{
-			br = m_netWork->NRead(tmpbuf,sizeof(tmpbuf));
-		}
-		if(ntohl(head.b_last_frame))
-		{
-			m_bEnd = true;
-		}
-
 	}
-	if(tmpbuf)
-		delete tmpbuf;
 
-	br = m_netWork->NWrite((const char*)&m_RequstData,sizeof(m_RequstData));
-	J_PL_FAILED(br);
-	br = m_netWork->NRead((char*)&headRet,sizeof(headRet));
-	J_PL_FAILED(br);
-	if(ntohl(headRet.ret) != 0)
-		return J_PL_ERROR_UNKNOW;
-
-	m_bEnd = false;
-
-	return J_PL_NO_ERROR;
+	return J_PL_ERROR_ACCESS_END;
 }
 
 int CXPlJospAccess::GuessBufferSize()

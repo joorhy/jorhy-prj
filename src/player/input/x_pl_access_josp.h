@@ -12,6 +12,7 @@ public:
 	virtual J_PL_RESULT GetDemuxType(j_pl_demux_t &t);		
 	virtual J_PL_RESULT ReadBlock(char *OUT_buf,int &OUT_len);
 	virtual J_PL_RESULT Control(int type,va_list args);
+	virtual J_PL_RESULT RequestData(int interval);
 	virtual int GuessBufferSize();
 
 private:
@@ -23,9 +24,6 @@ private:
 
 	//vod only
 	J_PL_RESULT ReadBlockFile(char *OUT_buf,int &OUT_len);			
-	J_PL_RESULT FindTime(j_pl_mtime_t &time);
-	bool NeedRequest();
-	J_PL_RESULT RequestData();
 
 	virtual void SetAccessType(int &ID);
 
