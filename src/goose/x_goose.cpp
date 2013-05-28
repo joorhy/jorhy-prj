@@ -338,46 +338,44 @@ u_short CXGooseCap::GSE_GetDataLen(const u_char *data)
 
 int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
 {
-	printf("cid = %d nid = %d type = %d\n", cid, nid, type);
+	//printf("cid = %d nid = %d type = %d\n", cid, nid, type);
 	//return 0;
     json_object *alm_body = json_object_new_object();
     json_object_object_add(alm_body, (char *)"cmd", json_object_new_int(103));
     json_object *alm_json = json_object_new_object();
     json_object_object_add(alm_json, (char *)"cid", json_object_new_int(cid));
     json_object_object_add(alm_json, (char *)"node", json_object_new_int(nid));
+	json_object_object_add(alm_json, (char *)"type", json_object_new_int(11));
+	json_object_object_add(alm_json, (char *)"ext", json_object_new_int(0));
+	json_object *alm_values = json_object_new_object();
     switch (type)
     {
         case GSE_TAG_BOOL:
-            json_object_object_add(alm_json, (char *)"type", json_object_new_int(11));
-            json_object_object_add(alm_json, (char *)"ext", json_object_new_int(data[0]));
+			json_object_object_add(alm_values, (char *)"val1", json_object_new_double(2.0));
+			json_object_object_add(alm_values, (char *)"val2", json_object_new_double((double)data[0]));
             break;
 		case GSE_TAG_DBPOS:
-			{
-				json_object_object_add(alm_json, (char *)"type", json_object_new_int(11));
-				int dbpos = data[0] >> 6;
-				printf("dbpos = %d\n", dbpos);
-				if (dbpos == 0 || dbpos == 1)
-					json_object_object_add(alm_json, (char *)"ext", json_object_new_int(0));
-				else
-					json_object_object_add(alm_json, (char *)"ext", json_object_new_int(1));
-			}
+			json_object_object_add(alm_values, (char *)"val1", json_object_new_double(1.0));
+			json_object_object_add(alm_values, (char *)"val2", json_object_new_double((double)(data[0] >> 6)));
 			break;
         default:
             //assert(false);
             break;
     }
     json_object_object_add(alm_body, (char *)"parm", alm_json);
-    printf("%s\n", json_object_to_json_string(alm_body));
+	json_object_object_add(alm_json, (char *)"values", alm_values);
+	if (cid == 1338 && (nid == 1 || nid == 23))
+		printf("%s\n", json_object_to_json_string(alm_body));
     
 	m_httpHelper.SetUri(GetMCUrl());
-	printf("%s\n", GetMCUrl());
+	//printf("%s\n", GetMCUrl());
 	m_httpHelper.SetType(x_http_type_post);
 	m_httpHelper.SetBody(json_object_to_json_string(alm_body), strlen(json_object_to_json_string(alm_body)));
 	m_httpHelper.Prepare();
 	if (m_httpHelper.Process() != J_OK)
 	{
-	    //assert(false);
-		return J_SOCKET_ERROR;
+	    //continue;
+		printf("%s\n", "error");
 	}
 
     int i_state = m_httpHelper.GetStatusCode();

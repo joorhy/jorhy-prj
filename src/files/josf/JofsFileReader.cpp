@@ -185,7 +185,7 @@ int CNvrFileReader::ListRecord(uint64_t beginTime, uint64_t endTime)
 	    return J_DB_ERROR;
 	}
 	m_fileVec.clear();
-	J_OS::LOGINFO("CNvrFileReader::ListRecord No Files start=%d end=%d", beginTime, endTime);
+	//J_OS::LOGINFO("CNvrFileReader::ListRecord No Files start=%d end=%d", beginTime, endTime);
 
 	if (p_historyfile->parm.files.empty())
 	{
