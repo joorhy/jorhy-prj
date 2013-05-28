@@ -51,13 +51,10 @@ int CSonyAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, int
 
 void CSonyAdapter::UserExchange()
 {
-    if (m_ping.SendPacket() == J_OK)
+	if (m_ping.SendPacket() < 0 || m_ping.RecvPacket() < 0)
 	{
-		if (m_ping.RecvPacket() < 0)
-		{
-			m_status = jo_dev_broken;
-			return;
-		}
-		m_status = jo_dev_ready;
+		m_status = jo_dev_broken;
+		return;
 	}
+	m_status = jo_dev_ready;
 }

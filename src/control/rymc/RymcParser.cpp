@@ -59,7 +59,7 @@ int CRymcParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nResp
 	std::string strBody = httpHelper.GetBody();
 	if(strBody.empty())
 	{
-		J_OS::LOGINFO("Empty");
+		J_OS::LOGINFO("CRymcParser::ProcessRequest Empty");
 		return J_JSON_UNKOWN;
 	}
 
@@ -82,6 +82,7 @@ int CRymcParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nResp
 		recordcol.resid 	= json_object_get_string(json_object_object_get(js, (char *)"resid"));
 		recordcol.ms	= json_object_get_int(json_object_object_get(js, (char *)"ms"));
 
+		J_OS::LOGINFO("CRymcParser::ProcessRequest RecordControl resid = %s", recordcol.resid.c_str());
 		nRet = RecordControl(recordcol.resid.c_str(), recordcol.act, recordcol.ms);
 
 		break;
@@ -99,7 +100,7 @@ int CRymcParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nResp
 		ptc_cntl.resid 	= json_object_get_string(json_object_object_get(js, (char *)"resid"));
 		ptc_cntl.action		= json_object_get_int(json_object_object_get(js, (char *)"action"));
 		ptc_cntl.value	= json_object_get_int(json_object_object_get(js, (char *)"value"));
-
+		
 		nRet = PtzControl(ptc_cntl.resid.c_str(), ptc_cntl.action, ptc_cntl.value);
 		break;
 	}

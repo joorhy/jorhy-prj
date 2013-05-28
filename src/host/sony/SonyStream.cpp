@@ -69,10 +69,21 @@ int CSonyStream::OnRead(int nfd)
     }
 
     TLock(m_locker);
+	J_StreamHeader streamHeader = {0};
     int	nLen = recv(nfd, m_pRecvBuff, RECV_SIZE, 0);
     if (nLen < 0)
     {
         J_OS::LOGERROR("CSonyStream::OnRead recv data error");
+		streamHeader.frameType = jo_media_broken;
+		TLock(m_vecLocker);
+		std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+		for (; it != m_vecRingBuffer.end(); it++)
+		{
+			//J_OS::LOGINFO("begin %lld,%lld", streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
+			//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
+			(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+		}
+		TUnlock(m_vecLocker);
         TUnlock(m_locker);
         return J_SOCKET_ERROR;
     }
@@ -83,7 +94,6 @@ int CSonyStream::OnRead(int nfd)
         int nRet = 0;
         do
         {
-            J_StreamHeader streamHeader;
             nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
             if (nRet == J_OK)
             {

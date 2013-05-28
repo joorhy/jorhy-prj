@@ -117,20 +117,17 @@ void CAipstarAdapter::UserExchange()
 	//tmWorkState_t state;
 	//if (TMCC_GetServerWorkState(m_devHandle, &state) != TMCC_ERR_SUCCESS)
 	//if (!TMCC_IsConnect(m_devHandle))
-	//if (m_ping.SendPacket() == J_OK)
+	if (m_ping.SendPacket() < 0 || m_ping.RecvPacket() < 0)
 	{
-		if (m_ping.SendPacket() < 0 || m_ping.RecvPacket() < 0)
+		Logout();
+		J_OS::LOGINFO("CAipstarAdapter::UserExchange error");
+	}
+	else
+	{
+		if (m_status == jo_dev_broken)
 		{
-			Logout();
-			J_OS::LOGINFO("CAipstarAdapter::UserExchange error");
-		}
-		else
-		{
-			if (m_status == jo_dev_broken)
-			{
-				int nRet = Login();
-				J_OS::LOGINFO("CAipstarAdapter::UserExchange Relogin, ret = %d", nRet);
-			}
+			int nRet = Login();
+			J_OS::LOGINFO("CAipstarAdapter::UserExchange Relogin, ret = %d", nRet);
 		}
 	}
 

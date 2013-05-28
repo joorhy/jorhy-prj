@@ -79,6 +79,7 @@ j_result_t CAipstarChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer
 		(static_cast<CAipstarStream *> (pObj))->Shutdown();
 		pStream->DelRingBuffer(pRingBuffer);
 		delete (CAipstarStream *) pObj;
+		m_pStream = NULL; 
 
 		return J_NO_REF;
 	}
@@ -159,11 +160,11 @@ j_result_t CAipstarChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 		}
 		if (nParam == 0)
 		{
-			nRet = TMCC_PtzControl(m_pAdapter->GetClientHandle(), ptzCmd, 0, nParam);
+			nRet = TMCC_PtzControl(m_pAdapter->GetClientHandle(), ptzCmd, 0, (nParam / 4 + 1));
 		}
 		else
 		{
-			nRet = TMCC_PtzControl(m_pAdapter->GetClientHandle(), ptzCmd, 1, nParam);
+			nRet = TMCC_PtzControl(m_pAdapter->GetClientHandle(), ptzCmd, 1, (nParam / 4 + 1));
 		}
 	}
 
@@ -220,7 +221,6 @@ int CAipstarChannel::Broken()
 	if (m_pStream != NULL)
 	{
 		(static_cast<CAipstarStream *> (m_pStream))->Broken();
-		m_pStream = NULL;
 		return J_OK;
 	}
 		
