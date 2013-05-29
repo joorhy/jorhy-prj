@@ -40,10 +40,18 @@ public:
 
 private:
 	static void X_PL_API EndCBK(void *pdata);
+	static void X_PL_API DisplayCbFunc(void *pUser, j_pl_mtime_t frame_time)
+	{
+		JoPlayer *user = reinterpret_cast<JoPlayer*>(pUser);
+		if(user)
+			user->OnDisplayCbFunc(frame_time);
+	}
+	void OnDisplayCbFunc(j_pl_mtime_t frame_time);
 
 private:
 	J_PlControl	*m_player;
 	std::string m_lastMrl;
 	HWND m_pPlWnd;
 	PlLock m_lock;
+	j_pl_mtime_t m_lastFrameTime;
 };

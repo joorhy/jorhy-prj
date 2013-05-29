@@ -21,12 +21,22 @@ void X_PL_API JoPlayer::EndCBK(void *pdata)
 	}
 }
 
+void JoPlayer::OnDisplayCbFunc( j_pl_mtime_t frame_time)
+{
+	if (frame_time - m_lastFrameTime >= 1000)
+	{
+		PlManager::Instance()->VodCallBack(m_pPlWnd);
+		m_lastFrameTime = frame_time;
+	}
+}
+
 /*********************ÀàÊµÏÖ*********************/
 JoPlayer::JoPlayer(int nWorkMode, HWND hWnd)
 {
 	m_player		= new J_PlControl();
 	m_Model		= nWorkMode;
 	m_pPlWnd	= hWnd;
+	m_lastFrameTime = 0;
 }
 
 JoPlayer::~JoPlayer(void)
@@ -47,8 +57,10 @@ BOOL JoPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 	}
 	else
 	{
+		Stop();
 		sprintf(mrl,"RYSP://%s:%d/%s?start=%d&end=%d", playInfo.strIpaddr, 8002, playInfo.strResid, playInfo.nStartTime, playInfo.nEndTime);
 		br = m_player->InitPlayByNetwork(mrl, J_PL_PLAY_FILE);
+		m_player->SetDisplayCBK(JoPlayer::DisplayCbFunc, this);
 	}
 	if(br != J_PL_NO_ERROR)
 		return FALSE;
@@ -177,7 +189,10 @@ HWND JoPlayer::GetPlayHwnd()
 
 BOOL JoPlayer::VodStreamJump(const PL_PlayInfo &playInfo)
 {
-	return TRUE;
+	HWND hwnd = GetPlayHwnd();
+	SendMessage(hwnd,WM_OWN_ERASEBKGROUND,FALSE,0);
+	//m_nSpeedIndex = NORMALSPEED;
+	return Play(hwnd, playInfo);
 }
 
 BOOL JoPlayer::SetOSDText(int stime,char *osdText)

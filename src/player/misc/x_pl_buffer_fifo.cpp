@@ -14,6 +14,7 @@ CXPlBufferFIFO::CXPlBufferFIFO(int size)
 	m_pWritePoint  = m_pReadPoint = m_pBegin;
 	m_nDataLen		= 0;
 	m_nDiscardedFrameNum = 0;
+	m_nBlockNum = 0;
 }
 
 CXPlBufferFIFO::~CXPlBufferFIFO(void)
@@ -43,6 +44,7 @@ J_PL_RESULT CXPlBufferFIFO::Read(char *OUT_Buffer,char *OUT_extra,j_pl_buffer_t 
 			if (pExHeader->type != DECODE_I_FRAME)
 				--m_nDiscardedFrameNum;
 		}
+		--m_nBlockNum;
 
 		m_lock.ReadUnlock();
 		return J_PL_NO_ERROR;
@@ -85,6 +87,7 @@ J_PL_RESULT CXPlBufferFIFO::Write(char *IN_Buffer,char *IN_extra,j_pl_buffer_t &
 	Write((const char *)&IN_Header, sizeof(j_pl_buffer_t));
 	Write((const char *)IN_extra, IN_Header.extrasize);
 	Write(IN_Buffer, nLen);
+	++m_nBlockNum;
 	m_lock.WriteUnlock();
 	m_sem.Post();
 

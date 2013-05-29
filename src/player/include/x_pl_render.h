@@ -53,5 +53,5 @@ private:
 
 	J_PL_RESULT VoutLoopPull(); 
 	J_PL_RESULT GetNextFrame(char *data,j_pl_video_format_t &t,j_pl_buffer_t &head);		//only for pull model
-	J_PL_RESULT DisplayNextFrame(j_pl_mtime_t last_time,j_pl_mtime_t now_time);
+	J_PL_RESULT DisplayNextFrame();
 };

@@ -308,6 +308,8 @@ J_PL_RESULT CXPlTransform::Run()
 	if(br != J_PL_NO_ERROR)
 		return br;
 
+	m_pullSwitch.Single();
+
 	return J_PL_NO_ERROR;
 }
 
@@ -336,9 +338,9 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 	char *srcData	= new char[MAX_VIDEO_FRAME_SIZE];
 	char *dstData	= new char[MAX_VIDEO_FRAME_SIZE];
 	int dstlen		= 0;
-	int framenum	= 0;
 	int state		= J_PL_NORMAL;
 	++(*ctl->m_ThreadNumer);
+	//m_pullSwitch.Unsingle();
 
 	while(true)
 	{
@@ -346,14 +348,15 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 		j_pl_decode_t format;
 		j_pl_video_format_t vout;
 
-		m_pullSwitch.Wait();
-		ctl->m_input->m_pullSwitch.Single();
+		if (m_vbufferEX->GetBlockNum() > 50)
+				m_pullSwitch.Wait();		
+		else
+			ctl->m_input->m_pullSwitch.Single();//唤醒input线程
 
 		ctl->m_state->GetVariable(&state);
 		switch(state)
 		{
 		case J_PL_NORMAL: break;
-
 		case J_PL_PALYING:
 		case J_PL_PAUSE:
 			ctl->m_input->m_buffer->WaitData();
@@ -378,8 +381,6 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 						head.datatype	= 1;
 						br = m_vbufferEX->Write(dstData,(char*)&vout,head);
 					}
-					ctl->m_input->m_buffer->MoveNext();
-					//framenum++;
 				}
 				else
 					Sleep(1);
@@ -404,6 +405,7 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 	}
 
 VDec_End2:
+	ctl->m_input->m_pullSwitch.Single();//唤醒input线程
 	delete srcData;
 	delete dstData;
 	j_pl_info("Pull Video Decode Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
@@ -418,7 +420,7 @@ J_PL_RESULT CXPlTransform::AudioLoopPull()
 
 J_PL_RESULT CXPlTransform::SetDirection(bool bFront)
 {
-	m_vbufferEX->Flush();
+	m_vbuffer->Flush();
 	return J_PL_NO_ERROR;
 }
 

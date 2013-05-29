@@ -202,7 +202,7 @@ J_PL_RESULT CXPlInput::RequestData()
 	if (br != J_PL_NO_ERROR)
 		return br;
 
-	m_pullSwitch.Single();
+	//m_pullSwitch.Single();
 	return br;
 }
 
@@ -235,7 +235,7 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 
 	while(true)
 	{
-		//m_pullSwitch.Wait();
+		m_pullSwitch.Wait();
 		ctl->m_state->GetVariable(&state);
 
 		switch(state)
@@ -259,8 +259,10 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 			}
 
 			br = m_demux->DemuxBlock(accessdata,m_buffer);			//demux
-			if(br != J_PL_NO_ERROR)
-				Sleep(30);
+			//j_pl_info("demux\n");
+			//if(br != J_PL_NO_ERROR)
+			//	Sleep(30);
+
 			break;
 
 		case J_PL_END: 

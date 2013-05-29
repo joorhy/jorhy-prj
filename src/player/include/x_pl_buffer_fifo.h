@@ -19,6 +19,7 @@ public:
 	virtual J_PL_RESULT MoveNext();
 	virtual J_PL_RESULT Flush();
 	virtual void WaitData();
+	virtual int GetBlockNum() { return m_nBlockNum; }
 
 private:
 private:
@@ -39,6 +40,7 @@ private:
 	char *m_pReadPoint;
 	int m_nBuffSize;
 	int m_nDataLen;
+	int m_nBlockNum;
 
 	J_MEMNODE m_Node;
 	j_pl_buffer_t m_streamHeader;

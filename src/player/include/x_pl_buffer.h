@@ -14,6 +14,7 @@ public:
 	virtual J_PL_RESULT MoveNext() = 0;
 	virtual J_PL_RESULT Flush() = 0;
 	virtual void WaitData() = 0;
+	virtual int GetBlockNum() = 0;
 
 protected:
 	J_PlRWLock	m_lock;

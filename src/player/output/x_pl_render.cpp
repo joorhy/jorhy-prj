@@ -93,7 +93,6 @@ J_PL_RESULT CXPlRender::AoutLoop()
 			if(format.timestamp < syncTime - AOUT_MAX_PTS_DELAY)
 			{
 				continue;
-				
 			}
 			else 
 			{
@@ -264,59 +263,62 @@ J_PL_RESULT CXPlRender::VoutLoopPull()
 {
 	J_PL_RESULT br;
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
-	m_vdata			= new char[MAX_VIDEO_FRAME_SIZE];
+	m_vdata		= new char[MAX_VIDEO_FRAME_SIZE];
 	int state		= J_PL_NORMAL;
 	++(*ctl->m_ThreadNumer);
 
-	ctl->m_tansfm->m_pullSwitch.Single();			//唤醒decode线程
-	bool bFirst		= true;
+	bool bDisplay		= true;
 	j_pl_mtime_t lasttime	= 0;
-	j_pl_mtime_t interval_time = 0;
+	DWORD nowTime = 0;
+	j_pl_mtime_t last_display_time = 0;
 	while(true)
 	{
+		nowTime = GetTickCount();
 		ctl->m_switch.Wait();
 		ctl->m_state->GetVariable(&state);
-
 		switch(state)
 		{
 		case J_PL_NORMAL: break;
-
 		case J_PL_PALYING:
 			m_vLock.Lock();
-			
-			br = GetNextFrame(m_vdata,m_vformat,m_vhead);
-			if(bFirst)
+			if (bDisplay)
 			{
-				bFirst = false;
-				interval_time = ((double)1000 / (double)m_vformat.fps) + 0.5;
+				br = GetNextFrame(m_vdata,m_vformat,m_vhead);
+				if (br != J_PL_NO_ERROR)
+				{
+					//j_pl_info("GetNextFrame\n");
+					m_vLock.Unlock();
+					continue;
+				}
+				bDisplay = false;
 			}
+			else if (last_display_time == 0 || nowTime - lasttime >= m_vformat.timestamp - last_display_time)
+			{
+				br = DisplayNextFrame();
+				//if (br != J_PL_NO_ERROR)
+				//	j_pl_info("DisplayNextFrame\n");
+				lasttime = 2 * nowTime - GetTickCount() - 5;
 
-			br = DisplayNextFrame(lasttime,lasttime + interval_time);
-			lasttime += interval_time;
-
+				bDisplay = true;
+				last_display_time = m_vformat.timestamp;
+			}
 			m_vLock.Unlock();
 			break;
-
 		case J_PL_PAUSE: 
 			ctl->m_FrameSwitch.Wait();			//单帧
 			m_vLock.Lock();
-
 			br = GetNextFrame(m_vdata,m_vformat,m_vhead);
-
 			ctl->m_FrameSwitch.Unsingle();
 			m_vLock.Unlock();
 			break;
-
 		case J_PL_END: 
 			goto Vout_End2;
-
 		case J_PL_ERROR:
 			goto Vout_End2;
-
 		}
-
 	}
 Vout_End2:
+	ctl->m_tansfm->m_pullSwitch.Single();			//唤醒decode线程
 	delete m_vdata;
 	m_vdata = NULL;
 	j_pl_info("Pull Video Output Thread Exit : %d\tbr=%d\n",GetCurrentThreadId(),br);
@@ -328,49 +330,25 @@ J_PL_RESULT CXPlRender::GetNextFrame(char *data,j_pl_video_format_t &t,j_pl_buff
 {
 	J_PL_RESULT br;
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
-	j_pl_mtime_t lasttime = 0;
 	bool bFront = true;
 	if(ctl)
 	{
-		br = ctl->m_displayTime->GetVariable(&lasttime);
 		br = ctl->m_bForward->GetVariable(&bFront);
-		while(true)
+		br = ctl->m_tansfm->m_vbuffer->Read(data,(char*)&t,head);
+		if(br == J_PL_ERROR_EMPTY_BUFFER)
 		{
+			ctl->m_tansfm->SwitchBuffer();					//交换vout buffer background 和 vout buffer
+			ctl->m_tansfm->m_pullSwitch.Single();			//唤醒decode线程
 			br = ctl->m_tansfm->m_vbuffer->Read(data,(char*)&t,head);
 			if(br == J_PL_ERROR_EMPTY_BUFFER)
-			{
-				ctl->m_tansfm->SwitchBuffer();					//交换vout buffer background 和 vout buffer
-
-				ctl->m_tansfm->m_pullSwitch.Single();			//唤醒decode线程
-
-				br = ctl->m_tansfm->m_vbuffer->Read(data,(char*)&t,head);
-				if(br == J_PL_ERROR_EMPTY_BUFFER)
-					return br;
-			}
-			br = ctl->m_tansfm->m_vbuffer->MoveNext();
-
-			/*if(bFront)
-			{
-				if(lasttime <= t.timestamp)
-				{
-					break;
-				}
-			}
-			else
-			{
-				if(lasttime >= t.timestamp)
-				{
-					break;
-				}
-			}*/
+				return br;
 		}
-
 	}
 
-	return J_PL_NO_ERROR;
+	return br;
 }
 
-J_PL_RESULT CXPlRender::DisplayNextFrame(j_pl_mtime_t last_time,j_pl_mtime_t now_time)
+J_PL_RESULT CXPlRender::DisplayNextFrame()
 {
 	J_PL_RESULT br;
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
@@ -378,8 +356,6 @@ J_PL_RESULT CXPlRender::DisplayNextFrame(j_pl_mtime_t last_time,j_pl_mtime_t now
 	{
 		int speedkey = J_PL_SPEED_NORMAL;
 		ctl->m_speed->GetVariable(&speedkey);
-		j_pl_mtime_t intervaltime = (now_time - last_time) * btk_speed_values[speedkey].value + 0.5;
-		Sleep(intervaltime);
 		// 显示图片
 		br = m_vOut->PrepareData(m_vdata,m_vformat.size);
 		br = m_vOut->Display();
@@ -400,7 +376,7 @@ J_PL_RESULT CXPlRender::SetTime(j_pl_mtime_t time)
 	if(ctl)
 	{
 		br = ctl->m_tansfm->m_vbuffer->Flush();
-		br = ctl->m_tansfm->m_vbufferEX->Flush();
+		//br = ctl->m_tansfm->m_vbufferEX->Flush();
 		br = ctl->m_input->ControlAccess(ACCESS_SET_TIME,(va_list)&time);
 		br = ctl->m_displayTime->SetVariable(&time);
 	}
