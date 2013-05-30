@@ -35,7 +35,7 @@ J_PL_RESULT CXPlDecodeH264::Decode(char *IN_buf,int In_len,char *OUT_buf,int *OU
 	if(nRet < 0)
 	{
 		j_pl_error("CXPlDecodeH264::Decode error :%d\n",nRet);
-		return J_PL_ERROR_DECODE;
+		return J_PL_NO_ERROR;
 	}
 
 	SetOutputType(m_voutT);
