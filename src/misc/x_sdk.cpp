@@ -369,13 +369,14 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 	json_object_object_add(helpjs,(char *)"stime",json_object_new_double(stime));
 	json_object_object_add(helpjs,(char *)"etime",json_object_new_double(etime));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
-
+	
 	//发送并接受数据
+	//J_OS::LOGINFO(json_object_to_json_string(jsojt));
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)
 	{
-	    assert(false);
+		J_OS::LOGINFO("GetHistoryFile HttpCommunicate error");
 	    return NULL;
     }
 

@@ -19,8 +19,8 @@ CAipstarAdapter::CAipstarAdapter(j_int32_t nDevId, const j_char_t *pAddr, j_int3
 	m_devHandle = TMCC_Init(0);
 	//assert(m_devHandle != NULL);
 	m_ping.SetAddr(m_remoteIP);
-	//TMCC_RegisterConnectCallBack(m_devHandle, CAipstarAdapter::OnConnectCallBack, this);
-	//int nret = TMCC_SetAutoReConnect(m_devHandle, true);
+	TMCC_RegisterConnectCallBack(m_devHandle, CAipstarAdapter::OnConnectCallBack, this);
+	TMCC_SetAutoReConnect(m_devHandle, true);
 	Login();
 	
 	//定时检测设备状态
@@ -49,6 +49,8 @@ J_DevStatus CAipstarAdapter::GetStatus() const
 
 j_result_t CAipstarAdapter::Broken()
 {
+	m_status = jo_dev_broken;
+	J_OS::LOGINFO("CAipstarAdapter::Broken()");
 	return J_OK;
 }
 
@@ -84,6 +86,7 @@ j_result_t CAipstarAdapter::Login()
 	if (nRet == TMCC_ERR_SUCCESS)
     {
         m_status = jo_dev_ready;
+		TMCC_SetAutoReConnect(m_devHandle, true);
     }
     /*else
     {
@@ -117,6 +120,7 @@ void CAipstarAdapter::UserExchange()
 	//tmWorkState_t state;
 	//if (TMCC_GetServerWorkState(m_devHandle, &state) != TMCC_ERR_SUCCESS)
 	//if (!TMCC_IsConnect(m_devHandle))
+	TMCC_RegisterConnectCallBack(m_devHandle, CAipstarAdapter::OnConnectCallBack, this);
 	if (m_ping.SendPacket() < 0 || m_ping.RecvPacket() < 0)
 	{
 		Logout();

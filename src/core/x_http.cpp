@@ -2,7 +2,7 @@
 #include "x_socket.h"
 
 #define X_HTTP_BODY_LEN	(1024*7)
-#define X_HTTP_MESSAGE_LEN	(1024*8)
+#define X_HTTP_MESSAGE_LEN	(1024*1024*2)
 
 const char *x_http_type_str[] = 
 {"GET", "", "", "POST", "", "", "", "", "", "", "", "", "", "", ""};

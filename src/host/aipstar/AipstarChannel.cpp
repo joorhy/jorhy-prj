@@ -19,7 +19,7 @@ CAipstarChannel::CAipstarChannel(const j_char_t *pResid, j_void_t *pOwner, j_int
 
 CAipstarChannel::~CAipstarChannel()
 {
-	//int nRet = TMCC_PtzClose(m_pAdapter->GetClientHandle());
+	//TMCC_PtzClose(m_pAdapter->GetClientHandle());
 	//assert(nRet == TMCC_ERR_SUCCESS);
 
 	TMCC_Done(m_hStream);
@@ -94,7 +94,9 @@ j_result_t CAipstarChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 {
 	j_int32_t ptzCmd = 0;
 	int nRet = TMCC_ERR_SUCCESS;
-	TMCC_PtzOpen(m_pAdapter->GetClientHandle(), m_nChannel - 1);
+	nRet = TMCC_PtzOpen(m_pAdapter->GetClientHandle(), m_nChannel - 1);
+	if (TMCC_ERR_SUCCESS != nRet)
+		J_OS::LOGINFO("TMCC_PtzOpen ret = %X", nRet);
 	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
 		switch (nCmd)
@@ -170,10 +172,12 @@ j_result_t CAipstarChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 
 	if (nRet != TMCC_ERR_SUCCESS)
 	{
-	    J_OS::LOGINFO("CAipstarChannel::PtzControl Error %d", nRet);
+	    J_OS::LOGINFO("CAipstarChannel::PtzControl Error %X", nRet);
 	    //m_pAdapter->Relogin();
 	}
 	TMCC_PtzClose(m_pAdapter->GetClientHandle());
+	if (TMCC_ERR_SUCCESS != nRet)
+		J_OS::LOGINFO("TMCC_PtzClose ret = %X", nRet);
 
 	return (nRet == TMCC_ERR_SUCCESS ? J_OK : J_UNKNOW);
 }

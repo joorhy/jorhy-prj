@@ -75,8 +75,12 @@ void CTimer::OnTimer()
 
 		FD_ZERO(&fdSet);
 		FD_SET(m_event[0], &fdSet);
+		 
 		if(select(m_event[0] + 1, &fdSet, NULL, NULL, &tv) < 0)
 		{
+			if (errno == EINTR)
+				continue;
+				
 			J_OS::LOGERROR("CTimer::OnTimer() Timer select error");
 			break;
 		}

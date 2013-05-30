@@ -48,7 +48,7 @@ j_void_t CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 		}
 		else
 		{
-			J_OS::LOGINFO("CAipstarStream::OnRecv Data type");
+			J_OS::LOGINFO("CAipstarStream::OnRecv Data type = %d", streamInfo->byFrameType);
 			return;
 		}
 		//J_OS::LOGINFO("CAipstarStream::OnRecv Data type = %d", streamInfo->byFrameType);

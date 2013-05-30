@@ -6,7 +6,6 @@
     <File Name="../../src/misc/x_config.cpp"/>
     <File Name="../../src/misc/x_http_helper.cpp"/>
     <File Name="../../src/misc/x_sdk.cpp"/>
-    <File Name="../../src/misc/x_inet.c"/>
     <File Name="../../src/misc/x_adapter_manager.cpp"/>
     <File Name="../../src/misc/x_filereader_factory.cpp"/>
     <File Name="../../src/misc/x_filterf_actory.cpp"/>
@@ -15,6 +14,7 @@
     <File Name="../../src/misc/x_parser_factory.cpp"/>
     <File Name="../../src/misc/x_jo_sdk.cpp"/>
     <File Name="../../src/misc/x_adapter_factory.cpp"/>
+    <File Name="../../src/misc/x_inet.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/misc/x_config.h"/>
