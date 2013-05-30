@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(HOME)\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
+				OutputFile="$(CHROME_PLUGINS_PATH)\$(ProjectName).dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
