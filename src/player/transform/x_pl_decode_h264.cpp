@@ -67,8 +67,8 @@ J_PL_RESULT CXPlDecodeH264::InitDecode()
 	if(!m_pCodec || !m_pContext || !m_pPicture)
 		return J_PL_ERROR_DECODE_INIT;
 
-	//if(m_pCodec->capabilities & CODEC_CAP_TRUNCATED)
-	//	m_pContext->flags|= CODEC_FLAG_TRUNCATED; /* we do not send complete frames */
+	if(m_pCodec->capabilities & CODEC_CAP_TRUNCATED)
+		m_pContext->flags|= CODEC_FLAG_TRUNCATED; /* we do not send complete frames */
 
 	if(avcodec_open(m_pContext,m_pCodec) < 0)
 		return J_PL_ERROR_DECODE_INIT;
@@ -84,6 +84,9 @@ int CXPlDecodeH264::CopyData(AVFrame *frame,char *OUT_buf,int *OUT_len)
 	int width	= 0;
 
 	pYuvData = frame->data[0];
+	if (pYuvData == NULL)
+		return len;
+
 	height	= m_pContext->height;
 	width	= m_pContext->width;
 	for(int i=0;i<height;i++)

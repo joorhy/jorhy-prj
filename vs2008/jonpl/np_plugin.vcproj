@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="C:\Documents and Settings\Jorhy\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
+				OutputFile="C:\Documents and Settings\Danny\Local Settings\Application Data\Google\Chrome\Application\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="..\..\src\ui\vs_plugins\np_plugin\np_plugin.def"
 				AddModuleNamesToAssembly=""
