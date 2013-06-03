@@ -95,19 +95,21 @@ j_result_t CAipstarAdapter::Login()
 		Login();
     }*/
 
-	return J_OK;
+	return nRet == TMCC_ERR_SUCCESS ? J_OK : J_UNKNOW;
 }
 
 j_result_t CAipstarAdapter::Logout()
 {
 	if (m_pChannel != NULL)
+	{
 		(static_cast<CAipstarChannel *> (m_pChannel))->Broken();
+	}
 	
 	int nRet = TMCC_DisConnect(m_devHandle);
 	if (nRet == TMCC_ERR_SUCCESS)
         m_status = jo_dev_broken;
 
-	return J_OK;
+	return nRet == TMCC_ERR_SUCCESS ? J_OK : J_UNKNOW;
 }
 
 j_void_t CAipstarAdapter::OnConnect(HANDLE hHandle, BOOL bConnect)
@@ -130,7 +132,7 @@ void CAipstarAdapter::UserExchange()
 	{
 		if (m_status == jo_dev_broken)
 		{
-			int nRet = Login();
+			int nRet = Relogin();
 			J_OS::LOGINFO("CAipstarAdapter::UserExchange Relogin, ret = %d", nRet);
 		}
 	}

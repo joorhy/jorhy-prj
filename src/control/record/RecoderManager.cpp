@@ -151,15 +151,16 @@ void CRecoderManager::OnWork()
                 {
                     it->second.pRecord->StopRecord(it->first.c_str());
                     it->second.nCount = 0;
+					AddRecord(it->first.c_str());//重新开始录像
                 }
                 else
                 {
                     --it->second.nCount;
                 }
                 //J_OS::LOGINFO("Stop Recode2");
-                TLock(m_locker);
-                m_recordVec.push_back(it->first);
-                TUnlock(m_locker);
+                //TLock(m_locker);
+                //m_recordVec.push_back(it->first);
+                //TUnlock(m_locker);
             }
         }
         TUnlock(m_locker2);

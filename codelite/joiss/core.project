@@ -10,7 +10,6 @@
     <File Name="../../src/core/x_log.cpp"/>
     <File Name="../../src/core/x_media_msg.cpp"/>
     <File Name="../../src/core/x_msg_queue.cpp"/>
-    <File Name="../../src/core/x_ping.cpp"/>
     <File Name="../../src/core/x_socket.cpp"/>
     <File Name="../../src/core/x_string.cpp"/>
     <File Name="../../src/core/x_thread_pool.cpp"/>
@@ -20,6 +19,7 @@
     <File Name="../../src/core/x_thread.cpp"/>
     <File Name="../../src/core/x_http.cpp"/>
     <File Name="../../src/core/x_mem_pool.cpp"/>
+    <File Name="../../src/core/x_ping.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/core/j_includes.h"/>

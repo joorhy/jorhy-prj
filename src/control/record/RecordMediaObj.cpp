@@ -146,7 +146,7 @@ int CStreamRecord::OnWriteVideo()
 	/*CRecordTask *pTask = new CRecordTask;
 	pTask->m_pParam = this;
 	CThreadPool::Instance()->AddTask(pTask);*/
-	OnRecord();
+	return OnRecord();
 }
 
 int CStreamRecord::OnRecord()
@@ -155,20 +155,19 @@ int CStreamRecord::OnRecord()
     int nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, streamHeader);
     if (nRet == J_OK && streamHeader.dataLen > 0)
     {
-        if (streamHeader.frameType == jo_media_broken)
-        {
-            CloseFile();
-            //m_fileInfo.etime = streamHeader.timeStamp / 1000;
-            m_record.filenum.push_back(m_fileInfo);
-			//J_OS::LOGINFO(m_fileInfo.file.c_str());
-            GetRecordNotice(m_record, CXConfig::GetUrl());
-            m_fileInfo.stime = streamHeader.timeStamp / 1000;
-            m_record.filenum.clear();
-            return J_DEV_BROKEN;
-        }
-
         ParserAndSave(m_pDataBuff, streamHeader);
     }
+	else if (nRet == J_OK && streamHeader.frameType == jo_media_broken)
+	{
+		CloseFile();
+		//m_fileInfo.etime = streamHeader.timeStamp / 1000;
+		m_record.filenum.push_back(m_fileInfo);
+		//J_OS::LOGINFO(m_fileInfo.file.c_str());
+		GetRecordNotice(m_record, CXConfig::GetUrl());
+		m_fileInfo.stime = streamHeader.timeStamp / 1000;
+		m_record.filenum.clear();
+		return J_DEV_BROKEN;
+	}
 	else 
 	{
 		usleep(1000);
@@ -194,6 +193,8 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 		m_record.filenum.clear();
 		CreateFile(NULL);
 	}
+	if (m_fdBody == NULL)
+		CreateFile(NULL);
 
 	bool bIsKeyFrame = (streamHeader.frameType == jo_video_i_frame);
 	bool bIsVideo = (streamHeader.frameType == jo_video_i_frame || streamHeader.frameType == jo_video_p_frame);
@@ -228,7 +229,7 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 		fwrite(pData, 1, streamHeader.dataLen, m_fdBody);
 		m_nFileOffset += streamHeader.dataLen;
 		m_fileBody.length += streamHeader.dataLen;
-	};
+	}
 }
 
 int CStreamRecord::CreateFile(char *pFileName)

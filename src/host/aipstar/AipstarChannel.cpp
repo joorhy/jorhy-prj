@@ -35,6 +35,7 @@ j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 		return J_DEV_BROKEN;
 	}
 	
+	//m_pStream = pObj;
 	if (m_bOpened && pObj != NULL)
 	{
 	    TMCC_MakeKeyFrame(m_hStream);
@@ -55,9 +56,9 @@ j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 	}
 
 	m_bOpened = true;
+	m_pStream = pObj;
 	(static_cast<CAipstarStream *> (pObj))->AddRingBuffer(pRingBuffer);
 	(static_cast<CAipstarStream *> (pObj))->Startup();
-	m_pStream = pObj;
 
 	return J_OK;
 }
@@ -79,6 +80,7 @@ j_result_t CAipstarChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer
 		(static_cast<CAipstarStream *> (pObj))->Shutdown();
 		pStream->DelRingBuffer(pRingBuffer);
 		delete (CAipstarStream *) pObj;
+		J_OS::LOGINFO("7");
 		m_pStream = NULL; 
 
 		return J_NO_REF;
@@ -222,8 +224,10 @@ j_result_t CAipstarChannel::StopView()
 
 int CAipstarChannel::Broken()
 {
+	J_OS::LOGINFO("3");
 	if (m_pStream != NULL)
 	{
+		J_OS::LOGINFO("4");
 		(static_cast<CAipstarStream *> (m_pStream))->Broken();
 		return J_OK;
 	}

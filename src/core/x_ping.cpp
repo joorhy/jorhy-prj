@@ -2,7 +2,7 @@
 #include "x_errtype.h"
 #include "x_log.h"
 
-#define RETRY_TIMES 2
+#define RETRY_TIMES 5
 
 static unsigned short cal_chksum(unsigned short *addr, int len)
 {
@@ -62,18 +62,30 @@ int CXPing::SetAddr(const char *pAddr)
 int CXPing::SendPacket()
 {
     int packet_size = Pack(1, 56);
-    if (sendto(m_socket, m_sendPacket, packet_size, 0,
+BEGIN_SEND:
+    if (int nRet = sendto(m_socket, m_sendPacket, packet_size, 0,
               (struct sockaddr *)&m_destAddr, sizeof(m_destAddr)) < 0)
     {
-		if (errno == EAGAIN && m_timeOutNum > 0)
+		if (errno == EAGAIN && nRet == 0)
 		{
 			--m_timeOutNum;
-			return J_OK;
+			goto BEGIN_SEND;
 		}
+		else if (errno == EAGAIN && nRet == 0)
+		{
+			j_sleep(1);
+			goto BEGIN_SEND;
+		}
+		else if (errno == 0)
+		{
+		    return nRet;
+		}
+		m_timeOutNum = RETRY_TIMES;
         J_OS::LOGERROR("CXPing::SendPacket() sendto error fd = %d", m_socket);
         return J_SOCKET_ERROR;
     }
 
+	m_timeOutNum = RETRY_TIMES;
     return J_OK;
 }
 
@@ -86,16 +98,27 @@ int CXPing::RecvPacket()
 	socklen_t from_len = sizeof(from);
 #endif
     int n = 0;
+BEGIN_RECV:
     if ((n = recvfrom(m_socket, m_recvPacket, sizeof(m_recvPacket), 0,
             (struct sockaddr *)&from, &from_len)) < 0)
     {
-		if (errno == EAGAIN && m_timeOutNum > 0)
+		if (errno == EAGAIN && n == 0)
 		{
-			--m_timeOutNum;
-			return J_OK;
+			j_sleep(1);
+			goto BEGIN_RECV;
+		}
+		else if (errno == EAGAIN && n == 0)
+		{
+			j_sleep(1);
+			goto BEGIN_RECV;
+		}
+		else if (errno == 0)
+		{
+		    return n;
 		}
 		
-        J_OS::LOGERROR("CXPing::RecvPacket() sendto error");
+		m_timeOutNum = RETRY_TIMES;
+        J_OS::LOGERROR("CXPing::RecvPacket() recvfrom error");
         return J_SOCKET_ERROR;
     }
     if (UnPack(n) < 0)
