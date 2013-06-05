@@ -1,49 +1,63 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "nsISupports.idl"
+#include "nsIDOMEventTarget.idl"
 
 interface nsIChannel;
 interface nsIDOMDocument;
 interface nsIDOMEventListener;
 interface nsIPrincipal;
 interface nsIScriptContext;
+interface nsIURI;
 interface nsIVariant;
 interface nsPIDOMWindow;
+interface nsIInputStream;
+interface nsIDOMBlob;
+
+%{C++
+// for jsval
+#include "jsapi.h"
+%}
+
+/**
+ * Parameters for instantiating an XMLHttpRequest. They are passed as an
+ * optional argument to the constructor:
+ *
+ *  new XMLHttpRequest({anon: true, system: true});
+ *
+ */
+dictionary XMLHttpRequestParameters
+{
+  /**
+   * If true, the request will be sent without cookie and authentication
+   * headers.
+   */
+  boolean mozAnon;
+
+  /**
+   * If true, the same origin policy will not be enforced on the request.
+   */
+  boolean mozSystem;
+};
+
+[scriptable, builtinclass, uuid(a137d5e6-81e2-4fa3-a791-26459df723ff)]
+interface nsIXMLHttpRequestEventTarget : nsIDOMEventTarget {
+  // event handler attributes
+  [implicit_jscontext] attribute jsval onabort;
+  [implicit_jscontext] attribute jsval onerror;
+  [implicit_jscontext] attribute jsval onload;
+  [implicit_jscontext] attribute jsval onloadstart;
+  [implicit_jscontext] attribute jsval onprogress;
+  [implicit_jscontext] attribute jsval ontimeout;
+  [implicit_jscontext] attribute jsval onloadend;
+};
+
+[scriptable, builtinclass, uuid(8dbd2448-740a-412c-b314-434f24a1c510)]
+interface nsIXMLHttpRequestUpload : nsIXMLHttpRequestEventTarget {
+  // for future use
+};
 
 /**
  * Mozilla's XMLHttpRequest is modelled after Microsoft's IXMLHttpRequest
@@ -82,15 +96,11 @@ interface nsPIDOMWindow;
  *   nsIJSXMLHttpRequest, but if you're coding in C++ you should avoid using
  *   those.
  *
- * Though actually, if you use addEventListener from C++ weird things will
- * happen too, since the result will depend on what JS happens to be on the
- * stack when you do it....
- *
  * Conclusion: Do not use event listeners on XMLHttpRequest from C++, unless
  * you're aware of all the security implications.  And then think twice about
  * it.
  */
-[scriptable, uuid(acda85ab-d06c-4176-b834-6d129ca97ca3)]
+[scriptable, uuid(8e9768b4-339c-413c-a210-0c74934eb9e1)]
 interface nsIXMLHttpRequest : nsISupports
 {
   /**
@@ -121,23 +131,39 @@ interface nsIXMLHttpRequest : nsISupports
    */
   readonly attribute AString responseText;
 
+  /**
+   * Determine a response format which response attribute returns.
+   * empty string (initial value) or "text": as text.
+   * "arraybuffer": as a typed array ArrayBuffer.
+   * "blob": as a File API Blob.
+   * "document": as a DOM Document object.
+   */
+  attribute AString responseType;
+
+  /**
+   * The response to the request as a specified format by responseType.
+   * NULL if the request is unsuccessful or
+   * has not yet been sent.
+   */
+  [implicit_jscontext] readonly attribute jsval /* any */ response;
 
   /**
    * The status of the response to the request for HTTP requests.
    */
+  // XXX spec says unsigned short
   readonly attribute unsigned long status;
 
   /**
    * The string representing the status of the response for
    * HTTP requests.
    */
-  readonly attribute AUTF8String statusText;
+  readonly attribute DOMString statusText;
 
   /**
    * If the request has been sent already, this method will
    * abort the request.
    */
-  void   abort();
+  [binaryname(SlowAbort)] void abort();
 
   /**
    * Returns all of the response headers as a string for HTTP
@@ -147,9 +173,9 @@ interface nsIXMLHttpRequest : nsISupports
    * part of a multipart request, not from the original channel.
    *
    * @returns A string containing all of the response headers.
-   *          NULL if the response has not yet been received.
+   *          The empty string if the response has not yet been received.
    */
-  string getAllResponseHeaders();
+  DOMString getAllResponseHeaders();
 
   /**
    * Returns the text of the header with the specified name for
@@ -162,42 +188,19 @@ interface nsIXMLHttpRequest : nsISupports
    */
   ACString getResponseHeader(in AUTF8String header);
 
-  /**
-   * Native (non-script) method to initialize a request. Note that
-   * the request is not sent until the <code>send</code> method
-   * is invoked.
-   *
-   * If there is an "active" request (that is, if open() or openRequest() has
-   * been called already), this is equivalent to calling abort().
-   *
-   * @param method The HTTP method, for example "POST" or "GET". Ignored
-   *               if the URL is not a HTTP(S) URL.
-   * @param url The URL to which to send the request.
-   * @param async Whether the request is synchronous or asynchronous
-   *              i.e. whether send returns only after the response
-   *              is received or if it returns immediately after
-   *              sending the request. In the latter case, notification
-   *              of completion is sent through the event listeners.
-   *              This argument must be true if the multipart
-   *              attribute has been set to true, or an exception will
-   *              be thrown.
-   * @param user A username for authentication if necessary.
-   * @param password A password for authentication if necessary.
-   */
-  [noscript] void   openRequest(in AUTF8String method,
-                                in AUTF8String url,
-                                in boolean async,
-                                in AString user,
-                                in AString password);
-
+%{C++
+  // note this is NOT virtual so this won't muck with the vtable!
+  inline nsresult Open(const nsACString& method, const nsACString& url,
+                       bool async, const nsAString& user,
+                       const nsAString& password) {
+    return Open(method, url, async, user, password, 3);
+  }
+%}
   /**
    * Meant to be a script-only method for initializing a request.
-   * The parameters are similar to the ones detailed in the
-   * description of <code>openRequest</code>, but the last
-   * 3 are optional.
    *
-   * If there is an "active" request (that is, if open() or openRequest() has
-   * been called already), this is equivalent to calling abort().
+   * If there is an "active" request (that is, if open() has been called
+   * already), this is equivalent to calling abort() and then open().
    *
    * @param method The HTTP method - either "POST" or "GET". Ignored
    *               if the URL is not a HTTP URL.
@@ -216,7 +219,10 @@ interface nsIXMLHttpRequest : nsISupports
    * @param password (optional) A password for authentication if necessary.
    *                 The default value is the empty string
    */
-  void   open(in AUTF8String method, in AUTF8String url);
+  [optional_argc] void open(in AUTF8String method, in AUTF8String url,
+                            [optional] in boolean async,
+                            [optional,Undefined(Empty)] in DOMString user,
+                            [optional,Undefined(Empty)] in DOMString password);
 
   /**
    * Sends the request. If the request is asynchronous, returns
@@ -243,7 +249,7 @@ interface nsIXMLHttpRequest : nsISupports
    *             Type header via the setRequestHeader method before
    *             calling send.
    */
-  void   send(in nsIVariant body);
+  void   send([optional] in nsIVariant body);
 
   /**
    * A variant of the send() method used to send binary data.
@@ -264,16 +270,28 @@ interface nsIXMLHttpRequest : nsISupports
   void   setRequestHeader(in AUTF8String header, in AUTF8String value);
 
   /**
+   * The amount of milliseconds a request can take before being terminated.
+   * Initially zero. Zero means there is no timeout.
+   */
+  attribute unsigned long timeout;
+
+  /**
    * The state of the request.
    *
    * Possible values:
-   *   0 UNINITIALIZED open() has not been called yet.
-   *   1 LOADING       send() has not been called yet.
-   *   2 LOADED        send() has been called, headers and status are available.
-   *   3 INTERACTIVE   Downloading, responseText holds the partial data.
-   *   4 COMPLETED     Finished with all operations.
+   *   0 UNSENT   open() has not been called yet.
+   *   1 OPENED   send() has not been called yet.
+   *   2 HEADERS_RECEIVED
+   *              send() has been called, headers and status are available.
+   *   3 LOADING  Downloading, responseText holds the partial data.
+   *   4 DONE     Finished with all operations.
    */
-  readonly attribute long readyState;
+  const unsigned short UNSENT = 0;
+  const unsigned short OPENED = 1;
+  const unsigned short HEADERS_RECEIVED = 2;
+  const unsigned short LOADING = 3;
+  const unsigned short DONE = 4;
+  readonly attribute unsigned short readyState;
 
   /**
    * Override the mime type returned by the server (if any). This may
@@ -284,7 +302,7 @@ interface nsIXMLHttpRequest : nsISupports
    * @param mimetype The type used to override that returned by the server
    *                 (if any).
    */
-  void   overrideMimeType(in AUTF8String mimetype);
+  [binaryname(SlowOverrideMimeType)] void overrideMimeType(in DOMString mimetype);
 
   /**
    * Set to true if the response is expected to be a stream of
@@ -311,6 +329,16 @@ interface nsIXMLHttpRequest : nsISupports
   attribute boolean mozBackgroundRequest;
 
   /**
+   * When set to true attempts to make cross-site Access-Control requests
+   * with credentials such as cookies and authorization headers.
+   *
+   * Never affects same-site requests.
+   *
+   * Defaults to false.
+   */
+  attribute boolean withCredentials;
+
+  /**
    * Initialize the object for use from C++ code with the principal, script
    * context, and owner window that should be used.
    *
@@ -319,74 +347,18 @@ interface nsIXMLHttpRequest : nsISupports
    * @param scriptContext The script context to use for the request. May be
    *                      null.
    * @param ownerWindow The associated window for the request. May be null.
+   * @param baseURI The base URI to use when resolving relative URIs. May be
+   *                null.
    */
   [noscript] void init(in nsIPrincipal principal,
                        in nsIScriptContext scriptContext,
-                       in nsPIDOMWindow ownerWindow);
-};
-
-[scriptable, uuid(261676b4-d508-43bf-b099-74635a0ee2e9)]
-interface nsIJSXMLHttpRequest : nsISupports {
-  /**
-   * Meant to be a script-only mechanism for setting a load event listener.
-   * The attribute is expected to be JavaScript function object. When
-   * the load event occurs, the function is invoked.
-   * This attribute should not be used from native code!!
-   *
-   * After the initial response, all event listeners will be cleared.
-   * // XXXbz what does that mean, exactly?   
-   *
-   * Call open() before setting an onload listener.
-   *
-   * Mozilla only.
-   */
-  attribute nsIDOMEventListener onload;
+                       in nsPIDOMWindow ownerWindow,
+                       in nsIURI baseURI);
 
   /**
-   * Meant to be a script-only mechanism for setting an error event listener.
-   * The attribute is expected to be JavaScript function object. When
-   * the error event occurs, the function is invoked.
-   * This attribute should not be used from native code!!
-   *
-   * After the initial response, all event listeners will be cleared.
-   * // XXXbz what does that mean, exactly?   
-   *
-   * Call open() before setting an onerror listener.
-   *
-   * Mozilla only.
+   * Upload process can be tracked by adding event listener to |upload|.
    */
-  attribute nsIDOMEventListener onerror;
-
-  /**
-   * Meant to be a script-only mechanism for setting a progress event listener.
-   * The attribute is expected to be JavaScript function object. When
-   * the error event occurs, the function is invoked.
-   * This attribute should not be used from native code!!
-   * This event listener may be called multiple times during the open request.
-   *
-   * After the initial response, all event listeners will be cleared.
-   * // XXXbz what does that mean, exactly?
-   *
-   * This event listener must be set BEFORE calling open().
-   *
-   * Mozilla only.
-   */
-  attribute nsIDOMEventListener onprogress;
-
-  /**
-   * Meant to be a script-only mechanism for setting an upload progress event
-   * listener.
-   * This attribute should not be used from native code!!
-   * This event listener may be called multiple times during the upload..
-   *
-   * After the initial response, all event listeners will be cleared.
-   * // XXXbz what does that mean, exactly?
-   *
-   * This event listener must be set BEFORE calling open().
-   *
-   * Mozilla only.
-   */
-  attribute nsIDOMEventListener onuploadprogress;
+  readonly attribute nsIXMLHttpRequestUpload upload;
 
   /**
    * Meant to be a script-only mechanism for setting a callback function.
@@ -399,7 +371,33 @@ interface nsIJSXMLHttpRequest : nsISupports {
    *
    * Call open() before setting an onreadystatechange listener.
    */
-  attribute nsIDOMEventListener onreadystatechange;
+  [implicit_jscontext] attribute jsval onreadystatechange;
+
+  /**
+   * If true, the request will be sent without cookie and authentication
+   * headers.
+   */
+  readonly attribute boolean mozAnon;
+
+  /**
+   * If true, the same origin policy will not be enforced on the request.
+   */
+  readonly attribute boolean mozSystem;
+};
+
+[scriptable, uuid(840d0d00-e83e-4a29-b3c7-67e96e90a499)]
+interface nsIXHRSendable : nsISupports {
+  void getSendInfo(out nsIInputStream body,
+                   out uint64_t contentLength,
+                   out ACString contentType,
+                   out ACString charset);
+};
+
+/**
+ * @deprecated
+ */
+[scriptable, uuid(8ae70a39-edf1-40b4-a992-472d23421c25)]
+interface nsIJSXMLHttpRequest : nsISupports {
 };
 
 %{ C++

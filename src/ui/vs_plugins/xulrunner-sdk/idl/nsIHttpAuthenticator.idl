@@ -1,44 +1,11 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Mozilla.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications.
- * Portions created by the Initial Developer are Copyright (C) 2001
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Darin Fisher <darin@netscape.com> (original author)
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
-interface nsIHttpChannel;
+interface nsIHttpAuthenticableChannel;
 
 /**
  * nsIHttpAuthenticator
@@ -51,7 +18,7 @@ interface nsIHttpChannel;
  * where <auth-scheme> is the lower-cased value of the authentication scheme
  * found in the server challenge per the rules of RFC 2617.
  */
-[scriptable, uuid(0f331436-8bc8-4c68-a124-d0253a19d06f)]
+[scriptable, uuid(16784db0-fcb1-4352-b0c9-6a3a67e3cf79)]
 interface nsIHttpAuthenticator : nsISupports
 {
     /**
@@ -78,12 +45,12 @@ interface nsIHttpAuthenticator : nsISupports
      *        return value indicating whether or not to prompt the user for a
      *        revised identity.
      */
-    void challengeReceived(in nsIHttpChannel aChannel,
-                           in string         aChallenge,
-                           in boolean        aProxyAuth,
-                           inout nsISupports aSessionState,
-                           inout nsISupports aContinuationState,
-                           out boolean       aInvalidatesIdentity);
+    void challengeReceived(in    nsIHttpAuthenticableChannel aChannel,
+                           in    string       aChallenge,
+                           in    boolean      aProxyAuth,
+                           inout nsISupports  aSessionState,
+                           inout nsISupports  aContinuationState,
+                           out   boolean      aInvalidatesIdentity);
 
     /**
      * Called to generate the authentication credentials for a particular
@@ -118,15 +85,30 @@ interface nsIHttpAuthenticator : nsISupports
      *        generateCredentials, assuming multiple calls are required
      *        to authenticate.  this state is held for at most the lifetime of
      *        the channel.
+     * @param aFlags
+     *        authenticator may return one of the generate flags bellow.
      */
-    string generateCredentials(in nsIHttpChannel aChannel,
-                               in string         aChallenge,
-                               in boolean        aProxyAuth,
-                               in wstring        aDomain,
-                               in wstring        aUser,
-                               in wstring        aPassword,
-                               inout nsISupports aSessionState,
-                               inout nsISupports aContinuationState);
+    string generateCredentials(in    nsIHttpAuthenticableChannel aChannel,
+                               in    string         aChallenge,
+                               in    boolean        aProxyAuth,
+                               in    wstring        aDomain,
+                               in    wstring        aUser,
+                               in    wstring        aPassword,
+                               inout nsISupports    aSessionState,
+                               inout nsISupports    aContinuationState,
+                               out   unsigned long  aFlags);
+
+    /**
+     * Generate flags
+     */
+
+    /**
+     * Indicates that the authenticator has used an out-of-band or internal
+     * source of identity and tells the consumer that it must not cache 
+     * the returned identity because it might not be valid and would overwrite
+     * the cached identity.  See bug 542318 comment 32.
+     */
+    const unsigned long USING_INTERNAL_IDENTITY = (1<<0);
 
     /**
      * Flags defining various properties of the authenticator.

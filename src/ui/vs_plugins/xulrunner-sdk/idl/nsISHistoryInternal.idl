@@ -1,40 +1,7 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Radha Kulkarni (radha@netscape.com)
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 #include "nsISupports.idl"
 #include "nsIFactory.idl"
@@ -50,9 +17,13 @@ interface nsIDocShell;
   { 0xb9, 0x04, 0x3a, 0xc9, 0x68, 0x11, 0x6e, 0x88 } }
 
 #define NS_SHISTORY_INTERNAL_CONTRACTID "@mozilla.org/browser/shistory-internal;1"
+
+#include "nsTArrayForwardDeclare.h"
 %}
 
-[scriptable, uuid(9c47c121-1c6e-4d8f-b904-3ac968116e88)]
+[ref] native nsDocshellIDArray(nsTArray<uint64_t>);
+
+[scriptable, uuid(f9348014-0239-11e2-b029-3d38e719eb2d)]
 interface nsISHistoryInternal: nsISupports
 {
   /**
@@ -81,28 +52,52 @@ interface nsISHistoryInternal: nsISupports
 
   /**
    * Replace the nsISHEntry at a particular index
-   * @param aIndex - The index at which the entry shoud be replaced
+   * @param aIndex - The index at which the entry should be replaced
    * @param aReplaceEntry - The replacement entry for the index.
    */
    void replaceEntry(in long aIndex, in nsISHEntry aReplaceEntry);
 
-  /** 
-   * Get handle to the history listener
-   */
-   readonly attribute nsISHistoryListener listener;
-
   /**
-   * Evict content viewers until the number of content viewers per tab
-   * is no more than gHistoryMaxViewers.  Also, count
-   * total number of content viewers globally and evict one if we are over
-   * our total max.  This is always called in Show(), after we destroy
-   * the previous viewer.
+   * Notifies all registered session history listeners about an impending
+   * reload.
+   *
+   * @param aReloadURI    The URI of the document to be reloaded.
+   * @param aReloadFlags  Flags that indicate how the document is to be
+   *                      refreshed. See constants on the nsIWebNavigation
+   *                      interface.
+   * @return              Whether the operation can proceed.
    */
-   void evictContentViewers(in long previousIndex, in long index);
+   boolean notifyOnHistoryReload(in nsIURI aReloadURI, in unsigned long aReloadFlags);
+
+   /**
+    * Evict content viewers which don't lie in the "safe" range around aIndex.
+    * In practice, this should leave us with no more than gHistoryMaxViewers
+    * viewers associated with this SHistory object.
+    *
+    * Also make sure that the total number of content viewers in all windows is
+    * not greater than our global max; if it is, evict viewers as appropriate.
+    *
+    * @param aIndex - The index around which the "safe" range is centered.  In
+    *   general, if you just navigated the history, aIndex should be the index
+    *   history was navigated to.
+    */
+   void evictOutOfRangeContentViewers(in long aIndex);
    
    /**
-    * Evict the content viewer associated with a session history entry
+    * Evict the content viewer associated with a bfcache entry
     * that has timed out.
     */
-   void evictExpiredContentViewerForEntry(in nsISHEntry aEntry);
+   void evictExpiredContentViewerForEntry(in nsIBFCacheEntry aEntry);
+
+   /**
+    * Evict all the content viewers in this session history
+    */
+   void evictAllContentViewers();
+
+   /**
+    * Removes entries from the history if their docshellID is in
+    * aIDs array.
+    */
+  [noscript, notxpcom] void RemoveEntries(in nsDocshellIDArray aIDs,
+                                          in long aStartIndex);
 };

@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #include "nsISupports.idl"
 
 interface nsIDOMDocument;
@@ -7,27 +11,54 @@ interface nsIPrintSettings;
 
 %{ C++
 class nsIWidget;
-class nsIDeviceContext;
-struct nsRect;
+class nsIDocument;
+struct nsIntRect;
+class nsIPresShell;
+class nsPresContext;
+class nsView;
+class nsDOMNavigationTiming;
 %}
 
 [ptr] native nsIWidgetPtr(nsIWidget);
-[ptr] native nsIDeviceContextPtr(nsIDeviceContext);
-[ref] native nsRectRef(nsRect);
+[ptr] native nsIDocumentPtr(nsIDocument);
+[ref] native nsIntRectRef(nsIntRect);
+[ptr] native nsIPresShellPtr(nsIPresShell);
+[ptr] native nsPresContextPtr(nsPresContext);
+[ptr] native nsViewPtr(nsView);
+[ptr] native nsDOMNavigationTimingPtr(nsDOMNavigationTiming);
 
-[scriptable, uuid(89653afe-182f-401f-9f3c-8858d91387cd)]
+[scriptable, builtinclass, uuid(b9d92b8b-5623-4079-ae11-36bb341f322e)]
 interface nsIContentViewer : nsISupports
 {
 
   [noscript] void init(in nsIWidgetPtr aParentWidget,
-                       in nsIDeviceContextPtr aDeviceContext,
-                       [const] in nsRectRef aBounds);
+                       [const] in nsIntRectRef aBounds);
 
   attribute nsISupports container;
 
   void loadStart(in nsISupports aDoc);
-  void loadComplete(in unsigned long aStatus);
-  boolean permitUnload();
+  void loadComplete(in nsresult aStatus);
+
+  /**
+   * Checks if the document wants to prevent unloading by firing beforeunload on
+   * the document, and if it does, prompts the user. The result is returned.
+   *
+   * @param aCallerClosesWindow indicates that the current caller will close the
+   *        window. If the method returns true, all subsequent calls will be
+   *        ignored.
+   */
+  boolean permitUnload([optional] in boolean aCallerClosesWindow);
+
+  /**
+   * Works in tandem with permitUnload, if the caller decides not to close the
+   * window it indicated it will, it is the caller's responsibility to reset
+   * that with this method.
+   *
+   * @Note this method is only meant to be called on documents for which the
+   *  caller has indicated that it will close the window. If that is not the case
+   *  the behavior of this method is undefined.
+   */
+  void resetCloseWindow();
   void pageHide(in boolean isUnload);
 
   /**
@@ -58,8 +89,13 @@ interface nsIContentViewer : nsISupports
 
   attribute nsIDOMDocument DOMDocument;
 
-  [noscript] void getBounds(in nsRectRef aBounds);
-  [noscript] void setBounds([const] in nsRectRef aBounds);
+  /**
+   * Returns DOMDocument as nsIDocument and without addrefing.
+   */
+  [noscript,notxpcom] nsIDocumentPtr getDocument();
+
+  [noscript] void getBounds(in nsIntRectRef aBounds);
+  [noscript] void setBounds([const] in nsIntRectRef aBounds);
 
   /**
    * The previous content viewer, which has been |close|d but not
@@ -71,8 +107,6 @@ interface nsIContentViewer : nsISupports
 
   void show();
   void hide();
-
-  attribute boolean enableRendering;
 
   attribute boolean sticky;
 
@@ -100,15 +134,46 @@ interface nsIContentViewer : nsISupports
    */
   void clearHistoryEntry();
 
-  /*
+  /**
    * Change the layout to view the document with page layout (like print preview), but
    * dynamic and editable (like Galley layout).
-  */
-  void setPageMode(in PRBool aPageMode, in nsIPrintSettings aPrintSettings);
+   */
+  void setPageMode(in boolean aPageMode, in nsIPrintSettings aPrintSettings);
 
   /**
    * Get the history entry that this viewer will save itself into when
    * destroyed.  Can return null
    */
   readonly attribute nsISHEntry historyEntry;
+
+  /**
+   * Indicates when we're in a state where content shouldn't be allowed to
+   * trigger a tab-modal prompt (as opposed to a window-modal prompt) because
+   * we're part way through some operation (eg beforeunload) that shouldn't be
+   * rentrant if the user closes the tab while the prompt is showing.
+   * See bug 613800.
+   */
+  readonly attribute boolean isTabModalPromptAllowed;
+
+  /**
+   * Returns whether this content viewer is in a hidden state.
+   */
+  readonly attribute boolean isHidden;
+
+  [noscript] readonly attribute nsIPresShellPtr presShell;
+  [noscript] readonly attribute nsPresContextPtr presContext;
+  // aDocument must not be null.
+  [noscript] void setDocumentInternal(in nsIDocumentPtr aDocument,
+                                      in boolean aForceReuseInnerWindow);
+  /**
+   * Find the view to use as the container view for MakeWindow. Returns
+   * null if this will be the root of a view manager hierarchy. In that
+   * case, if mParentWidget is null then this document should not even
+   * be displayed.
+   */
+  [noscript,notxpcom,nostdcall] nsViewPtr findContainerView();
+  /**
+   * Set collector for navigation timing data (load, unload events).
+   */
+  [noscript,notxpcom,nostdcall] void setNavigationTiming(in nsDOMNavigationTimingPtr aTiming);
 };

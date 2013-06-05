@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
 #include "nsISupports.idl"
@@ -46,8 +14,6 @@
  * http://groups.google.com/groups?q=nsisupportsarray+group:netscape.public.mozilla.xpcom&hl=en&lr=&ie=UTF-8&oe=UTF-8&selm=3D779491.3050506%40netscape.com&rnum=2
  * http://groups.google.com/groups?q=nsisupportsarray+group:netscape.public.mozilla.xpcom&hl=en&lr=&ie=UTF-8&oe=UTF-8&selm=al8412%245ab2%40ripley.netscape.com&rnum=8
  */
-
-native nsISupportsArrayEnumFunc(nsISupportsArrayEnumFunc);
 
 %{C++
 
@@ -64,20 +30,12 @@ class nsISupportsArray;
 #define NS_SUPPORTSARRAY_CONTRACTID "@mozilla.org/supports-array;1"
 #define NS_SUPPORTSARRAY_CLASSNAME "Supports Array"
  
-// Enumerator callback function. Return PR_FALSE to stop
-typedef PRBool (*nsISupportsArrayEnumFunc)(nsISupports* aElement, void *aData);
- 
-NS_COM nsresult
-NS_NewArrayEnumerator(nsISimpleEnumerator* *result,
-                      nsISupportsArray* array);
 %}
 
-[scriptable, uuid(791eafa0-b9e6-11d1-8031-006008159b5a)]
+[scriptable, uuid(241addc8-3608-4e73-8083-2fd6fa09eba2)]
 interface nsISupportsArray : nsICollection {
 
   [notxpcom] boolean Equals([const] in nsISupportsArray other);
-  
-  [notxpcom] nsISupports ElementAt(in unsigned long aIndex);
   
   [notxpcom] long IndexOf([const] in nsISupports aPossibleElement);
   [notxpcom] long IndexOfStartingAt([const] in nsISupports aPossibleElement,
@@ -106,12 +64,6 @@ interface nsISupportsArray : nsICollection {
   
   void Compact();
   
-  [notxpcom, noscript]
-      boolean EnumerateForwards(in nsISupportsArrayEnumFunc aFunc,
-                                in voidPtr aData);
-  [notxpcom, noscript]
-      boolean EnumerateBackwards(in nsISupportsArrayEnumFunc aFunc,
-                                 in voidPtr aData);
 
   nsISupportsArray clone();
 
@@ -131,13 +83,7 @@ interface nsISupportsArray : nsICollection {
 %{C++
 
 // Construct and return a default implementation of nsISupportsArray:
-extern NS_COM nsresult
+extern nsresult
 NS_NewISupportsArray(nsISupportsArray** aInstancePtrResult);
-
-// Construct and return a default implementation of an enumerator for nsISupportsArrays:
-extern NS_COM nsresult
-NS_NewISupportsArrayEnumerator(nsISupportsArray* array,
-                               nsIBidirectionalEnumerator* *aInstancePtrResult);
-
 
 %}

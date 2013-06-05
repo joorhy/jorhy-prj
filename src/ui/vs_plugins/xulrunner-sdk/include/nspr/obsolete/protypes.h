@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Netscape Portable Runtime (NSPR).
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998-2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
  * This header typedefs the old 'native' types to the new PR<type>s.
@@ -68,21 +36,14 @@ typedef PRIntn intn;
 #endif
 
 /*
- * OpenVMS defines all the int types below in its standard
- * header files ints.h and types.h.
- */
-#ifdef VMS
-#include <ints.h>
-#include <types.h>
-#endif
-
-/*
  * SVR4 typedef of uint is commonly found on UNIX machines.
  *
  * On AIX 4.3, sys/inttypes.h (which is included by sys/types.h)
  * defines the types int8, int16, int32, and int64.
+ *
+ * On OS/2, sys/types.h defines uint.
  */
-#ifdef XP_UNIX
+#if defined(XP_UNIX) || defined(XP_OS2)
 #include <sys/types.h>
 #endif
 
@@ -95,8 +56,7 @@ typedef PRIntn intn;
  * uint
  */
 
-#if !defined(XP_BEOS) && !defined(VMS) \
-    && !defined(XP_UNIX) || defined(NTO)
+#if !defined(XP_BEOS) && !defined(XP_OS2) && !defined(XP_UNIX) || defined(NTO)
 typedef PRUintn uint;
 #endif
 
@@ -104,7 +64,7 @@ typedef PRUintn uint;
  * uint64
  */
 
-#if !defined(XP_BEOS) && !defined(VMS)
+#if !defined(XP_BEOS)
 typedef PRUint64 uint64;
 #endif
 
@@ -112,8 +72,8 @@ typedef PRUint64 uint64;
  * uint32
  */
 
-#if !defined(XP_BEOS) && !defined(VMS)
-#if !defined(XP_MAC) && !defined(_WIN32) && !defined(XP_OS2) && !defined(NTO)
+#if !defined(XP_BEOS)
+#if !defined(_WIN32) && !defined(XP_OS2) && !defined(NTO)
 typedef PRUint32 uint32;
 #else
 typedef unsigned long uint32;
@@ -124,7 +84,7 @@ typedef unsigned long uint32;
  * uint16
  */
 
-#if !defined(XP_BEOS) && !defined(VMS)
+#if !defined(XP_BEOS)
 typedef PRUint16 uint16;
 #endif
 
@@ -132,7 +92,7 @@ typedef PRUint16 uint16;
  * uint8
  */
 
-#if !defined(XP_BEOS) && !defined(VMS)
+#if !defined(XP_BEOS)
 typedef PRUint8 uint8;
 #endif
 
@@ -140,8 +100,7 @@ typedef PRUint8 uint8;
  * int64
  */
 
-#if !defined(XP_BEOS) && !defined(VMS) \
-    && !defined(_PR_AIX_HAVE_BSD_INT_TYPES)
+#if !defined(XP_BEOS) && !defined(_PR_AIX_HAVE_BSD_INT_TYPES)
 typedef PRInt64 int64;
 #endif
 
@@ -149,10 +108,9 @@ typedef PRInt64 int64;
  * int32
  */
 
-#if !defined(XP_BEOS) && !defined(VMS) \
-    && !defined(_PR_AIX_HAVE_BSD_INT_TYPES) \
+#if !defined(XP_BEOS) && !defined(_PR_AIX_HAVE_BSD_INT_TYPES) \
     && !defined(HPUX)
-#if !defined(XP_MAC) && !defined(_WIN32) && !defined(XP_OS2) && !defined(NTO)
+#if !defined(_WIN32) && !defined(XP_OS2) && !defined(NTO)
 typedef PRInt32 int32;
 #else
 typedef long int32;
@@ -163,8 +121,7 @@ typedef long int32;
  * int16
  */
 
-#if !defined(XP_BEOS) && !defined(VMS) \
-    && !defined(_PR_AIX_HAVE_BSD_INT_TYPES) \
+#if !defined(XP_BEOS) && !defined(_PR_AIX_HAVE_BSD_INT_TYPES) \
     && !defined(HPUX)
 typedef PRInt16 int16;
 #endif
@@ -173,8 +130,7 @@ typedef PRInt16 int16;
  * int8
  */
 
-#if !defined(XP_BEOS) && !defined(VMS) \
-    && !defined(_PR_AIX_HAVE_BSD_INT_TYPES) \
+#if !defined(XP_BEOS) && !defined(_PR_AIX_HAVE_BSD_INT_TYPES) \
     && !defined(HPUX)
 typedef PRInt8 int8;
 #endif
@@ -239,14 +195,5 @@ typedef PRWord prword_t;
 #define PR_HashString PL_HashString
 #define PR_CompareStrings PL_CompareStrings
 #define PR_CompareValues PL_CompareValues
-
-#if defined(XP_MAC)
-#ifndef TRUE				/* Mac standard is lower case true */
-	#define TRUE 1
-#endif
-#ifndef FALSE				/* Mac standard is lower case false */
-	#define FALSE 0
-#endif
-#endif
 
 #endif /* !defined(PROTYPES_H) */

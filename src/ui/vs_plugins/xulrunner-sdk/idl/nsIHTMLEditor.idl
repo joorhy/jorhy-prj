@@ -1,57 +1,28 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Daniel Glazman <glazman@netscape.com>
- *   Akkana Peck <akkana@netscape.com>
- *   Kathleen Brade <brade@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 #include "domstubs.idl"
 
 interface nsIAtom;
+interface nsIContent;
 interface nsISupportsArray;
 interface nsISelection;
 interface nsIContentFilter;
 
 %{C++
-#define NS_EDITOR_ELEMENT_NOT_FOUND \
-  NS_ERROR_GENERATE_SUCCESS(NS_ERROR_MODULE_EDITOR, 1)
-
+namespace mozilla {
+namespace dom {
+class Element;
+}
+}
 %}
-[scriptable, uuid(afc36593-5787-4420-93d9-b2c0ccbf0cad)]
+
+[ptr] native Element (mozilla::dom::Element);
+
+[scriptable, uuid(833f30de-94c7-4630-a852-2300ef329d7b)]
 
 interface nsIHTMLEditor : nsISupports
 {
@@ -117,9 +88,6 @@ interface nsIHTMLEditor : nsISupports
    *                    Example: aProperty="font", aAttribute="color",
    *                             aValue="0x00FFFF"
    */
-  void setCSSInlineProperty(in nsIAtom aProperty, 
-                            in AString aAttribute,
-                            in AString aValue);
   void setInlineProperty(in nsIAtom aProperty, 
                          in AString aAttribute,
                          in AString aValue);
@@ -197,26 +165,6 @@ interface nsIHTMLEditor : nsISupports
    *  so they will be decreased instead of inserting new <FONT> tag
    */
   void decreaseFontSize();
-
-  /* ------------ Drag/Drop methods -------------- */
-
-  /** 
-   * canDrag decides if a drag should be started
-   * (for example, based on the current selection and mousepoint).
-   */
-  boolean canDrag(in nsIDOMEvent aEvent);
-
-  /** 
-   * doDrag transfers the relevant data (as appropriate)
-   * to a transferable so it can later be dropped.
-   */
-  void doDrag(in nsIDOMEvent aEvent);
-
-  /** 
-   * insertFromDrop looks for a dragsession and inserts the
-   * relevant data in response to a drop.
-   */
-  void insertFromDrop(in nsIDOMEvent aEvent);
 
   /* ------------ HTML content methods -------------- */
 
@@ -533,12 +481,6 @@ interface nsIHTMLEditor : nsISupports
    */
   void setBodyAttribute(in AString aAttr, in AString aValue);
   
-  /** 
-   * XXX Used to suppress spurious drag/drop events to workaround bug 50703
-   * Don't use this method! It will go away after first release!
-   */
-  void ignoreSpuriousDragEvent(in boolean aIgnoreSpuriousDragEvent);
-
   /**
    * Find all the nodes in the document which contain references
    * to outside URIs (e.g. a href, img src, script src, etc.)
@@ -608,5 +550,16 @@ interface nsIHTMLEditor : nsISupports
    * @return    true if CR in a paragraph creates a new paragraph
    */
   attribute boolean returnInParagraphCreatesNewParagraph;
+
+  /**
+   * Checks whether a BR node is visible to the user.
+   */
+  boolean breakIsVisible(in nsIDOMNode aNode);
+
+  /**
+   * Get an active editor's editing host in DOM window.  If this editor isn't
+   * active in the DOM window, this returns NULL.
+   */
+  [noscript, notxpcom] Element GetActiveEditingHost();
 };
 

@@ -1,68 +1,57 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is Mozilla Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2007
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Justin Dolske <dolske@mozilla.com> (original author)
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
 interface nsIInputStream;
 interface imgIContainer;
+interface imgILoader;
+interface imgICache;
+interface nsIDOMDocument;
+interface imgIScriptedNotificationObserver;
+interface imgINotificationObserver;
 
-[scriptable, uuid(c395d8f1-c616-4a1b-adfd-747b4b1b2cbe)]
+[scriptable, builtinclass, uuid(4c2383a4-931c-484d-8c4a-973590f66e3f)]
 interface imgITools : nsISupports
 {
+    /**
+     * decodeImage
+     * Caller provides an input stream and mimetype. We read from the stream
+     * and decompress it (according to the specified mime type) and return
+     * the resulting imgIContainer.
+     *
+     * @param aStream
+     *        An input stream for an encoded image file.
+     * @param aMimeType
+     *        Type of image in the stream.
+     */
+    imgIContainer decodeImage(in nsIInputStream aStream,
+                              in ACString aMimeType);
+
     /**
      * decodeImageData
      * Caller provides an input stream and mimetype. We read from the stream
      * and decompress it (according to the specified mime type) and return
-     * the resulting imgIContainer. (If the caller already has a container,
-     * it can be provided as input to be reused).
+     * the resulting imgIContainer.
+     *
+     * This method is deprecated and will be removed at some time in the future;
+     * new code should use |decodeImage|.
      *
      * @param aStream
      *        An input stream for an encoded image file.
      * @param aMimeType
      *        Type of image in the stream.
      * @param aContainer
-     *        An imgIContainer holding the decoded image. Specify |null| when
-     *        calling to have one created, otherwise specify a container to
-     *        be reused.
+     *        An imgIContainer holding the decoded image will be returned via
+     *        this parameter. It is an error to provide any initial value but
+     *        |null|.
      */
-    void decodeImageData(in nsIInputStream aStream,
-                         in ACString aMimeType,
-                         inout imgIContainer aContainer);
+    [deprecated] void decodeImageData(in nsIInputStream aStream,
+                                      in ACString aMimeType,
+                                      inout imgIContainer aContainer);
 
     /**
      * encodeImage
@@ -73,9 +62,12 @@ interface imgITools : nsISupports
      *        An image container.
      * @param aMimeType
      *        Type of encoded image desired (eg "image/png").
+     * @param outputOptions
+     *        Encoder-specific output options.
      */
     nsIInputStream encodeImage(in imgIContainer aContainer,
-                               in ACString aMimeType);
+                               in ACString aMimeType,
+                               [optional] in AString outputOptions);
 
     /**
      * encodeScaledImage
@@ -88,10 +80,72 @@ interface imgITools : nsISupports
      * @param aMimeType
      *        Type of encoded image desired (eg "image/png").
      * @param aWidth, aHeight
-     *        The size (in pixels) desired for the resulting image.
+     *        The size (in pixels) desired for the resulting image. Specify 0 to
+     *        use the given image's width or height. Values must be >= 0.
+     * @param outputOptions
+     *        Encoder-specific output options.
      */
     nsIInputStream encodeScaledImage(in imgIContainer aContainer,
                                      in ACString aMimeType,
                                      in long aWidth,
-                                     in long aHeight);
+                                     in long aHeight,
+                                     [optional] in AString outputOptions);
+
+    /**
+     * getImgLoaderForDocument
+     * Retrieve an image loader that reflects the privacy status of the given
+     * document.
+     *
+     * @param doc
+     *        A document. Must not be null.
+     */
+    imgILoader getImgLoaderForDocument(in nsIDOMDocument doc);
+
+    /**
+     * getImgLoaderForDocument
+     * Retrieve an image cache that reflects the privacy status of the given
+     * document.
+     *
+     * @param doc
+     *        A document. Null is allowed, but must _only_ be passed
+     *        when there is no way to obtain a relevant document for
+     *        the current context in which a cache is desired.
+     */
+    imgICache getImgCacheForDocument(in nsIDOMDocument doc);
+
+    /**
+     * encodeCroppedImage
+     * Caller provides an image container, and the mime type it should be
+     * encoded to. We return an input stream for the encoded image data.
+     * The encoded image is cropped to the specified dimensions.
+     *
+     * The given offset and size must not exceed the image bounds.
+     *
+     * @param aContainer
+     *        An image container.
+     * @param aMimeType
+     *        Type of encoded image desired (eg "image/png").
+     * @param aOffsetX, aOffsetY
+     *        The crop offset (in pixels). Values must be >= 0.
+     * @param aWidth, aHeight
+     *        The size (in pixels) desired for the resulting image. Specify 0 to
+     *        use the given image's width or height. Values must be >= 0.
+     * @param outputOptions
+     *        Encoder-specific output options.
+     */
+    nsIInputStream encodeCroppedImage(in imgIContainer aContainer,
+                                      in ACString aMimeType,
+                                      in long aOffsetX,
+                                      in long aOffsetY,
+                                      in long aWidth,
+                                      in long aHeight,
+                                      [optional] in AString outputOptions);
+
+    /**
+     * Create a wrapper around a scripted notification observer (ordinarily
+     * imgINotificationObserver cannot be implemented from scripts).
+     *
+     * @param aObserver The scripted observer to wrap 
+     */
+    imgINotificationObserver createScriptedObserver(in imgIScriptedNotificationObserver aObserver);
 };

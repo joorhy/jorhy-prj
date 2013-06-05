@@ -1,6 +1,6 @@
 #pragma once
 
-#include "npupp.h"
+#include "npfunctions.h"
 
 class ScriptablePluginObjectBase : public NPObject
 {

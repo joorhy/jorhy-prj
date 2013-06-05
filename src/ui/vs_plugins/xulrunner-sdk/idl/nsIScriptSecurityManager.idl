@@ -1,56 +1,16 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 #include "nsIPrincipal.idl"
 #include "nsIXPCSecurityManager.idl"
 interface nsIURI;
 interface nsIChannel;
+interface nsIDocShell;
 
-/**
- * WARNING!! The JEP needs to call GetSubjectPrincipal()
- * to support JavaScript-to-Java LiveConnect.  So every change to the
- * nsIScriptSecurityManager interface (big enough to change its IID) also
- * breaks JavaScript-to-Java LiveConnect on mac.
- *
- * If you REALLY have to change this interface, please mark your bug as
- * blocking bug 293973.
- */
-[scriptable, uuid(3fffd8e8-3fea-442e-a0ed-2ba81ae197d5)]
+[scriptable, uuid(ae486501-ec57-4ec8-a565-6880ca4ae6c4)]
 interface nsIScriptSecurityManager : nsIXPCSecurityManager
 {
     ///////////////// Security Checks //////////////////
@@ -60,21 +20,13 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
     [noscript] void checkPropertyAccess(in JSContextPtr aJSContext,
                                         in JSObjectPtr aJSObject,
                                         in string aClassName,
-                                        in JSVal aProperty,
-                                        in PRUint32 aAction);
-
-    /**
-     * Checks whether the running script is allowed to connect to aTargetURI
-     */
-    [noscript] void checkConnect(in JSContextPtr aJSContext,
-                                 in nsIURI aTargetURI,
-                                 in string aClassName,
-                                 in string aProperty);
+                                        in jsid aProperty,
+                                        in uint32_t aAction);
 
     /**
      * Check that the script currently running in context "cx" can load "uri".
      *
-     * Will return error code NS_ERROR_DOM_BAD_URI if the load request 
+     * Will return error code NS_ERROR_DOM_BAD_URI if the load request
      * should be denied.
      *
      * @param cx the JSContext of the script causing the load
@@ -119,10 +71,14 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
     // DISALLOW_INHERIT_PRINCIPAL
     const unsigned long DISALLOW_SCRIPT = 1 << 3;
 
+    // Do not report errors if we just want to check if a principal can load
+    // a URI to not unnecessarily spam the error console.
+    const unsigned long DONT_REPORT_ERRORS = 1 << 4;
+
     /**
      * Check that content with principal aPrincipal can load "uri".
      *
-     * Will return error code NS_ERROR_DOM_BAD_URI if the load request 
+     * Will return error code NS_ERROR_DOM_BAD_URI if the load request
      * should be denied.
      *
      * @param aPrincipal the principal identifying the actor causing the load
@@ -130,23 +86,8 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
      * @param flags the permission set, see above
      */
     void checkLoadURIWithPrincipal(in nsIPrincipal aPrincipal,
-                                   in nsIURI uri, 
+                                   in nsIURI uri,
                                    in unsigned long flags);
-
-    /**
-     * Check that content from "from" can load "uri".
-     *
-     * Will return error code NS_ERROR_DOM_BAD_URI if the load request 
-     * should be denied.
-     *
-     * @param from the URI causing the load
-     * @param uri the URI that is being loaded
-     * @param flags the permission set, see above
-     *
-     * @deprecated Use checkLoadURIWithPrincipal instead of this function.
-     */
-    void checkLoadURI(in nsIURI from, in nsIURI uri, 
-                      in unsigned long flags);
 
     /**
      * Similar to checkLoadURIWithPrincipal but there are two differences:
@@ -158,17 +99,8 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
      * function will return error code NS_ERROR_DOM_BAD_URI.
      */
     void checkLoadURIStrWithPrincipal(in nsIPrincipal aPrincipal,
-                                      in AUTF8String uri, 
-                                      in unsigned long flags);     
-    
-    /**
-     * Same as CheckLoadURI but takes string arguments for ease of use
-     * by scripts
-     *
-     * @deprecated Use checkLoadURIStrWithPrincipal instead of this function.
-     */
-    void checkLoadURIStr(in AUTF8String from, in AUTF8String uri, 
-                         in unsigned long flags);
+                                      in AUTF8String uri,
+                                      in unsigned long flags);
 
     /**
      * Check that the function 'funObj' is allowed to run on 'targetObj'
@@ -190,10 +122,10 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
     [noscript] boolean canExecuteScripts(in JSContextPtr cx,
                                          in nsIPrincipal principal);
 
-    ///////////////// Principals /////////////////////// 
+    ///////////////// Principals ///////////////////////
     /**
-     * Return the principal of the innermost frame of the currently 
-     * executing script. Will return null if there is no script 
+     * Return the principal of the innermost frame of the currently
+     * executing script. Will return null if there is no script
      * currently executing.
      */
     [noscript] nsIPrincipal getSubjectPrincipal();
@@ -201,73 +133,46 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
     /**
      * Return the all-powerful system principal.
      */
-    [noscript] nsIPrincipal getSystemPrincipal();
-
-    /**
-     * Return a principal with the specified certificate fingerprint, subject
-     * name (the full name or concatenated set of names of the entity
-     * represented by the certificate), pretty name, certificate, and
-     * codebase URI.  The certificate fingerprint and subject name MUST be
-     * nonempty; otherwise an error will be thrown.  Similarly, aCert must
-     * not be null.
-     */
-    [noscript] nsIPrincipal
-         getCertificatePrincipal(in AUTF8String aCertFingerprint,
-                                 in AUTF8String aSubjectName,
-                                 in AUTF8String aPrettyName,
-                                 in nsISupports aCert,
-                                 in nsIURI aURI);
+    nsIPrincipal getSystemPrincipal();
 
     /**
      * Return a principal that has the same origin as aURI.
+     * This principals should not be used for any data/permission check, it will
+     * have appId = UNKNOWN_APP_ID.
      */
-    nsIPrincipal getCodebasePrincipal(in nsIURI aURI);
-
-    ///////////////// Capabilities API /////////////////////
-    /**
-     * Request that 'capability' can be enabled by scripts or applets
-     * running with 'principal'. Will prompt user if
-     * necessary. Returns nsIPrincipal::ENABLE_GRANTED or
-     * nsIPrincipal::ENABLE_DENIED based on user's choice.
-     */
-    [noscript] short requestCapability(in nsIPrincipal principal,
-                                       in string capability);
-    
-    /**
-     * Return true if the currently executing script has 'capability' enabled.
-     */
-    boolean isCapabilityEnabled(in string capability);
-    
-    /**
-     * Enable 'capability' in the innermost frame of the currently executing
-     * script.
-     */
-    void enableCapability(in string capability);
+    nsIPrincipal getSimpleCodebasePrincipal(in nsIURI aURI);
 
     /**
-     * Remove 'capability' from the innermost frame of the currently
-     * executing script. Any setting of 'capability' from enclosing
-     * frames thus comes into effect.
+     * Returns a principal that has the given information.
+     * @param appId is the app id of the principal. It can't be UNKNOWN_APP_ID.
+     * @param inMozBrowser is true if the principal has to be considered as
+     * inside a mozbrowser frame.
      */
-    void revertCapability(in string capability);
+    nsIPrincipal getAppCodebasePrincipal(in nsIURI uri,
+                                         in unsigned long appId,
+                                         in boolean inMozBrowser);
 
     /**
-     * Disable 'capability' in the innermost frame of the currently executing
-     * script.
+     * Returns a principal that has the appId and inMozBrowser of the docshell
+     * inside a mozbrowser frame.
+     * @param docShell to get appId/inMozBrowser from.
      */
-    void disableCapability(in string capability);
+    nsIPrincipal getDocShellCodebasePrincipal(in nsIURI uri,
+                                              in nsIDocShell docShell);
 
-    //////////////// Master Certificate Functions ////////////////////
     /**
-     * Allow 'certificateID' to enable 'capability.' Can only be performed
-     * by code signed by the system certificate.
+     * Returns a principal with that has the same origin as uri and is not part
+     * of an appliction.
+     * The returned principal will have appId = NO_APP_ID.
      */
-    // XXXbz Capabilities can't have non-ascii chars?
-    // XXXbz ideally we'd pass a subjectName here too, and the nsISupports
-    // cert we're enabling for...
-    void setCanEnableCapability(in AUTF8String certificateFingerprint,
-                                in string capability, 
-                                in short canEnable);
+    nsIPrincipal getNoAppCodebasePrincipal(in nsIURI uri);
+
+    /**
+     * Legacy name for getNoAppCodebasePrincipal.
+     *
+     * @deprecated use getNoAppCodebasePrincipal instead.
+     */
+    [deprecated] nsIPrincipal getCodebasePrincipal(in nsIURI uri);
 
     ///////////////////////
     /**
@@ -298,13 +203,6 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
     void checkSameOriginURI(in nsIURI aSourceURI,
                             in nsIURI aTargetURI,
                             in boolean reportError);
-
-    /**
-     * Returns the principal of the global object of the given context, or null
-     * if no global or no principal.
-     */
-    [noscript] nsIPrincipal getPrincipalFromContext(in JSContextPtr cx);
-
     /**
      * Get the principal for the given channel.  This will typically be the
      * channel owner if there is one, and the codebase principal for the
@@ -326,13 +224,18 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
      * principal.
      */
     [noscript,notxpcom] nsIPrincipal getCxSubjectPrincipal(in JSContextPtr cx);
-};
 
-[scriptable, uuid(09cd62cd-3360-45e6-860b-6c0da411712a)]
-interface nsIScriptSecurityManager_1_9_0_BRANCH : nsIScriptSecurityManager
-{
-    [noscript,notxpcom] nsIPrincipal getCxSubjectPrincipalAndFrame(in JSContextPtr cx,
-                                                                   out JSStackFramePtr fp);
+    const unsigned long NO_APP_ID = 0;
+    const unsigned long UNKNOWN_APP_ID = 4294967295; // UINT32_MAX
+
+    /**
+     * Returns the extended origin for the uri.
+     * appId can be NO_APP_ID or a valid app id. appId should not be
+     * UNKNOWN_APP_ID.
+     * inMozBrowser has to be true if the uri is inside a mozbrowser iframe.
+     */
+    AUTF8String getExtendedOrigin(in nsIURI uri, in unsigned long appId,
+                                  in boolean inMozBrowser);
 };
 
 %{C++

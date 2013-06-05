@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Netscape Portable Runtime (NSPR).
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998-2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /* GLOBAL FUNCTIONS:
 ** DESCRIPTION:
@@ -110,31 +78,38 @@ NSPR_API(PRInt32)	PR_AtomicAdd(PRInt32 *ptr, PRInt32 val);
 **    the macros and functions won't be compatible and can't be used
 **    interchangeably.
 */
-#if defined(_WIN32) && (_MSC_VER >= 1310)
+#if defined(_WIN32) && !defined(_WIN32_WCE) && \
+    (!defined(_MSC_VER) || (_MSC_VER >= 1310))
 
 long __cdecl _InterlockedIncrement(long volatile *Addend);
-#pragma intrinsic(_InterlockedIncrement)
-
 long __cdecl _InterlockedDecrement(long volatile *Addend);
-#pragma intrinsic(_InterlockedDecrement)
-
 long __cdecl _InterlockedExchange(long volatile *Target, long Value);
-#pragma intrinsic(_InterlockedExchange)
-
 long __cdecl _InterlockedExchangeAdd(long volatile *Addend, long Value);
-#pragma intrinsic(_InterlockedExchangeAdd)
 
-#define PR_ATOMIC_INCREMENT(val) _InterlockedIncrement(val)
-#define PR_ATOMIC_DECREMENT(val) _InterlockedDecrement(val)
-#define PR_ATOMIC_SET(val, newval) _InterlockedExchange(val, newval)
-#define PR_ATOMIC_ADD(ptr, val) (_InterlockedExchangeAdd(ptr, val) + (val))
+#ifdef _MSC_VER
+#pragma intrinsic(_InterlockedIncrement)
+#pragma intrinsic(_InterlockedDecrement)
+#pragma intrinsic(_InterlockedExchange)
+#pragma intrinsic(_InterlockedExchangeAdd)
+#endif
+
+#define PR_ATOMIC_INCREMENT(val) _InterlockedIncrement((long volatile *)(val))
+#define PR_ATOMIC_DECREMENT(val) _InterlockedDecrement((long volatile *)(val))
+#define PR_ATOMIC_SET(val, newval) \
+        _InterlockedExchange((long volatile *)(val), (long)(newval))
+#define PR_ATOMIC_ADD(ptr, val) \
+        (_InterlockedExchangeAdd((long volatile *)(ptr), (long)(val)) + (val))
 
 #elif ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)) && \
-      ((defined(DARWIN) && \
-           (defined(__ppc__) || defined(__i386__))) || \
-       (defined(LINUX) && \
-           (defined(__i386__) || defined(__ia64__) || defined(__x86_64__) || \
+      ((defined(__APPLE__) && \
+           (defined(__ppc__) || defined(__i386__) || defined(__x86_64__))) || \
+       (defined(__linux__) && \
+           ((defined(__i386__) && \
+           defined(__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4)) || \
+           defined(__ia64__) || defined(__x86_64__) || \
            (defined(__powerpc__) && !defined(__powerpc64__)) || \
+           (defined(__arm__) && \
+           defined(__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4)) || \
            defined(__alpha))))
 
 /*

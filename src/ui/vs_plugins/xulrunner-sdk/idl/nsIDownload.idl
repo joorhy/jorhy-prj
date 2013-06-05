@@ -1,45 +1,12 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Blake Ross <blaker@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsITransfer.idl"
 
 interface nsIURI;
-interface nsILocalFile;
+interface nsIFile;
 interface nsIObserver;
 interface nsICancelable;
 interface nsIWebProgressListener;
@@ -57,13 +24,13 @@ interface nsIMIMEInfo;
  *       nsIDownloadManager::DOWNLOAD_DIRTY 
  *       nsIDownloadManager::DOWNLOAD_BLOCKED_POLICY 
  */
-[scriptable, uuid(c891111e-92a6-47b8-bc46-874ebb61ac9d)]
+[scriptable, uuid(b02be33b-d47c-4bd3-afd9-402a942426b0)]
 interface nsIDownload : nsITransfer {
     
     /**
      * The target of a download is always a file on the local file system.
      */
-    readonly attribute nsILocalFile targetFile;
+    readonly attribute nsIFile targetFile;
 
     /**
      * The percentage of transfer completed.
@@ -115,15 +82,27 @@ interface nsIDownload : nsITransfer {
 
     /**
      * Optional. If set, it will contain the target's relevant MIME information.
-     * This includes it's MIME Type, helper app, and whether that helper should be
+     * This includes its MIME Type, helper app, and whether that helper should be
      * executed.
      */
     readonly attribute nsIMIMEInfo MIMEInfo;
 
     /**
-     * The id of the download that is stored in the database.
+     * The id of the download that is stored in the database - not globally unique.
+     * For example, a private download and a public one might have identical ids.
+     * Can only be safely used for direct database manipulation in the database that
+     * contains this download. Use the guid property instead for safe, database-agnostic
+     * searching and manipulation.
+     *
+     * @deprecated
      */
     readonly attribute unsigned long id;
+
+    /**
+     * The guid of the download that is stored in the database.
+     * Has the form of twelve alphanumeric characters.
+     */
+    readonly attribute ACString guid;
 
     /**
      * The state of the download.
@@ -143,10 +122,54 @@ interface nsIDownload : nsITransfer {
      * server supports it.
      */
     readonly attribute boolean resumable;
+
+    /**
+     * Indicates if the download was initiated from a context marked as private,
+     * controlling whether it should be stored in a permanent manner or not.
+     */
+    readonly attribute boolean isPrivate;
+
+    /**
+     * Cancel this download if it's currently in progress.
+     */
+    void cancel();
+
+    /**
+     * Pause this download if it is in progress.
+     *
+     * @throws NS_ERROR_UNEXPECTED if it cannot be paused.
+     */
+    void pause();
+
+    /**
+     * Resume this download if it is paused.
+     *
+     * @throws NS_ERROR_UNEXPECTED if it cannot be resumed or is not paused.
+     */
+    void resume();
+
+    /**
+     * Instruct the download manager to remove this download. Whereas
+     * cancel simply cancels the transfer, but retains information about it,
+     * remove removes all knowledge of it.
+     *
+     * @see nsIDownloadManager.removeDownload for more detail
+     * @throws NS_ERROR_FAILURE if the download is active.
+     */
+    void remove();
+
+    /**
+     * Instruct the download manager to retry this failed download
+     * @throws NS_ERROR_NOT_AVAILABLE if the download is not known.
+     * @throws NS_ERROR_FAILURE if the download is not in the following states:
+     *         nsIDownloadManager::DOWNLOAD_CANCELED
+     *         nsIDownloadManager::DOWNLOAD_FAILED
+     */
+    void retry();
 };
 
 %{C++
-// {E3FA9D0A-1DD1-11B2-BDEF-8C720B597445}
+// {b02be33b-d47c-4bd3-afd9-402a942426b0}
 #define NS_DOWNLOAD_CID \
-    { 0xe3fa9d0a, 0x1dd1, 0x11b2, { 0xbd, 0xef, 0x8c, 0x72, 0x0b, 0x59, 0x74, 0x45 } }
+  { 0xb02be33b, 0xd47c, 0x4bd3, { 0xaf, 0xd9, 0x40, 0x2a, 0x94, 0x24, 0x26, 0xb0 } }
 %}

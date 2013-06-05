@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is Robert Sayre.
- *
- * Portions created by the Initial Developer are Copyright (C) 2005
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsIStreamListener.idl"
 
@@ -46,6 +14,7 @@ interface nsISAXDTDHandler;
 interface nsISAXEntityResolver;
 interface nsISAXErrorHandler;
 interface nsISAXLexicalHandler;
+interface nsIMozSAXXMLDeclarationHandler;
 
 /**
  * Interface for reading an XML document using callbacks.
@@ -56,7 +25,7 @@ interface nsISAXLexicalHandler;
  * handlers for document processing, and to initiate a document
  * parse.
  */
-[scriptable, uuid(5556997e-d816-4218-8b54-803d4261206e)]
+[scriptable, uuid(5b1de802-9091-454f-9972-5753c0d0c70e)]
 interface nsISAXXMLReader : nsIStreamListener {
 
   /**
@@ -100,6 +69,14 @@ interface nsISAXXMLReader : nsIStreamListener {
   attribute nsISAXErrorHandler errorHandler;
 
   /**
+   * A handler for the (optional) XML declaration of a document.
+   * <?xml version='1.0'?>
+   *
+   * @note This is not part of the SAX standard.
+   */
+  attribute nsIMozSAXXMLDeclarationHandler declarationHandler;
+
+  /**
    * If the application does not register a lexical handler, all
    * lexical events (e.g. startDTD) reported by the SAX parser will be
    * silently ignored.
@@ -111,7 +88,7 @@ interface nsISAXXMLReader : nsIStreamListener {
   attribute nsISAXLexicalHandler lexicalHandler;
 
   /**
-   * Set the value of a feature flag. NOT CURRENTLY IMPLEMENTED.
+   * Set the value of a feature flag.
    *
    * The feature name is any fully-qualified URI.  It is possible
    * for an XMLReader to expose a feature value but to be unable to
@@ -125,11 +102,15 @@ interface nsISAXXMLReader : nsIStreamListener {
    *
    * @param name String flag for a parser feature.
    * @param value Turn the feature on/off.
+   *
+   * @note This is currently supported only for
+   * http://xml.org/sax/features/namespace-prefixes .  All other
+   * features will result in a NOT_IMPLEMENTED exception.
    */
   void setFeature(in AString name, in boolean value);
 
   /**
-   * Look up the value of a feature flag. NOT CURRENTLY IMPLEMENTED.
+   * Look up the value of a feature flag.
    *
    * The feature name is any fully-qualified URI.  It is
    * possible for an XMLReader to recognize a feature name but
@@ -142,6 +123,10 @@ interface nsISAXXMLReader : nsIStreamListener {
    * http://xml.org/sax/features/namespace-prefixes feature names.
    *
    * @param name String flag for a parser feature.
+   *
+   * @note This is currently supported only for
+   * http://xml.org/sax/features/namespace-prefixes .  All other
+   * features will result in a NOT_IMPLEMENTED exception.
    */
   boolean getFeature(in AString name);
 

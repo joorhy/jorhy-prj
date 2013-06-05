@@ -1,43 +1,8 @@
 /* -*- Mode: IDL; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Mozilla Communicator client code, released
- * March 31, 1998.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   John Bandhauer <jband@netscape.com> (original author)
- *   Nate Nielsen <nielsen@memberwebs.com> 
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /* The core XPConnect public interfaces. */
 
@@ -50,99 +15,35 @@
 #include "nsIInterfaceInfoManager.idl"
 #include "nsIExceptionService.idl"
 #include "nsIVariant.idl"
+#include "nsIObjectOutputStream.idl"
+#include "nsIObjectInputStream.idl"
 
 %{ C++
 #include "jspubtd.h"
 #include "xptinfo.h"
 #include "nsAXPCNativeCallContext.h"
+
+class nsWrapperCache;
 %}
 
 /***************************************************************************/
 
+// NB: jsval and jsid are declared in nsIVariant.idl
+
 [ptr] native JSContextPtr(JSContext);
+[ptr] native JSClassPtr(JSClass);
+[ptr] native JSFreeOpPtr(JSFreeOp);
 [ptr] native JSObjectPtr(JSObject);
 [ptr] native JSValPtr(jsval);
-      native JSVal(jsval);
-[ptr] native JSClassConstPtr(const JSClass);
-      native JSGetObjectOps(JSGetObjectOps);
-      native JSID(jsid);
+[ptr] native JSValConstPtr(const jsval);
+      native JSPropertyOp(JSPropertyOp);
+      native JSEqualityOp(JSEqualityOp);
+[ptr] native JSScriptPtr(JSScript);
 [ptr] native voidPtrPtr(void*);
 [ptr] native nsScriptObjectTracerPtr(nsScriptObjectTracer);
 [ref] native nsCCTraversalCallbackRef(nsCycleCollectionTraversalCallback);
 [ptr] native nsAXPCNativeCallContextPtr(nsAXPCNativeCallContext);
-
-/***************************************************************************/
-
-%{ C++
-/***************************************************************************/
-#define GENERATE_XPC_FAILURE(x) \
-            (NS_ERROR_GENERATE_FAILURE(NS_ERROR_MODULE_XPCONNECT,x))
-
-#define NS_ERROR_XPC_NOT_ENOUGH_ARGS                   GENERATE_XPC_FAILURE( 1)
-#define NS_ERROR_XPC_NEED_OUT_OBJECT                   GENERATE_XPC_FAILURE( 2)
-#define NS_ERROR_XPC_CANT_SET_OUT_VAL                  GENERATE_XPC_FAILURE( 3)
-#define NS_ERROR_XPC_NATIVE_RETURNED_FAILURE           GENERATE_XPC_FAILURE( 4)
-#define NS_ERROR_XPC_CANT_GET_INTERFACE_INFO           GENERATE_XPC_FAILURE( 5)
-#define NS_ERROR_XPC_CANT_GET_PARAM_IFACE_INFO         GENERATE_XPC_FAILURE( 6)
-#define NS_ERROR_XPC_CANT_GET_METHOD_INFO              GENERATE_XPC_FAILURE( 7)
-#define NS_ERROR_XPC_UNEXPECTED                        GENERATE_XPC_FAILURE( 8)
-#define NS_ERROR_XPC_BAD_CONVERT_JS                    GENERATE_XPC_FAILURE( 9)
-#define NS_ERROR_XPC_BAD_CONVERT_NATIVE                GENERATE_XPC_FAILURE(10)
-#define NS_ERROR_XPC_BAD_CONVERT_JS_NULL_REF           GENERATE_XPC_FAILURE(11)
-#define NS_ERROR_XPC_BAD_OP_ON_WN_PROTO                GENERATE_XPC_FAILURE(12)
-#define NS_ERROR_XPC_CANT_CONVERT_WN_TO_FUN            GENERATE_XPC_FAILURE(13)
-#define NS_ERROR_XPC_CANT_DEFINE_PROP_ON_WN            GENERATE_XPC_FAILURE(14)
-#define NS_ERROR_XPC_CANT_WATCH_WN_STATIC              GENERATE_XPC_FAILURE(15)
-#define NS_ERROR_XPC_CANT_EXPORT_WN_STATIC             GENERATE_XPC_FAILURE(16)
-#define NS_ERROR_XPC_SCRIPTABLE_CALL_FAILED            GENERATE_XPC_FAILURE(17)
-#define NS_ERROR_XPC_SCRIPTABLE_CTOR_FAILED            GENERATE_XPC_FAILURE(18)
-#define NS_ERROR_XPC_CANT_CALL_WO_SCRIPTABLE           GENERATE_XPC_FAILURE(19)
-#define NS_ERROR_XPC_CANT_CTOR_WO_SCRIPTABLE           GENERATE_XPC_FAILURE(20)
-#define NS_ERROR_XPC_CI_RETURNED_FAILURE               GENERATE_XPC_FAILURE(21)
-#define NS_ERROR_XPC_GS_RETURNED_FAILURE               GENERATE_XPC_FAILURE(22)
-#define NS_ERROR_XPC_BAD_CID                           GENERATE_XPC_FAILURE(23)
-#define NS_ERROR_XPC_BAD_IID                           GENERATE_XPC_FAILURE(24)
-#define NS_ERROR_XPC_CANT_CREATE_WN                    GENERATE_XPC_FAILURE(25)
-#define NS_ERROR_XPC_JS_THREW_EXCEPTION                GENERATE_XPC_FAILURE(26)
-#define NS_ERROR_XPC_JS_THREW_NATIVE_OBJECT            GENERATE_XPC_FAILURE(27)
-#define NS_ERROR_XPC_JS_THREW_JS_OBJECT                GENERATE_XPC_FAILURE(28)
-#define NS_ERROR_XPC_JS_THREW_NULL                     GENERATE_XPC_FAILURE(29)
-#define NS_ERROR_XPC_JS_THREW_STRING                   GENERATE_XPC_FAILURE(30)
-#define NS_ERROR_XPC_JS_THREW_NUMBER                   GENERATE_XPC_FAILURE(31)
-#define NS_ERROR_XPC_JAVASCRIPT_ERROR                  GENERATE_XPC_FAILURE(32)
-#define NS_ERROR_XPC_JAVASCRIPT_ERROR_WITH_DETAILS     GENERATE_XPC_FAILURE(33)
-#define NS_ERROR_XPC_CANT_CONVERT_PRIMITIVE_TO_ARRAY   GENERATE_XPC_FAILURE(34)
-#define NS_ERROR_XPC_CANT_CONVERT_OBJECT_TO_ARRAY      GENERATE_XPC_FAILURE(35)
-#define NS_ERROR_XPC_NOT_ENOUGH_ELEMENTS_IN_ARRAY      GENERATE_XPC_FAILURE(36)
-#define NS_ERROR_XPC_CANT_GET_ARRAY_INFO               GENERATE_XPC_FAILURE(37)
-#define NS_ERROR_XPC_NOT_ENOUGH_CHARS_IN_STRING        GENERATE_XPC_FAILURE(38)
-#define NS_ERROR_XPC_SECURITY_MANAGER_VETO             GENERATE_XPC_FAILURE(39)
-#define NS_ERROR_XPC_INTERFACE_NOT_SCRIPTABLE          GENERATE_XPC_FAILURE(40)
-#define NS_ERROR_XPC_INTERFACE_NOT_FROM_NSISUPPORTS    GENERATE_XPC_FAILURE(41)
-#define NS_ERROR_XPC_CANT_GET_JSOBJECT_OF_DOM_OBJECT   GENERATE_XPC_FAILURE(42)
-#define NS_ERROR_XPC_CANT_SET_READ_ONLY_CONSTANT       GENERATE_XPC_FAILURE(43)
-#define NS_ERROR_XPC_CANT_SET_READ_ONLY_ATTRIBUTE      GENERATE_XPC_FAILURE(44)
-#define NS_ERROR_XPC_CANT_SET_READ_ONLY_METHOD         GENERATE_XPC_FAILURE(45)
-#define NS_ERROR_XPC_CANT_ADD_PROP_TO_WRAPPED_NATIVE   GENERATE_XPC_FAILURE(46)
-#define NS_ERROR_XPC_CALL_TO_SCRIPTABLE_FAILED         GENERATE_XPC_FAILURE(47)
-#define NS_ERROR_XPC_JSOBJECT_HAS_NO_FUNCTION_NAMED    GENERATE_XPC_FAILURE(48)
-#define NS_ERROR_XPC_BAD_ID_STRING                     GENERATE_XPC_FAILURE(49)
-#define NS_ERROR_XPC_BAD_INITIALIZER_NAME              GENERATE_XPC_FAILURE(50)
-#define NS_ERROR_XPC_HAS_BEEN_SHUTDOWN                 GENERATE_XPC_FAILURE(51)
-#define NS_ERROR_XPC_CANT_MODIFY_PROP_ON_WN            GENERATE_XPC_FAILURE(52)
-#define NS_ERROR_XPC_BAD_CONVERT_JS_ZERO_ISNOT_NULL    GENERATE_XPC_FAILURE(53)
-
-#ifdef XPC_IDISPATCH_SUPPORT
-// IDispatch support related errors
-#define NS_ERROR_XPC_COM_UNKNOWN                       GENERATE_XPC_FAILURE(54)
-#define NS_ERROR_XPC_COM_ERROR                         GENERATE_XPC_FAILURE(55)
-#define NS_ERROR_XPC_COM_INVALID_CLASS_ID              GENERATE_XPC_FAILURE(56)
-#define NS_ERROR_XPC_COM_CREATE_FAILED                 GENERATE_XPC_FAILURE(57)
-#define NS_ERROR_XPC_IDISPATCH_NOT_ENABLED             GENERATE_XPC_FAILURE(58)
-#endif
-// any new errors here should have an associated entry added in xpc.msg
-/***************************************************************************/
-%}
+[ptr] native nsWrapperCachePtr(nsWrapperCache);
 
 /***************************************************************************/
 
@@ -166,7 +67,7 @@ interface nsIXPConnectJSObjectHolder : nsISupports
     readonly attribute JSObjectPtr      JSObject;
 };
 
-[uuid(7021D99D-6344-4CC0-96E7-943ED58792B8)]
+[uuid(92e98688-0154-4b65-971b-0d4afe8fd7cb)]
 interface nsIXPConnectWrappedNative : nsIXPConnectJSObjectHolder
 {
     /* attribute 'JSObject' inherited from nsIXPConnectJSObjectHolder */
@@ -178,12 +79,20 @@ interface nsIXPConnectWrappedNative : nsIXPConnectJSObjectHolder
      */
 
     readonly attribute nsIXPConnect XPConnect;
-    nsIInterfaceInfo FindInterfaceWithMember(in JSVal nameID);
-    nsIInterfaceInfo FindInterfaceWithName(in JSVal nameID);
+    nsIInterfaceInfo FindInterfaceWithMember(in jsid nameID);
+    nsIInterfaceInfo FindInterfaceWithName(in jsid nameID);
+    [notxpcom] bool HasNativeMember(in jsid name);
 
     void debugDump(in short depth);
 
-    void refreshPrototype();
+    /*
+     * This finishes initializing a wrapped global, doing the parts that we
+     * couldn't do while the global and window were being simultaneously
+     * bootstrapped. This should be called exactly once, and only for wrapped
+     * globals.
+     */
+    void finishInitForWrappedGlobal();
+
     /* 
      * This returns a pointer into the instance and care should be taken
      * to make sure the pointer is not kept past the life time of the
@@ -203,16 +112,6 @@ interface nsIXPConnectWrappedNative : nsIXPConnectJSObjectHolder
      */
     nsISupports* Native() const { return mIdentity; }
 
-#ifndef XPCONNECT_STANDALONE
-    /**
-     * Get the object principal for this wrapper.  Note that this may well end
-     * up being null; in that case one should seek principals elsewhere.  Null
-     * here does NOT indicate system principal or no principals at all, just
-     * that this wrapper doesn't have an intrinsic one.
-     */
-    virtual nsIPrincipal* GetObjectPrincipal() const = 0;
-#endif
-    
 protected:
     nsISupports *mIdentity;
 public:
@@ -263,7 +162,7 @@ interface nsIXPConnectWrappedJS : nsIXPConnectJSObjectHolder
  *
  * That activity is...
  *
- * When JavaScript code uses a component that is itself implemeted in
+ * When JavaScript code uses a component that is itself implemented in
  * JavaScript then XPConnect will build a wrapper rather than directly
  * expose the JSObject of the component. This allows components implemented
  * in JavaScript to 'look' just like any other xpcom component (from the
@@ -372,27 +271,12 @@ interface nsIXPCWrappedJSObjectGetter : nsISupports
  *
  * If a null interface pointer is returned then xpconnect will use the default
  * 'this' - the same JSObject as the function object it is calling.
- *
- * The translator can also return a non-null aIIDOfResult to tell xpconnect what
- * type of wrapper to build. If that is null then xpconnect will assume the
- * wrapper should be for nsISupports. For objects that support flattening -
- * i.e. expose nsIClassInfo and that interface's getInterfaces method - then
- * a flattened wrapper will be created and no iid was really necessary.
- *
- * XXX aHideFirstParamFromJS is intended to allow the trimming of that first
- * param (used to indicate 'this') from the actual call to the JS code. The JS
- * DOM does not require this functionality and it is **NOT YET IMPLEMENTED**
- *
  */
 
-[uuid(039ef260-2a0d-11d5-90a7-0010a4e73d9a)]
+[uuid(f5f84b70-92eb-41f1-a1dd-2eaac0ed564c)]
 interface nsIXPCFunctionThisTranslator : nsISupports
 {
-    nsISupports TranslateThis(in nsISupports        aInitialThis,
-                              in nsIInterfaceInfo   aInterfaceInfo,
-                              in PRUint16           aMethodIndex,
-                              out PRBool            aHideFirstParamFromJS,
-                              out nsIIDPtr          aIIDOfResult);
+    nsISupports TranslateThis(in nsISupports aInitialThis);
 };
 
 /***************************************************************************/
@@ -405,26 +289,44 @@ interface nsIXPCFunctionThisTranslator : nsISupports
     { 0xbd, 0xd6, 0x0, 0x0, 0x64, 0x65, 0x73, 0x74 } }
 %}
 
-[uuid(c1d4a482-1beb-4c82-9c0b-d2ab93acc7ef)]
+[uuid(3e825850-3a5f-11e2-81c1-0800200c9a66)]
 interface nsIXPConnect : nsISupports
 {
 %{ C++
   NS_DEFINE_STATIC_CID_ACCESSOR(NS_XPCONNECT_CID)
 %}
 
+    /**
+     * Initializes classes on a global object that has already been created.
+     */
     void
     initClasses(in JSContextPtr aJSContext,
                 in JSObjectPtr  aGlobalJSObj);
 
+    /**
+     * Creates a new global object using the given aCOMObj as the global
+     * object. The object will be set up according to the flags (defined
+     * below). If you do not pass INIT_JS_STANDARD_CLASSES, then aCOMObj
+     * must implement nsIXPCScriptable so it can resolve the standard
+     * classes when asked by the JS engine.
+     *
+     * @param aJSContext the context to use while creating the global object.
+     * @param aCOMObj the native object that represents the global object.
+     * @param aPrincipal the principal of the code that will run in this
+     *                   compartment. Can be null if not on the main thread.
+     * @param aFlags one of the flags below specifying what options this
+     *               global object wants.
+     */
     nsIXPConnectJSObjectHolder
     initClassesWithNewWrappedGlobal(
                   in JSContextPtr aJSContext,
                   in nsISupports  aCOMObj,
-                  in nsIIDRef     aIID,
-                  in PRUint32     aFlags);
+                  in nsIPrincipal aPrincipal,
+                  in uint32_t     aFlags);
 
-    const PRUint32 INIT_JS_STANDARD_CLASSES  = 1 << 0;
-    const PRUint32 FLAG_SYSTEM_GLOBAL_OBJECT = 1 << 1;
+    const uint32_t INIT_JS_STANDARD_CLASSES  = 1 << 0;
+    // Free bit here!
+    const uint32_t OMIT_COMPONENTS_OBJECT    = 1 << 2;
 
     /**
     * wrapNative will create a new JSObject or return an existing one.
@@ -442,9 +344,6 @@ interface nsIXPConnect : nsISupports
     *     as an nsIXPConnectWrappedNative.
     *  2) The xpcom object is in fact a nsIXPConnectWrappedJS and thus already
     *     has an underlying JSObject.
-    *  3) The xpcom object implements nsIScriptObjectOwner; i.e. is an idlc
-    *     style DOM object for which we can call GetScriptObject to get the
-    *     JSObject it uses to represent itself into JavaScript.
     *
     * It *might* be possible to QueryInterface the nsIXPConnectJSObjectHolder
     * returned by the method into a nsIXPConnectWrappedNative or a
@@ -466,6 +365,30 @@ interface nsIXPConnect : nsISupports
                in JSObjectPtr  aScope,
                in nsISupports  aCOMObj,
                in nsIIDRef     aIID);
+
+    /**
+     * Same as wrapNative, but also returns the JSObject in aVal. C++ callers
+     * can pass in null for the aHolder argument, but in that case they must
+     * ensure that aVal is rooted.
+     * aIID may be null, it means the same as passing in
+     * &NS_GET_IID(nsISupports) but when passing in null certain shortcuts
+     * can be taken because we know without comparing IIDs that the caller is
+     * asking for an nsISupports wrapper.
+     * If aAllowWrapper, then the returned value will be wrapped in the proper
+     * type of security wrapper on top of the XPCWrappedNative (if needed).
+     * This method doesn't push aJSContext on the context stack, so the caller
+     * is required to push it if the top of the context stack is not equal to
+     * aJSContext.
+     */
+    void
+    wrapNativeToJSVal(in JSContextPtr aJSContext,
+                      in JSObjectPtr  aScope,
+                      in nsISupports  aCOMObj,
+                      in nsWrapperCachePtr aCache,
+                      in nsIIDPtr     aIID,
+                      in boolean      aAllowWrapper,
+                      out jsval       aVal,
+                      out nsIXPConnectJSObjectHolder aHolder);
 
     /**
     * wrapJS will yield a new or previously existing xpcom interface pointer
@@ -497,6 +420,12 @@ interface nsIXPConnect : nsISupports
            [iid_is(aIID),retval] out nsQIResult result);
 
     /**
+     * Wraps the given jsval in a nsIVariant and returns the new variant.
+     */
+    nsIVariant
+    jSValToVariant(in JSContextPtr cx, in JSValPtr aJSVal);
+
+    /**
     * This only succeeds if the JSObject is a nsIXPConnectWrappedNative.
     * A new wrapper is *never* constructed.
     */
@@ -504,61 +433,54 @@ interface nsIXPConnect : nsISupports
     getWrappedNativeOfJSObject(in JSContextPtr aJSContext,
                                in JSObjectPtr  aJSObj);
 
+    [noscript, notxpcom] nsISupports
+    getNativeOfWrapper(in JSContextPtr aJSContext,
+                       in JSObjectPtr  aJSObj);
+
+    JSObjectPtr
+    getJSObjectOfWrapper(in JSContextPtr aJSContext,
+                         in JSObjectPtr  aJSObj);
+
     void setSecurityManagerForJSContext(in JSContextPtr aJSContext,
                                         in nsIXPCSecurityManager aManager,
-                                        in PRUint16 flags);
+                                        in uint16_t flags);
 
     void getSecurityManagerForJSContext(in JSContextPtr aJSContext,
                                         out nsIXPCSecurityManager aManager,
-                                        out PRUint16 flags);
+                                        out uint16_t flags);
 
     /**
     * The security manager to use when the current JSContext has no security
     * manager.
     */
     void setDefaultSecurityManager(in nsIXPCSecurityManager aManager,
-                                   in PRUint16 flags);
+                                   in uint16_t flags);
 
     void getDefaultSecurityManager(out nsIXPCSecurityManager aManager,
-                                   out PRUint16 flags);
+                                   out uint16_t flags);
 
     nsIStackFrame
-    createStackFrameLocation(in PRUint32       aLanguage,
+    createStackFrameLocation(in uint32_t       aLanguage,
                              in string         aFilename,
                              in string         aFunctionName,
-                             in PRInt32        aLineNumber,
+                             in int32_t        aLineNumber,
                              in nsIStackFrame  aCaller);
 
     /**
-    * XPConnect builds internal objects that parallel, and are one-to-one with,
-    * the JSContexts in the JSRuntime. It builds these objects as needed.
-    * This method tells XPConnect to resynchronize its representations with the
-    * list of JSContexts currently 'alive' in the JSRuntime. This allows it
-    * to cleanup any representations of JSContexts that are no longer valid.
+    * @deprecated do-nothing function.
     */
-    void syncJSContexts();
+    [deprecated] void syncJSContexts();
 
     readonly attribute nsIStackFrame                CurrentJSStack;
     readonly attribute nsAXPCNativeCallContextPtr   CurrentNativeCallContext;
-    /* pass nsnull to clear pending exception */
-             attribute nsIException                 PendingException;
 
     void debugDump(in short depth);
     void debugDumpObject(in nsISupports aCOMObj, in short depth);
-    void debugDumpJSStack(in PRBool showArgs,
-                          in PRBool showLocals,
-                          in PRBool showThisProps);
-    void debugDumpEvalInJSStackFrame(in PRUint32 aFrameNumber,
+    void debugDumpJSStack(in boolean showArgs,
+                          in boolean showLocals,
+                          in boolean showThisProps);
+    void debugDumpEvalInJSStackFrame(in uint32_t aFrameNumber,
                                      in string aSourceText);
-
-    /**
-    * Set fallback JSContext to use when xpconnect can't find an appropriate
-    * context to use to execute JavaScript.
-    *
-    * NOTE: This method is DEPRECATED. 
-    *       Use nsIThreadJSContextStack::safeJSContext instead.
-    */
-    void setSafeJSContextForCurrentThread(in JSContextPtr cx);
 
     /**
     * wrapJSAggregatedToNative is just like wrapJS except it is used in cases
@@ -593,22 +515,17 @@ interface nsIXPConnect : nsISupports
                                    in nsISupports  aCOMObj,
                                    in nsIIDRef     aIID);
 
-    nsIXPCFunctionThisTranslator
-    getFunctionThisTranslator(in nsIIDRef aIID);
-
-    nsIXPCFunctionThisTranslator
+    void
     setFunctionThisTranslator(in nsIIDRef aIID,
                               in nsIXPCFunctionThisTranslator aTranslator);
 
-    nsIXPConnectJSObjectHolder
+    void
     reparentWrappedNativeIfFound(in JSContextPtr aJSContext,
                                  in JSObjectPtr  aScope,
                                  in JSObjectPtr  aNewParent,
                                  in nsISupports  aCOMObj);
     void
-    reparentScopeAwareWrappers(in JSContextPtr aJSContext,
-                               in JSObjectPtr  aOldScope,
-                               in JSObjectPtr  aNewScope);
+    rescueOrphansInScope(in JSContextPtr aJSContext, in JSObjectPtr  aScope);
 
     void clearAllWrappedNativeSecurityPolicies();
 
@@ -617,36 +534,10 @@ interface nsIXPConnect : nsISupports
                               in JSObjectPtr  aScope,
                               in nsIClassInfo aClassInfo);
 
-    void releaseJSContext(in JSContextPtr aJSContext, in PRBool noGC);
+    void releaseJSContext(in JSContextPtr aJSContext, in boolean noGC);
 
-    JSVal variantToJS(in JSContextPtr ctx, in JSObjectPtr scope, in nsIVariant value);
-    nsIVariant JSToVariant(in JSContextPtr ctx, in JSVal value);
-
-    /**
-     * Preconfigure XPCNativeWrapper automation so that when a scripted
-     * caller whose filename starts with filenamePrefix accesses a wrapped
-     * native that is not flagged as "system", the wrapped native will be
-     * automatically wrapped with an XPCNativeWrapper.
-     *
-     * @param aFilenamePrefix the UTF-8 filename prefix to match, which
-     *                        should end with a slash (/) character
-     * @param aWantNativeWrappers whether XPConnect should produce native
-     *                            wrappers for scripts whose paths begin
-     *                            with this prefix
-     */
-    void flagSystemFilenamePrefix(in string aFilenamePrefix,
-                                  in PRBool aWantNativeWrappers);
-
-    /**
-     * Restore an old prototype for wrapped natives of type
-     * aClassInfo. This should be used only when restoring an old
-     * scope into a state close to where it was prior to
-     * being reinitialized.
-     */
-    void restoreWrappedNativePrototype(in JSContextPtr aJSContext,
-                                       in JSObjectPtr  aScope,
-                                       in nsIClassInfo aClassInfo,
-                                       in nsIXPConnectJSObjectHolder aPrototype);
+    jsval variantToJS(in JSContextPtr ctx, in JSObjectPtr scope, in nsIVariant value);
+    nsIVariant JSToVariant(in JSContextPtr ctx, in jsval value);
 
     /**
      * Create a sandbox for evaluating code in isolation using
@@ -677,50 +568,30 @@ interface nsIXPConnect : nsISupports
      *         is responsible for rooting the jsval before making a call
      *         to this method.
      */
-    [noscript] JSVal evalInSandboxObject(in AString source, in JSContextPtr cx,
+    [noscript] jsval evalInSandboxObject(in AString source, in JSContextPtr cx,
                                          in nsIXPConnectJSObjectHolder sandbox,
-                                         in PRBool returnStringOnly);
-
-    /**
-     * Wrap a jsval in a cross origin wrapper.
-     * @param aJSContext A context to use to create objects.
-     * @param aParent The parent to create the wrapper with.
-     * @param aWrappedObj The object to wrap.
-     */
-    [noscript] JSVal getXOWForObject(in JSContextPtr aJSContext,
-                                     in JSObjectPtr aParent,
-                                     in JSObjectPtr aWrappedObj);
-
-    /**
-     * Tells updateXOWs to clear the scope of all of the XOWs it finds.
-     */
-    const PRUint32 XPC_XOW_CLEARSCOPE = 1;
-
-    /**
-     * Performs an operation over all of |object|'s XOWs such as clearing
-     * their scopes or updating their concept of the current principal.
-     *
-     * @param aJSContext A context to use to perform JS operations.
-     * @param aObject Which XPCWrappedNative we should find the XOWs for.
-     * @param aWay What operation to perform.
-     */
-    [noscript] void updateXOWs(in JSContextPtr aJSContext,
-                               in nsIXPConnectWrappedNative aObject,
-                               in PRUint32 aWay);
+                                         in boolean returnStringOnly);
 
     /**
      * Root JS objects held by aHolder.
      * @param aHolder The object that hold the JS objects that should be rooted.
      * @param aTrace The tracer for aHolder.
      */
-    [noscript] void addJSHolder(in voidPtr aHolder,
-                                in nsScriptObjectTracerPtr aTracer);
+    [noscript,notxpcom] void addJSHolder(in voidPtr aHolder,
+                                         in nsScriptObjectTracerPtr aTracer);
 
     /**
      * Stop rooting the JS objects held by aHolder.
      * @param aHolder The object that hold the rooted JS objects.
      */
-    [noscript] void removeJSHolder(in voidPtr aHolder);
+    [noscript,notxpcom] void removeJSHolder(in voidPtr aHolder);
+
+    /**
+     * Test to see if a JS holder is in our hashtable.
+     * Only available in debug builds.
+     * @param aHolder The object to test for.
+     */
+    [noscript,notxpcom] bool testJSHolder(in voidPtr aHolder);
 
     /**
      * Note aJSContext as a child to the cycle collector.
@@ -731,53 +602,73 @@ interface nsIXPConnect : nsISupports
                                            in nsCCTraversalCallbackRef aCb);
 
     /**
-     * Get the JSClass and JSGetObjectOps pointers to use for
-     * identifying JSObjects that hold nsIXPConnectWrappedNative
-     * pointers in their private date. See IS_WRAPPER_CLASS in
-     * xpcprivate.h for details.
-     */
-    void GetXPCWrappedNativeJSClassInfo(out JSClassConstPtr clazz,
-                                        out JSGetObjectOps ops1,
-                                        out JSGetObjectOps ops2);
-
-    /**
      * Whether or not XPConnect should report all JS exceptions when returning
      * from JS into C++. False by default, although any value set in the
      * MOZ_REPORT_ALL_JS_EXCEPTIONS environment variable will override the value
      * passed here.
      */
     void setReportAllJSExceptions(in boolean reportAllJSExceptions);
-};
 
-[uuid(2f82dcf3-b2b3-4841-8a00-6080c45c0a4c)]
-interface nsIXPConnect_1_9_0_BRANCH : nsIXPConnect
-{
     /**
-     * Returns a XPCNativeWrapper, XPCSafeJSObjectWrapper, or
-     * XPCCrossOriginWrapper for the given object based on the principal, scope,
-     * and filename flags that are passed in.
-     *
-     * @param aJSContext
-     *     A JSContext.
-     * @param aObject
-     *     The object to wrap.
-     * @param aScope
-     *     The scope to be used in the event that we create a
-     *     XPCCrossOriginWrapper. Can be null.
-     * @param aPrincipal
-     *     The principal that should be used for the wrapper. If this parameter
-     *     is given then aFilenameFlags will not be calculated and will be
-     *     assumed to be 0 unless another value is given. If this parameter is
-     *     null then aFilenameFlags will be calculated and the value of that
-     *     argument will be ignored.
-     * @param aFilenameFlags
-     *     The filename flags from the script that will use this wrapper. See
-     *     above (aPrincipal) for details.
+     * Trigger a JS garbage collection.
+     * Use a js::gcreason::Reason from jsfriendapi.h for the kind.
      */
-    [noscript] JSVal getWrapperForObject(
-        in JSContextPtr aJSContext,
-        in JSObjectPtr aObject,
-        in JSObjectPtr aScope,
-        in nsIPrincipal aPrincipal,
-        in unsigned long aFilenameFlags);
+    void GarbageCollect(in uint32_t reason);
+
+    /**
+     * Signals a good place to do an incremental GC slice, because the
+     * browser is drawing a frame.
+     */
+    void NotifyDidPaint();
+
+%{C++
+    /**
+     * Get the object principal for this wrapper.  Note that this may well end
+     * up being null; in that case one should seek principals elsewhere.  Null
+     * here does NOT indicate system principal or no principals at all, just
+     * that this wrapper doesn't have an intrinsic one.
+     */
+    virtual nsIPrincipal* GetPrincipal(JSObject* obj,
+                                       bool allowShortCircuit) const = 0;
+    virtual char* DebugPrintJSStack(bool showArgs,
+                                    bool showLocals,
+                                    bool showThisProps) = 0;
+%}
+
+    /**
+     * Creates a JS object holder around aObject that will hold the object
+     * alive for as long as the holder stays alive.
+     */
+    nsIXPConnectJSObjectHolder holdObject(in JSContextPtr aJSContext,
+                                          in JSObjectPtr aObject);
+
+    /**
+     * Return the caller object of the current call from JS.
+     */
+    [noscript,notxpcom] void getCaller(out JSContextPtr aJSContext,
+                                       out JSObjectPtr aObject);
+
+    /**
+     * When we place the browser in JS debug mode, there can't be any
+     * JS on the stack. This is because we currently activate debugMode 
+     * on all scripts in the JSRuntime when the debugger is activated.
+     * This method will turn debug mode on or off when the context 
+     * stack reaches zero length.
+     */
+    [noscript] void setDebugModeWhenPossible(in boolean mode,
+                                             in boolean allowSyncDisable);
+
+    [noscript] void writeScript(in nsIObjectOutputStream aStream,
+                                in JSContextPtr aJSContext,
+                                in JSScriptPtr aJSScript);
+
+    [noscript] JSScriptPtr readScript(in nsIObjectInputStream aStream,
+                                      in JSContextPtr aJSContext);
+
+    [noscript] void writeFunction(in nsIObjectOutputStream aStream,
+                                  in JSContextPtr aJSContext,
+                                  in JSObjectPtr aJSObject);
+
+    [noscript] JSObjectPtr readFunction(in nsIObjectInputStream aStream,
+                                        in JSContextPtr aJSContext);
 };

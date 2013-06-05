@@ -23,7 +23,7 @@ void X_PL_API JoPlayer::EndCBK(void *pdata)
 
 void JoPlayer::OnDisplayCbFunc( j_pl_mtime_t frame_time)
 {
-	if (frame_time - m_lastFrameTime >= 1000)
+	if (frame_time - m_lastFrameTime >= 1000 || frame_time - m_lastFrameTime <= 0)
 	{
 		PlManager::Instance()->VodCallBack(m_pPlWnd);
 		m_lastFrameTime = frame_time;
@@ -72,7 +72,6 @@ BOOL JoPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 		return FALSE;
 	
 	m_pPlWnd = hPlayWnd;
-
 	m_player->SetEndCBK(EndCBK,this);
 	
 	return TRUE;

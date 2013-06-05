@@ -5,10 +5,8 @@
 class ScriptablePluginObject : public ScriptablePluginObjectBase
 {
 public:
-	ScriptablePluginObject(NPP npp) : ScriptablePluginObjectBase(npp)
-	{
-
-	}
+	ScriptablePluginObject(NPP npp);
+	~ScriptablePluginObject();
 
 	virtual bool HasMethod(NPIdentifier name);
 	virtual bool HasProperty(NPIdentifier name);
@@ -20,6 +18,11 @@ public:
 private:
 	bool GetProperty(const char *pType, NPVariant *result);
 	bool SetProperty(const char *pType, const NPVariant *value);
+
+	NPObject *m_CallBkPtz;
+	NPObject *m_CallBkState;
+	NPObject *m_CallBkVod;
+	long volatile m_bCbReturn;
 };
 
 static NPObject *AllocateScriptablePluginObject(NPP npp, NPClass *aClass)

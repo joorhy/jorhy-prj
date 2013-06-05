@@ -236,8 +236,8 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 	while(true)
 	{
 		m_pullSwitch.Wait();
+		//j_pl_info("m_pullSwitch.Wait()\n");
 		ctl->m_state->GetVariable(&state);
-
 		switch(state)
 		{
 		case J_PL_NORMAL: break;
@@ -259,10 +259,6 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 			}
 
 			br = m_demux->DemuxBlock(accessdata,m_buffer);			//demux
-			//j_pl_info("demux\n");
-			//if(br != J_PL_NO_ERROR)
-			//	Sleep(30);
-
 			break;
 
 		case J_PL_END: 

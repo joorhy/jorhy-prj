@@ -1,41 +1,8 @@
 /* -*- Mode: IDL; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Mozilla browser.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications, Inc.
- * Portions created by the Initial Developer are Copyright (C) 1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Adam Lock <adamlock@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsICancelable.idl"
 
@@ -43,20 +10,19 @@ interface nsIURI;
 interface nsIInputStream;
 interface nsIDOMDocument;
 interface nsIWebProgressListener;
-interface nsILocalFile;
+interface nsIFile;
 interface nsIChannel;
+interface nsILoadContext;
 
 /**
  * Interface for persisting DOM documents and URIs to local or remote storage.
- *
- * @status UNDER_REVIEW
  */
-[scriptable, uuid(dd4e0a6a-210f-419a-ad85-40e8543b9465)]
+[scriptable, uuid(35c1f231-582b-4315-a26c-a1227e3539b4)]
 interface nsIWebBrowserPersist : nsICancelable
 {
   /** No special persistence behaviour. */
   const unsigned long PERSIST_FLAGS_NONE = 0;
-  /** Only use cached data (could result in failure if data is not cached). */
+  /** Use cached data if present (skipping validation), else load from network */
   const unsigned long PERSIST_FLAGS_FROM_CACHE = 1;
   /** Bypass the cached data. */
   const unsigned long PERSIST_FLAGS_BYPASS_CACHE = 2;
@@ -100,6 +66,11 @@ interface nsIWebBrowserPersist : nsICancelable
    */
   const unsigned long PERSIST_FLAGS_APPEND_TO_FILE = 32768;
 
+  /**
+   * Force relevant cookies to be sent with this load even if normally they
+   * wouldn't be.
+   */
+  const unsigned long PERSIST_FLAGS_FORCE_ALLOW_COOKIES = 65536;
 
   /**
    * Flags governing how data is fetched and saved from the network. 
@@ -128,7 +99,7 @@ interface nsIWebBrowserPersist : nsICancelable
    * @return NS_BINDING_ABORTED Operation cancelled.
    * @return NS_ERROR_FAILURE Non-specific failure.
    */
-  readonly attribute unsigned long result;
+  readonly attribute nsresult result;
 
   /**
    * Callback listener for progress notifications. The object that the
@@ -145,21 +116,28 @@ interface nsIWebBrowserPersist : nsICancelable
    * Save the specified URI to file.
    *
    * @param aURI       URI to save to file. Some implementations of this interface
-   *                   may also support <CODE>nsnull</CODE> to imply the currently
+   *                   may also support <CODE>nullptr</CODE> to imply the currently
    *                   loaded URI.
    * @param aCacheKey  An object representing the URI in the cache or
-   *                   <CODE>nsnull</CODE>.
+   *                   <CODE>nullptr</CODE>.  This can be a necko cache key,
+   *                   an nsIWebPageDescriptor, or the currentDescriptor of an
+   *                   nsIWebPageDescriptor.
    * @param aReferrer  The referrer URI to pass with an HTTP request or
-   *                   <CODE>nsnull</CODE>.
+   *                   <CODE>nullptr</CODE>.
    * @param aPostData  Post data to pass with an HTTP request or
-   *                   <CODE>nsnull</CODE>.
+   *                   <CODE>nullptr</CODE>.
    * @param aExtraHeaders Additional headers to supply with an HTTP request
-   *                   or <CODE>nsnull</CODE>.
-   * @param aFile      Target file. This may be a nsILocalFile object or an
+   *                   or <CODE>nullptr</CODE>.
+   * @param aFile      Target file. This may be a nsIFile object or an
    *                   nsIURI object with a file scheme or a scheme that
    *                   supports uploading (e.g. ftp).
+   * @param aPrivacyContext A context from which the privacy status of this
+   *                   save operation can be determined. Must only be null
+   *                   in situations in which no such context is available
+   *                   (eg. the operation has no logical association with any
+   *                   window or document)
    *
-   * @see nsILocalFile
+   * @see nsIFile
    * @see nsIURI
    * @see nsIInputStream
    *
@@ -168,7 +146,19 @@ interface nsIWebBrowserPersist : nsICancelable
    */
   void saveURI(in nsIURI aURI, in nsISupports aCacheKey,
       in nsIURI aReferrer, in nsIInputStream aPostData,
-      in string aExtraHeaders, in nsISupports aFile);
+      in string aExtraHeaders, in nsISupports aFile,
+      in nsILoadContext aPrivacyContext);
+
+  /**
+   * @param aIsPrivate Treat the save operation as private (ie. with
+   *                   regards to networking operations and persistence
+   *                   of intermediate data, etc.)
+   * @see saveURI for all other parameter descriptions
+   */
+  void savePrivacyAwareURI(in nsIURI aURI, in nsISupports aCacheKey,
+      in nsIURI aReferrer, in nsIInputStream aPostData,
+      in string aExtraHeaders, in nsISupports aFile,
+      in boolean aIsPrivate);
 
   /**
    * Save a channel to a file. It must not be opened yet.
@@ -253,24 +243,24 @@ interface nsIWebBrowserPersist : nsICancelable
    * document has finished loading!
    *
    * @param aDocument          Document to save to file. Some implementations of
-   *                           this interface may also support <CODE>nsnull</CODE>
+   *                           this interface may also support <CODE>nullptr</CODE>
    *                           to imply the currently loaded document.
-   * @param aFile              Target local file. This may be a nsILocalFile object or an
+   * @param aFile              Target local file. This may be a nsIFile object or an
    *                           nsIURI object with a file scheme or a scheme that
    *                           supports uploading (e.g. ftp).
    * @param aDataPath          Path to directory where URIs linked to the document
-   *                           are saved or nsnull if no linked URIs should be saved.
-   *                           This may be a nsILocalFile object or an nsIURI object
+   *                           are saved or nullptr if no linked URIs should be saved.
+   *                           This may be a nsIFile object or an nsIURI object
    *                           with a file scheme.
    * @param aOutputContentType The desired MIME type format to save the 
-   *                           document and all subdocuments into or nsnull to use
+   *                           document and all subdocuments into or nullptr to use
    *                           the default behaviour.
    * @param aEncodingFlags     Flags to pass to the encoder.
    * @param aWrapColumn        For text documents, indicates the desired width to
    *                           wrap text at. Parameter is ignored if wrapping is not
    *                           specified by the encoding flags.
    *
-   * @see nsILocalFile
+   * @see nsIFile
    * @see nsIURI
    *
    * @return NS_OK Operation has been started.

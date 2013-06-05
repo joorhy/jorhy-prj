@@ -77,8 +77,8 @@ unsigned CXPlTransform::VideoThread(void *parm)
 			}
 			else
 			{
-				pThis->m_vbuffer	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);		//参见m_decoders动态生成大小
-				pThis->m_vbufferEX	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);
+				pThis->m_vbuffer	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT *  20);		//参见m_decoders动态生成大小
+				pThis->m_vbufferEX	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT * 20);
 				br = pThis->VideoLoopPull();
 			}
 		}
@@ -340,7 +340,6 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 	int dstlen		= 0;
 	int state		= J_PL_NORMAL;
 	++(*ctl->m_ThreadNumer);
-	//m_pullSwitch.Unsingle();
 
 	while(true)
 	{
@@ -348,10 +347,16 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 		j_pl_decode_t format;
 		j_pl_video_format_t vout;
 
-		if (m_vbufferEX->GetBlockNum() > 50)
-				m_pullSwitch.Wait();		
+		if (m_vbufferEX->GetBlockNum() > 30)
+		{
+			m_sem.Post();
+			m_pullSwitch.Wait();		
+		}
 		else
+		{
+			//j_pl_info("ctl->m_input->m_pullSwitch.Single()\n");
 			ctl->m_input->m_pullSwitch.Single();//唤醒input线程
+		}
 
 		ctl->m_state->GetVariable(&state);
 		switch(state)
@@ -382,14 +387,11 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 						br = m_vbufferEX->Write(dstData,(char*)&vout,head);
 					}
 				}
-				else
-					Sleep(1);
 			}
-			else if(br == J_PL_ERROR_EMPTY_BUFFER)
-			{
-				break;
-			}
-			m_sem.Post();
+			//else if(br == J_PL_ERROR_EMPTY_BUFFER)
+			//{
+			//	break;
+			//}
 			break;
 
 		case J_PL_END: 

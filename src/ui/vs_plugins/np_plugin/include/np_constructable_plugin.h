@@ -1,6 +1,6 @@
 #ifndef __NP_CONSTRUCTABLE_PLUGIN_H_
 #define __NP_CONSTRUCTABLE_PLUGIN_H_
-#include "npupp.h"
+#include "npfunctions.h"
 #include "np_script_plugin_base.h"
 
 class ConstructablePluginObject : public ScriptablePluginObjectBase

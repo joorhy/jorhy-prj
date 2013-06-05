@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Netscape Portable Runtime (NSPR).
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998-2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
  *----------------------------------------------------------------------
@@ -56,11 +24,11 @@ PR_BEGIN_EXTERN_C
 /************************* TYPES AND CONSTANTS ************************/
 /**********************************************************************/
 
-#define PR_MSEC_PER_SEC		1000UL
-#define PR_USEC_PER_SEC		1000000UL
-#define PR_NSEC_PER_SEC		1000000000UL
-#define PR_USEC_PER_MSEC	1000UL
-#define PR_NSEC_PER_MSEC	1000000UL
+#define PR_MSEC_PER_SEC		1000L
+#define PR_USEC_PER_SEC		1000000L
+#define PR_NSEC_PER_SEC		1000000000L
+#define PR_USEC_PER_MSEC	1000L
+#define PR_NSEC_PER_MSEC	1000000L
 
 /*
  * PRTime --
@@ -115,7 +83,7 @@ typedef struct PRTimeParameters {
 typedef struct PRExplodedTime {
     PRInt32 tm_usec;		    /* microseconds past tm_sec (0-99999)  */
     PRInt32 tm_sec;             /* seconds past tm_min (0-61, accomodating
-                                   up to two leap seconds) */	
+                                   up to two leap seconds) */
     PRInt32 tm_min;             /* minutes past tm_hour (0-59) */
     PRInt32 tm_hour;            /* hours past tm_day (0-23) */
     PRInt32 tm_mday;            /* days past tm_mon (1-31, note that it
@@ -126,7 +94,7 @@ typedef struct PRExplodedTime {
 
     PRInt8 tm_wday;		        /* calculated day of the week
 				                (0-6, Sun = 0) */
-    PRInt16 tm_yday;            /* calculated day of the year 
+    PRInt16 tm_yday;            /* calculated day of the year
 				                (0-365, Jan 1 = 0) */
 
     PRTimeParameters tm_params;  /* time parameters used by conversion */
@@ -174,11 +142,7 @@ typedef PRTimeParameters (PR_CALLBACK *PRTimeParamFn)(const PRExplodedTime *gmt)
  * The implementation is machine dependent.
  * Cf. time_t time(time_t *tp) in ANSI C.
  */
-#if defined(HAVE_WATCOM_BUG_2)
-PRTime __pascal __export __loadds
-#else
-NSPR_API(PRTime) 
-#endif
+NSPR_API(PRTime)
 PR_Now(void);
 
 /*
@@ -195,11 +159,7 @@ NSPR_API(void) PR_ExplodeTime(
     PRTime usecs, PRTimeParamFn params, PRExplodedTime *exploded);
 
 /* Reverse operation of PR_ExplodeTime */
-#if defined(HAVE_WATCOM_BUG_2)
-PRTime __pascal __export __loadds
-#else
-NSPR_API(PRTime) 
-#endif
+NSPR_API(PRTime)
 PR_ImplodeTime(const PRExplodedTime *exploded);
 
 /*
@@ -286,19 +246,8 @@ NSPR_API(PRStatus) PR_ParseTimeString (
 	PRBool default_to_gmt,
 	PRTime *result);
 
-/*
- * FIXME: should we also have a formatting function, such as asctime, ctime,
- * and strftime in standard C library?  But this would involve
- * internationalization issues.  Might want to provide a US English version.
- */
-
-/**********************************************************************/
-/*********************** OLD COMPATIBILITYFUNCTIONS *******************/
-/**********************************************************************/
-#ifndef NO_NSPR_10_SUPPORT
-
 /* Format a time value into a buffer. Same semantics as strftime() */
-NSPR_API(PRUint32) PR_FormatTime(char *buf, int buflen, const char *fmt, 
+NSPR_API(PRUint32) PR_FormatTime(char *buf, int buflen, const char *fmt,
                                            const PRExplodedTime *tm);
 
 /* Format a time value into a buffer. Time is always in US English format, regardless
@@ -307,8 +256,6 @@ NSPR_API(PRUint32) PR_FormatTime(char *buf, int buflen, const char *fmt,
 NSPR_API(PRUint32)
 PR_FormatTimeUSEnglish( char* buf, PRUint32 bufSize,
                         const char* format, const PRExplodedTime* tm );
-
-#endif /* NO_NSPR_10_SUPPORT */
 
 PR_END_EXTERN_C
 

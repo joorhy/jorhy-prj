@@ -40,7 +40,7 @@
 // Implementation of Netscape entry points (NPN_*)
 //
 #include "npapi.h"
-#include "npupp.h"
+#include "npfunctions.h"
 
 #ifndef HIBYTE
 #define HIBYTE(x) ((((uint32)(x)) & 0xff00) >> 8)
@@ -79,7 +79,7 @@ NPError NPN_GetURL(NPP instance, const char *url, const char *target)
 	return rv;
 }
 
-NPError NPN_PostURLNotify(NPP instance, const char* url, const char* window, uint32 len, const char* buf, NPBool file, void* notifyData)
+NPError NPN_PostURLNotify(NPP instance, const char* url, const char* window, unsigned int len, const char* buf, NPBool file, void* notifyData)
 {
 	int navMinorVers = NPNFuncs.version & 0xFF;
 	NPError rv = NPERR_NO_ERROR;
@@ -92,7 +92,7 @@ NPError NPN_PostURLNotify(NPP instance, const char* url, const char* window, uin
 	return rv;
 }
 
-NPError NPN_PostURL(NPP instance, const char* url, const char* window, uint32 len, const char* buf, NPBool file)
+NPError NPN_PostURL(NPP instance, const char* url, const char* window, unsigned int len, const char* buf, NPBool file)
 {
 	NPError rv = NPNFuncs.posturl(instance, url, window, len, buf, file);
 	return rv;
@@ -118,10 +118,10 @@ NPError NPN_NewStream(NPP instance, NPMIMEType type, const char* target, NPStrea
 	return rv;
 }
 
-int32 NPN_Write(NPP instance, NPStream *stream, int32 len, void *buffer)
+int NPN_Write(NPP instance, NPStream *stream, int len, void *buffer)
 {
 	int navMinorVersion = NPNFuncs.version & 0xFF;
-	int32 rv = 0;
+	int rv = 0;
 
 	if( navMinorVersion >= NPVERS_HAS_STREAMOUTPUT )
 		rv = NPNFuncs.write(instance, stream, len, buffer);
@@ -156,7 +156,7 @@ const char* NPN_UserAgent(NPP instance)
 	return rv;
 }
 
-void* NPN_MemAlloc(uint32 size)
+void* NPN_MemAlloc(unsigned int size)
 {
 	void * rv = NULL;
 	rv = NPNFuncs.memalloc(size);
@@ -168,9 +168,9 @@ void NPN_MemFree(void* ptr)
 	NPNFuncs.memfree(ptr);
 }
 
-uint32 NPN_MemFlush(uint32 size)
+unsigned int NPN_MemFlush(unsigned int size)
 {
-	uint32 rv = NPNFuncs.memflush(size);
+	unsigned int rv = NPNFuncs.memflush(size);
 	return rv;
 }
 
@@ -179,16 +179,16 @@ void NPN_ReloadPlugins(NPBool reloadPages)
 	NPNFuncs.reloadplugins(reloadPages);
 }
 
-JRIEnv* NPN_GetJavaEnv(void)
+void *NPN_GetJavaEnv(void)
 {
-	JRIEnv * rv = NULL;
+	void *rv = NULL;
 	rv = NPNFuncs.getJavaEnv();
 	return rv;
 }
 
-jref NPN_GetJavaPeer(NPP instance)
+void *NPN_GetJavaPeer(NPP instance)
 {
-	jref rv;
+	void *rv;
 	rv = NPNFuncs.getJavaPeer(instance);
 	return rv;
 }

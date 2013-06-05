@@ -1,47 +1,12 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2001
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Joe Hewitt <hewitt@netscape.com> (Original Author)
- *   Dean Tessman <dean_tessman@hotmail.com>
- *   Masayuki Nakano <masayuki@d-toybox.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
 interface nsIAutoCompleteInput;
 
-[scriptable, uuid(6F08D134-8536-4B28-B456-D150FBAA66A9)]
+[scriptable, uuid(dd2c4489-e4bd-4702-86bc-e1691744e556)]
 interface nsIAutoCompleteController : nsISupports
 {
   /*
@@ -78,11 +43,19 @@ interface nsIAutoCompleteController : nsISupports
   void stopSearch();
 
   /*
-   * Notify the controller that the user has changed text in the textbox.  This includes all
-   * means of changing the text value, including typing a character, backspacing, deleting, or
-   * pasting in an entirely new value.
+   * Notify the controller that the user has changed text in the textbox.
+   * This includes all means of changing the text value, including typing a
+   * character, backspacing, deleting, pasting, committing composition or
+   * canceling composition.
+   *
+   * NOTE: handleText() must be called after composition actually ends, even if
+   *       the composition is canceled and the textbox value isn't changed.
+   *       Then, implementation of handleText() can access the editor when
+   *       it's not in composing mode. DOM compositionend event is not good
+   *       timing for calling handleText(). DOM input event immediately after
+   *       DOM compositionend event is the best timing to call this.
    */
-  void handleText(in boolean aIgnoreSelection);
+  void handleText();
 
   /*
    * Notify the controller that the user wishes to enter the current text. If
@@ -103,11 +76,17 @@ interface nsIAutoCompleteController : nsISupports
 
   /*
    * Notify the controller that the user wishes to start composition
+   *
+   * NOTE: nsIAutoCompleteController implementation expects that this is called
+   *       by DOM compositionstart handler.
    */
   void handleStartComposition();
 
   /*
    * Notify the controller that the user wishes to end composition
+   *
+   * NOTE: nsIAutoCompleteController implementation expects that this is called
+   *       by DOM compositionend handler.
    */
   void handleEndComposition();
 
@@ -136,12 +115,17 @@ interface nsIAutoCompleteController : nsISupports
   AString getValueAt(in long index);
 
   /*
+   * Get the label of the result at a given index in the last completed search
+   */
+  AString getLabelAt(in long index);
+
+  /*
    * Get the comment of the result at a given index in the last completed search
    */
   AString getCommentAt(in long index);
 
   /*
-   * Get a the style hint for the result at a given index in the last completed search
+   * Get the style hint for the result at a given index in the last completed search
    */
   AString getStyleAt(in long index);
 

@@ -1,45 +1,12 @@
 /* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Local File Interface (Windows Extensions).
- *
- * The Initial Developer of the Original Code is
- * Google Inc.
- * Portions created by the Initial Developer are Copyright (C) 2005
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Ben Goodger <ben@mozilla.org> (Original Author)
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK *****
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 #include "nsILocalFile.idl"
 
-[scriptable, uuid(def38371-73b0-4dfd-85cd-0a7c91afbec6)]
+[scriptable, builtinclass, uuid(c7b3fd13-30f2-46e5-a0d9-7a79a9b73c5b)]
 interface nsILocalFileWin : nsILocalFile
 {
    /**
@@ -55,7 +22,7 @@ interface nsILocalFileWin : nsILocalFile
 
     /**
      * The canonical path of the file, which avoids short/long
-     * pathname inconsistencies. The nsILocalFile persistent
+     * pathname inconsistencies. The nsIFile persistent
      * descriptor is not guaranteed to be canonicalized (it may
      * persist either the long or the short path name). The format of
      * the canonical path will vary with the underlying file system:
@@ -64,5 +31,68 @@ interface nsILocalFileWin : nsILocalFile
      */
     readonly attribute AString canonicalPath;
     [noscript] readonly attribute ACString nativeCanonicalPath;
+
+    /**
+     * Windows specific file attributes.
+     */
+
+    /*
+     * WFA_SEARCH_INDEXED: Generally the default on files in Windows except
+     * those created in temp locations. Valid on XP and up. When set the
+     * file or directory is marked to be indexed by desktop search services.
+     */
+    const unsigned long WFA_SEARCH_INDEXED = 1;
+
+    /*
+     * WFA_READONLY: Whether the file is readonly or not.
+     */
+    const unsigned long WFA_READONLY = 2;
+
+    /*
+     * WFA_READWRITE: Used to clear the readonly attribute.
+     */
+    const unsigned long WFA_READWRITE = 4;
+
+    /**
+     * fileAttributesWin
+     *
+     * Set or get windows specific file attributes.
+     * 
+     * Throws NS_ERROR_FILE_INVALID_PATH for an invalid file.
+     * Throws NS_ERROR_FAILURE if the set or get fails.
+     */
+    attribute unsigned long fileAttributesWin;
+
+    /**
+     * setShortcut
+     *
+     * Creates the specified shortcut, or updates it if it already exists.
+     *
+     * If the shortcut is being updated (i.e. the shortcut already exists),
+     * any excluded parameters will remain unchanged in the shortcut file.
+     * For example, if you want to change the description of a specific
+     * shortcut but keep the target, working dir, args, and icon the same,
+     * pass null for those parameters and only pass in a value for the
+     * description.
+     *
+     * If the shortcut does not already exist and targetFile is not specified,
+     * setShortcut will throw NS_ERROR_FILE_TARGET_DOES_NOT_EXIST.
+     *
+     * @param targetFile      the path that the shortcut should target
+     * @param workingDir      the working dir that should be set for the shortcut
+     * @param args            the args string that should be set for the shortcut
+     * @param description     the description that should be set for the shortcut
+     * @param iconFile        the file containing an icon to be used for this
+                              shortcut
+     * @param iconIndex       this value selects a specific icon from within
+                              iconFile.  If iconFile contains only one icon, this
+                              value should be 0.
+     */
+     void setShortcut([optional] in nsIFile targetFile,
+                      [optional] in nsIFile workingDir,
+                      [optional] in wstring args,
+                      [optional] in wstring description,
+                      [optional] in nsIFile iconFile,
+                      [optional] in long iconIndex);
 };
 

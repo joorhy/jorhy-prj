@@ -1,50 +1,14 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2007
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *  Alexander Surkov <surkov.alexander@gmail.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
 /**
  * Defines cross platform (Gecko) roles.
- *
- * @note - When adding a new role, be sure to also add it to nsRoleMap.h for
- *         each platform.
  */
-[scriptable, uuid(8c0f68f8-164a-4078-a9ee-36a7d180f0e4)]
+[scriptable, uuid(50db5e86-9a45-4637-a5c3-4ff148c33270)]
 interface nsIAccessibleRole : nsISupports
 {
   /**
@@ -98,7 +62,7 @@ interface nsIAccessibleRole : nsISupports
    * Assistive Technologies typically respond to the role by reading the entire
    * onscreen contents of containers advertising this role. Should be used for
    * warning dialogs, etc. The role is used by xul:browsermessage,
-   * role="alert", xforms:message.
+   * role="alert".
    */
   const unsigned long ROLE_ALERT = 8;
 
@@ -230,16 +194,15 @@ interface nsIAccessibleRole : nsISupports
   const unsigned long ROLE_ROW = 28;
 
   /**
-   * Represents a cell within a table. Is is used for html:td,
-   * role="gridcell". Also, see ROLE_TABLE.
+   * Represents a cell within a table. It is used for html:td,
+   * xul:tree cell and xul:listcell. Also, see ROLE_TABLE.
    */
   const unsigned long ROLE_CELL = 29;
 
   /**
    * Represents a link to something else. This object might look like text or
    * a graphic, but it acts like a button. It is used for
-   * xul:label@class="text-link", html:a, html:area,
-   * xforms:trigger@appearance="minimal".
+   * xul:label@class="text-link", html:a, html:area.
    */
   const unsigned long ROLE_LINK = 30;
 
@@ -305,8 +268,7 @@ interface nsIAccessibleRole : nsISupports
   /**
    * Represents read-only text, such as labels for other controls or
    * instructions in a dialog box. Static text cannot be modified or selected.
-   * Is is used for xul:label, xul:description, html:lablel,
-   * role="label" or role="description", xforms:output.
+   * Is is used for xul:label, xul:description, html:label, role="label".
    */
   const unsigned long ROLE_STATICTEXT = 41;
 
@@ -317,13 +279,13 @@ interface nsIAccessibleRole : nsISupports
 
   /**
    * Represents a push button control. It is used for xul:button, html:button,
-   * role="button", xforms:trigger, xforms:submit.
+   * role="button".
    */
   const unsigned long ROLE_PUSHBUTTON = 43;
 
   /**
    * Represents a check box control. It is used for xul:checkbox,
-   * html:input@type="checkbox", role="checkbox", boolean xforms:input.
+   * html:input@type="checkbox", role="checkbox".
    */
   const unsigned long ROLE_CHECKBUTTON = 44;
 
@@ -344,7 +306,7 @@ interface nsIAccessibleRole : nsISupports
   const unsigned long ROLE_COMBOBOX = 46;
 
   /**
-   * Represents the calendar control. It is used for date xforms:input.
+   * Represents the calendar control.
    */
   const unsigned long ROLE_DROPLIST = 47;
 
@@ -369,7 +331,7 @@ interface nsIAccessibleRole : nsISupports
   /**
    * Represents a slider, which allows the user to adjust a setting in given
    * increments between minimum and maximum values. It is used by xul:scale,
-   * role="slider", xforms:range.
+   * role="slider".
    */
   const unsigned long ROLE_SLIDER = 51;
 
@@ -770,9 +732,46 @@ interface nsIAccessibleRole : nsISupports
   const unsigned long ROLE_FLAT_EQUATION = 120;
   
   /**
-   * It's not role actually. This contanst is important to help ensure
-   * nsRoleMap's are synchronized.
+   * Represents a cell within a grid. It is used for role="gridcell". Unlike
+   * ROLE_CELL, it allows the calculation of the accessible name from subtree.
+   * Also, see ROLE_TABLE.
    */
-  const unsigned long ROLE_LAST_ENTRY = 121;
+  const unsigned long ROLE_GRID_CELL = 121;
+
+  /**
+   * Represents an embedded object. It is used for html:object or html:embed.
+   */
+  const unsigned long ROLE_EMBEDDED_OBJECT = 122;
+
+  /**
+   * A note. Originally intended to be hidden until activated, but now also used
+   * for things like html 'aside'.
+   */
+  const unsigned long ROLE_NOTE = 123;
+
+  /**
+   * A figure. Used for things like HTML5 figure element.
+   */
+  const unsigned long ROLE_FIGURE = 124;
+
+  /**
+   * Represents a rich item with a check box.
+   */
+  const unsigned long ROLE_CHECK_RICH_OPTION = 125;
+
+  /**
+   * An HTML definition list <dl>
+   */
+  const unsigned long ROLE_DEFINITION_LIST = 126;
+
+  /**
+   * An HTML definition term <dt>
+   */
+  const unsigned long ROLE_TERM = 127;
+
+  /**
+   * An HTML definition <dd>
+   */
+  const unsigned long ROLE_DEFINITION = 128;
 };
 

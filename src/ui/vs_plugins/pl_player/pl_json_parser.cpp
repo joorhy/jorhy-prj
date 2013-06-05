@@ -146,7 +146,7 @@ BOOL PlJsonParser::MakeAllWndParam(char **pVecStr, int nWndNum, char *pJsStr)
 	return TRUE;
 }
 
-BOOL PlJsonParser::MakeCbStatus(const PL_PlayInfo &playInfo, char *pJsStr)
+BOOL PlJsonParser::MakeCbStatus(const PL_PlayInfo &playInfo, char *pJsStr, int nState)
 {
 	json_object *j_obj = json_object_new_object();
 	json_object_object_add(j_obj,"id", json_object_new_int(playInfo.nId));

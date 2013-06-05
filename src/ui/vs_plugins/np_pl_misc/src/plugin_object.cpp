@@ -1,5 +1,5 @@
 #include "plugin_object.h"
-#include "npupp.h"
+#include "npfunctions.h"
 #include "NPPluginMisc.h"
 #include <string>
 

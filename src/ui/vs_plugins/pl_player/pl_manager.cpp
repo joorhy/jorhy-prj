@@ -291,7 +291,17 @@ void PlManager::NotifyNpn(HWND hWnd, UINT nType, int args[], UINT argCount)
 			return;
 		}
 		else
-			m_pFuncCallBk(it->second.pUser, nType, args, argCount);
+		{
+			int nArgCount = argCount + 1;
+			int *pArgs = new int[nArgCount];
+			pArgs[0] = nType;
+			for (int i=1; i<=argCount; ++i)
+			{
+				pArgs[i] = args[i-1];
+			}
+			m_pFuncCallBk(it->second.pUser, nType, pArgs, nArgCount);
+			delete pArgs;
+		}
 	}
 	//m_locker.Unlock();
 }

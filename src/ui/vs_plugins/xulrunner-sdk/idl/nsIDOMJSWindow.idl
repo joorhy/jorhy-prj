@@ -1,44 +1,11 @@
 /* -*- Mode: IDL; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Johnny Stenback <jst@netscape.com> (original author)
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "domstubs.idl"
 
-[scriptable, uuid(c8188620-1dd1-11b2-bc88-df8440498add)]
+[scriptable, uuid(6652c4d2-6b49-424b-aaf9-91f91006fab7)]
 interface nsIDOMJSWindow : nsISupports
 {
   void                      dump(in DOMString str);
@@ -57,8 +24,8 @@ interface nsIDOMJSWindow : nsISupports
    * clear. Often in existing code these methods are passed undefined,
    * which is a nop so we need to support that as well.
    */
-  void                      clearTimeout();
-  void                      clearInterval();
+  void                      clearTimeout([optional] in long handle);
+  void                      clearInterval([optional] in long handle);
 
   /**
    * This method is here for backwards compatibility with 4.x only,
@@ -77,23 +44,28 @@ interface nsIDOMJSWindow : nsISupports
   void                      disableExternalCapture();
 
   /**
-   * The prompt method takes up to four arguments, the arguments are
-   * message, initial prompt value, title and a save password flag
+   * This is the scriptable version of nsIDOMWindow::open()
+   * that takes 3 optional arguments. Its binary name is OpenJS to
+   * avoid colliding with nsIDOMWindow::open(), which has the
+   * same signature. The reason we can't have that collision is that
+   * the implementation needs to know whether it was called from JS or
+   * not.
+   *
+   * IOW, DO NOT CALL THIS FROM C++
    */
-  DOMString                 prompt();
+  [binaryname(OpenJS)] nsIDOMWindow open([optional] in DOMString url,
+                                         [optional] in DOMString name,
+                                         [optional] in DOMString options);
 
   /**
-   * These are the scriptable versions of nsIDOMWindowInternal::open() and
-   * nsIDOMWindowInternal::openDialog() that take 3 optional arguments.  Unlike
-   * the nsIDOMWindowInternal methods, these methods assume that they are
-   * called from JavaScript and hence will look on the JS context stack to
-   * determine the caller and hence correct security context for doing their
-   * search for an existing named window.  Also, these methods will set the
-   * default charset on the newly opened window based on the current document
-   * charset in the caller.
+   * This is the scriptable version of
+   * nsIDOMWindow::openDialog() that takes 3 optional
+   * arguments, plus any additional arguments are passed on as
+   * arguments on the dialog's window object (window.arguments).
    */
-  nsIDOMWindow              open();
-  nsIDOMWindow              openDialog();
+  nsIDOMWindow              openDialog([optional] in DOMString url,
+                                       [optional] in DOMString name,
+                                       [optional] in DOMString options);
 
   /**
    * window.frames in Netscape 4.x and IE is just a reference to the
@@ -104,16 +76,4 @@ interface nsIDOMJSWindow : nsISupports
    * This property is "replaceable" in JavaScript.
    */
   readonly attribute nsIDOMWindow             frames;
-
-  /* Scriptable version of find(). See nsIDOMWindowInternal for the
-   * non-scriptable version. It takes 7 optional arguments:
-   * @param searchString: the search string
-   * @param caseSensitive: is the search case sensitive?
-   * @param backwards: should we search backwards?
-   * @param wrapAround: should wrap the search?
-   * @param wholeWord: should we search only for whole words?
-   * @param searchInFrames: should we search in all frames?
-   * @param showDialog: should we show the Find Dialog?
-   */  
-  boolean                   find();                
 };

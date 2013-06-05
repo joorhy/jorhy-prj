@@ -1,40 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Mozilla Communicator client code, released
- * March 31, 1998.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998-1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 #include "nsrootidl.idl"
@@ -61,12 +28,12 @@ interface nsIStorageStream : nsISupports
      *        Size of each segment. Must be a power of two.
      * @param maxSize
      *        Maximum total size of this stream. length will always be less
-     *        than or equal to this value. Passing PR_UINT32_MAX is safe.
+     *        than or equal to this value. Passing UINT32_MAX is safe.
      * @param segmentAllocator
      *        Which allocator to use for the segments. May be null, in which
      *        case a default allocator will be used.
      */
-    void init(in PRUint32 segmentSize, in PRUint32 maxSize, in nsIMemory segmentAllocator);
+    void init(in uint32_t segmentSize, in uint32_t maxSize, in nsIMemory segmentAllocator);
 
     /**
      * Get a reference to the one and only output stream for this instance.
@@ -75,14 +42,14 @@ interface nsIStorageStream : nsISupports
      * current buffer length.  Calling this method has the side-effect of
      * truncating the internal buffer to startPosition bytes.
      */
-    nsIOutputStream getOutputStream(in PRInt32 startPosition);
+    nsIOutputStream getOutputStream(in int32_t startPosition);
 
     /**
      * Create a new input stream to read data (written by the singleton output
      * stream) from the internal buffer.  Multiple, independent input streams
      * can be created.
      */
-    nsIInputStream newInputStream(in PRInt32 startPosition);
+    nsIInputStream newInputStream(in int32_t startPosition);
 
     /** 
      * The length attribute indicates the total number of bytes stored in the
@@ -92,7 +59,7 @@ interface nsIStorageStream : nsISupports
      * stream is in use.
      *
      * @See #writeInProgress */
-    attribute PRUint32 length;
+    attribute uint32_t length;
 
     /**
      * True, when output stream has not yet been Close'ed
@@ -102,6 +69,6 @@ interface nsIStorageStream : nsISupports
 
 %{C++
 // Factory method
-NS_COM nsresult
-NS_NewStorageStream(PRUint32 segmentSize, PRUint32 maxSize, nsIStorageStream **result);
+nsresult
+NS_NewStorageStream(uint32_t segmentSize, uint32_t maxSize, nsIStorageStream **result);
 %}

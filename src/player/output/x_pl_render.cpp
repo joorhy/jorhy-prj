@@ -261,7 +261,7 @@ J_PL_RESULT CXPlRender::TakeSnapshot(char *path_name)
 
 J_PL_RESULT CXPlRender::VoutLoopPull()
 {
-	J_PL_RESULT br;
+	J_PL_RESULT br = J_PL_NO_ERROR;
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
 	m_vdata		= new char[MAX_VIDEO_FRAME_SIZE];
 	int state		= J_PL_NORMAL;
@@ -274,37 +274,36 @@ J_PL_RESULT CXPlRender::VoutLoopPull()
 	while(true)
 	{
 		nowTime = GetTickCount();
-		ctl->m_switch.Wait();
+		//ctl->m_switch.Wait();
 		ctl->m_state->GetVariable(&state);
 		switch(state)
 		{
 		case J_PL_NORMAL: break;
 		case J_PL_PALYING:
-			m_vLock.Lock();
+			//m_vLock.Lock();
 			if (bDisplay)
 			{
 				br = GetNextFrame(m_vdata,m_vformat,m_vhead);
-				if (br != J_PL_NO_ERROR)
+				if (br == J_PL_NO_ERROR)
 				{
-					//j_pl_info("GetNextFrame\n");
-					m_vLock.Unlock();
-					continue;
+					//m_vLock.Unlock();
+					//continue;
+					bDisplay = false;
 				}
-				bDisplay = false;
 			}
-			else if (last_display_time == 0 || nowTime - lasttime >= m_vformat.timestamp - last_display_time)
+			if (!bDisplay && last_display_time == 0 || nowTime - lasttime >= m_vformat.timestamp - last_display_time)
 			{
 				br = DisplayNextFrame();
 				//if (br != J_PL_NO_ERROR)
-				//	j_pl_info("DisplayNextFrame\n");
 				lasttime = 2 * nowTime - GetTickCount() - 5;
 
 				bDisplay = true;
 				last_display_time = m_vformat.timestamp;
 			}
-			m_vLock.Unlock();
+			//m_vLock.Unlock();
 			break;
 		case J_PL_PAUSE: 
+			//j_pl_info("J_PL_PAUSE\n");
 			ctl->m_FrameSwitch.Wait();			//单帧
 			m_vLock.Lock();
 			br = GetNextFrame(m_vdata,m_vformat,m_vhead);
@@ -318,6 +317,7 @@ J_PL_RESULT CXPlRender::VoutLoopPull()
 		}
 	}
 Vout_End2:
+	//j_pl_info("ctl->m_tansfm->m_pullSwitch.Single()\n");
 	ctl->m_tansfm->m_pullSwitch.Single();			//唤醒decode线程
 	delete m_vdata;
 	m_vdata = NULL;
@@ -328,7 +328,7 @@ Vout_End2:
 
 J_PL_RESULT CXPlRender::GetNextFrame(char *data,j_pl_video_format_t &t,j_pl_buffer_t &head)
 {
-	J_PL_RESULT br;
+	J_PL_RESULT br = J_PL_NO_ERROR;
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
 	bool bFront = true;
 	if(ctl)
@@ -350,7 +350,7 @@ J_PL_RESULT CXPlRender::GetNextFrame(char *data,j_pl_video_format_t &t,j_pl_buff
 
 J_PL_RESULT CXPlRender::DisplayNextFrame()
 {
-	J_PL_RESULT br;
+	J_PL_RESULT br = J_PL_NO_ERROR;
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
 	if(ctl)
 	{
@@ -359,12 +359,12 @@ J_PL_RESULT CXPlRender::DisplayNextFrame()
 		// 显示图片
 		br = m_vOut->PrepareData(m_vdata,m_vformat.size);
 		br = m_vOut->Display();
-
 		if(ctl->m_pDisplayCBK)
+		{
 			ctl->m_pDisplayCBK(ctl->m_pDisplayData,m_vformat.timestamp);
-
+		}
+		
 		ctl->m_displayTime->SetVariable(&m_vformat.timestamp);
-
 	}
 	return br;
 }

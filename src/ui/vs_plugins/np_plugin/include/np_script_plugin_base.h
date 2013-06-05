@@ -1,6 +1,6 @@
 #ifndef __NP_SCRIPT_PLUGIN_BASE_H_
 #define __NP_SCRIPT_PLUGIN_BASE_H_
-#include "npupp.h"
+#include "npfunctions.h"
 
 class ScriptablePluginObjectBase : public NPObject
 {

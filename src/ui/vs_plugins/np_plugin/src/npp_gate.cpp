@@ -42,7 +42,7 @@
 //
 #include "np_plugin.h"
 
-char* NPP_GetMIMEDescription(void)
+const char* NPP_GetMIMEDescription(void)
 {
 	return "ry-ivs-media-player::";
 }
@@ -61,8 +61,8 @@ void NPP_Shutdown(void)
 // will do all the neccessary job
 NPError NPP_New(NPMIMEType pluginType,
 				NPP instance,
-				uint16 mode,
-				int16 argc,
+				unsigned short mode,
+				short argc,
 				char* argn[],
 				char* argv[],
 				NPSavedData* saved)
@@ -193,7 +193,7 @@ NPError NPP_NewStream(NPP instance,
 					  NPMIMEType type,
 					  NPStream* stream, 
 					  NPBool seekable,
-					  uint16* stype)
+					  unsigned short* stype)
 {
 	if(instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -202,21 +202,21 @@ NPError NPP_NewStream(NPP instance,
 	return rv;
 }
 
-int32 NPP_WriteReady (NPP instance, NPStream *stream)
+int NPP_WriteReady (NPP instance, NPStream *stream)
 {
 	if(instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	int32 rv = 0x0fffffff;
+	int rv = 0x0fffffff;
 	return rv;
 }
 
-int32 NPP_Write (NPP instance, NPStream *stream, int32 offset, int32 len, void *buffer)
+int NPP_Write (NPP instance, NPStream *stream, int offset, int len, void *buffer)
 {   
 	if(instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	int32 rv = len;
+	int rv = len;
 	return rv;
 }
 
@@ -256,12 +256,12 @@ NPError NPP_SetValue(NPP instance, NPNVariable variable, void *value)
 	return rv;
 }
 
-int16	NPP_HandleEvent(NPP instance, void* event)
+short	 NPP_HandleEvent(NPP instance, void* event)
 {
 	if(instance == NULL)
 		return 0;
 
-	int16 rv = 0;
+	short rv = 0;
 	CNPPlugin * pPlugin = (CNPPlugin *)instance->pdata;
 	if (pPlugin)
 		rv = pPlugin->handleEvent(event);

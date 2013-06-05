@@ -1,41 +1,7 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Gagan Saksena <gagan@netscape.com> (original author)
- *   Darin Fisher <darin@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsIURI.idl"
 
@@ -45,7 +11,6 @@
  *
  * http://host/directory/fileBaseName.fileExtension?query
  * http://host/directory/fileBaseName.fileExtension#ref
- * http://host/directory/fileBaseName.fileExtension;param
  *            \          \                       /
  *             \          -----------------------
  *              \                   |          /
@@ -53,10 +18,8 @@
  *                ----------------------------
  *                            |
  *                        filePath
- *
- * @status FROZEN
  */
-[scriptable, uuid(d6116970-8034-11d3-9399-00104ba0fd40)]
+[scriptable, uuid(1419aa16-f134-4154-9886-00c7c5147a13)]
 interface nsIURL : nsIURI
 {
     /*************************************************************************
@@ -73,27 +36,12 @@ interface nsIURL : nsIURI
     attribute AUTF8String filePath;
 
     /**
-     * Returns the parameters specified after the ; in the URL. 
-     *
-     * Some characters may be escaped.
-     */
-    attribute AUTF8String param;
-
-    /**
      * Returns the query portion (the part after the "?") of the URL.
      * If there isn't one, an empty string is returned.
      *
      * Some characters may be escaped.
      */
     attribute AUTF8String query;
-
-    /**
-     * Returns the reference portion (the part after the "#") of the URL.
-     * If there isn't one, an empty string is returned.
-     *
-     * Some characters may be escaped.
-     */
-    attribute AUTF8String ref;
 
 
     /*************************************************************************
@@ -169,10 +117,18 @@ interface nsIURL : nsIURI
     AUTF8String getCommonBaseSpec(in nsIURI aURIToCompare);
 
     /**
-     * This method takes a uri and returns a substring of this if it can be
-     * made relative to the uri passed in.  If no commonality is found, the
-     * entire uri spec is returned.  If they are identical, "" is returned.
-     * Filename, query, etc are always returned except when uris are identical.
+     * This method tries to create a string which specifies the location of the
+     * argument relative to |this|.  If the argument and |this| are equal, the
+     * method returns "".  If any of the URIs' scheme, host, userpass, or port
+     * don't match, the method returns the full spec of the argument.
+     *
+     * Examples:
+     *    this.spec               aURIToCompare.spec        result
+     * 1) http://mozilla.org/     http://www.mozilla.org/   http://www.mozilla.org/
+     * 2) http://mozilla.org/     http://www.mozilla.org    http://www.mozilla.org/
+     * 3) http://foo.com/bar/     http://foo.com:80/bar/    ""
+     * 4) http://foo.com/         http://foo.com/a.htm#b    a.html#b
+     * 5) http://foo.com/a/b/     http://foo.com/c          ../../c
      */
     AUTF8String getRelativeSpec(in nsIURI aURIToCompare);
 

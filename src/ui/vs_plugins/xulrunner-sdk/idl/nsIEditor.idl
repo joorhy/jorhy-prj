@@ -1,42 +1,8 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Mozilla browser.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications, Inc.
- * Portions created by the Initial Developer are Copyright (C) 1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Daniel Glazman <glazman@netscape.com>
- *   Akkana Peck <akkana@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 #include "domstubs.idl"
@@ -53,20 +19,15 @@ interface nsITransaction;
 interface nsIEditorObserver;
 interface nsIEditActionListener;
 interface nsIInlineSpellChecker;
+interface nsITransferable;
 
-%{C++
-class nsIPresShell;
-typedef short EDirection;
-%}
-
-[ptr] native nsIPresShellPtr(nsIPresShell);
-
-[scriptable, uuid(2f76d0bb-d90d-4454-905e-9b0cc39a701c)]
+[scriptable, uuid(753b38d1-ee03-4e58-a650-1076ccccdb7f)]
 
 interface nsIEditor  : nsISupports
 {
 %{C++
   typedef short EDirection;
+  typedef short EStripWrappers;
 %}
   const short eNone = 0;
   const short eNext = 1;
@@ -76,24 +37,23 @@ interface nsIEditor  : nsISupports
   const short eToBeginningOfLine = 5;
   const short eToEndOfLine = 6;
 
+  const short eStrip = 0;
+  const short eNoStrip = 1;
+
   readonly attribute nsISelection selection;
 
   /**
    * Init is to tell the implementation of nsIEditor to begin its services
    * @param aDoc          The dom document interface being observed
-   * @param aPresShell    TEMP: The presentation shell displaying the document.
-   *                      Once events can tell us from what pres shell
-   *                      they originated, this will no longer be
-   *                      necessary, and the editor will no longer be
-   *                      linked to a single pres shell.
    * @param aRoot         This is the root of the editable section of this
    *                      document. If it is null then we get root
    *                      from document body.
    * @param aSelCon       this should be used to get the selection location
+   *                      (will be null for HTML editors)
    * @param aFlags        A bitmask of flags for specifying the behavior
    *                      of the editor.
    */
-  [noscript] void init(in nsIDOMDocument doc, in nsIPresShellPtr shell,
+  [noscript] void init(in nsIDOMDocument doc,
                        in nsIContent aRoot,
                        in nsISelectionController aSelCon,
                        in unsigned long aFlags);
@@ -115,8 +75,11 @@ interface nsIEditor  : nsISupports
   /**
    * preDestroy is called before the editor goes away, and gives the editor a
    * chance to tell its documentStateObservers that the document is going away.
+   * @param aDestroyingFrames set to true when the frames being edited
+   * are being destroyed (so there is no need to modify any nsISelections,
+   * nor is it safe to do so)
    */
-  void preDestroy();
+  void preDestroy(in boolean aDestroyingFrames);
 
   /** edit flags for this editor.  May be set at any time. */
   attribute unsigned long flags;
@@ -128,6 +91,9 @@ interface nsIEditor  : nsISupports
 
   /** Returns true if we have a document that is not marked read-only */
   readonly attribute boolean isDocumentEditable;
+
+  /** Returns true if the current selection anchor is editable */
+  readonly attribute boolean isSelectionEditable;
 
   /**
    * the DOM Document this editor is associated with, refcounted.
@@ -150,8 +116,12 @@ interface nsIEditor  : nsISupports
    * DeleteSelection removes all nodes in the current selection.
    * @param aDir  if eNext, delete to the right (for example, the DEL key)
    *              if ePrevious, delete to the left (for example, the BACKSPACE key)
+   * @param stripWrappers If eStrip, strip any empty inline elements left
+   *                      behind after the deletion; if eNoStrip, don't.  If in
+   *                      doubt, pass eStrip -- eNoStrip is only for if you're
+   *                      about to insert text or similar right after.
    */
-  void deleteSelection(in short action);
+  void deleteSelection(in short action, in short stripWrappers);
 
 
   /* ------------ Document info and file methods -------------- */
@@ -208,6 +178,16 @@ interface nsIEditor  : nsISupports
     *                 if aEnable is PR_FALSE, returns NS_OK.
     */
   void enableUndo(in boolean enable);
+
+  /**
+   * The number of items on the undo stack.
+   */
+  readonly attribute long numberOfUndoItems;
+
+  /**
+   * The number of items on the redo stack.
+   */
+  readonly attribute long numberOfRedoItems;
 
   /** undo reverses the effects of the last Do operation,
     * if Undo is enabled in the editor.
@@ -336,10 +316,22 @@ interface nsIEditor  : nsISupports
     */
   void paste(in long aSelectionType);
 
+  /** Paste the text in |aTransferable| at the cursor position, replacing the
+    * selected text (if any).
+    */
+  void pasteTransferable(in nsITransferable aTransferable);
+
   /** Can we paste? True if the doc is modifiable, and we have
     * pasteable data in the clipboard.
     */
   boolean canPaste(in long aSelectionType);
+
+  /** Can we paste |aTransferable| or, if |aTransferable| is null, will a call
+    * to pasteTransferable later possibly succeed if given an instance of
+    * nsITransferable then? True if the doc is modifiable, and, if
+    * |aTransfeable| is non-null, we have pasteable data in |aTransfeable|.
+    */
+  boolean canPasteTransferable([optional] in nsITransferable aTransferable);
 
   /* ------------ Selection methods -------------- */
 
@@ -351,26 +343,6 @@ interface nsIEditor  : nsISupports
 
   /** sets the document selection to the end of the document */
   void endOfDocument();
-
-   /* ------------ Drag/Drop methods -------------- */
-  
-   /** 
-    * canDrag decides if a drag should be started
-    * (for example, based on the current selection and mousepoint).
-    */
-  boolean canDrag(in nsIDOMEvent aEvent);
- 
-   /** 
-    * doDrag transfers the relevant data (as appropriate)
-    * to a transferable so it can later be dropped.
-    */
-  void doDrag(in nsIDOMEvent aEvent);
- 
-   /** 
-    * insertFromDrop looks for a dragsession and inserts the
-    * relevant data in response to a drop.
-    */
-  void insertFromDrop(in nsIDOMEvent aEvent);
 
   /* ------------ Node manipulation methods -------------- */
 
@@ -499,6 +471,12 @@ interface nsIEditor  : nsISupports
    */
   void deleteNode(in nsIDOMNode child);
 
+  /**
+   * Returns true if markNodeDirty() has any effect.  Returns false if
+   * markNodeDirty() is a no-op.
+   */
+  [notxpcom] boolean outputsMozDirty();
+
   /** 
    * markNodeDirty() sets a special dirty attribute on the node.
    * Usually this will be called immediately after creating a new node.
@@ -567,4 +545,7 @@ interface nsIEditor  : nsISupports
 
   /* checks if a node is read-only or not */
   [notxpcom] boolean isModifiableNode(in nsIDOMNode aNode);
+
+  /* Set true if you want to suppress dispatching input event. */
+  attribute boolean suppressDispatchingInputEvent;
 };

@@ -1,45 +1,13 @@
 /* -*- Mode: IDL; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /* vim:expandtab:shiftwidth=4:tabstop=4:
  */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Jungshik Shin <jshin@mailaps.org>
- * Portions created by the Initial Developer are Copyright (C) 2003.
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 /*
  * This interface allows any module to access the routine 
- * for MIME header parameter parsing (RFC 2231)
+ * for MIME header parameter parsing (RFC 2231/5987)
  */
 
 #include "nsISupports.idl"
@@ -97,6 +65,42 @@ interface nsIMIMEHeaderParam : nsISupports {
                        in ACString aFallbackCharset,
                        in boolean aTryLocaleCharset, 
                        out string aLang);
+
+
+  /**
+   * Like getParameter, but using RFC 5987 instead of 2231.  This removes
+   * support for header parameter continuations (foo*0, foo*1, etc).
+   */
+  AString getParameter5987(in ACString aHeaderVal,
+                           in string aParamName,
+                           in ACString aFallbackCharset,
+                           in boolean aTryLocaleCharset, 
+                           out string aLang);
+
+  /** 
+   * Given the value of a header field parameter using the encoding
+   * defined in RFC 5987, decode the value into a Unicode string, and extract
+   * the optional language parameter.
+   *
+   * <p> 
+   * This function is purposefully picky; it will abort for all (most?)
+   * invalid inputs. This is by design. In particular, it does not support
+   * any character encodings other than UTF-8, in order not to promote
+   * non-interoperable usage.
+   *
+   * <p>
+   * This code is currently not used inside nsMIMEHeaderParamImpl, but
+   * might be in the future. New code that needs RFC2231/5987
+   * encoding should use this one.
+   *
+   * @param  aParamVal         a header field parameter to decode.
+   * @param  aLang             will be set to the language part (possibly
+   *                           empty).
+   * @return the decoded parameter value.
+   */
+  AString decodeRFC5987Param(in ACString aParamVal, 
+                             out ACString aLang);
+
   /** 
    * Given the value of a single header field  (such as
    * Content-Disposition and Content-Type) and the name of a parameter
@@ -145,7 +149,7 @@ interface nsIMIMEHeaderParam : nsISupports {
    * invoked  is  <code>MIME_DecodeMimeHeader</code> in 
    * mailnews/mime/src/mimehdrs.cpp defined as
    * char * Mime_DecodeMimeHeader(char *header_val, const char *charset, 
-   *                              PRBool override, PRBool eatcontinuation)
+   *                              bool override, bool eatcontinuation)
    *
    * @param aHeaderVal       a header value to decode
    * @param aDefaultCharset  MIME charset to use in place of MIME charset

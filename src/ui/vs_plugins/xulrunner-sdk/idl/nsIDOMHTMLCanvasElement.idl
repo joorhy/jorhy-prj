@@ -1,41 +1,14 @@
 /* -*- Mode: IDL; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- *   Vladimir Vukicevic <vladimir@pobox.com>
- * Portions created by the Initial Developer are Copyright (C) 2005
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsIDOMHTMLElement.idl"
+
+%{C++
+// for jsval
+#include "jsapi.h"
+%}
 
 /**
  * The nsIDOMHTMLCanvasElement interface is the interface to a HTML
@@ -47,28 +20,70 @@
  * @status UNDER_DEVELOPMENT
  */
 
-[scriptable, uuid(0583A2EA-AB19-40e1-8BE4-5E9B2F275560)]
+interface nsIDOMBlob;
+interface nsIDOMFile;
+interface nsIVariant;
+interface nsIInputStreamCallback;
+
+[scriptable, builtinclass, uuid(8d5fb8a0-7782-11e1-b0c4-0800200c9a67)]
+interface nsIDOMMozCanvasPrintState : nsISupports
+{
+  // A canvas rendering context.
+  readonly attribute nsISupports context;
+
+  // To be called when rendering to the context is done.
+  void done();
+};
+
+[scriptable, function, uuid(8d5fb8a0-7782-11e1-b0c4-0800200c9a66)]
+interface nsIPrintCallback : nsISupports
+{
+  void render(in nsIDOMMozCanvasPrintState ctx);
+};
+
+[scriptable, function, uuid(6e9ffb59-2067-4aef-a51c-65e65a3e0d81)]
+interface nsIFileCallback : nsISupports {
+  void receive(in nsIDOMBlob file);
+};
+
+[scriptable, uuid(a7062fca-41c6-4520-b777-3bb30fd77273)]
 interface nsIDOMHTMLCanvasElement : nsIDOMHTMLElement
 {
-  attribute long width;
-  attribute long height;
+  attribute unsigned long width;
+  attribute unsigned long height;
+  attribute boolean mozOpaque;
 
-  nsISupports getContext(in DOMString contextId);
+  nsISupports getContext(in DOMString contextId,
+                         [optional] in jsval contextOptions);
 
-  // This version will query the JS context for its arguments; C++
-  // callers should use toDataURLAs.
-  //
+
   // Valid calls are:
   //  toDataURL();              -- defaults to image/png
   //  toDataURL(type);          -- uses given type
-  //  toDataURL(type, params);  -- only available to trusted callers
-  DOMString toDataURL();
+  //  toDataURL(type, params);  -- uses given type, and any valid parameters
+  [optional_argc] DOMString toDataURL([optional] in DOMString type,
+                                      [optional] in nsIVariant params);
 
-  // This version lets you specify different image types and pass parameters
-  // to the encoder. For example toDataURLAs("image/png", "transparency=none")
-  // gives you a PNG with the alpha channel discarded. See the encoder for
-  // the options string that it supports. Separate multiple options with
-  // semicolons.
-  [noscript] DOMString toDataURLAs(in DOMString mimeType, in DOMString encoderOptions);
+  // Valid calls are
+  // mozGetAsFile(name);              -- defaults to image/png
+  // mozGetAsFile(name, type);        -- uses given type
+  [optional_argc] nsIDOMFile mozGetAsFile(in DOMString name,
+                                          [optional] in DOMString type);
+
+  [optional_argc] void toBlob(in nsIFileCallback callback,
+                              [optional] in DOMString type,
+                              [optional] in nsIVariant params);
+
+  // A Mozilla-only extension to get a canvas context backed by double-buffered
+  // shared memory. Only privileged callers can call this.
+  nsISupports MozGetIPCContext(in DOMString contextId);
+
+  // A Mozilla-only extension that returns the canvas' image data as a data
+  // stream in the desired image format.
+  void mozFetchAsStream(in nsIInputStreamCallback callback,
+                                        [optional] in DOMString type);
+
+  // A Mozilla-only callback that is called during the printing process.
+  attribute nsIPrintCallback mozPrintCallback;
 };
 

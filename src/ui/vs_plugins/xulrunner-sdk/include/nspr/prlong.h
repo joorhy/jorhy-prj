@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Netscape Portable Runtime (NSPR).
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998-2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
 ** File:                prlong.h
@@ -59,32 +27,21 @@ PR_BEGIN_EXTERN_C
 **      Various interesting constants and static variable
 **      initializer
 ***********************************************************************/
-#if defined(HAVE_WATCOM_BUG_2)
-PRInt64 __pascal __loadds __export
-    LL_MaxInt(void);
-PRInt64 __pascal __loadds __export
-    LL_MinInt(void);
-PRInt64 __pascal __loadds __export
-    LL_Zero(void);
-PRUint64 __pascal __loadds __export
-    LL_MaxUint(void);
-#else
 NSPR_API(PRInt64) LL_MaxInt(void);
 NSPR_API(PRInt64) LL_MinInt(void);
 NSPR_API(PRInt64) LL_Zero(void);
 NSPR_API(PRUint64) LL_MaxUint(void);
-#endif
 
 #if defined(HAVE_LONG_LONG)
 
 /* Keep this in sync with prtypes.h. */
-#if PR_BYTES_PER_LONG == 8 && !defined(__APPLE__)
+#if PR_BYTES_PER_LONG == 8 && !defined(PR_ALTERNATE_INT64_TYPEDEF)
 #define LL_MAXINT   9223372036854775807L
 #define LL_MININT   (-LL_MAXINT - 1L)
 #define LL_ZERO     0L
 #define LL_MAXUINT  18446744073709551615UL
 #define LL_INIT(hi, lo)  ((hi ## L << 32) + lo ## L)
-#elif (defined(WIN32) || defined(WIN16)) && !defined(__GNUC__)
+#elif defined(WIN32) && !defined(__GNUC__)
 #define LL_MAXINT   9223372036854775807i64
 #define LL_MININT   (-LL_MAXINT - 1i64)
 #define LL_ZERO     0i64

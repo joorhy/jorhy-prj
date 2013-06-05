@@ -1,48 +1,15 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Oracle Corporation code.
- *
- * The Initial Developer of the Original Code is
- *  Oracle Corporation
- * Portions created by the Initial Developer are Copyright (C) 2004
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Vladimir Vukicevic <vladimir.vukicevic@oracle.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
-[ptr] native octetPtr(PRUint8);
+[ptr] native octetPtr(uint8_t);
 
 /**
- * mozIStorageValueArray wraps an array of SQL values,
- * such as a single database row.
+ * mozIStorageValueArray wraps an array of SQL values, such as a single database
+ * row.
  */
 [scriptable, uuid(07b5b93e-113c-4150-863c-d247b003a55d)]
 interface mozIStorageValueArray : nsISupports {
@@ -109,45 +76,83 @@ interface mozIStorageValueArray : nsISupports {
    * Not virtual; no vtable bloat.
    */
 
-  inline PRInt32 AsInt32(PRUint32 idx) {
-    PRInt32 v;
-    GetInt32(idx, &v);
+  inline int32_t AsInt32(uint32_t idx) {
+    int32_t v = 0;
+#ifdef DEBUG
+    nsresult rv =
+#endif
+      GetInt32(idx, &v);
+    NS_ABORT_IF_FALSE(NS_SUCCEEDED(rv) || IsNull(idx),
+                      "Getting value failed, wrong column index?");
     return v;
   }
 
-  inline PRInt64 AsInt64(PRUint32 idx) {
-    PRInt64 v;
-    GetInt64(idx, &v);
+  inline int64_t AsInt64(uint32_t idx) {
+    int64_t v = 0;
+#ifdef DEBUG
+    nsresult rv =
+#endif
+      GetInt64(idx, &v);
+    NS_ABORT_IF_FALSE(NS_SUCCEEDED(rv) || IsNull(idx),
+                      "Getting value failed, wrong column index?");
     return v;
   }
 
-  inline double AsDouble(PRUint32 idx) {
-    double v;
-    GetDouble(idx, &v);
+  inline double AsDouble(uint32_t idx) {
+    double v = 0.0;
+#ifdef DEBUG
+    nsresult rv =
+#endif
+      GetDouble(idx, &v);
+    NS_ABORT_IF_FALSE(NS_SUCCEEDED(rv) || IsNull(idx),
+                      "Getting value failed, wrong column index?");
     return v;
   }
 
-  inline const char* AsSharedUTF8String(PRUint32 idx, PRUint32 *len) {
-    const char *str = nsnull;
-    GetSharedUTF8String(idx, len, &str);
+  inline const char* AsSharedUTF8String(uint32_t idx, uint32_t *len) {
+    const char *str = nullptr;
+    *len = 0;
+#ifdef DEBUG
+    nsresult rv =
+#endif
+      GetSharedUTF8String(idx, len, &str);
+    NS_ABORT_IF_FALSE(NS_SUCCEEDED(rv) || IsNull(idx),
+                      "Getting value failed, wrong column index?");
     return str;
   }
 
-  inline const PRUnichar* AsSharedWString(PRUint32 idx, PRUint32 *len) {
-    const PRUnichar *str = nsnull;
-    GetSharedString(idx, len, &str);
+  inline const PRUnichar* AsSharedWString(uint32_t idx, uint32_t *len) {
+    const PRUnichar *str = nullptr;
+    *len = 0;
+#ifdef DEBUG
+    nsresult rv =
+#endif
+      GetSharedString(idx, len, &str);
+    NS_ABORT_IF_FALSE(NS_SUCCEEDED(rv) || IsNull(idx),
+                      "Getting value failed, wrong column index?");
     return str;
   }
 
-  inline const PRUint8* AsSharedBlob(PRUint32 idx, PRUint32 *len) {
-    const PRUint8 *blob = nsnull;
-    GetSharedBlob(idx, len, &blob);
+  inline const uint8_t* AsSharedBlob(uint32_t idx, uint32_t *len) {
+    const uint8_t *blob = nullptr;
+    *len = 0;
+#ifdef DEBUG
+    nsresult rv =
+#endif
+      GetSharedBlob(idx, len, &blob);
+    NS_ABORT_IF_FALSE(NS_SUCCEEDED(rv) || IsNull(idx),
+                      "Getting value failed, wrong column index?");
     return blob;
   }
 
-  inline PRBool IsNull(PRUint32 idx) {
-    PRBool b = PR_FALSE;
-    GetIsNull(idx, &b);
+  inline bool IsNull(uint32_t idx) {
+    bool b = false;
+#ifdef DEBUG
+    nsresult rv =
+#endif
+      GetIsNull(idx, &b);
+    NS_ABORT_IF_FALSE(NS_SUCCEEDED(rv),
+                      "Getting value failed, wrong column index?");
     return b;
   }
 

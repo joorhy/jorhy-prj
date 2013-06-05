@@ -40,7 +40,7 @@
 // Main plugin entry point implementation
 //
 #include "npapi.h"
-#include "npupp.h"
+#include "npfunctions.h"
 
 #ifndef HIBYTE
 #define HIBYTE(x) ((((uint32)(x)) & 0xff00) >> 8)
@@ -55,8 +55,8 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
   if(pFuncs == NULL)
     return NPERR_INVALID_FUNCTABLE_ERROR;
 
-  if(pFuncs->size < sizeof(NPPluginFuncs))
-    return NPERR_INVALID_FUNCTABLE_ERROR;
+  //if(pFuncs->size < sizeof(NPPluginFuncs) - 4)
+  //  return NPERR_INVALID_FUNCTABLE_ERROR;
 
   pFuncs->version				= (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
   pFuncs->newp					= NPP_New;
@@ -79,9 +79,9 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 
 #endif /* XP_WIN */
 
-char *NPP_GetMIMEDescription();
+const char *NPP_GetMIMEDescription();
 
-char *NP_GetMIMEDescription()
+const char *NP_GetMIMEDescription()
 {
   return NPP_GetMIMEDescription();
 }
@@ -99,8 +99,8 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
   if(HIBYTE(pFuncs->version) > NP_VERSION_MAJOR)
     return NPERR_INCOMPATIBLE_VERSION_ERROR;
 
-  if(pFuncs->size < sizeof(NPNetscapeFuncs))
-    return NPERR_INVALID_FUNCTABLE_ERROR;
+  //if(pFuncs->size < sizeof(NPNetscapeFuncs) - 4)
+  //  return NPERR_INVALID_FUNCTABLE_ERROR;
 
   NPNFuncs.size						= pFuncs->size;
   NPNFuncs.version					= pFuncs->version;

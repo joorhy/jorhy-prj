@@ -1,45 +1,8 @@
 /* -*- Mode: IDL; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Mozilla browser.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications, Inc.
- * Portions created by the Initial Developer are Copyright (C) 1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Travis Bogard <travis@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
-
-/**
- * The nsIContentViewerEdit    
- */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
  * The nsIMarkupDocumentViewer
@@ -51,8 +14,16 @@
 
 interface nsIDOMNode;
 
+%{C++
+#include "nsCOMPtr.h"
+#include "nsTArray.h"
+%}
 
-[scriptable, uuid(40b2282a-a882-4483-a634-dec468d88377)]
+interface nsIMarkupDocumentViewer;
+
+[ref] native nsIMarkupDocumentViewerTArray(nsTArray<nsCOMPtr<nsIMarkupDocumentViewer> >);
+
+[scriptable, uuid(02d37b31-e654-4b74-9bc3-14dfe0020bb3)]
 interface nsIMarkupDocumentViewer : nsISupports
 {
 
@@ -75,32 +46,33 @@ interface nsIMarkupDocumentViewer : nsISupports
 	*/
 	attribute ACString defaultCharacterSet;
 
-	/*
-	XXX Comment here!
-	*/
+	/**
+	 * XXX comm-central only: bug 829543. Not the Character Encoding menu in 
+     * browser!
+	 */
 	attribute ACString forceCharacterSet;
 
-	/*
-	XXX Comment here!
-	*/
+	/**
+	 * XXX comm-central only: bug 829543.
+	 */
 	attribute ACString hintCharacterSet;
 
-	/*
-	XXX Comment here!
-	*/
-	attribute PRInt32 hintCharacterSetSource;
+	/**
+	 * XXX comm-central only: bug 829543.
+	 */
+	attribute int32_t hintCharacterSetSource;
 
 	/*
 	character set from prev document 
 	*/
 	attribute ACString prevDocCharacterSet;
 
-	//void GetCharacterSetHint(in wstring hintCharset, in PRInt32 charsetSource);
+	//void GetCharacterSetHint(in wstring hintCharset, in int32_t charsetSource);
 
-	/**
-	* Tell the container to shrink-to-fit or grow-to-fit its contents
-	*/
-	void sizeToContent();
+  /**
+   * Requests the size of the content to the container.
+   */
+  void getContentSize(out long width, out long height);
 
   /**
    * Options for Bidi presentation.
@@ -126,14 +98,6 @@ interface nsIMarkupDocumentViewer : nsISupports
   attribute octet bidiTextType;
 
   /**
-   * bidiControlsTextMode: the order of bidirectional text in form controls.
-   *                       1 - logical
-   *                       2 - visual
-   *                       3 - like the containing document
-   */
-  attribute octet bidiControlsTextMode;
-
-  /**
    * bidiNumeral: the type of numerals to display. 
    *              1 - depending on context, default is Arabic numerals
    *              2 - depending on context, default is Hindi numerals
@@ -151,14 +115,25 @@ interface nsIMarkupDocumentViewer : nsISupports
   attribute octet bidiSupport;
 
   /**
-   * bidiCharacterSet: whether to force the user's character set
-   *                   1 - use the document character set
-   *                   2 - use the character set chosen by the user
-   */
-  attribute octet bidiCharacterSet;  
-  
-  /**
    * Use this attribute to access all the Bidi options in one operation
    */
-  attribute PRUint32 bidiOptions;
+  attribute uint32_t bidiOptions;
+
+  /** The minimum font size  */
+  attribute long minFontSize;
+
+  /**
+   * Append |this| and all of its descendants to the given array,
+   * in depth-first pre-order traversal.
+   */
+  [noscript] void appendSubtree(in nsIMarkupDocumentViewerTArray array);
+
+  /**
+   * Set the maximum line width for the document.
+   * NOTE: This will generate a reflow!
+   *
+   * @param maxLineWidth The maximum width of any line boxes on the page,
+   *        in CSS pixels.
+   */
+  void changeMaxLineBoxWidth(in int32_t maxLineBoxWidth);
 };

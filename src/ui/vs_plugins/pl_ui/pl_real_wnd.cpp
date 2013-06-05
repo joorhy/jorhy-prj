@@ -213,6 +213,7 @@ void CPlRealWnd::OnLButtonDown(UINT nFlags, CPoint point)
 	m_dwInterval = interval;
 	if(PlManager::Instance()->IsPlaying(m_hWnd))
 	{
+		//PlManager::Instance()->StatusCallBack(m_hWnd);
 		int args[3];
 		CRect rect;
 		int speed = 0;

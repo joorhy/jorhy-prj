@@ -119,6 +119,7 @@ J_PL_RESULT J_PlControl::Stop()
 		return J_PL_NO_ERROR;
 
 	int state = J_PL_END;
+	m_pDisplayCBK = NULL;
 	m_switch.Single();
 	m_state->SetVariable(&state);
 	m_FrameSwitch.Single();
@@ -301,7 +302,6 @@ J_PL_RESULT J_PlControl::CallBackStop()
 	for (int i=0; i<num; ++i)
 	{
 		m_AllClose.Wait();
-		//--m_ThreadNumer;
 	}
 
 	if(m_input != NULL)

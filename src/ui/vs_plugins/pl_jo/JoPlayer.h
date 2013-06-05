@@ -54,4 +54,5 @@ private:
 	HWND m_pPlWnd;
 	PlLock m_lock;
 	j_pl_mtime_t m_lastFrameTime;
+	PlLock m_lock2;
 };

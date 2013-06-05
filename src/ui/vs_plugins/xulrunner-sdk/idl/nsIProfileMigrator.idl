@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is The Browser Profile Migrator.
- *
- * The Initial Developer of the Original Code is Ben Goodger.
- * Portions created by the Initial Developer are Copyright (C) 2004
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Ben Goodger <ben@bengoodger.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 interface nsIFile;
@@ -69,24 +37,12 @@ interface nsIProfileStartup : nsISupports
  * @client   Toolkit (Startup code)
  * @obtainable service, contractid("@mozilla.org/toolkit/profile-migrator;1")
  */
-[scriptable, uuid(24ce8b9d-b7ff-4279-aef4-26e158f03e34)]
+[scriptable, uuid(3df284a5-2258-4d46-a664-761ecdc04c22)]
 interface nsIProfileMigrator : nsISupports 
 {
   /**
-   * Import existing profile paths.  When the app is started the first
-   * time, if there are no INI-style profiles, appstartup will call
-   * this method to import any registry- style profiles that may
-   * exist. When this method is called, there is no event queue
-   * service and this method should not attempt to use the network or
-   * show any GUI.
-   *
-   * @note You don't actually have to move the profile data. Just call
-   *       nsIToolkitProfileService.create on the existing profile path(s).
-   */
-  void import();
-
-  /**
-   * Do profile migration.
+   * Migrate data from an outside source, if possible.  Does nothing
+   * otherwise.
    *
    * When this method is called, a default profile has been created;
    * XPCOM has been initialized such that compreg.dat is in the
@@ -98,10 +54,13 @@ interface nsIProfileMigrator : nsISupports
    * If your migrator needs to access services that use the profile (to
    * set profile prefs or bookmarks, for example), use aStartup.doStartup.
    *
-   * The startup code ignores COM exceptions thrown from this method.
+   * @param  aStartup nsIProfileStartup object to use during migration.
+   * @param  aKey     optional key of a migrator to use to skip source selection.
+   *
+   * @note The startup code ignores COM exceptions thrown from this method.
    */
-  void migrate(in nsIProfileStartup aStartup);
-};  
+  void migrate(in nsIProfileStartup aStartup, in ACString aKey);
+};
 
 %{C++
 #define NS_PROFILEMIGRATOR_CONTRACTID "@mozilla.org/toolkit/profile-migrator;1"

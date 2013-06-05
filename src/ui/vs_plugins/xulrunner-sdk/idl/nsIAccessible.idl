@@ -1,49 +1,16 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2003
- * the Initial Developer. All Rights Reserved.
- *
- * Original Author: Eric D Vaughan (evaughan@netscape.com)
- * Contributor(s): Aaron Leventhal (aaronl@netscape.com)
- *                 John Gaunt (jgaunt@netscape.com)
- *                 Kyle Yuan (kyle.yuan@sun.com)
- *                 Håkan Waara (hwaara@gmail.com)
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 #include "nsIArray.idl"
 
 interface nsIPersistentProperties;
+interface nsIDOMCSSPrimitiveValue;
 interface nsIDOMDOMStringList;
+interface nsIDOMNode;
+interface nsIAccessibleDocument;
 interface nsIAccessibleRelation;
 
 /**
@@ -55,10 +22,8 @@ interface nsIAccessibleRelation;
  * nodes in the DOM tree -- such as documents, focusable elements and text.
  * Mozilla creates the implementations of nsIAccessible on demand.
  * See http://www.mozilla.org/projects/ui/accessibility for more information.
- *
- * @status UNDER_REVIEW
  */
-[scriptable, uuid(004b6882-2df1-49df-bb5f-0fb81a5b1edf)]
+[scriptable, uuid(45600c50-b06a-11e1-afa6-0800200c9a66)]
 interface nsIAccessible : nsISupports
 {
   /**
@@ -103,7 +68,34 @@ interface nsIAccessible : nsISupports
   readonly attribute long indexInParent;
 
   /**
-   * Accessible name -- the main text equivalent for this node
+   * The DOM node this nsIAccessible is associated with.
+   */
+  readonly attribute nsIDOMNode DOMNode;
+
+  /**
+   * The document accessible that this access node resides in.
+   */
+  readonly attribute nsIAccessibleDocument document;
+
+  /**
+   * The root document accessible that this access node resides in.
+   */
+  readonly attribute nsIAccessibleDocument rootDocument;
+
+  /**
+   * The language for the current DOM node, e.g. en, de, etc.
+   */
+  readonly attribute DOMString language;
+
+  /**
+   * Accessible name -- the main text equivalent for this node. The name is
+   * specified by ARIA or by native markup. Example of ARIA markup is
+   * aria-labelledby attribute placed on element of this accessible. Example
+   * of native markup is HTML label linked with HTML element of this accessible.
+   *
+   * Value can be string or null. A null value indicates that AT may attempt to
+   * compute the name. Any string value, including the empty string, should be
+   * considered author-intentional, and respected.
    */
   attribute AString name;
 
@@ -123,36 +115,21 @@ interface nsIAccessible : nsISupports
    * The modifier may be affected by user and platform preferences.
    * Usually alt+letter, or just the letter alone for menu items. 
    */
-  readonly attribute AString keyboardShortcut;
+  readonly attribute AString accessKey;
 
   /**
    * Provides localized string of global keyboard accelerator for default
    * action, such as Ctrl+O for Open file
    */
-  readonly attribute AString defaultKeyBinding;
+  readonly attribute AString keyboardShortcut;
 
   /**
-   * Provides array of localized string of global keyboard accelerator for
-   * the given action index supported by accessible.
+   * Enumerated accessible role (see the constants defined in nsIAccessibleRole).
    *
-   * @param aActionIndex - index of the given action
-   */
-  nsIDOMDOMStringList getKeyBindings(in PRUint8 aActionIndex);
-
-  /**
-   * Natural enumerated accessible role for the associated element.
-   * The values depend on platform because of variations.
-   * See the ROLE_* constants defined in nsIAccessibleRole.
-   * This does not take into account role attribute as the finalRole does.
+   * @note  The values might depend on platform because of variations. Widgets
+   *        can use ARIA role attribute to force the final role.
    */
   readonly attribute unsigned long role;
-
-  /**
-   * Enumerated accessible role. The values depend on platform because of variations.
-   * See the ROLE_* constants defined in nsIAccessibleRole.
-   * Widgets can use role attribute to force the final role
-   */
-  readonly attribute unsigned long finalRole;
 
   /**
    * Accessible states -- bit fields which describe boolean properties of node.
@@ -164,7 +141,7 @@ interface nsIAccessible : nsISupports
    * @param aExtraState - the second bit field
    *                      (see nsIAccessibleStates::EXT_STATE_* constants)
    */
-  void getFinalState(out unsigned long aState, out unsigned long aExtraState);
+  void getState(out unsigned long aState, out unsigned long aExtraState);
 
   /**
    * Help text associated with node
@@ -199,8 +176,24 @@ interface nsIAccessible : nsISupports
    * current accessible will be returned.
    * If the point is in neither the current accessible or a child, then
    * null will be returned.
+   *
+   * @param x  screen's x coordinate
+   * @param y  screen's y coordinate
+   * @return   the deepest accessible child containing the given point
    */
   nsIAccessible getChildAtPoint(in long x, in long y);
+
+  /**
+   * Deepest accessible child which contains the coordinate at (x, y) in screen
+   * pixels. If the point is in the current accessible but not in a child, the
+   * current accessible will be returned. If the point is in neither the current
+   * accessible or a child, then null will be returned.
+   *
+   * @param x  screen's x coordinate
+   * @param y  screen's y coordinate
+   * @return   the deepest accessible child containing the given point
+   */
+  nsIAccessible getDeepestChildAtPoint(in long x, in long y);
 
   /**
    * Nth accessible child using zero-based index or last child if index less than zero
@@ -208,42 +201,10 @@ interface nsIAccessible : nsISupports
   nsIAccessible getChildAt(in long aChildIndex);
 
   /**
-   * Accessible node geometrically to the right of this one
-   */
-  nsIAccessible getAccessibleToRight();
-
-  /**
-   * Accessible node geometrically to the left of this one
-   */
-  nsIAccessible getAccessibleToLeft();
-
-  /**
-   * Accessible node geometrically above this one
-   */
-  nsIAccessible getAccessibleAbove();
-
-  /**
-   * Accessible node geometrically below this one
-   */
-  nsIAccessible getAccessibleBelow();
-
-  /**
-   * Return accessible related to this one by the given relation type (see.
+   * Return accessible relation by the given relation type (see.
    * constants defined in nsIAccessibleRelation).
    */
-  nsIAccessible getAccessibleRelated(in unsigned long aRelationType);
-
-  /**
-   * Returns the number of accessible relations for this object.
-   */
-  readonly attribute unsigned long relationsCount;
-
-  /**
-   * Returns one accessible relation for this object.
-   *
-   * @param index - relation index (0-based)
-   */
-  nsIAccessibleRelation getRelation(in unsigned long index);
+  nsIAccessibleRelation getRelationByType(in unsigned long aRelationType);
 
   /**
    * Returns multiple accessible relations for this object.
@@ -285,23 +246,43 @@ interface nsIAccessible : nsISupports
   /**
    * The number of accessible actions associated with this accessible
    */
-  readonly attribute PRUint8 numActions;
+  readonly attribute uint8_t actionCount;
 
   /**
    * The name of the accessible action at the given zero-based index
    */
-  AString getActionName(in PRUint8 index);
+  AString getActionName(in uint8_t index);
 
   /**
    * The description of the accessible action at the given zero-based index
    */
-  AString getActionDescription(in PRUint8 aIndex);
+  AString getActionDescription(in uint8_t aIndex);
 
   /**
    * Perform the accessible action at the given zero-based index
    * Action number 0 is the default action
    */
-  void doAction(in PRUint8 index);   
+  void doAction(in uint8_t index);   
+
+  /**
+   * Makes an object visible on screen.
+   *
+   * @param scrollType - defines where the object should be placed on
+   *                     the screen (see nsIAccessibleScrollType for
+   *                     available constants).
+   */
+  void scrollTo(in unsigned long aScrollType);
+
+  /**
+   * Moves the top left of an object to a specified location.
+   *
+   * @param coordinateType [in] - specifies whether the coordinates are relative to
+   *                         the screen or the parent object (for available
+   *                         constants refer to nsIAccessibleCoordinateType)
+   * @param x [in] - defines the x coordinate
+   * @param y [in] - defines the y coordinate
+  */
+  void scrollToPoint(in unsigned long coordinateType, in long x, in long y);
 
   /**
    * Get a pointer to accessibility interface for this node, which is specific 

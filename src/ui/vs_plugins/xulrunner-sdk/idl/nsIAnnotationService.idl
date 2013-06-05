@@ -1,45 +1,13 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Annotation code
- *
- * The Initial Developer of the Original Code is
- * Google Inc.
- * Portions created by the Initial Developer are Copyright (C) 2005
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Brett Wilson <brettw@gmail.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
 interface nsIURI;
 interface nsIVariant;
+interface mozIAnnotatedResult;
 
 [scriptable, uuid(63fe98e0-6889-4c2c-ac9f-703e4bc25027)]
 interface nsIAnnotationObserver : nsISupports
@@ -48,19 +16,23 @@ interface nsIAnnotationObserver : nsISupports
      * Called when an annotation value is set. It could be a new annotation,
      * or it could be a new value for an existing annotation.
      */
-    void onPageAnnotationSet(in nsIURI aPage, in AUTF8String aName);
-    void onItemAnnotationSet(in long long aItemId, in AUTF8String aName);
+    void onPageAnnotationSet(in nsIURI aPage,
+                             in AUTF8String aName);
+    void onItemAnnotationSet(in long long aItemId,
+                             in AUTF8String aName);
 
     /**
      * Called when an annotation is deleted. If aName is empty, then ALL
      * annotations for the given URI have been deleted. This is not called when
      * annotations are expired (normally happens when the app exits).
      */
-    void onPageAnnotationRemoved(in nsIURI aURI, in AUTF8String aName);
-    void onItemAnnotationRemoved(in long long aItemId, in AUTF8String aName);
+    void onPageAnnotationRemoved(in nsIURI aURI,
+                                 in AUTF8String aName);
+    void onItemAnnotationRemoved(in long long aItemId,
+                                 in AUTF8String aName);
 };
 
-[scriptable, uuid(ba249b58-346f-42a9-a393-203ae34ec6c4)]
+[scriptable, uuid(c7f425cc-a063-49ef-9f4c-b08eb2f1730a)]
 interface nsIAnnotationService : nsISupports
 {
     /**
@@ -75,7 +47,7 @@ interface nsIAnnotationService : nsISupports
     // Removed at application exit.
     const unsigned short EXPIRE_SESSION = 0;
 
-    // NOTE: 1 is skipped due to it's temporary use as EXPIRE_NEVER in bug #319455.
+    // NOTE: 1 is skipped due to its temporary use as EXPIRE_NEVER in bug #319455.
 
     // For general page settings, things the user is interested in seeing
     // if they come back to this page some time in the near future.
@@ -124,15 +96,17 @@ interface nsIAnnotationService : nsISupports
      * aExpiration is one of EXPIRE_* above. aFlags should be 0 for now, some
      * flags will be defined in the future.
      *
-     * NOTE: ALL ANNOTATIONS WILL GET DELETED WHEN THE PAGE IS REMOVED FROM HISTORY,
-     * UNLESS YOU USE THE EXPIRE_NEVER FLAG. This means that if you create an
-     * annotation on a random unvisited URI, it will get deleted when the
-     * browser shuts down. Otherwise, things can exist in history as
-     * annotations but the user has no way of knowing it, potentially violating
-     * their privacy expectations about actions such as "Clear history." If
-     * there is an important annotation that the user wants to keep, you should
-     * make sure that you use EXPIRE_NEVER. This will ensure the item is never
-     * completely deleted from the Places database.
+     * NOTE: ALL PAGE ANNOTATIONS WILL GET DELETED WHEN THE PAGE IS REMOVED FROM
+     * HISTORY IF THE PAGE IS NOT BOOKMARKED. This means that if you create an
+     * annotation on an unvisited URI, it will get deleted when the browser
+     * shuts down. Otherwise, URIs can exist in history as annotations but the
+     * user has no way of knowing it, potentially violating their privacy
+     * expectations about actions such as "Clear history".
+     * If there is an important annotation that the user or extension wants to
+     * keep, you should add a bookmark for the page and use an EXPIRE_NEVER
+     * annotation.  This will ensure the annotation exists until the item is
+     * removed by the user.
+     * See EXPIRE_* constants above for further information.
      *
      * The annotation "favicon" is special. Favicons are stored in the favicon
      * service, but are special cased in the protocol handler so they look like
@@ -141,56 +115,89 @@ interface nsIAnnotationService : nsISupports
      * Binary annotations should be set using
      * setItemAnnotationBinary/setPageAnnotationBinary. For other types, only
      * C++ consumers may use the type-specific methods.
+     *
+     * @throws NS_ERROR_ILLEGAL_VALUE if the page or the bookmark doesn't exist.
      */
-    void setPageAnnotation(in nsIURI aURI, in AUTF8String aName,
-                           in nsIVariant aValue, in long aFlags,
+    void setPageAnnotation(in nsIURI aURI,
+                           in AUTF8String aName,
+                           in nsIVariant aValue,
+                           in long aFlags,
                            in unsigned short aExpiration);
-    void setItemAnnotation(in long long aItemId, in AUTF8String aName,
-                           in nsIVariant aValue, in long aFlags,
+    void setItemAnnotation(in long long aItemId,
+                           in AUTF8String aName,
+                           in nsIVariant aValue,
+                           in long aFlags,
                            in unsigned short aExpiration);
 
-    [noscript] void setPageAnnotationString(in nsIURI aURI, in AUTF8String aName,
-                                in AString aValue, in long aFlags,
-                                in unsigned short aExpiration);
-    [noscript] void setItemAnnotationString(in long long aItemId, in AUTF8String aName,
-                                            in AString aValue, in long aFlags,
+    /**
+     * @throws NS_ERROR_ILLEGAL_VALUE if the page or the bookmark doesn't exist.
+     */
+    [noscript] void setPageAnnotationString(in nsIURI aURI,
+                                            in AUTF8String aName,
+                                            in AString aValue,
+                                            in long aFlags,
+                                            in unsigned short aExpiration);
+    [noscript] void setItemAnnotationString(in long long aItemId,
+                                            in AUTF8String aName,
+                                            in AString aValue,
+                                            in long aFlags,
                                             in unsigned short aExpiration);
 
     /**
      * Sets an annotation just like setAnnotationString, but takes an Int32 as
      * input.
+     *
+     * @throws NS_ERROR_ILLEGAL_VALUE if the page or the bookmark doesn't exist.
      */
-    [noscript] void setPageAnnotationInt32(in nsIURI aURI, in AUTF8String aName,
-                                           in long aValue, in long aFlags,
+    [noscript] void setPageAnnotationInt32(in nsIURI aURI,
+                                           in AUTF8String aName,
+                                           in long aValue,
+                                           in long aFlags,
                                            in unsigned short aExpiration);
-    [noscript] void setItemAnnotationInt32(in long long aItemId, in AUTF8String aName,
-                                           in long aValue, in long aFlags,
+    [noscript] void setItemAnnotationInt32(in long long aItemId,
+                                           in AUTF8String aName,
+                                           in long aValue,
+                                           in long aFlags,
                                            in unsigned short aExpiration);
 
     /**
      * Sets an annotation just like setAnnotationString, but takes an Int64 as
      * input.
+     *
+     * @throws NS_ERROR_ILLEGAL_VALUE if the page or the bookmark doesn't exist.
      */
-    [noscript] void setPageAnnotationInt64(in nsIURI aURI, in AUTF8String aName,
-                                           in long long aValue, in long aFlags,
+    [noscript] void setPageAnnotationInt64(in nsIURI aURI,
+                                           in AUTF8String aName,
+                                           in long long aValue,
+                                           in long aFlags,
                                            in unsigned short aExpiration);
-    [noscript] void setItemAnnotationInt64(in long long aItemId, in AUTF8String aName,
-                                           in long long aValue, in long aFlags,
+    [noscript] void setItemAnnotationInt64(in long long aItemId,
+                                           in AUTF8String aName,
+                                           in long long aValue,
+                                           in long aFlags,
                                            in unsigned short aExpiration);
 
     /**
      * Sets an annotation just like setAnnotationString, but takes a double as
      * input.
+     *
+     * @throws NS_ERROR_ILLEGAL_VALUE if the page or the bookmark doesn't exist.
      */
-    [noscript] void setPageAnnotationDouble(in nsIURI aURI, in AUTF8String aName,
-                                            in double aValue, in long aFlags,
+    [noscript] void setPageAnnotationDouble(in nsIURI aURI,
+                                            in AUTF8String aName,
+                                            in double aValue,
+                                            in long aFlags,
                                             in unsigned short aExpiration);
-    [noscript] void setItemAnnotationDouble(in long long aItemId, in AUTF8String aName,
-                                            in double aValue, in long aFlags,
+    [noscript] void setItemAnnotationDouble(in long long aItemId,
+                                            in AUTF8String aName,
+                                            in double aValue,
+                                            in long aFlags,
                                             in unsigned short aExpiration);
-    /*
+    /**
      * Sets an annotation just like setAnnotationString, but takes binary data
      * as input. You MUST supply a valid MIME type.
+     *
+     * @throws NS_ERROR_ILLEGAL_VALUE if the page or the bookmark doesn't exist.
      */
     void setPageAnnotationBinary(in nsIURI aURI, in AUTF8String aName,
                                  [const,array,size_is(aDataLen)] in octet aData,
@@ -214,42 +221,54 @@ interface nsIAnnotationService : nsISupports
      * The type-specific methods throw if the given annotation is set in
      * a different type.
      */
-    nsIVariant getPageAnnotation(in nsIURI aURI, in AUTF8String aName);
-    nsIVariant getItemAnnotation(in long long aItemId, in AUTF8String aName);
+    nsIVariant getPageAnnotation(in nsIURI aURI,
+                                 in AUTF8String aName);
+    nsIVariant getItemAnnotation(in long long aItemId,
+                                 in AUTF8String aName);
 
     /**
      * @see getPageAnnotation
      */
-    [noscript] AString getPageAnnotationString(in nsIURI aURI, in AUTF8String aName);
-    [noscript] AString getItemAnnotationString(in long long aItemId, in AUTF8String aName);
+    [noscript] AString getPageAnnotationString(in nsIURI aURI,
+                                               in AUTF8String aName);
+    [noscript] AString getItemAnnotationString(in long long aItemId,
+                                               in AUTF8String aName);
 
     /**
      * @see getPageAnnotation
      */
-    [noscript] long getPageAnnotationInt32(in nsIURI aURI, in AUTF8String aName);
-    [noscript] long getItemAnnotationInt32(in long long aItemId, in AUTF8String aName);
+    [noscript] long getPageAnnotationInt32(in nsIURI aURI,
+                                           in AUTF8String aName);
+    [noscript] long getItemAnnotationInt32(in long long aItemId,
+                                           in AUTF8String aName);
 
     /**
      * @see getPageAnnotation
      */
-    [noscript] long long getPageAnnotationInt64(in nsIURI aURI, in AUTF8String aName);
-    [noscript] long long getItemAnnotationInt64(in long long aItemId, in AUTF8String aName);
+    [noscript] long long getPageAnnotationInt64(in nsIURI aURI,
+                                                in AUTF8String aName);
+    [noscript] long long getItemAnnotationInt64(in long long aItemId,
+                                                in AUTF8String aName);
 
     /**
      * @see getPageAnnotation
      */
-    [noscript] double getPageAnnotationDouble(in nsIURI aURI, in AUTF8String aName);
-    [noscript] double getItemAnnotationDouble(in long long aItemId, in AUTF8String aName);
+    [noscript] double getPageAnnotationDouble(in nsIURI aURI,
+                                              in AUTF8String aName);
+    [noscript] double getItemAnnotationDouble(in long long aItemId,
+                                              in AUTF8String aName);
 
     /**
      * @see getPageAnnotation. This also returns the
      * MIME type.
      */
-    void getPageAnnotationBinary(in nsIURI aURI, in AUTF8String aName,
+    void getPageAnnotationBinary(in nsIURI aURI,
+                                 in AUTF8String aName,
                                  [array,size_is(aDataLen)] out octet aData,
                                  out unsigned long aDataLen,
                                  out AUTF8String aMimeType);
-    void getItemAnnotationBinary(in long long aItemId, in AUTF8String aName,
+    void getItemAnnotationBinary(in long long aItemId,
+                                 in AUTF8String aName,
                                  [array,size_is(aDataLen)] out octet aData,
                                  out unsigned long aDataLen,
                                  out AUTF8String aMimeType);
@@ -267,12 +286,14 @@ interface nsIAnnotationService : nsISupports
      */
     void getPageAnnotationInfo(in nsIURI aURI,
                                in AUTF8String aName,
-                               out PRInt32 aFlags,
+                               out int32_t aFlags,
                                out unsigned short aExpiration,
                                out AUTF8String aMimeType,
                                out unsigned short aType);
-    void getItemAnnotationInfo(in long long aItemId, in AUTF8String aName,
-                               out long aFlags, out unsigned short aExpiration,
+    void getItemAnnotationInfo(in long long aItemId,
+                               in AUTF8String aName,
+                               out long aFlags,
+                               out unsigned short aExpiration,
                                out AUTF8String aMimeType,
                                out unsigned short aType);
 
@@ -287,18 +308,35 @@ interface nsIAnnotationService : nsISupports
      * @return one of the TYPE_* constants above
      * @throws if the annotation is not set
      */
-    PRUint16 getPageAnnotationType(in nsIURI aURI, in AUTF8String aName);
-    PRUint16 getItemAnnotationType(in long long aItemId, in AUTF8String aName);
+    uint16_t getPageAnnotationType(in nsIURI aURI,
+                                   in AUTF8String aName);
+    uint16_t getItemAnnotationType(in long long aItemId,
+                                   in AUTF8String aName);
 
     /**
      * Returns a list of all URIs having a given annotation.
      */
-    void getPagesWithAnnotation(in AUTF8String name,
-      out unsigned long resultCount,
+    void getPagesWithAnnotation(
+      in AUTF8String name,
+      [optional] out unsigned long resultCount,
       [retval, array, size_is(resultCount)] out nsIURI results);
-    void getItemsWithAnnotation(in AUTF8String name,
-      out unsigned long resultCount,
+    void getItemsWithAnnotation(
+      in AUTF8String name,
+      [optional] out unsigned long resultCount,
       [retval, array, size_is(resultCount)] out long long results);
+
+    /**
+     * Returns a list of mozIAnnotation(s), having a given annotation name.
+     *
+     * @param name
+     *        The annotation to search for.
+     * @return list of mozIAnnotation objects.
+     * @note binary annotations are not supported and thus skipped.
+     */
+    void getAnnotationsWithName(
+        in AUTF8String name,
+        [optional] out unsigned long count,
+        [retval, array, size_is(count)] out mozIAnnotatedResult results);
 
     /**
      * Get the names of all annotations for this URI.
@@ -306,23 +344,31 @@ interface nsIAnnotationService : nsISupports
      * example JS:
      *   var annotations = annotator.getPageAnnotations(myURI, {});
      */
-    void getPageAnnotationNames(in nsIURI aURI, out unsigned long count,
+    void getPageAnnotationNames(
+      in nsIURI aURI,
+      [optional] out unsigned long count,
       [retval, array, size_is(count)] out nsIVariant result);
-    void getItemAnnotationNames(in long long aItemId, out unsigned long count,
+    void getItemAnnotationNames(
+      in long long aItemId,
+      [optional] out unsigned long count,
       [retval, array, size_is(count)] out nsIVariant result);
 
     /**
-     * Test for annotation existance.
+     * Test for annotation existence.
      */
-    boolean pageHasAnnotation(in nsIURI aURI, in AUTF8String aName);
-    boolean itemHasAnnotation(in long long aItemId, in AUTF8String aName);
+    boolean pageHasAnnotation(in nsIURI aURI,
+                              in AUTF8String aName);
+    boolean itemHasAnnotation(in long long aItemId,
+                              in AUTF8String aName);
 
     /**
      * Removes a specific annotation. Succeeds even if the annotation is
      * not found.
      */
-    void removePageAnnotation(in nsIURI aURI, in AUTF8String aName);
-    void removeItemAnnotation(in long long aItemId, in AUTF8String aName);
+    void removePageAnnotation(in nsIURI aURI,
+                              in AUTF8String aName);
+    void removeItemAnnotation(in long long aItemId,
+                              in AUTF8String aName);
 
     /**
      * Removes all annotations for the given page/item.
@@ -336,12 +382,13 @@ interface nsIAnnotationService : nsISupports
      * Copies all annotations from the source to the destination URI/item. If
      * the destination already has an annotation with the same name as one on
      * the source, it will be overwritten if aOverwriteDest is set. Otherwise,
-     * the destination URIs will be preferred.
+     * the original annotation will be preferred.
      *
      * All the source annotations will stay as-is. If you don't want them
      * any more, use removePageAnnotations on that URI.
      */
-    void copyPageAnnotations(in nsIURI aSourceURI, in nsIURI aDestURI,
+    void copyPageAnnotations(in nsIURI aSourceURI,
+                             in nsIURI aDestURI,
                              in boolean aOverwriteDest);
     void copyItemAnnotations(in long long aSourceItemId,
                              in long long aDestItemId,
@@ -366,5 +413,47 @@ interface nsIAnnotationService : nsISupports
      * set by setAnnotationBinary. No non-URI valid chars in name, especially
      * colon, which will mess up parsing.
      */
-    nsIURI getAnnotationURI(in nsIURI aURI, in AUTF8String aName);
+    nsIURI getAnnotationURI(in nsIURI aURI,
+                            in AUTF8String aName);
+};
+
+/**
+ * Represents a place annotated with a given annotation.  If a place has
+ * multiple annotations, it can be represented by multiple
+ * mozIAnnotatedResult(s).
+ */
+[scriptable, uuid(81fd0188-db6a-492e-80b6-f6414913b396)]
+interface mozIAnnotatedResult : nsISupports
+{
+    /**
+     * The globally unique identifier of the place with this annotation.
+     *
+     * @note if itemId is valid this is the guid of the bookmark, otherwise
+     *       of the page.
+     */
+    readonly attribute AUTF8String guid;
+
+    /**
+     * The URI of the place with this annotation, if available, null otherwise.
+     */
+    readonly attribute nsIURI uri;
+
+    /**
+     * The bookmark id of the place with this annotation, if available,
+     * -1 otherwise.
+     *
+     * @note if itemId is -1, it doesn't mean the page is not bookmarked, just
+     *       that this annotation is relative to the page, not to the bookmark.
+     */
+    readonly attribute long long itemId;
+
+    /**
+     * Name of the annotation.
+     */
+    readonly attribute AUTF8String annotationName;
+
+    /**
+     * Value of the annotation.
+     */
+    readonly attribute nsIVariant annotationValue;
 };

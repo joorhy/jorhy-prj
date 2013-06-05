@@ -1,40 +1,7 @@
 /* -*- Mode: IDL; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Dan Rosen <dr@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /* nsISupports wrappers for single primitive pieces of data. */
 
@@ -45,8 +12,6 @@
  *
  * These first three are pointer types and do data copying
  * using the nsIMemory. Be careful!
- *
- * @status FROZEN
  */
 
 [scriptable, uuid(d0d4b136-1dd1-11b2-9371-f0727ef827c0)]
@@ -75,8 +40,6 @@ interface nsISupportsPrimitive : nsISupports
 
 /**
  * Scriptable storage for nsID structures
- *
- * @status FROZEN
  */
 
 [scriptable, uuid(d18290a0-4a1c-11d3-9890-006008962422)]
@@ -88,8 +51,6 @@ interface nsISupportsID : nsISupportsPrimitive
 
 /**
  * Scriptable storage for ASCII strings
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(d65ff270-4a1c-11d3-9890-006008962422)]
@@ -101,8 +62,6 @@ interface nsISupportsCString : nsISupportsPrimitive
 
 /**
  * Scriptable storage for Unicode strings
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(d79dc970-4a1c-11d3-9890-006008962422)]
@@ -118,73 +77,61 @@ interface nsISupportsString : nsISupportsPrimitive
 
 /**
  * Scriptable storage for booleans
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(ddc3b490-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRBool : nsISupportsPrimitive
 {
-    attribute PRBool data;
+    attribute boolean data;
     string toString();
 };
 
 /**
  * Scriptable storage for 8-bit integers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(dec2e4e0-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRUint8 : nsISupportsPrimitive
 {
-    attribute PRUint8 data;
+    attribute uint8_t data;
     string toString();
 };
 
 /**
  * Scriptable storage for unsigned 16-bit integers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(dfacb090-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRUint16 : nsISupportsPrimitive
 {
-    attribute PRUint16 data;
+    attribute uint16_t data;
     string toString();
 };
 
 /**
  * Scriptable storage for unsigned 32-bit integers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(e01dc470-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRUint32 : nsISupportsPrimitive
 {
-    attribute PRUint32 data;
+    attribute uint32_t data;
     string toString();
 };
 
 /**
  * Scriptable storage for 64-bit integers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(e13567c0-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRUint64 : nsISupportsPrimitive
 {
-    attribute PRUint64 data;
+    attribute uint64_t data;
     string toString();
 };
 
 /**
  * Scriptable storage for NSPR date/time values
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(e2563630-4a1c-11d3-9890-006008962422)]
@@ -197,8 +144,6 @@ interface nsISupportsPRTime : nsISupportsPrimitive
 /**
  * Scriptable storage for single character values
  * (often used to store an ASCII character)
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(e2b05e40-4a1c-11d3-9890-006008962422)]
@@ -210,47 +155,39 @@ interface nsISupportsChar : nsISupportsPrimitive
 
 /**
  * Scriptable storage for 16-bit integers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(e30d94b0-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRInt16 : nsISupportsPrimitive
 {
-    attribute PRInt16 data;
+    attribute int16_t data;
     string toString();
 };
 
 /**
  * Scriptable storage for 32-bit integers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(e36c5250-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRInt32 : nsISupportsPrimitive
 {
-    attribute PRInt32 data;
+    attribute int32_t data;
     string toString();
 };
 
 /**
  * Scriptable storage for 64-bit integers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(e3cb0ff0-4a1c-11d3-9890-006008962422)]
 interface nsISupportsPRInt64 : nsISupportsPrimitive
 {
-    attribute PRInt64 data;
+    attribute int64_t data;
     string toString();
 };
 
 /**
  * Scriptable storage for floating point numbers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(abeaa390-4ac0-11d3-baea-00805f8a5dd7)]
@@ -262,8 +199,6 @@ interface nsISupportsFloat : nsISupportsPrimitive
 
 /**
  * Scriptable storage for doubles
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(b32523a0-4ac0-11d3-baea-00805f8a5dd7)]
@@ -275,8 +210,6 @@ interface nsISupportsDouble : nsISupportsPrimitive
 
 /**
  * Scriptable storage for generic pointers
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(464484f0-568d-11d3-baf8-00805f8a5dd7)]
@@ -288,8 +221,6 @@ interface nsISupportsVoid : nsISupportsPrimitive
 
 /**
  * Scriptable storage for other XPCOM objects
- * 
- * @status FROZEN
  */
 
 [scriptable, uuid(995ea724-1dd1-11b2-9211-c21bdd3e7ed0)]

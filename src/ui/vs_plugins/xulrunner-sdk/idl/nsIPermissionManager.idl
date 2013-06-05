@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
  * This file contains an interface to the Permission Manager,
@@ -65,8 +33,10 @@
 
 interface nsIURI;
 interface nsIObserver;
+interface nsIPrincipal;
+interface nsIDOMWindow;
 
-[scriptable, uuid(00708302-684c-42d6-a5a3-995d51b1d17c)]
+[scriptable, uuid(b38c982d-30bc-463f-9afc-0ca339eac03c)]
 interface nsIPermissionManager : nsISupports
 {
   /**
@@ -76,9 +46,19 @@ interface nsIPermissionManager : nsISupports
    * default permission when no entry is found for a host, and
    * should not be used by consumers to indicate otherwise.
    */
-  const PRUint32 UNKNOWN_ACTION = 0;
-  const PRUint32 ALLOW_ACTION = 1;
-  const PRUint32 DENY_ACTION = 2;
+  const uint32_t UNKNOWN_ACTION = 0;
+  const uint32_t ALLOW_ACTION = 1;
+  const uint32_t DENY_ACTION = 2;
+  const uint32_t PROMPT_ACTION = 3;
+
+  /**
+   * Predefined expiration types for permissions.  Permissions can be permanent
+   * (never expire), expire at the end of the session, or expire at a specified
+   * time.
+   */
+  const uint32_t EXPIRE_NEVER = 0;
+  const uint32_t EXPIRE_SESSION = 1;
+  const uint32_t EXPIRE_TIME = 2;
 
   /**
    * Add permission information for a given URI and permission type. This
@@ -98,10 +78,30 @@ interface nsIPermissionManager : nsISupports
    *                    NOTE: UNKNOWN_ACTION (0) is reserved to represent the
    *                    default permission when no entry is found for a host, and
    *                    should not be used by consumers to indicate otherwise.
+   * @param expiretype  a constant defining whether this permission should
+   *                    never expire (EXPIRE_NEVER), expire at the end of the
+   *                    session (EXPIRE_SESSION), or expire at a specified time
+   *                    (EXPIRE_TIME).
+   * @param expiretime  an integer representation of when this permission
+   *                    should be forgotten (milliseconds since Jan 1 1970 0:00:00). 
    */
   void add(in nsIURI uri,
            in string type,
-           in PRUint32 permission);
+           in uint32_t permission,
+           [optional] in uint32_t expireType,
+           [optional] in int64_t expireTime);
+
+  /**
+   * Add permission information for a given principal.
+   * It is internally calling the other add() method using the nsIURI from the
+   * principal.
+   * Passing a system principal will be a no-op because they will always be
+   * granted permissions.
+   */
+  void addFromPrincipal(in nsIPrincipal principal, in string typed,
+                        in uint32_t permission,
+                        [optional] in uint32_t expireType,
+                        [optional] in int64_t expireTime);
 
   /**
    * Remove permission information for a given host string and permission type.
@@ -118,6 +118,14 @@ interface nsIPermissionManager : nsISupports
               in string type);
 
   /**
+   * Remove permission information for a given principal.
+   * This is internally calling remove() with the host from the principal's URI.
+   * Passing system principal will be a no-op because we never add them to the
+   * database.
+   */
+  void removeFromPrincipal(in nsIPrincipal principal, in string type);
+
+  /**
    * Clear permission information for all websites.
    */
   void removeAll();
@@ -129,8 +137,23 @@ interface nsIPermissionManager : nsISupports
    * @param return  see add(), param permission. returns UNKNOWN_ACTION when
    *                there is no stored permission for this uri and / or type.
    */
-  PRUint32 testPermission(in nsIURI uri,
+  uint32_t testPermission(in nsIURI uri,
                           in string type);
+
+  /**
+   * Test whether the principal has the permission to perform a given action.
+   * System principals will always have permissions granted.
+   */
+  uint32_t testPermissionFromPrincipal(in nsIPrincipal principal,
+                                       in string type);
+
+  /**
+   * Test whether the principal associated with the window's document has the
+   * permission to perform a given action.  System principals will always
+   * have permissions granted.
+   */
+  uint32_t testPermissionFromWindow(in nsIDOMWindow window,
+                                    in string type);
 
   /**
    * Test whether a website has permission to perform the given action.
@@ -140,8 +163,38 @@ interface nsIPermissionManager : nsISupports
    * @param return  see add(), param permission. returns UNKNOWN_ACTION when
    *                there is no stored permission for this uri and / or type.
    */
-  PRUint32 testExactPermission(in nsIURI uri,
+  uint32_t testExactPermission(in nsIURI uri,
                                in string type);
+
+  /**
+   * See testExactPermission() above.
+   * System principals will always have permissions granted.
+   */
+  uint32_t testExactPermissionFromPrincipal(in nsIPrincipal principal,
+                                            in string type);
+
+  /**
+   * Test whether a website has permission to perform the given action
+   * ignoring active sessions.
+   * System principals will always have permissions granted.
+   *
+   * @param principal the principal
+   * @param type      a case-sensitive ASCII string, identifying the consumer
+   * @param return    see add(), param permission. returns UNKNOWN_ACTION when
+   *                  there is no stored permission for this uri and / or type.
+   */
+  uint32_t testExactPermanentPermission(in nsIPrincipal principal,
+                                        in string type);
+
+   /**
+    * Increment or decrement our "refcount" of an app id.
+    *
+    * We use this refcount to determine an app's lifetime.  When an app's
+    * refcount goes to 0, we clear the permissions given to the app which are
+    * set to expire at the end of its session.
+    */
+   void addrefAppId(in unsigned long appId);
+   void releaseAppId(in unsigned long appId);
 
   /**
    * Allows enumeration of all stored permissions
@@ -149,6 +202,15 @@ interface nsIPermissionManager : nsISupports
    *         nsIPermission objects
    */
   readonly attribute nsISimpleEnumerator enumerator;
+
+  /**
+   * Remove all permissions associated with a given app id.
+   * @param aAppId       The appId of the app
+   * @param aBrowserOnly Whether we should remove permissions associated with
+   *                     a browser element (true) or all permissions (false).
+   */
+  void removePermissionsForApp(in unsigned long appId,
+                               in boolean browserOnly);
 };
 
 %{ C++

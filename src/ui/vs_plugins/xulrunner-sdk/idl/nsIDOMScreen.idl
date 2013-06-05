@@ -1,46 +1,12 @@
 /* -*- Mode: IDL; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Vidur Apparao <vidur@netscape.com> (original author)
- *   Johnny Stenback <jst@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "domstubs.idl"
+#include "nsIDOMEventTarget.idl"
 
-[scriptable, uuid(77947960-b4af-11d2-bd93-00805f8ae3f4)]
-interface nsIDOMScreen : nsISupports
+[scriptable, builtinclass, uuid(01e8587b-35a9-4a59-8349-c7ee93846fb2)]
+interface nsIDOMScreen : nsIDOMEventTarget
 {
   readonly attribute long             top;
   readonly attribute long             left;
@@ -52,4 +18,46 @@ interface nsIDOMScreen : nsISupports
   readonly attribute long             availHeight;
   readonly attribute long             availLeft;
   readonly attribute long             availTop;
+
+  /**
+   * Returns the current screen orientation.
+   * Can be: landscape-primary, landscape-secondary,
+   *         portrait-primary or portrait-secondary.
+   */
+  [binaryname(SlowMozOrientation)]
+  readonly attribute DOMString       mozOrientation;
+
+  [implicit_jscontext] attribute jsval      onmozorientationchange;
+
+  /**
+   * Lock the screen to the specified orientations(s).  This method returns true
+   * if the lock was acquired successfully, and false otherwise.
+   *
+   * The parameter can be a DOMString or an Array of DOMStrings.  If you pass a
+   * string, we lock the screen to that one orientation.  If you pass an Array,
+   * we ensure that the screen is always in one of the given orientations.
+   *
+   * Valid orientations are "portrait", "portrait-primary",
+   * "portrait-secondary", "landscape", "landscape-primary", and
+   * "landscape-secondary".
+   * These tokens are case-sensitive.
+   *
+   * If you pass a string that's not one of the valid orientations, or if you
+   * pass an array of orientations and any of the orientations in the array is
+   * not valid, we reject the lock and return false.
+   *
+   * The "-primary" orientations correspond to holding the device right-side up,
+   * while the "-secondary" orientations correspond to holding the device
+   * upside-down.	Locking the orientation in "portrait" is the same as locking
+   * the orientation in ['portrait-primary', 'portrait-secondary'], and the
+   * "landscape" orientation similarly corresponds to the set
+   * ['landscape-primary', 'landscape-secondary'].
+   */
+  [implicit_jscontext] boolean mozLockOrientation(in jsval orientation);
+
+  /**
+   * Unlock the screen orientation.
+   */
+  [binaryname(SlowMozUnlockOrientation)]
+  void mozUnlockOrientation();
 };

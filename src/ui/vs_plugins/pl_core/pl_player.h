@@ -1,6 +1,12 @@
 #pragma once
 #include "pl_type.h"
 
+struct PL_MsgParm
+{
+	int type;
+	int args;
+};
+
 struct PL_PlayParm
 {
 	int pVolume;

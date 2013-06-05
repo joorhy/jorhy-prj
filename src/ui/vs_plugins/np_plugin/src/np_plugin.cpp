@@ -18,21 +18,6 @@ m_pScriptableObject(NULL)
 
 CNPPlugin::~CNPPlugin()
 {
-	if(NULL != m_CallBkPtz)
-	{
-		NPN_ReleaseObject(m_CallBkPtz);
-		m_CallBkPtz = NULL;
-	}
-	if(NULL != m_CallBkState)
-	{
-		NPN_ReleaseObject(m_CallBkState);
-		m_CallBkState = NULL;
-	}
-	if(NULL != m_CallBkVod)
-	{
-		NPN_ReleaseObject(m_CallBkVod);
-		m_CallBkVod = NULL;
-	}
 }
 
 NPBool CNPPlugin::init(NPWindow* pNPWindow)
@@ -61,10 +46,6 @@ NPBool CNPPlugin::init(NPWindow* pNPWindow)
 
 	m_Window = pNPWindow;
 	m_bInitialized = TRUE;
-
-	m_CallBkPtz	= NULL;
-	m_CallBkState = NULL;
-	m_CallBkVod = NULL;
 	CPlCtrl::CreateInstance(m_hWnd)->RegisterCallBack(OnEvent, this);
 
 	return TRUE;
@@ -87,7 +68,7 @@ NPBool CNPPlugin::isInitialized()
 	return m_bInitialized;
 }
 
-int16 CNPPlugin::handleEvent(void* event)
+short CNPPlugin::handleEvent(void* event)
 {
 	return 0;
 }
@@ -102,9 +83,9 @@ void CNPPlugin::showVersion()
 	{
 		NPRect r =
 		{
-			(uint16)m_Window->y, (uint16)m_Window->x,
-			(uint16)(m_Window->y + m_Window->height),
-			(uint16)(m_Window->x + m_Window->width)
+			(unsigned short)m_Window->y, (unsigned short)m_Window->x,
+			(unsigned short)(m_Window->y + m_Window->height),
+			(unsigned short)(m_Window->x + m_Window->width)
 		};
 		NPN_InvalidateRect(m_pNPInstance, &r);
 	}
@@ -152,9 +133,7 @@ LRESULT CALLBACK CNPPlugin::PluginWinProc(HWND hwnd, UINT message, WPARAM wParam
 			GetClientRect(hwnd, &rect);
 			FillRect((HDC)wParam, &rect, (HBRUSH) (COLOR_WINDOW+1));
 			return 1;
-
 		default:
-			
 			break;
 
 		}
@@ -162,30 +141,6 @@ LRESULT CALLBACK CNPPlugin::PluginWinProc(HWND hwnd, UINT message, WPARAM wParam
 			return CallWindowProc(ud->lpOldProc,hwnd,message,wParam,lParam);
 	}
 		return DefWindowProc(hwnd, message, wParam, lParam);
-}
-
-void CNPPlugin::RegisterCallBack(NPObject *CallBackFunc,UINT type)
-{
-	switch(type)
-	{
-	case CALLBACK_PTZCTL:
-		m_CallBkPtz	= CallBackFunc;
-		NPN_RetainObject(m_CallBkPtz);
-		break;
-
-	case CALLBACK_ONSTATE:
-		m_CallBkState = CallBackFunc;
-		NPN_RetainObject(m_CallBkState);
-		break;
-
-	case CALLBACK_ONVOD:
-		m_CallBkVod = CallBackFunc;
-		NPN_RetainObject(m_CallBkVod);
-		break;
-
-	default:
-		break;
-	}
 }
 
 void CNPPlugin::OnEvent(void *pUser,UINT nType, int args[],UINT argCount)
@@ -197,50 +152,52 @@ void CNPPlugin::OnEvent(void *pUser,UINT nType, int args[],UINT argCount)
 
 void CNPPlugin::DefaultInvoke(UINT nType, int args[],UINT argCount)
 {
-	NPVariant result;
-	switch(nType)
+	ScriptablePluginObject *pScriptablePluginObj = dynamic_cast<ScriptablePluginObject *>((ScriptablePluginObjectBase *)m_pScriptableObject);
+	if (pScriptablePluginObj)
 	{
-	case CALLBACK_PTZCTL:
+		NPVariant result;
+		switch(nType)
 		{
-			if(NULL == m_CallBkPtz) return;
-			if(args[1]  <= 0) return;
+		case CALLBACK_PTZCTL:
+		{
+			if(args[2]  <= 0) 
+				return;
+			NPVariant NPN_args[4];
+			INT32_TO_NPVARIANT(	args[0],	NPN_args[0]);
+			INT32_TO_NPVARIANT(	args[1],	NPN_args[1]);
+			STRINGZ_TO_NPVARIANT((char*)args[2], NPN_args[2]);
+			INT32_TO_NPVARIANT(	args[3],	NPN_args[3]);
+			pScriptablePluginObj->InvokeDefault(NPN_args,argCount,&result);
+			break;
+		}
+		case CALLBACK_ONSTATE:
+		{
+			if(args[2] <= 0) 
+				return;
 
 			NPVariant NPN_args[3];
-			INT32_TO_NPVARIANT(		args[0],		NPN_args[0]);
-			STRINGZ_TO_NPVARIANT(	(char*)args[1],	NPN_args[1]);
-			INT32_TO_NPVARIANT(		args[2],		NPN_args[2]);
-
-			NPN_InvokeDefault(m_pNPInstance,m_CallBkPtz,NPN_args,argCount,&result);
+			INT32_TO_NPVARIANT(	args[0],	NPN_args[0]);
+			INT32_TO_NPVARIANT(	args[1],	NPN_args[1]);
+			STRINGZ_TO_NPVARIANT((char*)args[2], NPN_args[2]);
+			pScriptablePluginObj->InvokeDefault(NPN_args, argCount, &result);
 			break;
 		}
-
-	case CALLBACK_ONSTATE:
+		case CALLBACK_ONVOD:
 		{
-			if(NULL == m_CallBkState) return;
-			if(args[1] <= 0) return;
-
 			NPVariant NPN_args[2];
-			INT32_TO_NPVARIANT(		args[0],		NPN_args[0]);
-			STRINGZ_TO_NPVARIANT(	(char*)args[1],	NPN_args[1]);
-			NPN_InvokeDefault(m_pNPInstance,m_CallBkState,NPN_args,argCount,&result);
+			INT32_TO_NPVARIANT(	args[0],	NPN_args[0]);
+			INT32_TO_NPVARIANT(	*(int64_t*)args[1], NPN_args[1]);
+			pScriptablePluginObj->InvokeDefault(NPN_args, argCount, &result);
 			break;
 		}
-	case CALLBACK_ONVOD:
-		{
-			if(NULL == m_CallBkVod) return;
-			NPVariant NPN_args[1];
-			INT32_TO_NPVARIANT(	*(int64_t*)args[0],NPN_args[0]);
-			NPN_InvokeDefault(m_pNPInstance,m_CallBkVod,NPN_args,argCount,&result);
+		default:
 			break;
 		}
-	default:
-		break;
 	}
 }
 
 bool CNPPlugin::SetWorkModel(char *js_workmodel,NPVariant *result)
 {
-
 	if(CPlCtrl::CreateInstance(m_hWnd)->InitDisPlay(m_hWnd,js_workmodel))
 		SetRetValue("{\"rst\":0}",result);
 	else
@@ -273,7 +230,6 @@ bool CNPPlugin::ChangePath(char *js_path,NPVariant *result)
 
 	return true;
 }
-
 
 bool CNPPlugin::SetLayout()
 {

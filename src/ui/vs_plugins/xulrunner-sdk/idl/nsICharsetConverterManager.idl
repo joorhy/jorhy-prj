@@ -1,40 +1,7 @@
 /* -*- Mode: IDL; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is character set conversion service
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corp.
- * Portions created by the Initial Developer are Copyright (C) 2003
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *  Alec Flett <alecf@flett.org>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 #include "nsIAtom.idl"
@@ -66,27 +33,29 @@ interface nsIUTF8StringEnumerator;
  * @created         21/Feb/2000
  * @author  Catalin Rotaru [CATA]
  */
-[scriptable, uuid(f5323a76-c8f7-4c65-8d0c-1250e969c7d5)]
+[scriptable, uuid(a0550d46-8d9c-47dd-acc7-c083620dff12)]
 interface nsICharsetConverterManager : nsISupports
 {
     /**
      * Get the Unicode decoder for the given charset.
      * The "Raw" version skips charset alias resolution
      */
-    nsIUnicodeDecoder getUnicodeDecoder(in string charset);
-    nsIUnicodeDecoder getUnicodeDecoderRaw(in string charset);
+    [noscript] nsIUnicodeDecoder getUnicodeDecoder(in string charset);
+    [noscript] nsIUnicodeDecoder getUnicodeDecoderRaw(in string charset);
+    [noscript] nsIUnicodeDecoder getUnicodeDecoderInternal(in string charset);
 
     /**
      * Get the Unicode encoder for the given charset.
      * The "Raw" version skips charset alias resolution
      */
-    nsIUnicodeEncoder getUnicodeEncoder(in string charset);
-    nsIUnicodeEncoder getUnicodeEncoderRaw(in string charset);
+    [noscript] nsIUnicodeEncoder getUnicodeEncoder(in string charset);
+    [noscript] nsIUnicodeEncoder getUnicodeEncoderRaw(in string charset);
 
     /**
      * A shortcut to calling nsICharsetAlias to do alias resolution
+     * @throws if aCharset is an unknown charset.
      */
-    ACString getCharsetAlias(in string charset);
+    ACString getCharsetAlias(in string aCharset);
     
     /**
      * Get the complete list of available decoders.
@@ -105,33 +74,37 @@ interface nsICharsetConverterManager : nsISupports
 
     /**
      * Get the human-readable name for the given charset.
+     * @throws if aCharset is an unknown charset.
      */
-    AString getCharsetTitle(in string charset);
+    AString getCharsetTitle(in string aCharset);
 
     /**
      * Get some data about the given charset. This includes whether the 
      * character encoding may be used for certain purposes, if it is 
      * multi-byte, and the language code for it. See charsetData.properties
      * for the source of this data. Some known property names:
-     *    notForBrowser  - not to be used in the bowser.
+     *    notForBrowser  - not to be used in the browser.
      *    notForOutgoing - not to be used for exporting files.
      *    LangGroup      - language code for charset, e.g. 'he' and 'zh-CN'.
      *    isMultibyte    - is this a multi-byte charset?
+     *    isInternal     - not to be used in untrusted web content.
      * 
-     * @param charset name of the character encoding, e.g. 'iso-8859-15'.
-     * @param prop property desired for the character encoding.
+     * @param aCharset name of the character encoding, e.g. 'iso-8859-15'.
+     * @param aProp property desired for the character encoding.
+     * @throws if aCharset is an unknown charset.
      * @return the value of the property, for the character encoding.
      */
-    AString getCharsetData(in string charset, 
-                           in wstring prop);
+    AString getCharsetData(in string aCharset, 
+                           in wstring aProp);
 
     /**
      * Get the language group for the given charset. This is similar to 
      * calling <tt>getCharsetData</tt> with the <tt>prop</tt> "LangGroup".
      * 
-     * @param charset name of the character encoding, e.g. 'iso-8859-15'.
+     * @param aCharset name of the character encoding, e.g. 'iso-8859-15'.
+     * @throws if aCharset is an unknown charset.
      * @return the language code for the character encoding.
      */
-    nsIAtom getCharsetLangGroup(in string charset);
-    nsIAtom getCharsetLangGroupRaw(in string charset);
+    nsIAtom getCharsetLangGroup(in string aCharset);
+    nsIAtom getCharsetLangGroupRaw(in string aCharset);
 };

@@ -1,45 +1,19 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Mozilla Communicator client code, released
- * March 31, 1998.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998-1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Doug Turner <dougt@netscape.com>
- *   Christopher Blizzard <blizzard@mozilla.org>
- *   Darin Fisher <darin@netscape.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
+
+%{C++
+#include "prio.h"
+#include "prlink.h"
+#include <stdio.h>
+%}
+
+[ptr] native PRFileDescStar(PRFileDesc);
+[ptr] native PRLibraryStar(PRLibrary);
+[ptr] native FILE(FILE);
 
 interface nsISimpleEnumerator;
 
@@ -55,10 +29,8 @@ interface nsISimpleEnumerator;
  * A string containing characters encoded in the native charset cannot
  * be safely passed to javascript via xpconnect.  Therefore, the "native
  * methods" are not scriptable. 
- *
- * @status FROZEN
  */
-[scriptable, uuid(c8c0a080-0868-11d3-915f-d9d889d48e3c)]
+[scriptable, uuid(272a5020-64f5-485c-a8c4-44b2882ae0a2), builtinclass]
 interface nsIFile : nsISupports
 {
     /**
@@ -170,6 +142,7 @@ interface nsIFile : nsISupports
      *  (NS_ERROR_FILE_TARGET_DOES_NOT_EXIST).
      *  If 'this' is a file, and the destination file already exists, moveTo
      *  will replace the old file.
+     *  This object is updated to refer to the new file.
      *
      *  moveTo will NOT resolve aliases/shortcuts during the copy.
      *  moveTo will do the right thing and allow copies across volumes.
@@ -215,8 +188,8 @@ interface nsIFile : nsISupports
      *  midnight (00:00:00), January 1, 1970 Greenwich Mean
      *  Time (GMT).
      */
-    attribute PRInt64 lastModifiedTime;
-    attribute PRInt64 lastModifiedTimeOfLink;
+    attribute PRTime lastModifiedTime;
+    attribute PRTime lastModifiedTimeOfLink;
 
     /**
      *  WARNING!  On the Mac, getting/setting the file size with nsIFile
@@ -224,8 +197,8 @@ interface nsIFile : nsISupports
      *  know the size of the combined data and resource forks use the
      *  GetFileSizeWithResFork() method defined on nsILocalFileMac.
      */
-    attribute PRInt64 fileSize;
-    readonly attribute PRInt64 fileSizeOfLink;
+    attribute int64_t fileSize;
+    readonly attribute int64_t fileSizeOfLink;
 
     /**
      *  target & path
@@ -334,6 +307,155 @@ interface nsIFile : nsISupports
      *           not specify a directory.
      */
     readonly attribute nsISimpleEnumerator directoryEntries;
+
+    /**
+     *  initWith[Native]Path
+     *
+     *  This function will initialize the nsIFile object.  Any
+     *  internal state information will be reset.
+     *
+     *   @param filePath       
+     *       A string which specifies a full file path to a 
+     *       location.  Relative paths will be treated as an
+     *       error (NS_ERROR_FILE_UNRECOGNIZED_PATH).  For 
+     *       initWithNativePath, the filePath must be in the native
+     *       filesystem charset.
+     */
+    void initWithPath(in AString filePath);
+    [noscript] void initWithNativePath(in ACString filePath);
+    
+    /**
+     *  initWithFile
+     *
+     *  Initialize this object with another file
+     *
+     *   @param aFile
+     *       the file this becomes equivalent to
+     */
+    void initWithFile(in nsIFile aFile);
+    
+    /**
+     *  followLinks
+     *
+     *  This attribute will determine if the nsLocalFile will auto
+     *  resolve symbolic links.  By default, this value will be false
+     *  on all non unix systems.  On unix, this attribute is effectively
+     *  a noop.  
+     */
+    attribute boolean followLinks;  
+
+    /**
+     * Flag for openNSPRFileDesc(), to hint to the OS that the file will be
+     * read sequentially with agressive readahead.
+     */
+    const unsigned long OS_READAHEAD = 0x40000000;
+    
+    /**
+     * Flag for openNSPRFileDesc(). Deprecated and unreliable!
+     * Instead use NS_OpenAnonymousTemporaryFile() to create a temporary
+     * file which will be deleted upon close!
+     */
+    const unsigned long DELETE_ON_CLOSE = 0x80000000;
+
+    /**
+     * Return the result of PR_Open on the file.  The caller is
+     * responsible for calling PR_Close on the result.
+     *
+     * @param flags the PR_Open flags from prio.h, plus optionally
+     * OS_READAHEAD or DELETE_ON_CLOSE. OS_READAHEAD is a hint to the
+     * OS that the file will be read sequentially with agressive
+     * readahead. DELETE_ON_CLOSE is unreliable on Windows and is deprecated.
+     * Instead use NS_OpenAnonymousTemporaryFile() to create a temporary
+     * file which will be deleted upon close.
+     */
+    [noscript] PRFileDescStar openNSPRFileDesc(in long flags, in long mode);
+
+    /**
+     * Return the result of fopen on the file.  The caller is
+     * responsible for calling fclose on the result.
+     */
+    [noscript] FILE           openANSIFileDesc(in string mode);
+
+    /**
+     * Return the result of PR_LoadLibrary on the file.  The caller is
+     * responsible for calling PR_UnloadLibrary on the result.
+     */
+    [noscript] PRLibraryStar  load();
+
+    // number of bytes available on disk to non-superuser
+    readonly attribute int64_t diskSpaceAvailable;
+
+    /**
+     *  appendRelative[Native]Path
+     *
+     *  Append a relative path to the current path of the nsIFile object.
+     *
+     *   @param relativeFilePath
+     *       relativeFilePath is a native relative path. For security reasons,
+     *       this cannot contain .. or cannot start with a directory separator.
+     *       For the |appendRelativeNativePath| method, the relativeFilePath 
+     *       must be in the native filesystem charset.
+     */
+    void appendRelativePath(in AString relativeFilePath);
+    [noscript] void appendRelativeNativePath(in ACString relativeFilePath);
+    
+    /**
+     *  Accessor to a null terminated string which will specify
+     *  the file in a persistent manner for disk storage.
+     *
+     *  The character set of this attribute is undefined.  DO NOT TRY TO
+     *  INTERPRET IT AS HUMAN READABLE TEXT!
+     */
+    attribute ACString persistentDescriptor;
+
+    /** 
+     *  reveal
+     *
+     *  Ask the operating system to open the folder which contains
+     *  this file or folder. This routine only works on platforms which 
+     *  support the ability to open a folder and is run async on Windows.  
+     *  This routine must be called on the main. 
+     */
+    void reveal();
+    
+    /** 
+     *  launch
+     *
+     *  Ask the operating system to attempt to open the file. 
+     *  this really just simulates "double clicking" the file on your platform.
+     *  This routine only works on platforms which support this functionality
+     *  and is run async on Windows.  This routine must be called on the 
+     *  main thread. 
+     */
+    void launch();
+    
+    /**
+     *  getRelativeDescriptor
+     *
+     *  Returns a relative file path in an opaque, XP format. It is therefore
+     *  not a native path.
+     *
+     *  The character set of the string returned from this function is
+     *  undefined.  DO NOT TRY TO INTERPRET IT AS HUMAN READABLE TEXT!
+     *
+     *   @param fromFile
+     *       the file from which the descriptor is relative.
+     *       There is no defined result if this param is null.
+     */
+    ACString getRelativeDescriptor(in nsIFile fromFile);
+
+    /**
+     *  setRelativeDescriptor
+     *
+     *  Initializes the file to the location relative to fromFile using
+     *  a string returned by getRelativeDescriptor.
+     *
+     *   @param fromFile
+     *       the file to which the descriptor is relative
+     *   @param relative
+     *       the relative descriptor obtained from getRelativeDescriptor
+     */
+    void setRelativeDescriptor(in nsIFile fromFile, in ACString relativeDesc);    
 };
 
 %{C++

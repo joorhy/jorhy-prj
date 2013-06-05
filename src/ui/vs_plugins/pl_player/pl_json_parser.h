@@ -17,6 +17,6 @@ public:
 	BOOL ParserDrag(const char *pJsStr, PL_PlayInfo &playInfo);
 	BOOL MakeWndParam(const PL_PlayInfo &playInfo, char *pJsStr);
 	BOOL MakeAllWndParam(char **pVecStr, int nWndNum, char *pJsStr);
-	BOOL MakeCbStatus(const PL_PlayInfo &playInfo, char *pJsStr);
+	BOOL MakeCbStatus(const PL_PlayInfo &playInfo, char *pJsStr, int nState = 1);
 	BOOL MakeFocus(const PL_PlayInfo &playInfo, char *pJsStr);
 };

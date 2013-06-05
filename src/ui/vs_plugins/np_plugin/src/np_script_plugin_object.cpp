@@ -1,8 +1,35 @@
 #include "np_script_plugin_object.h"
-#include "npupp.h"
+#include "npfunctions.h"
 #include "np_plugin.h"
 #include "pl_type.h"
 #include <string>
+
+ScriptablePluginObject::ScriptablePluginObject(NPP npp) : ScriptablePluginObjectBase(npp)
+{
+	m_bCbReturn = 0;
+	m_CallBkPtz	= NULL;
+	m_CallBkState = NULL;
+	m_CallBkVod = NULL;
+}
+
+ScriptablePluginObject::~ScriptablePluginObject()
+{
+	if(NULL != m_CallBkPtz)
+	{
+		NPN_ReleaseObject(m_CallBkPtz);
+		m_CallBkPtz = NULL;
+	}
+	if(NULL != m_CallBkState)
+	{
+		NPN_ReleaseObject(m_CallBkState);
+		m_CallBkState = NULL;
+	}
+	if(NULL != m_CallBkVod)
+	{
+		NPN_ReleaseObject(m_CallBkVod);
+		m_CallBkVod = NULL;
+	}
+}
 
 bool ScriptablePluginObject::HasMethod(NPIdentifier name)
 {
@@ -13,24 +40,33 @@ bool ScriptablePluginObject::HasMethod(NPIdentifier name)
 
 bool ScriptablePluginObject::HasProperty(NPIdentifier name)
 {
-	return PR_FALSE;
+	return false;
 }
 
 bool ScriptablePluginObject::GetProperty(NPIdentifier name, NPVariant *result)
 {
-	return PR_TRUE;
+	return true;
 }
 
 bool  ScriptablePluginObject::SetProperty(NPIdentifier name, const NPVariant *value)
 {
-	return PR_TRUE;
+	return true;
 }
 
 bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result)  
 {  
+	//if (InterlockedExchangeAdd(&m_bCbReturn, 0) > 0)
+	if (m_bCbReturn > 0)
+	{
+		char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":1}")+1);
+		strncpy(tmp, "{\"rst\":1}", strlen("{\"rst\":1}"));
+		tmp[strlen("{\"rst\":1}")] = '\0';
+		STRINGZ_TO_NPVARIANT(tmp, *result);
+		return true;
+	}
 	CNPPlugin * pPlugin = (CNPPlugin *)mNpp->pdata;
-	bool bRet = PR_FALSE;
-
+	//InterlockedExchangeAdd(&m_bCbReturn, 1);
+	m_bCbReturn = 1;
 	if(name == NPN_GetStringIdentifier("Plugin_Interface"))
 	{
 		int	cmd			= (int)NPVARIANT_TO_DOUBLE(args[0]);
@@ -40,49 +76,48 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 		case 1:case 2:case 5:case 21:case 23:case 11:
 			{
 				NPString jsonStr= NPVARIANT_TO_STRING(args[1]);
-				js_parm		= new char[jsonStr.utf8length + 1];
-				memcpy(js_parm,jsonStr.utf8characters,jsonStr.utf8length);
-				js_parm[jsonStr.utf8length] = '\0';
+				js_parm		= new char[jsonStr.UTF8Length + 1];
+				memcpy(js_parm,jsonStr.UTF8Characters,jsonStr.UTF8Length);
+				js_parm[jsonStr.UTF8Length] = '\0';
 			}
 			break;
 		}
 		switch(cmd)
 		{
 		case 1:		//设置工作模式和布局
-			bRet = pPlugin->SetWorkModel(js_parm,result);
+			pPlugin->SetWorkModel(js_parm,result);
 			break;
 		case 2:		//改变布局
-			bRet = pPlugin->ChangeLayout(js_parm,result);
+			pPlugin->ChangeLayout(js_parm,result);
 			break;
 		case 5:		//改变存储路径
-			bRet = pPlugin->ChangePath(js_parm,result);
+			pPlugin->ChangePath(js_parm,result);
 			break;
 		case 21:	//打开历史流
-			bRet = pPlugin->Play(js_parm,result);
+			pPlugin->Play(js_parm,result);
 			break;
 		case 23:	//历史流跳转
-			bRet = pPlugin->VodPlayJump(js_parm,result);
+			pPlugin->VodPlayJump(js_parm,result);
 			break;
 		case 11:	//播放实时视频
-			bRet = pPlugin->Play(js_parm,result);
+			pPlugin->Play(js_parm,result);
 			break;
 
 		case 3:		//得到当前焦点播放窗口参数
-			bRet = pPlugin->GetWndParm(FOCUS_WINDOW, result);
+			pPlugin->GetWndParm(FOCUS_WINDOW, result);
 			break;
 		case 4:		//得到所有窗口播放参数列表
-			bRet = pPlugin->GetWndParm(ALL_WINDOW, result);
+			pPlugin->GetWndParm(ALL_WINDOW, result);
 			break;
 		case 12:	//关闭所有播放
-			bRet = pPlugin->StopAllPlay(result);
+			pPlugin->StopAllPlay(result);
 			break;
 		case 22:	//关闭所有历史流
-			bRet = pPlugin->StopAllPlay(result);
+			pPlugin->StopAllPlay(result);
 			break;
 		case 30:	//播放器sleep
-			bRet = pPlugin->SleepPlayer((bool)NPVARIANT_TO_BOOLEAN(args[1]),result);
+			pPlugin->SleepPlayer((bool)NPVARIANT_TO_BOOLEAN(args[1]),result);
 			break;
-
 		default:
 			break;
 		}
@@ -92,19 +127,65 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 
 	if(name == NPN_GetStringIdentifier("ResgisterFunction"))
 	{
-		int type = (int)NPVARIANT_TO_DOUBLE(args[1]);
+		switch((int)NPVARIANT_TO_DOUBLE(args[1]))
+		{
+		case CALLBACK_PTZCTL:
+			m_CallBkPtz	= NPVARIANT_TO_OBJECT(args[0]);
+			NPN_RetainObject(m_CallBkPtz);
+			break;
 
-		pPlugin->RegisterCallBack(NPVARIANT_TO_OBJECT(args[0]),type);
-		return PR_TRUE;
+		case CALLBACK_ONSTATE:
+			m_CallBkState = NPVARIANT_TO_OBJECT(args[0]);
+			NPN_RetainObject(m_CallBkState);
+			break;
 
+		case CALLBACK_ONVOD:
+			m_CallBkVod = NPVARIANT_TO_OBJECT(args[0]);
+			NPN_RetainObject(m_CallBkVod);
+			break;
+		default:
+			break;
+		}
 	}
-
-	return bRet;  
+	//InterlockedExchangeAdd(&m_bCbReturn, -1);
+	m_bCbReturn = 0;
+	return true;  
 }  
 
 bool ScriptablePluginObject::InvokeDefault(const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
-	return PR_TRUE;
+	//if (InterlockedExchangeAdd(&m_bCbReturn, 0) > 0)
+	if (m_bCbReturn > 0)
+	{
+		char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":1}")+1);
+		strncpy(tmp, "{\"rst\":1}", strlen("{\"rst\":1}"));
+		tmp[strlen("{\"rst\":1}")] = '\0';
+		STRINGZ_TO_NPVARIANT(tmp, *result);
+		return true;
+	}
+	//InterlockedExchangeAdd(&m_bCbReturn, 1);
+	m_bCbReturn = 1;
+	int nType = NPVARIANT_TO_INT32(args[0]);
+	switch (nType)
+	{
+	case CALLBACK_PTZCTL:
+		if (m_CallBkPtz != NULL)
+			NPN_InvokeDefault(mNpp, m_CallBkPtz, args+1, argCount-1, result);
+		break;
+	case CALLBACK_ONSTATE:
+		if (m_CallBkState != NULL)
+			NPN_InvokeDefault(mNpp, m_CallBkState, args+1, argCount-1, result);
+		break;
+	case CALLBACK_ONVOD:
+		if (m_CallBkVod != NULL)
+			NPN_InvokeDefault(mNpp, m_CallBkVod, args+1, argCount-1, result);
+		break;
+	default:
+		break;
+	}
+	m_bCbReturn = 0;
+	//InterlockedExchangeAdd(&m_bCbReturn, -1);
+	return true;
 }
 
 bool ScriptablePluginObject::GetProperty(const char *pType, NPVariant *result)
@@ -119,7 +200,7 @@ bool ScriptablePluginObject::GetProperty(const char *pType, NPVariant *result)
 	NPIdentifier iHandle_id = NPN_GetStringIdentifier(strNPId);
 	NPN_GetProperty(mNpp, pWindowObj, iHandle_id,  result);
 
-	return PR_TRUE;
+	return true;
 }
 
 bool ScriptablePluginObject::SetProperty(const char *pType, const NPVariant *value)
@@ -139,8 +220,8 @@ bool ScriptablePluginObject::SetProperty(const char *pType, const NPVariant *val
 	NPIdentifier iSetHandle_id = NPN_GetStringIdentifier(strNPId);
 
 	NPVariant rvalFlag;
-	BOOLEAN_TO_NPVARIANT(PR_TRUE, rvalFlag);
+	BOOLEAN_TO_NPVARIANT(true, rvalFlag);
 	NPN_SetProperty(mNpp, pWindowObj, iSetHandle_id, &rvalFlag);
 
-	return PR_TRUE;
+	return true;
 }

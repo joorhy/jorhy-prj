@@ -1,41 +1,7 @@
 /* -*- Mode: IDL; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Dan Mosedale <dmose@mozilla.org>
- *   Myk Melez <myk@mozilla.org>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
@@ -157,7 +123,7 @@ interface nsIHandlerInfo : nsISupports {
  * MIMEInfo objects are generally retrieved from the MIME Service
  * @see nsIMIMEService
  */
-[scriptable, uuid(cd7083f8-5fe9-4248-bb09-0b0e2982fde8)]
+[scriptable, uuid(1c21acef-c7a1-40c6-9d40-a20480ee53a1)]
 interface nsIMIMEInfo : nsIHandlerInfo {
     /**
      * Gives you an array of file types associated with this type.
@@ -203,12 +169,6 @@ interface nsIMIMEInfo : nsIHandlerInfo {
     readonly attribute ACString MIMEType;
 
     /**
-     * Mac Type and creator types
-     */
-    attribute PRUint32 macType;
-    attribute PRUint32 macCreator;
-
-    /**
      * Returns whether or not these two nsIMIMEInfos are logically
      * equivalent.
      *
@@ -248,7 +208,7 @@ interface nsIMIMEInfo : nsIHandlerInfo {
  * we should also try to make nsIWebContentHandlerInfo inherit from or possibly
  * be replaced by nsIWebHandlerApp (bug 394710).
  */
-[scriptable, uuid(8d298761-0963-4c90-99e2-6ea498825e82)]
+[scriptable, uuid(8BDF20A4-9170-4548-AF52-78311A44F920)]
 interface nsIHandlerApp : nsISupports {
 
     /**
@@ -257,11 +217,18 @@ interface nsIHandlerApp : nsISupports {
     attribute AString name;
 
     /**
+     * Detailed description for this handler. Suitable for
+     * a tooltip or short informative sentence.
+     */
+    attribute AString detailedDescription;
+
+    /**
      * Whether or not the given handler app is logically equivalent to the
      * invokant (i.e. they represent the same app).
      * 
      * Two apps are the same if they are both either local or web handlers
-     * and their executables/URI templates are the same in a string comparison.
+     * and their executables/URI templates and command line parameters are
+     * the same.
      *
      * @param aHandlerApp the handler app to compare to the invokant
      *
@@ -295,13 +262,52 @@ interface nsIHandlerApp : nsISupports {
 /**
  * nsILocalHandlerApp is a local OS-level executable
  */
-[scriptable, uuid(9812be73-273c-478c-8170-c3e0db08ae7c)]
+[scriptable, uuid(D36B6329-52AE-4f45-80F4-B2536AE5F8B2)]
 interface nsILocalHandlerApp : nsIHandlerApp {
 
     /**
      * Pointer to the executable file used to handle content
      */
     attribute nsIFile executable;
+
+    /**
+     * Returns the current number of command line parameters.
+     */
+    readonly attribute unsigned long parameterCount;
+
+    /**
+     * Clears the current list of command line parameters.
+     */
+    void clearParameters();
+
+    /**
+     * Appends a command line parameter to the command line
+     * parameter list.
+     *
+     * @param param the parameter to add.
+     */
+    void appendParameter(in AString param);
+
+    /**
+     * Retrieves a specific command line parameter.
+     *
+     * @param param the index of the parameter to return.
+     *
+     * @return the parameter string.
+     *
+     * @throw NS_ERROR_INVALID_ARG if the index is out of range.
+     */
+    AString getParameter(in unsigned long parameterIndex);
+
+    /**
+     * Checks to see if a parameter exists in the command line
+     * parameter list.
+     *
+     * @param param the parameter to search for.
+     *
+     * @return TRUE if the parameter exists in the current list. 
+     */
+    boolean parameterExists(in AString param);
 };
 
 /**
@@ -320,3 +326,40 @@ interface nsIWebHandlerApp : nsIHandlerApp {
      */
     attribute AUTF8String uriTemplate;
 };
+
+/**
+ * nsIDBusHandlerApp represents local applications launched by DBus a message
+ * invoking a method taking a single string argument descibing a URI
+ */
+[scriptable, uuid(1ffc274b-4cbf-4bb5-a635-05ad2cbb6534)]
+interface nsIDBusHandlerApp : nsIHandlerApp {
+
+    /**
+     * Service defines the dbus service that should handle this protocol.
+     * If its not set,  NS_ERROR_FAILURE will be returned by LaunchWithURI
+     */
+    attribute AUTF8String service;
+    
+    /**
+     * Objpath defines the object path of the dbus service that should handle 
+     * this protocol. If its not set,  NS_ERROR_FAILURE will be returned 
+     * by LaunchWithURI
+     */
+    attribute AUTF8String objectPath;
+
+    /**
+     * DBusInterface defines the interface of the dbus service that should 
+     * handle this protocol. If its not set,  NS_ERROR_FAILURE will be  
+     * returned by LaunchWithURI
+     */
+    attribute AUTF8String dBusInterface;
+    
+    /**
+     * Method defines the dbus method that should be invoked to handle this 
+     * protocol. If its not set,  NS_ERROR_FAILURE will be returned by 
+     * LaunchWithURI
+     */
+    attribute AUTF8String method;
+    
+};
+

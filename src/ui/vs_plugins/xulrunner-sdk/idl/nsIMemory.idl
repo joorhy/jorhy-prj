@@ -1,39 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
@@ -58,6 +26,11 @@
  * This will be passed as the extra data when the pressure 
  * observer is being asked to flush for low-memory conditions.
  *
+ * "low-memory-no-forward"
+ * This will be passed as the extra data when the pressure observer
+ * is being asked to flush for low-memory conditions but the resulting
+ * notification should not be forwarded to the child processes.
+ *
  * "heap-minimize"
  * This will be passed as the extra data when the pressure 
  * observer is being asked to flush because of a heap minimize 
@@ -67,17 +40,15 @@
  * This will be passed as the extra data when the pressure 
  * observer has been asked to flush because a malloc() or 
  * realloc() has failed.
- *
- * @status FROZEN
  */
 
-[scriptable, uuid(59e7e77a-38e4-11d4-8cf5-0060b0fc14a3)]
+[scriptable, uuid(6aef11c4-8615-44a6-9711-98f43805693d)]
 interface nsIMemory : nsISupports
 {
     /**
      * Allocates a block of memory of a particular size. If the memory 
-     * cannot be allocated (because of an out-of-memory condition), null
-     * is returned.
+     * cannot be allocated (because of an out-of-memory condition), the
+     * process aborts.
      *
      * @param size - the size of the block to allocate
      * @result the block of memory
@@ -95,8 +66,7 @@ interface nsIMemory : nsISupports
      * If s is the size of the block to which ptr points, the first
      * min(s, size) bytes of ptr's block are copied to the new block.
      * If the allocation succeeds, ptr is freed and a pointer to the 
-     * new block returned.  If the allocation fails, ptr is not freed
-     * and null is returned. The returned value may be the same as ptr.
+     * new block returned.  If the allocation fails, the process aborts.
      */
     [noscript, notxpcom] voidPtr realloc(in voidPtr ptr,
                                          in size_t newSize);
@@ -124,7 +94,17 @@ interface nsIMemory : nsISupports
      * This predicate can be used to determine if we're in a low-memory
      * situation (what constitutes low-memory is platform dependent). This
      * can be used to trigger the memory pressure observers.
+     *
+     * DEPRECATED - Always returns false.  See bug 592308.
      */
     boolean isLowMemory();
+
+    /**
+     * This predicate can be used to determine if the platform is a "low-memory"
+     * platform. Callers may use this to dynamically tune their behaviour
+     * to favour reduced memory usage at the expense of performance. The value
+     * returned by this function will not change over the lifetime of the process.
+     */
+    boolean isLowMemoryPlatform();
 };
 

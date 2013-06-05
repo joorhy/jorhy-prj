@@ -1,45 +1,12 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2002
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
 interface nsIObserver;
+interface nsIEventTarget;
 
 %{C++
 /**
@@ -75,14 +42,24 @@ interface nsITimerCallback : nsISupports
   void notify(in nsITimer timer);
 };
 
+%{C++
+// Two timer deadlines must differ by less than half the PRIntervalTime domain.
+#define DELAY_INTERVAL_LIMIT    PR_BIT(8 * sizeof(PRIntervalTime) - 1)
+%}
 
 /**
  * nsITimer instances must be initialized by calling one of the "init" methods
- * documented below.  You may also re-initialize an existing instance with new
- * delay to avoid the overhead of destroying and creating a timer.  It is not
- * necessary to cancel the timer in that case.
+ * documented below.  You may also re-initialize (using one of the init()
+ * methods) an existing instance to avoid the overhead of destroying and
+ * creating a timer.  It is not necessary to cancel the timer in that case.
+ *
+ * It is not currently safe to initialize timers on any thread other than the
+ * main thread (it will cause races on the timers' delay adjustment mechanism,
+ * which may mess up timings).   You can, however, cancel() and/or release a
+ * timer on a non-main thread (provided that its callback object has a
+ * thread-safe release() function).
  */
-[scriptable, uuid(436a83fa-b396-11d9-bcfa-00112478d626)]
+[scriptable, uuid(193fc37a-8aa4-4d29-aa57-1acd87c26b66)]
 interface nsITimer : nsISupports
 {
   /* Timer types */
@@ -108,9 +85,32 @@ interface nsITimer : nsISupports
    * influence the timer period.  However, if the processing for the last
    * timer firing could not be completed until just before the next firing
    * occurs, then you could have two timer notification routines being
-   * executed in quick succession.
+   * executed in quick succession.  Furthermore, if your callback processing
+   * time is longer than the timer period, then the timer will post more
+   * notifications while your callback is running.  For example, if a
+   * REPEATING_PRECISE timer has a 10ms period and a callback takes 50ms,
+   * then by the time the callback is done there will be 5 events to run the
+   * timer callback in the event queue.  Furthermore, the next scheduled time
+   * will always advance by exactly the delay every time the timer fires.
+   * This means that if the clock increments without the timer thread running
+   * (e.g. the computer is asleep) when the timer thread gets to run again it
+   * will post all the events that it "missed" while it wasn't running.  Use
+   * this timer type with extreme caution.  Chances are, this is not what you
+   * want.
    */
   const short TYPE_REPEATING_PRECISE  = 2;
+
+  /**
+   * A TYPE_REPEATING_PRECISE_CAN_SKIP repeating timer aims to have constant
+   * period between firings.  The processing time for each timer callback
+   * should not influence the timer period.  However this timer type
+   * guarantees that it will not queue up new events to fire the callback
+   * until the previous callback event finishes firing.  If the callback
+   * takes a long time, then the next callback will be scheduled immediately
+   * afterward, but only once, unlike TYPE_REPEATING_PRECISE.  If you want a
+   * non-slack timer, you probably want this one.
+   */
+  const short TYPE_REPEATING_PRECISE_CAN_SKIP  = 3;
 
   /**
    * Initialize a timer that will fire after the said delay.
@@ -149,8 +149,7 @@ interface nsITimer : nsISupports
 
   /**
    * Initialize a timer to fire after the given millisecond interval.
-   * This version takes a function to call and a closure to pass to
-   * that function.
+   * This version takes a function to call.
    *
    * @param aFunc      nsITimerCallback interface to call when timer expires
    * @param aDelay     The millisecond interval
@@ -169,12 +168,16 @@ interface nsITimer : nsISupports
   void cancel();
   
   /**
-   * The millisecond delay of the timeout
+   * The millisecond delay of the timeout.
+   *
+   * NOTE: Re-setting the delay on a one-shot timer that has already fired
+   * doesn't restart the timer. Call one of the init() methods to restart
+   * a one-shot timer.
    */
   attribute unsigned long delay;
   
   /**
-   * The timer type : one shot or repeating
+   * The timer type - one of the above TYPE_* constants.
    */  
   attribute unsigned long type;
 
@@ -187,6 +190,12 @@ interface nsITimer : nsISupports
    * The nsITimerCallback object passed to initWithCallback.
    */
   readonly attribute nsITimerCallback callback;
+
+  /**
+   * The nsIEventTarget where the callback will be dispatched. Note that this
+   * target may only be set before the call to one of the init methods above.
+   */
+  attribute nsIEventTarget target;
 };
 
 %{C++

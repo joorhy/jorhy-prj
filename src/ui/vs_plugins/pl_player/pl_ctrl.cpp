@@ -74,7 +74,11 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent, char* pJsUrl)
 int CPlCtrl::CalcWndNum(const PL_LayoutInfo &layoutInfo)
 {
 	int nWndNum = (layoutInfo.nWindows + 1);
-	if(3 == layoutInfo.nLayout)
+	if(2 == layoutInfo.nLayout)
+	{
+		nWndNum -= 1;
+	}
+	else if(3 == layoutInfo.nLayout)
 	{
 		nWndNum *= nWndNum;
 	}
@@ -125,7 +129,7 @@ BOOL CPlCtrl::SetLayout(const PL_LayoutInfo &layoutInfo)
 		}
 		break;
 	case 2:
-		for(int i=0; i<nWindowNum; i++)
+		for(int i=0; i<nWindowNum; ++i)
 		{
 			//m_key.nId = i + (UINT)m_hParent;
 			((CWnd*)m_playWndMap[i])->MoveWindow(rect.left,		

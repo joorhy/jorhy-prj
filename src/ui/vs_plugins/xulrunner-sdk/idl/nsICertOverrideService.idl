@@ -1,41 +1,8 @@
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
  *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Red Hat, Inc.
- * Portions created by the Initial Developer are Copyright (C) 2006
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Kai Engert <kengert@redhat.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 
@@ -83,9 +50,9 @@ interface nsICertOverrideService : nsISupports {
    *  @param aOverrideBits The errors we want to be overriden
    */
   void rememberValidityOverride(in ACString aHostName, 
-                                in PRInt32 aPort,
+                                in int32_t aPort,
                                 in nsIX509Cert aCert,
-                                in PRUint32 aOverrideBits,
+                                in uint32_t aOverrideBits,
                                 in boolean aTemporary);
 
   /**
@@ -104,9 +71,9 @@ interface nsICertOverrideService : nsISupports {
    *          that matches the given certificate
    */
   boolean hasMatchingOverride(in ACString aHostName, 
-                              in PRInt32 aPort,
+                              in int32_t aPort,
                               in nsIX509Cert aCert,
-                              out PRUint32 aOverrideBits,
+                              out uint32_t aOverrideBits,
                               out boolean aIsTemporary);
 
   /**
@@ -123,21 +90,23 @@ interface nsICertOverrideService : nsISupports {
    *          and aFingerprint is currently on file
    */
   boolean getValidityOverride(in ACString aHostName, 
-                              in PRInt32 aPort,
+                              in int32_t aPort,
                               out ACString aHashAlg,
                               out ACString aFingerprint,
-                              out PRUint32 aOverrideBits,
+                              out uint32_t aOverrideBits,
                               out boolean aIsTemporary);
 
   /**
    *  Remove a override for the given hostname:port.
    *
    *  @param aHostName The host (punycode) whose entry should be cleared.
-   *  @param aPort The port whose entry should be cleared, if it is -1 then it 
-   *          is internaly treated as 443
+   *  @param aPort The port whose entry should be cleared.
+   *               If it is -1, then it is internaly treated as 443.
+   *               If it is 0 and aHostName is "all:temporary-certificates",
+   *               then all temporary certificates should be cleared.
    */
   void clearValidityOverride(in ACString aHostName,
-                             in PRInt32 aPort);
+                             in int32_t aPort);
 
   /**
    *  Obtain the full list of hostname:port for which overrides are known.
@@ -145,7 +114,7 @@ interface nsICertOverrideService : nsISupports {
    *  @param aCount The number of host:port entries returned
    *  @param aHostsWithPortsArray The array of host:port entries returned
    */
-  void getAllOverrideHostsWithPorts(out PRUint32 aCount, 
+  void getAllOverrideHostsWithPorts(out uint32_t aCount, 
                                     [array, size_is(aCount)] out wstring aHostsWithPortsArray);
 
   /**
@@ -155,7 +124,7 @@ interface nsICertOverrideService : nsISupports {
    *  @return how many override entries are currently on file
    *          for the given certificate
    */
-  PRUint32 isCertUsedForOverrides(in nsIX509Cert aCert,
+  uint32_t isCertUsedForOverrides(in nsIX509Cert aCert,
                                   in boolean aCheckTemporaries,
                                   in boolean aCheckPermanents);
 };

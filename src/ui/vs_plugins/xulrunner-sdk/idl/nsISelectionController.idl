@@ -1,41 +1,7 @@
-/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- *
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Sammy Ford
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* -*- Mode: IDL; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
 #include "nsISupports.idl"
@@ -47,11 +13,12 @@ typedef short SelectionType;
 typedef short SelectionRegion;
 %}
 
+interface nsIContent;
 interface nsIDOMNode;
 interface nsISelection;
 interface nsISelectionDisplay;
 
-[scriptable, uuid(5f8f41cb-f182-4010-9e38-7c873e8e8a9f)]
+[scriptable, uuid(b1ff7faa-8097-431d-b7f1-b0615e3cd596)]
 interface nsISelectionController : nsISelectionDisplay
 {
    const short SELECTION_NONE=0;
@@ -62,11 +29,14 @@ interface nsISelectionController : nsISelectionDisplay
    const short SELECTION_IME_CONVERTEDTEXT=16;
    const short SELECTION_IME_SELECTEDCONVERTEDTEXT=32;
    const short SELECTION_ACCESSIBILITY=64; // For accessibility API usage
-   const short NUM_SELECTIONTYPES=8;
+   const short SELECTION_FIND=128;
+   const short SELECTION_URLSECONDARY=256;
+   const short NUM_SELECTIONTYPES=10;
 
    const short SELECTION_ANCHOR_REGION = 0;
    const short SELECTION_FOCUS_REGION = 1;
-   const short NUM_SELECTION_REGIONS = 2;
+   const short SELECTION_WHOLE_SELECTION = 2;
+   const short NUM_SELECTION_REGIONS = 3;
 
    const short SELECTION_OFF = 0;
    const short SELECTION_HIDDEN =1;//>HIDDEN displays selection
@@ -93,20 +63,31 @@ interface nsISelectionController : nsISelectionDisplay
    */
     nsISelection getSelection(in short type);
 
+   const short SCROLL_SYNCHRONOUS = 1<<1;
+   const short SCROLL_FIRST_ANCESTOR_ONLY = 1<<2;
+   const short SCROLL_CENTER_VERTICALLY = 1<<4;
+   const short SCROLL_OVERFLOW_HIDDEN = 1<<5;
+
    /**
    * ScrollSelectionIntoView scrolls a region of the selection,
    * so that it is visible in the scrolled view.
    *
    * @param aType the selection to scroll into view. //SelectionType
    * @param aRegion the region inside the selection to scroll into view. //SelectionRegion
-   * @param aIsSynchronous when true, scrolls the selection into view
-   * before returning. If false, posts a request which is processed
+   * @param aFlags the scroll flags.  Valid bits include:
+   * SCROLL_SYNCHRONOUS: when set, scrolls the selection into view
+   * before returning. If not set, posts a request which is processed
    * at some point after the method returns.
+   * SCROLL_FIRST_ANCESTOR_ONLY: if set, only the first ancestor will be scrolled
+   * into view.
+   * SCROLL_OVERFLOW_HIDDEN: if set, scrolls even if the overflow is specified
+   * as hidden.
    *
    * Note that if isSynchronous is true, then this might flush the pending
    * reflow. It's dangerous for some objects. See bug 418470 comment 12.
    */
-    void scrollSelectionIntoView(in short type, in short region, in boolean isSynchronous);
+    void scrollSelectionIntoView(in short type, in short region, in short flags);
+
    /**
    * RepaintSelection repaints the selection specified by aType.
    *
@@ -163,6 +144,21 @@ interface nsISelectionController : nsISelectionDisplay
    *  @param aExtend  should it collapse the selection of extend it?
    */
     void characterMove(in boolean forward, in boolean extend);
+
+   /**
+    * CharacterExtendForDelete will extend the selection one character cell
+    * forward in the document.
+    * this method is used internally for handling del key.
+    */
+    [noscript] void characterExtendForDelete();
+
+   /**
+    * CharacterExtendForBackspace will extend the selection one character cell
+    * backward in the document.
+    * this method is used internally for handling backspace key only when we're
+    * after UTF-16 surrogates.
+    */
+    [noscript] void characterExtendForBackspace();
 
    /** WordMove will move the selection one word forward/backward in the document.
    *  this will also have the effect of collapsing the selection if the aExtend = PR_FALSE
@@ -228,15 +224,16 @@ interface nsISelectionController : nsISelectionDisplay
    */
     void scrollPage(in boolean forward);
 
-  /** ScrolLine will scroll line up or down dependent on the boolean
+  /** ScrollLine will scroll line up or down dependent on the boolean
    *  @param aForward scroll forward or backwards in selection
    */
 	  void scrollLine(in boolean forward);
 
-  /** ScrolHorizontal will scroll left or right dependent on the boolean
-   *  @param aLeft if true will scroll left. if not will scroll right.
+  /** ScrollCharacter will scroll right or left dependent on the boolean
+   *  @param aRight if true will scroll right. if not will scroll left.
    */
-	  void scrollHorizontal(in boolean left);
+    void scrollCharacter(in boolean right);
+
   /** SelectAll will select the whole page
    */
     void selectAll();
@@ -249,6 +246,7 @@ interface nsISelectionController : nsISelectionDisplay
    *  @param aReturnBool   boolean returned TRUE if visible FALSE if not
    */
     boolean checkVisibility(in nsIDOMNode node, in short startOffset, in short endOffset);
+    [noscript,nostdcall] boolean checkVisibilityContent(in nsIContent node, in short startOffset, in short endOffset);
 
 };
 %{ C++

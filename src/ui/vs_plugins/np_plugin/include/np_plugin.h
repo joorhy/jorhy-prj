@@ -37,16 +37,14 @@ public:
 	NPBool init(NPWindow* pNPWindow);
 	void shut();
 	NPBool isInitialized(); 
-	int16 handleEvent(void* event);
+	short handleEvent(void* event);
 	void showVersion();
 	void clear();
 	void getVersion(char* *aVersion);
 	NPObject *GetScriptableObject();
 	
 	/************************/
-
 	void DefaultInvoke(UINT nType, int args[],UINT argCount);
-	void RegisterCallBack(NPObject *CallBackFunc,UINT type);
 	bool SetWorkModel(char *js_workmodel,NPVariant *result);
 	bool Play(char *js_playInfo,NPVariant *result);
 	bool ChangeLayout(char *js_layout,NPVariant *result);
@@ -64,10 +62,6 @@ private:
 	bool SetRetValue(char *psz_ret,NPVariant *result);
 
 private:
-	NPObject *m_CallBkPtz;
-	NPObject *m_CallBkState;
-	NPObject *m_CallBkVod;
-
 	static WNDPROC CNPPlugin::lpOldProc;
 };
 

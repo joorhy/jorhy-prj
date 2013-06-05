@@ -22,9 +22,10 @@ private:
 	bool SetProperty(const char *pType, const NPVariant *value);
 };
 
-static NPObject *AllocateScriptablePluginObject(NPP npp, NPClass *aClass)
-{
-	return new ScriptablePluginObject(npp);
-}
-
-DECLARE_NPOBJECT_CLASS_WITH_BASE(ScriptablePluginObject, AllocateScriptablePluginObject);
+//static NPObject *AllocateScriptablePluginObject(NPP npp, NPClass *aClass)
+//{
+//	NPObject *p = new ScriptablePluginObject(npp);
+//	return p;
+//}
+//
+//DECLARE_NPOBJECT_CLASS_WITH_BASE(ScriptablePluginObject, AllocateScriptablePluginObject);

@@ -1,43 +1,11 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Netscape security libraries.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1994-2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
  * cert.h - public data structures and prototypes for the certificate library
  *
- * $Id: cert.h,v 1.76 2009/03/20 18:03:57 nelson%bolyard.com Exp $
+ * $Id: cert.h,v 1.91 2012/09/28 16:05:02 wtc%google.com Exp $
  */
 
 #ifndef _CERT_H_
@@ -66,7 +34,7 @@ SEC_BEGIN_PROTOS
 /*
 ** Convert an ascii RFC1485 encoded name into its CERTName equivalent.
 */
-extern CERTName *CERT_AsciiToName(char *string);
+extern CERTName *CERT_AsciiToName(const char *string);
 
 /*
 ** Convert an CERTName into its RFC1485 encoded equivalent.
@@ -129,7 +97,7 @@ extern SECStatus CERT_AddAVA(PLArenaPool *arena, CERTRDN *rdn, CERTAVA *ava);
 /*
 ** Compare two RDN's, returning the difference between them.
 */
-extern SECComparison CERT_CompareRDN(CERTRDN *a, CERTRDN *b);
+extern SECComparison CERT_CompareRDN(const CERTRDN *a, const CERTRDN *b);
 
 /*
 ** Create an X.500 style name using a NULL terminated list of RDN's.
@@ -161,7 +129,7 @@ extern SECStatus CERT_AddRDN(CERTName *name, CERTRDN *rdn);
 /*
 ** Compare two names, returning the difference between them.
 */
-extern SECComparison CERT_CompareName(CERTName *a, CERTName *b);
+extern SECComparison CERT_CompareName(const CERTName *a, const CERTName *b);
 
 /*
 ** Convert a CERTName into something readable
@@ -296,13 +264,6 @@ CERT_GetCertificateRequestExtensions(CERTCertificateRequest *req,
 ** Extract a public key object from a certificate
 */
 extern SECKEYPublicKey *CERT_ExtractPublicKey(CERTCertificate *cert);
-
-/*
- * used to get a public key with Key Material ID. Only used for fortezza V1
- * certificates.
- */
-extern SECKEYPublicKey *CERT_KMIDPublicKey(CERTCertificate *cert);
-
 
 /*
 ** Retrieve the Key Type associated with the cert we're dealing with
@@ -450,12 +411,12 @@ extern SECStatus CERT_AddOKDomainName(CERTCertificate *cert, const char *hostnam
 extern CERTCertificate *
 CERT_DecodeDERCertificate (SECItem *derSignedCert, PRBool copyDER, char *nickname);
 /*
-** Decode a DER encoded CRL/KRL into an CERTSignedCrl structure
-**	"derSignedCrl" is the DER encoded signed crl/krl.
-**	"type" is this a CRL or KRL.
+** Decode a DER encoded CRL into a CERTSignedCrl structure
+**	"derSignedCrl" is the DER encoded signed CRL.
+**	"type" must be SEC_CRL_TYPE.
 */
 #define SEC_CRL_TYPE	1
-#define SEC_KRL_TYPE	0
+#define SEC_KRL_TYPE	0 /* deprecated */
 
 extern CERTSignedCrl *
 CERT_DecodeDERCrl (PLArenaPool *arena, SECItem *derSignedCrl,int type);
@@ -520,12 +481,6 @@ SECStatus CERT_CacheCRL(CERTCertDBHandle* dbhandle, SECItem* newcrl);
    for the application to free the memory after a successful removal
 */
 SECStatus CERT_UncacheCRL(CERTCertDBHandle* dbhandle, SECItem* oldcrl);
-
-/*
-** Decode a certificate and put it into the temporary certificate database
-*/
-extern CERTCertificate *
-CERT_DecodeCertificate (SECItem *derCert, char *nickname,PRBool copyDER);
 
 /*
 ** Find a certificate in the database
@@ -605,6 +560,16 @@ CERT_FindCertByEmailAddr(CERTCertDBHandle *handle, char *emailAddr);
 */
 CERTCertificate *
 CERT_FindCertByNicknameOrEmailAddr(CERTCertDBHandle *handle, const char *name);
+
+/*
+** Find a certificate in the database by a email address or nickname
+** and require it to have the given usage.
+**      "name" is the email address or nickname to look up
+*/
+CERTCertificate *
+CERT_FindCertByNicknameOrEmailAddrForUsage(CERTCertDBHandle *handle,
+                                           const char *name, 
+                                           SECCertUsage lookingForUsage);
 
 /*
 ** Find a certificate in the database by a digest of a subject public key
@@ -1077,11 +1042,19 @@ extern CERTDistNames *CERT_GetSSLCACerts(CERTCertDBHandle *handle);
 
 extern void CERT_FreeDistNames(CERTDistNames *names);
 
+/* Duplicate distinguished name array */
+extern CERTDistNames *CERT_DupDistNames(CERTDistNames *orig);
+
 /*
 ** Generate an array of Distinguished names from an array of nicknames
 */
 extern CERTDistNames *CERT_DistNamesFromNicknames
    (CERTCertDBHandle *handle, char **nicknames, int nnames);
+
+/*
+** Generate an array of Distinguished names from a list of certs.
+*/
+extern CERTDistNames *CERT_DistNamesFromCertList(CERTCertList *list);
 
 /*
 ** Generate a certificate chain from a certificate.
@@ -1094,7 +1067,7 @@ extern CERTCertificateList *
 CERT_CertListFromCert(CERTCertificate *cert);
 
 extern CERTCertificateList *
-CERT_DupCertList(CERTCertificateList * oldList);
+CERT_DupCertList(const CERTCertificateList * oldList);
 
 extern void CERT_DestroyCertificateList(CERTCertificateList *list);
 
@@ -1284,8 +1257,9 @@ CERT_CheckForEvilCert(CERTCertificate *cert);
 CERTGeneralName *
 CERT_GetCertificateNames(CERTCertificate *cert, PLArenaPool *arena);
 
-char *
-CERT_GetNickName(CERTCertificate   *cert, CERTCertDBHandle *handle, PLArenaPool *nicknameArena);
+CERTGeneralName *
+CERT_GetConstrainedCertificateNames(CERTCertificate *cert, PLArenaPool *arena,
+                                    PRBool includeSubjectCommonName);
 
 /*
  * Creates or adds to a list of all certs with a give subject name, sorted by
@@ -1525,7 +1499,7 @@ CERT_GetSPKIDigest(PLArenaPool *arena, const CERTCertificate *cert,
 
 
 SECStatus CERT_CheckCRL(CERTCertificate* cert, CERTCertificate* issuer,
-                        SECItem* dp, PRTime t, void* wincx);
+                        const SECItem* dp, PRTime t, void* wincx);
 
 
 /*
@@ -1610,25 +1584,25 @@ CERT_EncodeNoticeReference(PLArenaPool *arena,
  * Returns a pointer to a static structure.
  */
 extern const CERTRevocationFlags*
-CERT_GetPKIXVerifyNistRevocationPolicy();
+CERT_GetPKIXVerifyNistRevocationPolicy(void);
 
 /*
  * Returns a pointer to a static structure.
  */
 extern const CERTRevocationFlags*
-CERT_GetClassicOCSPEnabledSoftFailurePolicy();
+CERT_GetClassicOCSPEnabledSoftFailurePolicy(void);
 
 /*
  * Returns a pointer to a static structure.
  */
 extern const CERTRevocationFlags*
-CERT_GetClassicOCSPEnabledHardFailurePolicy();
+CERT_GetClassicOCSPEnabledHardFailurePolicy(void);
 
 /*
  * Returns a pointer to a static structure.
  */
 extern const CERTRevocationFlags*
-CERT_GetClassicOCSPDisabledPolicy();
+CERT_GetClassicOCSPDisabledPolicy(void);
 
 /*
  * Verify a Cert with libpkix
@@ -1643,26 +1617,33 @@ extern SECStatus CERT_PKIXVerifyCert(
 	CERTValInParam *paramsIn,
 	CERTValOutParam *paramsOut,
 	void *wincx);
-/*
- * This function changes the application defaults for the Verify function.
- * It should be called once at app initialization time, and only changes
- * if the default configuration changes.
- *
- * This changes the default values for the parameters specified. These
- * defaults can be overridden in CERT_PKIXVerifyCert() by explicitly 
- * setting the value in paramsIn.
- */
-extern SECStatus CERT_PKIXSetDefaults(CERTValInParam *paramsIn);
 
 /* Makes old cert validation APIs(CERT_VerifyCert, CERT_VerifyCertificate)
  * to use libpkix validation engine. The function should be called ones at
  * application initialization time.
  * Function is not thread safe.*/
-SECStatus CERT_SetUsePKIXForValidation(PRBool enable);
+extern SECStatus CERT_SetUsePKIXForValidation(PRBool enable);
 
 /* The function return PR_TRUE if cert validation should use
  * libpkix cert validation engine. */
-PRBool CERT_GetUsePKIXForValidation();
+extern PRBool CERT_GetUsePKIXForValidation(void);
+
+/*
+ * Allocate a parameter container of type CERTRevocationFlags,
+ * and allocate the inner arrays of the given sizes.
+ * To cleanup call CERT_DestroyCERTRevocationFlags.
+ */
+extern CERTRevocationFlags *
+CERT_AllocCERTRevocationFlags(
+    PRUint32 number_leaf_methods, PRUint32 number_leaf_pref_methods,
+    PRUint32 number_chain_methods, PRUint32 number_chain_pref_methods);
+
+/*
+ * Destroy the arrays inside flags,
+ * and destroy the object pointed to by flags, too.
+ */
+extern void
+CERT_DestroyCERTRevocationFlags(CERTRevocationFlags *flags);
 
 SEC_END_PROTOS
 

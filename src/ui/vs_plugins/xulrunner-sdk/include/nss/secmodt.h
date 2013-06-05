@@ -1,38 +1,6 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Netscape security libraries.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1994-2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #ifndef _SECMODT_H_
 #define _SECMODT_H_ 1
 
@@ -41,23 +9,28 @@
 #include "secoid.h"
 #include "secasn1.h"
 #include "pkcs11t.h"
+#include "utilmodt.h"
+
+SEC_BEGIN_PROTOS
 
 /* find a better home for these... */
 extern const SEC_ASN1Template SECKEY_PointerToEncryptedPrivateKeyInfoTemplate[];
-extern SEC_ASN1TemplateChooser NSS_Get_SECKEY_PointerToEncryptedPrivateKeyInfoTemplate;
+SEC_ASN1_CHOOSER_DECLARE(SECKEY_PointerToEncryptedPrivateKeyInfoTemplate)
 extern const SEC_ASN1Template SECKEY_EncryptedPrivateKeyInfoTemplate[];
-extern SEC_ASN1TemplateChooser NSS_Get_SECKEY_EncryptedPrivateKeyInfoTemplate;
+SEC_ASN1_CHOOSER_DECLARE(SECKEY_EncryptedPrivateKeyInfoTemplate)
 extern const SEC_ASN1Template SECKEY_PrivateKeyInfoTemplate[];
-extern SEC_ASN1TemplateChooser NSS_Get_SECKEY_PrivateKeyInfoTemplate;
+SEC_ASN1_CHOOSER_DECLARE(SECKEY_PrivateKeyInfoTemplate)
 extern const SEC_ASN1Template SECKEY_PointerToPrivateKeyInfoTemplate[];
-extern SEC_ASN1TemplateChooser NSS_Get_SECKEY_PointerToPrivateKeyInfoTemplate;
+SEC_ASN1_CHOOSER_DECLARE(SECKEY_PointerToPrivateKeyInfoTemplate)
+
+SEC_END_PROTOS
 
 /* PKCS11 needs to be included */
 typedef struct SECMODModuleStr SECMODModule;
 typedef struct SECMODModuleListStr SECMODModuleList;
 typedef NSSRWLock SECMODListLock;
 typedef struct PK11SlotInfoStr PK11SlotInfo; /* defined in secmodti.h */
-typedef struct PK11PreSlotInfoStr PK11PreSlotInfo; /* defined in secmodti.h */
+typedef struct NSSUTILPreSlotInfoStr PK11PreSlotInfo; /* defined in secmodti.h */
 typedef struct PK11SymKeyStr PK11SymKey; /* defined in secmodti.h */
 typedef struct PK11ContextStr PK11Context; /* defined in secmodti.h */
 typedef struct PK11SlotListStr PK11SlotList;
@@ -164,34 +137,6 @@ struct PK11DefaultArrayEntryStr {
     unsigned long mechanism; /* this is a long so we don't include the 
 			      * whole pkcs 11 world to use this header */
 };
-
-
-#define SECMOD_RSA_FLAG 	0x00000001L
-#define SECMOD_DSA_FLAG 	0x00000002L
-#define SECMOD_RC2_FLAG 	0x00000004L
-#define SECMOD_RC4_FLAG 	0x00000008L
-#define SECMOD_DES_FLAG 	0x00000010L
-#define SECMOD_DH_FLAG	 	0x00000020L
-#define SECMOD_FORTEZZA_FLAG	0x00000040L
-#define SECMOD_RC5_FLAG		0x00000080L
-#define SECMOD_SHA1_FLAG	0x00000100L
-#define SECMOD_MD5_FLAG		0x00000200L
-#define SECMOD_MD2_FLAG		0x00000400L
-#define SECMOD_SSL_FLAG		0x00000800L
-#define SECMOD_TLS_FLAG		0x00001000L
-#define SECMOD_AES_FLAG 	0x00002000L
-#define SECMOD_SHA256_FLAG	0x00004000L
-#define SECMOD_SHA512_FLAG	0x00008000L	/* also for SHA384 */
-#define SECMOD_CAMELLIA_FLAG 	0x00010000L /* = PUBLIC_MECH_CAMELLIA_FLAG */
-#define SECMOD_SEED_FLAG	0x00020000L
-/* reserved bit for future, do not use */
-#define SECMOD_RESERVED_FLAG    0X08000000L
-#define SECMOD_FRIENDLY_FLAG	0x10000000L
-#define SECMOD_RANDOM_FLAG	0x80000000L
-
-/* need to make SECMOD and PK11 prefixes consistant. */
-#define PK11_OWN_PW_DEFAULTS 0x20000000L
-#define PK11_DISABLE_FLAG    0x40000000L
 
 /*
  * PK11AttrFlags
@@ -338,7 +283,7 @@ typedef PRUint32 PK11AttrFlags;
 #define SECMOD_SLOT_FLAGS "slotFlags=[RSA,DSA,DH,RC2,RC4,DES,RANDOM,SHA1,MD5,MD2,SSL,TLS,AES,Camellia,SEED,SHA256,SHA512]"
 
 #define SECMOD_MAKE_NSS_FLAGS(fips,slot) \
-"Flags=internal,critical"fips" slotparams=("#slot"={"SECMOD_SLOT_FLAGS"})"
+"Flags=internal,critical" fips " slotparams=(" #slot "={" SECMOD_SLOT_FLAGS "})"
 
 #define SECMOD_INT_NAME "NSS Internal PKCS #11 Module"
 #define SECMOD_INT_FLAGS SECMOD_MAKE_NSS_FLAGS("",1)

@@ -52,16 +52,12 @@
 #endif
 
 #define CAIRO_VERSION_MAJOR 1
-#define CAIRO_VERSION_MINOR 6
-#define CAIRO_VERSION_MICRO 4
-
-#define CAIRO_VERSION_STRING "1.6.4"
+#define CAIRO_VERSION_MINOR 9
+#define CAIRO_VERSION_MICRO 5
 
 
 
 #define CAIRO_HAS_PDF_SURFACE 1
-
-
 
 
 
@@ -83,12 +79,17 @@
 
 
 
-
-
 #define CAIRO_HAS_WIN32_FONT 1
 
+#define CAIRO_HAS_DWRITE_FONT 1
+
+#define CAIRO_HAS_D2D_SURFACE 1
 
 
-#define CAIRO_HAS_PNG_FUNCTIONS 1
+
+#define CAIRO_HAS_TEE_SURFACE 1
+
+
+
 
 #endif

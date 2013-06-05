@@ -1,46 +1,15 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is mozilla.org code.
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1999
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either of the GNU General Public License Version 2 or later (the "GPL"),
- * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "nsISupports.idl"
 #include "nsISimpleEnumerator.idl"
 
 %{C++
 #define NS_WINDOWMEDIATOR_CID \
-{ 0x0659cb83, 0xfaad, 0x11d2, { 0x8e, 0x19, 0xb2, 0x06, 0x62, 0x0a, 0x65, 0x7c } }
+{ 0x292e17c8, 0xccc1, 0x42e1, \
+  { 0xac, 0x8b, 0xaf, 0x61, 0x7d, 0x54, 0x13, 0xb1 } }
 
 #define NS_WINDOWMEDIATOR_CONTRACTID \
   "@mozilla.org/appshell/window-mediator;1"
@@ -48,10 +17,10 @@
 
 interface nsIXULWindow;
 interface nsIWidget;
-interface nsIDOMWindowInternal;
+interface nsIDOMWindow;
 interface nsIWindowMediatorListener;
 
-[scriptable, uuid(0659cb81-faad-11d2-8e19-b206620a657c)]
+[scriptable, uuid(292e17c8-ccc1-42e1-ac8b-af617d5413b1)]
 interface nsIWindowMediator: nsISupports
 {
   /** Return an enumerator which iterates over all windows of type aWindowType
@@ -98,7 +67,7 @@ interface nsIWindowMediator: nsISupports
     *                     If null, return the topmost window of any type.
     * @return the topmost window
     */
-  nsIDOMWindowInternal getMostRecentWindow(in wstring aWindowType);
+  nsIDOMWindow getMostRecentWindow(in wstring aWindowType);
 
   /** Add the window to the list of known windows. Listeners (see
     * addListener) will be notified through their onOpenWindow method.
@@ -186,7 +155,7 @@ interface nsIWindowMediator: nsISupports
     * @param aWindow the window in question
     * @return aWindow's z level
     */
-  [noscript] PRUint32 getZLevel(in nsIXULWindow aWindow);
+  [noscript] uint32_t getZLevel(in nsIXULWindow aWindow);
 
   /** Set the window's Z level (as defined in nsIXULWindow). The implementation
     * will reposition the window as necessary to match its new Z level.
@@ -195,7 +164,7 @@ interface nsIWindowMediator: nsISupports
     * @param aWindow the window in question
     * @param aZLevel the window's new Z level
     */
-  [noscript] void setZLevel(in nsIXULWindow aWindow, in PRUint32 aZLevel);
+  [noscript] void setZLevel(in nsIXULWindow aWindow, in uint32_t aZLevel);
 
   /** Register a listener for window status changes.
     * keeps strong ref? (to be decided)
