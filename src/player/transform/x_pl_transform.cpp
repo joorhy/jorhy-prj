@@ -167,7 +167,7 @@ J_PL_RESULT CXPlTransform::VideoLoopPush()
 	while(true)
 	{
 		ctl->m_state->GetVariable(&state);
-		
+		//j_pl_info("VideoLoopPush()\n");
 		j_pl_buffer_t head;
 		j_pl_decode_t format;
 		j_pl_video_format_t vout;

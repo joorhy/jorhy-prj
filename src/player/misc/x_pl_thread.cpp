@@ -117,7 +117,7 @@ int J_PlCond::WaitTime(j_pl_mtime_t deadline)
 		if( total < 0 )
 			total = 0;
 		DWORD delay = (total > INT_MAX) ? INT_MAX : total;
-		ret = J_PlThreadMisc::WaitForSingleObject(m_cond.handle,delay);
+		ret = J_PlThreadMisc::WaitForSingleObject(m_cond.handle,deadline);
 	} while (ret == WAIT_IO_COMPLETION);
 
 	//ResetEvent (m_cond.handle);

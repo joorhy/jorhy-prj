@@ -39,6 +39,7 @@ void CPlCtrl::ReleaseInstance(HWND pWnd)
 		m_ctrlMap.erase(it);
 	}
 	m_lock.Unlock();
+	PlManager::Destroy();
 }
 
 CPlCtrl::CPlCtrl(void)

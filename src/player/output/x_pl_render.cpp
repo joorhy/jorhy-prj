@@ -152,6 +152,7 @@ J_PL_RESULT CXPlRender::VoutLoopPush()
 	{
 		ctl->m_state->GetVariable(&state);
 		ctl->m_switch.Wait();
+		//j_pl_info("VoutLoopPush()\n");
 		switch(state)
 		{
 		case J_PL_NORMAL: break;
@@ -165,9 +166,9 @@ J_PL_RESULT CXPlRender::VoutLoopPush()
 				if(!bSleep)
 				{
 					br = m_vOut->PrepareData(m_vdata,m_vformat.size);
-					vclock.WaitTime(lasttime);
+					//vclock.WaitTime(0);
 					br = m_vOut->Display();
-					lasttime = J_PlThreadMisc::MakeDate() + 25*1000;		//<=40 ms
+					//lasttime = J_PlThreadMisc::MakeDate() + 25*1000;		//<=40 ms
 
 
 					if(ctl->m_pDisplayCBK)
@@ -175,7 +176,7 @@ J_PL_RESULT CXPlRender::VoutLoopPush()
 				}
 				ctl->m_displayTime->SetVariable(&m_vformat.timestamp);
 		
-				br = ctl->m_tansfm->m_vbuffer->MoveNext();
+				//br = ctl->m_tansfm->m_vbuffer->MoveNext();
 			}
 			else
 			{

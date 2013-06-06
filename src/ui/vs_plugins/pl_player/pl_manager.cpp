@@ -12,6 +12,7 @@ PlManager::PlManager()
 	m_nVodEndTime	= 0;
 	m_pFuncCallBk		= NULL;
 	m_nPlayNum		= 0;
+	m_playerMap.clear();
 }
 
 PlManager::~PlManager(void)
@@ -133,6 +134,7 @@ BOOL PlManager::Capture(HWND hWnd, char *pPath)
 		strcat(path_name, pPath);
 		strcat(path_name, locatime);
 		bRet = it->second.pPlayer->Capture(path_name);
+		
 	}
 	m_locker.Unlock();
 	return bRet;
@@ -342,7 +344,7 @@ BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 	if (it != m_playerMap.end())
 	{
 		
-		if(!it->second.pPlayer->IsPlaying())
+		if(it->second.pPlayer == NULL || !it->second.pPlayer->IsPlaying())
 		{
 			m_locker.Unlock();
 			return TRUE;
