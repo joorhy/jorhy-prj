@@ -30,6 +30,7 @@ private:
 private:
 	static CLog* m_pInstance;
 	void *m_pFile;
+	char *m_dataBuff;
 	CTLock m_locker;
 };
 

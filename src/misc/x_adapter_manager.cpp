@@ -68,14 +68,18 @@ int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_sock
 	if (pChannelStream->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
 	{
 		//(static_cast<J_VideoStream *>(m_streamMap[pResId]))->Shutdown();
-		m_streamMap.erase(it);
+		//m_streamMap.erase(it);
+		DelRingBuffer(pResId, nStreamType, nSocket);
 		if (!pChannelStream->HasMultiStream())
 		{
-            key.stream_type = nStreamType == 0 ? 1 : 0;
-            m_streamMap.erase(key);
+           // key.stream_type = nStreamType == 0 ? 1 : 0;
+			DelRingBuffer(pResId, nStreamType == 0 ? 1 : 0, nSocket);
+			CAdapterFactory::Instance()->RemoveInstance(pResId, OBJ_CHANNEL, nStreamType == 0 ? 1 : 0);
+            //m_streamMap.erase(key);
 		}
+		CAdapterFactory::Instance()->RemoveInstance(pResId, OBJ_CHANNEL, nStreamType);
 	}
-	DelRingBuffer(pResId, nStreamType, nSocket);
+	//DelRingBuffer(pResId, nStreamType, nSocket);
 
 	return J_OK;
 }

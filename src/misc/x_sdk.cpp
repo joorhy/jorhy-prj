@@ -50,7 +50,7 @@ static int get_int(json_object *p_object, const char *p_key)
 
 	json_object *pObject = NULL;
 	pObject = json_object_object_get(p_object,(char *)p_key);
-	if (pObject && !is_error(pObject))
+	if (pObject != NULL && !is_error(pObject))
 		return json_object_get_int(pObject);
 
 	J_OS::LOGINFO("json get_int error, key = %s", p_key);
@@ -519,6 +519,7 @@ int GetRecordNotice(s_record &record,char *uri)
 		clean_all();
 		return -1;
 	}
+	//J_OS::LOGINFO(json_buf);
 	r_data = get_int(json_helper, "rst");
     clean_all();
 

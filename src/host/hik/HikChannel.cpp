@@ -23,6 +23,7 @@ CHikChannel::CHikChannel(const char *pResid, void *pOwner, int nChannel,
 
 	m_resid = pResid;
 
+	J_OS::LOGINFO("CHikChannel::CHikChannel()");
 	//signal(SIGPIPE, SIG_IGN);
 
 	//m_timer = J_OS::ADD_TIMER2(3, CHikChannel::OnTimer, (unsigned long)this, false);
@@ -37,6 +38,7 @@ CHikChannel::~CHikChannel()
 		delete m_recvSocket;
 
 	m_timer.Destroy();
+	J_OS::LOGINFO("CHikChannel::~CHikChannel()");
 }
 
 ///J_VideoChannel

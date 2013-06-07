@@ -7,6 +7,7 @@
 #include "x_log.h"
 #include "x_time.h"
 
+#define LOG_DATA_BUFF_SIZE (1024 * 1024)
 
 namespace J_OS
 {
@@ -21,6 +22,7 @@ CLog::CLog()
 	sprintf(fileName, "%s.log", curTime.GetLocalTime().c_str());
 
 	m_pFile = (void *)fopen(fileName, "wb+");*/
+	m_dataBuff = new char[LOG_DATA_BUFF_SIZE];
 	CreateFile();
 }
 
@@ -31,6 +33,9 @@ CLog::~CLog()
 		fclose((FILE *)m_pFile);
 		m_pFile = NULL;
 	}
+	
+	if (m_dataBuff)
+		delete m_dataBuff;
 }
 
 CLog* CLog::Instance()
@@ -46,24 +51,22 @@ CLog* CLog::Instance()
 int CLog::WriteLogInfo(const char *format, ...)
 {
 	m_locker._Lock();
-
-	static char dataBuff[1024*1024] = {0};
 	int nArgLen = 0;
 
 	va_list arg_ptr;
 	va_start(arg_ptr, format);
-	nArgLen = vsprintf(dataBuff, format, arg_ptr);
+	nArgLen = vsprintf(m_dataBuff, format, arg_ptr);
 	va_end(arg_ptr);
 
 	std::string strLocalTime = CTime::Instance()->GetLocalTime();
 	fwrite(strLocalTime.c_str(), 1, strLocalTime.length(), (FILE *)m_pFile);
 	fwrite(" : ", 1, 3, (FILE *)m_pFile);
-	fwrite(dataBuff, 1, nArgLen, (FILE *)m_pFile);
+	fwrite(m_dataBuff, 1, nArgLen, (FILE *)m_pFile);
 	fwrite("\r\n", 1, 2, (FILE *)m_pFile);
 
 	fflush((FILE *)m_pFile);
 
-	printf("%s : %s\n", strLocalTime.c_str(), dataBuff);
+	printf("%s : %s\n", strLocalTime.c_str(), m_dataBuff);
 	m_locker._Unlock();
 
 	return J_OK;
@@ -75,7 +78,7 @@ int CLog::WriteLogError(const char *format, ...)
 	char errBuff[256] = {0};
 	sprintf(errBuff, "(%s, errno = %d)", strerror(errno), errno);
 
-	static char dataBuff[1024] = {0};
+	char dataBuff[1024] = {0};
 	int nArgLen = 0;
 
 	va_list arg_ptr;

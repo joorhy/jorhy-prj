@@ -12,6 +12,7 @@ CJospFilter::CJospFilter()
 	m_nRetLen = 0;
 	m_pRetBuff = new char[1024];
 	memset(m_strResid, 0, sizeof(m_strResid));
+	J_OS::LOGINFO("CJospFilter::CJospFilter()");
 }
 
 CJospFilter::~CJospFilter()
@@ -21,6 +22,8 @@ CJospFilter::~CJospFilter()
 	
 	if (m_pRetBuff)
 		delete m_pRetBuff;
+	
+	J_OS::LOGINFO("CJospFilter::~CJospFilter()");
 }
 
 int CJospFilter::Parser(j_socket_t nSocket)
