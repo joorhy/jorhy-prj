@@ -304,6 +304,11 @@ J_PL_RESULT J_PlControl::CallBackStop()
 		m_AllClose.Wait();
 	}
 
+	/*int state = J_PL_NORMAL;
+	m_state->GetVariable(&state);
+	if(state == J_PL_END && m_pEndCBK)					//»Øµ÷
+		m_pEndCBK(m_pEndData);*/
+
 	if(m_input != NULL)
 	{
 		delete m_input;

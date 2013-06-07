@@ -266,8 +266,6 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 			break;
 
 		case J_PL_ERROR: 
-			if(ctl->m_pEndCBK)					//»Øµ÷
-				ctl->m_pEndCBK(ctl->m_pEndData);
 			goto Input_End2;
 			break;
 

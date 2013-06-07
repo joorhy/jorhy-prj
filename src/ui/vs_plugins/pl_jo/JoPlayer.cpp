@@ -16,6 +16,7 @@ void X_PL_API JoPlayer::EndCBK(void *pdata)
 		}
 		else
 		{
+			user->Stop();
 			PostMessage(user->m_pPlWnd,WM_MEDIA_END_REACHED,0,0);
 		}
 	}
