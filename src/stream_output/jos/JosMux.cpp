@@ -6,12 +6,12 @@ extern "C"
 
 CJosMux::CJosMux()
 {
-
+	J_OS::LOGINFO("CJosMux::CJosMux()");
 }
 
 CJosMux::~CJosMux()
 {
-
+	J_OS::LOGINFO("CJosMux::~CJosMux()");
 }
 
 int CJosMux::Init()

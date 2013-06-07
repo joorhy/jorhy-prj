@@ -404,4 +404,5 @@ void CNvrFileReader::OnWork()
 		}
 		TUnlock(m_locker);
 	}
+	delete pBuffer;
 }

@@ -40,6 +40,8 @@ CXHttp::CXHttp()
 	m_pBody = new char[X_HTTP_BODY_LEN];
 	m_pMessage = new char[X_HTTP_MESSAGE_LEN];
 	m_pResponse = new char[X_HTTP_MESSAGE_LEN];
+	
+	J_OS::LOGINFO("CXHttp::CXHttp()");
 }
 
 CXHttp::~CXHttp()
@@ -47,6 +49,7 @@ CXHttp::~CXHttp()
 	delete m_pBody;
 	delete m_pMessage;
 	delete m_pResponse;
+	J_OS::LOGINFO("CXHttp::~CXHttp()");
 }
 
 j_result_t CXHttp::SetUri(j_char_t *pUri)
@@ -126,8 +129,9 @@ j_result_t CXHttp::Process()
 	if (sock.Write_n(m_pMessage, m_nMessageLen) < 0)
 		return J_SOCKET_ERROR;
 
+	J_OS::LOGINFO(m_pMessage);
 	int nRet = 0;
-	memset (m_pResponse, 0, sizeof(m_pResponse));
+	memset (m_pResponse, 0, X_HTTP_MESSAGE_LEN);
 	m_nRespHeadLen = 0;
 	m_pRespBodyLen = 0;
 	while (1)
@@ -184,6 +188,7 @@ j_result_t CXHttp::Process()
 			}
 		}
 	}
+	J_OS::LOGINFO(m_pResponse);
 
 	return J_OK;
 }

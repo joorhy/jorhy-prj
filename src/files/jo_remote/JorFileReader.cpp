@@ -195,5 +195,6 @@ void CJorFileReader::OnWork()
 		}
 		TUnlock(m_locker);
 	}
+	delete pBuffer;
 }
 

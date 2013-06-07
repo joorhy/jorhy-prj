@@ -6,12 +6,12 @@
 
 CJospParser::CJospParser()
 {
-
+	J_OS::LOGINFO("CJospParser::CJospParser()");
 }
 
 CJospParser::~CJospParser()
 {
-
+	J_OS::LOGINFO("CJospParser::~CJospParser()");
 }
 
 int CJospParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)

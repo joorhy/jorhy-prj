@@ -13,6 +13,7 @@ CRingBuffer::CRingBuffer(int nCacheFrameNum, int nBufferSize)
 	m_pWritePoint = m_pReadPoint = m_pBegin;
 	m_nDataLen = 0;
 	m_nBufferSize = nBufferSize;
+	J_OS::LOGINFO("CRingBuffer::CRingBuffer()");
 }
 CRingBuffer::~CRingBuffer()
 {
@@ -23,6 +24,7 @@ CRingBuffer::~CRingBuffer()
 		m_pBuffer = NULL;
 	}
 	m_mutex._Unlock();
+	J_OS::LOGINFO("CRingBuffer::~CRingBuffer()");
 }
 
 int CRingBuffer::ResetBufferSize(int nBufferSize)

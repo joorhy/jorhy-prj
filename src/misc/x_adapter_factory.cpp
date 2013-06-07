@@ -134,8 +134,25 @@ void* CAdapterFactory::GetInstance(const char *pResId, OBJ_TYPE nType, int nStre
 	return NULL;
 }
 
-int CAdapterFactory::RemoveInstance(const char *pResId, OBJ_TYPE nType)
+int CAdapterFactory::RemoveInstance(const char *pResId, OBJ_TYPE nType, int nStreamType)
 {
+	if (OBJ_ADAPTER == nType)
+	{
+	}
+	else
+	{
+		//pResId 标识的是通道ID
+		J_ChannelKey key;
+		key.resid = pResId;
+		key.stream_type = nStreamType;
+
+		ChannelMap::iterator it = m_channelMap.find(key);
+		if (it != m_channelMap.end())
+		{
+		    delete (J_Obj *)it->second;
+			m_channelMap.erase(it);
+		}
+	}
 	return J_OK;
 }
 

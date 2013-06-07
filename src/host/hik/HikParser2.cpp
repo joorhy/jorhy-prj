@@ -54,7 +54,7 @@ int CHikParser2::Init(int nDataType)
 		m_pAudioCache = new short int[1024 * 10];
 
 	//初始化G.722.1解码库
-	mlt_based_coder_init();
+	/*mlt_based_coder_init();
 
 	//初始化AAC编码库
 	m_aacHandle = faacEncOpen(16000, 1, &m_nInputSamples, &m_nOutputBytes);
@@ -67,7 +67,7 @@ int CHikParser2::Init(int nDataType)
 	pAacConfig->bitRate = 16 * 1024;
 	pAacConfig->bandWidth = 0;
 	pAacConfig->inputFormat = FAAC_INPUT_16BIT;
-	faacEncSetConfiguration(m_aacHandle, pAacConfig);
+	faacEncSetConfiguration(m_aacHandle, pAacConfig);*/
 	//delete pAacConfig;
 
 	return J_OK;
@@ -82,11 +82,11 @@ int CHikParser2::Deinit()
 	}
 
 	WLock(m_rwLocker);
-	if (m_aacHandle != NULL)
+	/*if (m_aacHandle != NULL)
 	{
 		//faacEncClose(m_aacHandle);
 		m_aacHandle = NULL;
-	}
+	}*/
 
 	if (m_pAudioCache != NULL)
 	{

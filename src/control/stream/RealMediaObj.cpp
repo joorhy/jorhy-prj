@@ -30,6 +30,9 @@ CRealMediaObj::~CRealMediaObj()
 {
 	if (m_pDataBuff != NULL)
 		delete m_pDataBuff;
+	
+	if (m_pConvetBuff != NULL)
+		delete m_pConvetBuff;
 
 	J_OS::LOGINFO("CRealMediaObj::~CRealMediaObj destroyed socket =  %d", m_nSocket);
 }

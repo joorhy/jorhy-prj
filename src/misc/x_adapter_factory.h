@@ -42,15 +42,16 @@ public:
 	///获取Adapter和channel对象
 	///@param[in] 	pResId 全局唯一的资源ID
 	///@param[in] 	nType 对象类型 1-Adapter, 2-Channel
-	///@param[io]	nStreamType 码流类型 0-主码流, 1-子码流
+	///@param[in]	nStreamType 码流类型 0-主码流, 1-子码流
 	///@return 		NULL-获取失败,需要调用CreateInstence; 非空-对象的地址
 	void *GetInstance(const char *pResId, OBJ_TYPE nType, int nStreamType);
 
 	///构造Adapter和channel对象
 	///@param[in] 	pResId 全局唯一的资源ID
+	///@param[in]	nStreamType 码流类型 0-主码流, 1-子码流
 	///@param[in] 	nType 操作类型 1-析构Adapter, 2-析构Channel
 	///@return 		参考x_error_type.h
-	int RemoveInstance(const char *pResId, OBJ_TYPE nType);
+	int RemoveInstance(const char *pResId, OBJ_TYPE nType, int nStreamType);
 
 private:
 	static void TimerThread(void *pUser)
