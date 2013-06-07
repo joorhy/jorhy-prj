@@ -25,6 +25,7 @@ CPlCtrl *CPlCtrl::CreateInstance(HWND pWnd)
 	else
 		pCtrl = it->second;
 	m_lock.Unlock();
+
 	return pCtrl;
 }
 
@@ -47,6 +48,11 @@ CPlCtrl::CPlCtrl(void)
 	m_hParent	= NULL;
 	m_pUser		= NULL;
 	memset(&m_layoutInfo, 0, sizeof(PL_LayoutInfo));
+
+	//AllocConsole();
+	//SetConsoleTitle("BTKPlayer-Debug");
+	//freopen("CONOUT$", "w", stderr);
+	//freopen("CONOUT$", "w", stdout);
 }
 
 CPlCtrl::~CPlCtrl(void)
@@ -236,7 +242,10 @@ BOOL CPlCtrl::Play(char *js_mrl)
 	{
 		int nSize = m_playWndMap.size();
 		if(playInfo.nId > nSize || playInfo.nId < 0) 
+		{
+			//printf("%d > %d\n", playInfo.nId, nSize);
 			return FALSE;
+		}
 
 		//WindowKey key = {m_hParent, playInfo.nId};
 		//m_key.nId = playInfo.nId;
@@ -244,7 +253,10 @@ BOOL CPlCtrl::Play(char *js_mrl)
 	}
 
 	if(!PlManager::Instance()->SetUserData(hWnd, m_pUser))
+	{
+		//printf("SetUserData\n");
 		return FALSE;
+	}
 
 	::SendMessage(hWnd, WM_OWN_SETFOCUS, 0, 0);
 	bRet = PlManager::Instance()->Play(hWnd, playInfo);

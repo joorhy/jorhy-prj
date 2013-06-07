@@ -347,7 +347,7 @@ BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 		if(it->second.pPlayer == NULL || !it->second.pPlayer->IsPlaying())
 		{
 			m_locker.Unlock();
-			return TRUE;
+			return FALSE;
 		}
 		
 		if (playInfo.nStartTime > it->second.playInfo.nEndTime)		//超出结束时间就停止

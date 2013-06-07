@@ -350,7 +350,7 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 		if (m_vbufferEX->GetBlockNum() > 30)
 		{
 			m_sem.Post();
-			m_pullSwitch.Wait();		
+			m_pullSwitch.WaitTime(2000);		
 		}
 		else
 		{
