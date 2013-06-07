@@ -194,7 +194,10 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 		CreateFile(NULL);
 	}
 	if (m_fdBody == NULL)
+	{
+		J_OS::LOGINFO("CStreamRecord::ParserAndSave m_fdBody == NULL");
 		CreateFile(NULL);
+	}
 
 	bool bIsKeyFrame = (streamHeader.frameType == jo_video_i_frame);
 	bool bIsVideo = (streamHeader.frameType == jo_video_i_frame || streamHeader.frameType == jo_video_p_frame);

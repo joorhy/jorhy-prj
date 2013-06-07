@@ -157,7 +157,8 @@ int CXDecoder::DecodeRendFrame(const char *pData, int nLen)
 
 int CXDecoder::InputData(const char *pData, int nLen)
 {
-	m_buffer.PushData(pData, nLen);
+	if (m_bRun)
+		m_buffer.PushData(pData, nLen);
 	//DecodeRendFrame(pData, nLen);
 		
 	return J_OK;

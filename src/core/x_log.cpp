@@ -47,7 +47,7 @@ int CLog::WriteLogInfo(const char *format, ...)
 {
 	m_locker._Lock();
 
-	static char dataBuff[1024] = {0};
+	static char dataBuff[1024*1024] = {0};
 	int nArgLen = 0;
 
 	va_list arg_ptr;

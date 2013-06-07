@@ -60,6 +60,9 @@ int CXRender::AspectRatio(int w, int h)
 	m_locker.Lock();
 	m_width = w;
 	m_height = h;
+	m_img = XGetImage(m_display, m_drawable, 0, 0, 547, 556, 0, ZPixmap);
+	m_img->bytes_per_line = m_width * 3;
+	m_img->bits_per_pixel = 24;
 	m_locker.Unlock();
 	
 	return 0;
@@ -67,7 +70,8 @@ int CXRender::AspectRatio(int w, int h)
 
 int CXRender::InputData(const char *pData, int nLen)
 {
-	m_buffer.PushData(pData, nLen);
+	if (m_bRun)
+		m_buffer.PushData(pData, nLen);
 	//RendRrame(pData);
 	
 	return J_OK;
@@ -99,9 +103,9 @@ void CXRender::OnExit()
 void CXRender::RendRrame(const char *pData)
 {
 	m_locker.Lock();
-	m_img = XGetImage(m_display, m_drawable, 0, 0, m_width, m_height, 0, ZPixmap);
-	m_img->bytes_per_line = m_width * 3;
-	m_img->bits_per_pixel = 24;
+	//m_img = XGetImage(m_display, m_drawable, 0, 0, m_width, m_height, 0, ZPixmap);
+	//m_img->bytes_per_line = m_width * 3;
+	//m_img->bits_per_pixel = 24;
 	
 	m_img->data = (char*)pData;
 	XPutImage(m_display, m_drawable, m_gc, m_img, 0, 0, 0, 0, m_width, m_height);

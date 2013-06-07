@@ -1,7 +1,7 @@
 #include "x_http.h"
 #include "x_socket.h"
 
-#define X_HTTP_BODY_LEN	(1024*7)
+#define X_HTTP_BODY_LEN	(1024*1024*2)
 #define X_HTTP_MESSAGE_LEN	(1024*1024*2)
 
 const char *x_http_type_str[] = 
@@ -168,8 +168,14 @@ j_result_t CXHttp::Process()
 				{
 					j_int32_t nChunkSize = x_atoh(strChunkSize);
 					if (nChunkSize == 0)
+					{
+						if (sock.Read_n(strChunkSize, 2) < 0)
+							return J_SOCKET_ERROR;
 						break;
-					if (sock.Read_n(m_pResponse + m_nRespHeadLen, nChunkSize) < 0)
+					}
+					if (sock.Read_n(m_pResponse + m_nRespHeadLen + m_pRespBodyLen, nChunkSize) < 0)
+						return J_SOCKET_ERROR;
+					if (sock.Read_n(strChunkSize, 2) < 0)
 						return J_SOCKET_ERROR;
 					m_pRespBodyLen += nChunkSize;
 					nReadLen = 0;

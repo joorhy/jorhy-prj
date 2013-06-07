@@ -229,6 +229,7 @@ int CAipstarChannel::Broken()
 	{
 		J_OS::LOGINFO("4");
 		(static_cast<CAipstarStream *> (m_pStream))->Broken();
+		J_OS::LOGINFO("5");
 		return J_OK;
 	}
 		

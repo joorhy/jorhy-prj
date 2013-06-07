@@ -29,8 +29,10 @@ char *HttpCommunicate(char *body,char *uri)
 	case 200:	resrvdata = httpHelper.GetBody();
 				if (resrvdata == NULL)
 					return NULL;
-				ret_data = new char[strlen(resrvdata) + 1];
-				memset(ret_data, 0, strlen(resrvdata) + 1);
+				
+				//J_OS::LOGINFO("%d", httpHelper.GetBodyLen());
+				ret_data = new char[httpHelper.GetBodyLen() + 1];
+				memset(ret_data, 0, httpHelper.GetBodyLen() + 1);
 				strncpy(ret_data, resrvdata, httpHelper.GetBodyLen());
 				break;
 	default:
@@ -382,6 +384,7 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 
 	//解析数据
 	//json_helper = json_object_new_object();
+	//J_OS::LOGINFO("json_data = %s", json_buf);
 	json_helper = json_tokener_parse(json_buf);
 	if(is_error(json_helper))
 	{

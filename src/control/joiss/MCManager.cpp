@@ -52,7 +52,7 @@ const char *CMCManager::GetResList()
 	pXmlDoc->LinkEndChild(pDecl);
 	pXmlDoc->LinkEndChild(pRootElement);
 	pRootElement->SetAttribute("id", "0");
-	pRootElement->SetAttribute("ipAddr", "192.168.1.53");
+	pRootElement->SetAttribute("ipAddr", "192.168.1.106");
 	pRootElement->SetAttribute("desc", "视频主目录");
 	TiXmlElement *pChannelElement = NULL;
 

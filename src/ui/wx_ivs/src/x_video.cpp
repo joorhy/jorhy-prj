@@ -141,6 +141,8 @@ void CVideoDlg::OnMove(wxMoveEvent& event)
 void CVideoDlg::OnSize(wxSizeEvent &event)
 {
     event.Skip();
+	fprintf(stderr, "CVideoDlg::OnSize %d, %d\n",GetParent()->GetSize().GetWidth() - 251
+		, GetParent()->GetSize().GetHeight() - m_nAdjustHeight - 42);
     SetSize(251, 42, GetParent()->GetSize().GetWidth() - 251, GetParent()->GetSize().GetHeight() - m_nAdjustHeight - 42);
     WinLayout();
     for (int i=0; i<m_videoNum; i++)

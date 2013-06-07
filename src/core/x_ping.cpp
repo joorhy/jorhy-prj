@@ -66,7 +66,7 @@ BEGIN_SEND:
     if (int nRet = sendto(m_socket, m_sendPacket, packet_size, 0,
               (struct sockaddr *)&m_destAddr, sizeof(m_destAddr)) < 0)
     {
-		if (errno == EAGAIN && nRet == 0)
+		if (errno == EINTR)
 		{
 			--m_timeOutNum;
 			goto BEGIN_SEND;
@@ -102,7 +102,7 @@ BEGIN_RECV:
     if ((n = recvfrom(m_socket, m_recvPacket, sizeof(m_recvPacket), 0,
             (struct sockaddr *)&from, &from_len)) < 0)
     {
-		if (errno == EAGAIN && n == 0)
+		if (errno == EINTR)
 		{
 			j_sleep(1);
 			goto BEGIN_RECV;
