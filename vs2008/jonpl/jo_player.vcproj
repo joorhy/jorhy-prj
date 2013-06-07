@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\player\include\ffmpeg;..\..\src\player\include;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
+				AdditionalIncludeDirectories="..\..\src\player\include\ffmpeg;..\..\src\player\include;..\..\src\utils"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_PLAYER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

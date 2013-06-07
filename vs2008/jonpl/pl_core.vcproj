@@ -176,14 +176,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_com.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_core.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_err.h"
 				>
 			</File>
@@ -221,10 +213,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_core.cpp"
-				>
-			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_core\pl_lock.cpp"
 				>
