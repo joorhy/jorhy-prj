@@ -58,9 +58,9 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 	//if (InterlockedExchangeAdd(&m_bCbReturn, 0) > 0)
 	if (m_bCbReturn > 0)
 	{
-		char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":1}")+1);
-		strncpy(tmp, "{\"rst\":1}", strlen("{\"rst\":1}"));
-		tmp[strlen("{\"rst\":1}")] = '\0';
+		char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":5}")+1);
+		strncpy(tmp, "{\"rst\":5}", strlen("{\"rst\":5}"));
+		tmp[strlen("{\"rst\":5}")] = '\0';
 		STRINGZ_TO_NPVARIANT(tmp, *result);
 		return true;
 	}
@@ -157,9 +157,9 @@ bool ScriptablePluginObject::InvokeDefault(const NPVariant *args, uint32_t argCo
 	//if (InterlockedExchangeAdd(&m_bCbReturn, 0) > 0)
 	if (m_bCbReturn > 0)
 	{
-		char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":1}")+1);
-		strncpy(tmp, "{\"rst\":1}", strlen("{\"rst\":1}"));
-		tmp[strlen("{\"rst\":1}")] = '\0';
+		char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":5}")+1);
+		strncpy(tmp, "{\"rst\":5}", strlen("{\"rst\":5}"));
+		tmp[strlen("{\"rst\":5}")] = '\0';
 		STRINGZ_TO_NPVARIANT(tmp, *result);
 		return true;
 	}
