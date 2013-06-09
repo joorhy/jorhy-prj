@@ -41,6 +41,7 @@ J_PlControl::J_PlControl(void)
 
 J_PlControl::~J_PlControl(void)
 {
+	m_SafeClose.Wait();
 	int state = J_PL_NORMAL;
 	m_state->GetVariable(&state);
 	if(state == J_PL_PALYING || state == J_PL_PAUSE)
@@ -124,7 +125,7 @@ J_PL_RESULT J_PlControl::Stop()
 	m_state->SetVariable(&state);
 	m_FrameSwitch.Single();
 
-	m_SafeClose.Wait();
+	//m_SafeClose.Wait();
 
 	return J_PL_NO_ERROR;
 }
@@ -303,11 +304,6 @@ J_PL_RESULT J_PlControl::CallBackStop()
 	{
 		m_AllClose.Wait();
 	}
-
-	/*int state = J_PL_NORMAL;
-	m_state->GetVariable(&state);
-	if(state == J_PL_END && m_pEndCBK)					//»Øµ÷
-		m_pEndCBK(m_pEndData);*/
 
 	if(m_input != NULL)
 	{

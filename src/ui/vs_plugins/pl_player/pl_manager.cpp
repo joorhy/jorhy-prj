@@ -338,17 +338,36 @@ BOOL PlManager::GetPlayInfo(HWND hWnd, PL_PlayInfo &playInfo)
 
 BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 {
-	m_locker.Lock();
+	PlayerMap::iterator it = m_playerMap.find(hWnd);
+	if (it != m_playerMap.end())
+	{
+		Stop(hWnd);
+		if (playInfo.nStartTime > it->second.playInfo.nEndTime)		//超出结束时间就停止
+		{
+			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
+			return FALSE;
+		}
+
+		it->second.playInfo.nStartTime = playInfo.nStartTime;
+		it->second.dwPlayTime = playInfo.nStartTime;
+		return Play(hWnd, it->second.playInfo);
+	}
+	return TRUE;
+	/*m_locker.Lock();
 	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		
-		if(it->second.pPlayer == NULL || !it->second.pPlayer->IsPlaying())
+		if (it->second.pPlayer == NULL || !it->second.bPlay)
 		{
 			m_locker.Unlock();
-			return FALSE;
+			return Play(hWnd, playInfo);
 		}
+		//if(!it->second.pPlayer->IsPlaying())
+		//{
+		//	m_locker.Unlock();
+		//	return FALSE;
+		//}
 		
 		if (playInfo.nStartTime > it->second.playInfo.nEndTime)		//超出结束时间就停止
 		{
@@ -361,7 +380,7 @@ BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 		bRet = it->second.pPlayer->VodStreamJump(it->second.playInfo);
 	}
 	m_locker.Unlock();
-	return bRet;
+	return bRet;*/
 }
 
 BOOL PlManager::RePlay(HWND hWnd)

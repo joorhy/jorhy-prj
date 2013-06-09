@@ -142,8 +142,8 @@ DWORD J_PlThreadMisc::WaitForMultipleObject(DWORD count,const HANDLE *handles,DW
 	else
 		ret = WaitForMultipleObjectsEx (count, handles, FALSE, delay, TRUE);
 
-	if(ret == WAIT_FAILED)
-		abort();
+	//if(ret == WAIT_FAILED)
+	//	abort();
 	return ret;
 }
 

@@ -241,7 +241,6 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 		switch(state)
 		{
 		case J_PL_NORMAL: break;
-
 		case J_PL_PALYING:
 		case J_PL_PAUSE:
 			br = m_access->ReadBlock(accessdata,readlen);
@@ -257,18 +256,16 @@ J_PL_RESULT CXPlInput::ThreadLoopPull()
 				ctl->m_state->SetVariable(&state);
 				break;
 			}
-
 			br = m_demux->DemuxBlock(accessdata,m_buffer);			//demux
 			break;
-
 		case J_PL_END: 
 			goto Input_End2;
 			break;
-
 		case J_PL_ERROR: 
+			if(ctl->m_pEndCBK)					//»Øµ÷
+				ctl->m_pEndCBK(ctl->m_pEndData);
 			goto Input_End2;
 			break;
-
 		}
 		m_pullSwitch.Unsingle();
 	}

@@ -48,7 +48,10 @@ JoPlayer::~JoPlayer(void)
 
 BOOL JoPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 {
-	J_PL_RESULT br;
+	J_PL_RESULT br = J_PL_NO_ERROR;
+	if (m_player == NULL)
+		m_player = new J_PlControl();
+
 	char mrl[128] = {0};
 	if (playInfo.nPlayMode == STREAME_REALTIME)
 	{
