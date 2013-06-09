@@ -129,7 +129,7 @@ j_result_t CXHttp::Process()
 	if (sock.Write_n(m_pMessage, m_nMessageLen) < 0)
 		return J_SOCKET_ERROR;
 
-	J_OS::LOGINFO(m_pMessage);
+	//J_OS::LOGINFO(m_pMessage);
 	int nRet = 0;
 	memset (m_pResponse, 0, X_HTTP_MESSAGE_LEN);
 	m_nRespHeadLen = 0;
@@ -188,7 +188,7 @@ j_result_t CXHttp::Process()
 			}
 		}
 	}
-	J_OS::LOGINFO(m_pResponse);
+	//J_OS::LOGINFO(m_pResponse);
 
 	return J_OK;
 }

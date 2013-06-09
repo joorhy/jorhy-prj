@@ -20,10 +20,12 @@ CNvrFileReader::CNvrFileReader(const char *pResid)
 	
 	m_lastTime = 0;
 	m_buffer = new CRingBuffer(0, RECORD_BUFF_SIZE);
+	m_pBuffer = new char[RECORD_BUFF_SIZE];
 	m_bRun = true;
 	pthread_mutex_init(&m_mux, NULL);
 	pthread_cond_init(&m_cond, NULL);
 	pthread_create(&m_thread, NULL, WorkThread, this);
+	pthread_detach(m_thread);
 	//m_timer.Create(TIMER_INTERVAL, CNvrFileReader::TimerThread, (unsigned long)this);
 	J_OS::LOGINFO("CNvrFileReader::CNvrFileReader");
 }
@@ -31,13 +33,21 @@ CNvrFileReader::CNvrFileReader(const char *pResid)
 CNvrFileReader::~CNvrFileReader()
 {
 	m_bRun = false;
+	
 	pthread_cancel(m_thread);
-	pthread_join(m_thread, NULL);
 	pthread_mutex_destroy(&m_mux);
 	pthread_cond_destroy(&m_cond);
-	if (m_buffer)
+	
+	J_OS::LOGINFO("CNvrFileReader::~CloseFile");
+	TLock(m_locker);
+	if (m_buffer != NULL)
 		delete m_buffer;
+	if (m_pBuffer != NULL)
+		delete m_pBuffer;
+	J_OS::LOGINFO("CNvrFileReader::Lock(m_locker)");
 	CloseFile();
+	J_OS::LOGINFO("CNvrFileReader::TUnlock(m_locker)");
+	TUnlock(m_locker);
 	//m_timer.Destroy();
 	J_OS::LOGINFO("CNvrFileReader::~CNvrFileReader");
 }
@@ -93,12 +103,19 @@ int CNvrFileReader::GetContext(J_MediaContext *&mediaContext)
 
 int CNvrFileReader::GetPacket(char *pBuffer, J_StreamHeader &streamHeader)
 {
+	J_OS::LOGINFO("13");
 	TLock(m_locker);
+	J_OS::LOGINFO("14");
 	if (!m_bRun)
 	{
+		J_OS::LOGINFO("15");
 		TUnlock(m_locker);
+		J_OS::LOGINFO("16");
 		return J_UNKNOW;
 	}
+	J_OS::LOGINFO("17");
+	TUnlock(m_locker);
+	J_OS::LOGINFO("18");
 		
 	int nRet = J_OK;
 	if (m_bPaused)
@@ -119,7 +136,6 @@ int CNvrFileReader::GetPacket(char *pBuffer, J_StreamHeader &streamHeader)
 			streamHeader.frameNum = 0;
 		}
 	}
-	TUnlock(m_locker);
 	return J_OK;
 }
 
@@ -139,25 +155,21 @@ int CNvrFileReader::SetScale(float nScale)
 
 int CNvrFileReader::SetTime(uint64_t s_time, uint64_t e_time)
 {
-	//TLock(m_locker);
 	int nRet = J_OK;
 	nRet = ListRecord(s_time, s_time + RECORD_INTERVAL);
 	if (nRet != J_OK)
 	{
-		//TUnlock(m_locker);
 		return nRet;
 	}
 
 	nRet = CalcPosition(s_time);
 	if (nRet != J_OK)
 	{
-		//TUnlock(m_locker);
 		return nRet;
 	}
 	m_bGoNext = true;
 	m_nextTimeStamp = s_time * 1000;
 
-	//TUnlock(m_locker);
 	return J_OK;
 }
 
@@ -168,10 +180,14 @@ int CNvrFileReader::SetPosition(int nPos)
 
 int CNvrFileReader::GetMediaData(j_uint64_t beginTime, int nIval)
 {
+	J_OS::LOGINFO("9");
 	TLock(m_locker);
+	J_OS::LOGINFO("10");
 	m_lastTime += nIval;
 	pthread_cond_signal(&m_cond);
+	J_OS::LOGINFO("11");
 	TUnlock(m_locker);
+	J_OS::LOGINFO("12");
 	
 	return J_OK;
 }
@@ -189,6 +205,7 @@ int CNvrFileReader::ListRecord(uint64_t beginTime, uint64_t endTime)
 
 	if (p_historyfile->parm.files.empty())
 	{
+		delete p_historyfile;
 		J_OS::LOGINFO("CNvrFileReader::ListRecord No Files start=%d end=%d", beginTime, endTime);
 		return J_OK;
 	}
@@ -312,54 +329,61 @@ int CNvrFileReader::CalcPosition(uint64_t timeStamp, uint32_t interval)
 	}
 
 	fseek(m_pFileId, it->second.offset, SEEK_SET);
-	//printf("offset = %d %llu %llu\n", it->second.offset, it->second.timeStamp, timeStamp);
-	//TLock(m_locker);
 	m_nextTimeStamp = it->second.timeStamp;
-	//TUnlock(m_locker);
 
 	return J_OK;
 }
 
 void CNvrFileReader::OnTimer()
 {
-	//TLock(m_locker);
 	m_nextTimeStamp += (uint32_t)(TIMER_INTERVAL / m_nScale);
-	//TUnlock(m_locker);
 }
 
 void CNvrFileReader::OnWork()
 {
 	int nRet = J_OK;
 	J_StreamHeader streamHeader;
-	//bool bLock = false;
-	char *pBuffer = new char[1024 * 1024 * 5];
+	pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
 	while (m_bRun)
 	{
+		//J_OS::LOGINFO("run = %d, th = %d", m_bRun, pthread_self());
+		pthread_testcancel();
 		if (m_lastTime == 0)
 		{
+			struct timespec tspec = {0};
+			tspec.tv_sec = time(0) + 3; 
 			pthread_mutex_lock(&m_mux);
-			pthread_cond_wait(&m_cond, &m_mux);
-			//bLock = true;
+			if (pthread_cond_timedwait(&m_cond, &m_mux, &tspec) > 0)
+			{
+				streamHeader.dataLen = 0;
+				streamHeader.frameType = jo_file_end;
+				streamHeader.timeStamp = 0;
+				streamHeader.frameNum = 0;
+				m_buffer->PushBuffer(m_pBuffer, streamHeader);
+				pthread_mutex_unlock(&m_mux);
+				return;
+			}
 			pthread_mutex_unlock(&m_mux);
 		}
 		if (m_buffer->GetIdleLength() != RECORD_BUFF_SIZE)
 		{
-			usleep(10000);
+			usleep(1000);
 			continue;
 		}
-		//usleep(20000);
+		J_OS::LOGINFO("1");
 		TLock(m_locker);
+		J_OS::LOGINFO("2");
 		if (m_pFileId == NULL || ftell(m_pFileId) >= m_fileEnd)
 		{
 			nRet = OpenFile();
 			if (nRet != J_OK)
 			{
-				//TLock(m_locker);
-				//return nRet;
 				//未处理
-				J_OS::LOGINFO("error %d", nRet);
+				J_OS::LOGINFO("CNvrFileReader::OnWork() error %d", nRet);
 				m_bRun = false;
+				J_OS::LOGINFO("3");
 				TUnlock(m_locker);
+				J_OS::LOGINFO("4");
 				break;
 			}
 		}
@@ -370,11 +394,11 @@ void CNvrFileReader::OnWork()
 			nReadLen = fread(&m_nextHeader, 1, sizeof(m_nextHeader), m_pFileId);
 			if (nReadLen == 0)
 			{
-				//J_OS::LOGINFO("offset = %d", ftell(m_pFileId));
-				//return J_OK;
+				J_OS::LOGINFO("5");
+				TUnlock(m_locker);
+				J_OS::LOGINFO("6");
 				continue;
 			}
-			//J_OS::LOGINFO("len = %d", m_nextHeader.dataLen);
 			m_bGoNext = false;
 		}
 
@@ -382,27 +406,21 @@ void CNvrFileReader::OnWork()
 				&& m_nextHeader.timeStamp > m_nextTimeStamp
 				&& m_nextHeader.timeStamp - m_nextTimeStamp > 120000)
 		{
-			//return J_FILE_END;
 			//未处理
-			//J_OS::LOGINFO("error 2");
 			streamHeader.dataLen = 0;
 			streamHeader.frameType = jo_file_end;
 			streamHeader.timeStamp = 0;
 			streamHeader.frameNum = 0;
 		}
-
 		m_nextTimeStamp = m_nextHeader.timeStamp;
-		//if (m_nextTimeStamp >= m_nextHeader.timeStamp)
-		{
-			streamHeader = m_nextHeader;
-			//streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
-			nReadLen = fread(pBuffer, 1, streamHeader.dataLen, m_pFileId);
-			m_buffer->PushBuffer(pBuffer, streamHeader);
-			m_lastTime -= 40;
-			//TUnlock(m_locker);
-			m_bGoNext = true;
-		}
+		streamHeader = m_nextHeader;
+		nReadLen = fread(m_pBuffer, 1, streamHeader.dataLen, m_pFileId);
+		J_OS::LOGINFO("7");
 		TUnlock(m_locker);
+		J_OS::LOGINFO("8");
+		
+		m_buffer->PushBuffer(m_pBuffer, streamHeader);
+		m_lastTime -= 40;
+		m_bGoNext = true;
 	}
-	delete pBuffer;
 }

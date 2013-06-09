@@ -74,6 +74,7 @@ private:
 	pthread_cond_t m_cond;
 	int m_lastTime;
 	CRingBuffer *m_buffer;
+	char *m_pBuffer;
 	bool m_bRun;
 };
 

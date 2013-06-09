@@ -188,7 +188,7 @@ write_begin:
 			j_sleep(1000);
 			goto write_begin;
 		}
-		else if (errno == EAGAIN/* && nSend == 0*/)
+		else if (errno == EAGAIN && nSend == 0)
 		{
 			j_sleep(1000);
 			goto write_begin;
@@ -294,12 +294,13 @@ int CTCPSocket::Read_n(char *pBuff, int nLen)
 		if (nRet <= 0)
 		{
 			J_OS::LOGERROR("CTCPSocket::Read_n nRead = %d", nRet);
-			if ((errno == EAGAIN && nRet < 0) || (errno == EINTR && nRet < 0))
+			if ((errno == EAGAIN && nRet == 0) || (errno == EINTR/* && nRet < 0*/))
 			{
 				J_OS::LOGERROR("CTCPSocket::Read_n nRead2 = %d", nRet);
 				j_sleep(1);
 				continue;
 			}
+			J_OS::LOGINFO("QQQQQQQQQQQQQQQQQq");
 			/*else if(errno == EAGAIN && nRet == 0)
 			{
 				J_OS::LOGINFO("QQQQQQQQQQQQQQQQQq");
@@ -329,7 +330,7 @@ int CTCPSocket::Write_n(const char *pBuff, int nLen)
 
 		if (nRet <= 0)
 		{
-			if ((errno == EAGAIN && nRet == 0) || (errno == EINTR && nRet < 0))
+			if ((errno == EAGAIN && nRet == 0) || (errno == EINTR/* && nRet < 0*/))
 			{
 			    J_OS::LOGERROR("CTCPSocket::Write_n");
 				j_sleep(1);
