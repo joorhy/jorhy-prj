@@ -402,22 +402,22 @@ struct J_AsioUser : public J_Obj
 	///连接事件触发(用于网络IO)
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual j_result_t OnAccept(int nfd) = 0;
+	virtual j_result_t OnAccept(j_socket_t nfd) = 0;
 
 	///读事件触发
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual j_result_t OnRead(int nfd) = 0;
+	virtual j_result_t OnRead(j_socket_t nfd) = 0;
 
 	///写事件触发
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual j_result_t OnWrite(int nfd) = 0;
+	virtual j_result_t OnWrite(j_socket_t nfd) = 0;
 
 	///断线事件触发(用于网络IO)
 	///@param[in]	nfd IO设备描述符
 	///@return		见x_error_type.h
-	virtual j_result_t OnBroken(int nfd) = 0;
+	virtual j_result_t OnBroken(j_socket_t nfd) = 0;
 };
 
 struct J_CommandParser : public J_Obj

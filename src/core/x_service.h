@@ -178,6 +178,8 @@ private:
 			}
 			else if (nfds == 0)
 			{
+				ModifyListen();
+				continue;
 				//J_OS::LOGERROR("nfds == 0 CXService::OnThread epoll error");
 			}
 

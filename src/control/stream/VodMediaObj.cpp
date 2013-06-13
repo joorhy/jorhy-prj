@@ -225,7 +225,8 @@ int CVodMediaObj::WriteData()
 			}
 		}
 	}
-	else if (nRet < 0 || (nRet==J_OK && m_streamHeader.frameType==jo_file_end))
+	else if (nRet < 0 || (nRet==J_OK && m_streamHeader.frameType==jo_file_end
+									|| m_streamHeader.frameType==jo_media_broken))
 	{
 		return J_SOCKET_ERROR;
 	}
