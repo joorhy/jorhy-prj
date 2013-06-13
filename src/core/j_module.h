@@ -397,27 +397,28 @@ struct J_MuxFilter : virtual public J_Obj
 	virtual j_result_t Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0) = 0;
 };
 
+struct J_AsioDataBase;
 struct J_AsioUser : public J_Obj
 {
 	///连接事件触发(用于网络IO)
-	///@param[in]	nfd IO设备描述符
+	///@param[in]	asioData IO数据集
 	///@return		见x_error_type.h
-	virtual j_result_t OnAccept(j_socket_t nfd) = 0;
+	virtual j_result_t OnAccept(const J_AsioDataBase &asioData, int nRet) = 0;
 
 	///读事件触发
-	///@param[in]	nfd IO设备描述符
+	///@param[in]	asioData IO数据集
 	///@return		见x_error_type.h
-	virtual j_result_t OnRead(j_socket_t nfd) = 0;
+	virtual j_result_t OnRead(const J_AsioDataBase &asioData, int nRet) = 0;
 
 	///写事件触发
-	///@param[in]	nfd IO设备描述符
+	///@param[in]	asioData IO数据集
 	///@return		见x_error_type.h
-	virtual j_result_t OnWrite(j_socket_t nfd) = 0;
+	virtual j_result_t OnWrite(const J_AsioDataBase &asioData, int nRet) = 0;
 
 	///断线事件触发(用于网络IO)
-	///@param[in]	nfd IO设备描述符
+	///@param[in]	asioData IO数据集
 	///@return		见x_error_type.h
-	virtual j_result_t OnBroken(j_socket_t nfd) = 0;
+	virtual j_result_t OnBroken(const J_AsioDataBase &asioData, int nRet) = 0;
 };
 
 struct J_CommandParser : public J_Obj

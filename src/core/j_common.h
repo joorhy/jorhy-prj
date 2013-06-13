@@ -7,6 +7,7 @@
 #include <Winsock2.h>
 #include <Mstcpip.h>
 #include <windows.h>
+#include <ws2tcpip.h>
 #else
 #include <stdint.h>
 #include <pthread.h>
