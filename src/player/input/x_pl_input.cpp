@@ -198,9 +198,9 @@ J_PL_RESULT CXPlInput::InitDecoder()
 J_PL_RESULT CXPlInput::RequestData()
 {
 	J_PL_RESULT br = J_PL_NO_ERROR;
-	br = m_access->RequestData(24 * 60 * 60 * 1000);
+	/*br = m_access->RequestData(24 * 60 * 60 * 1000);
 	if (br != J_PL_NO_ERROR)
-		return br;
+		return br;*/
 
 	//m_pullSwitch.Single();
 	return br;

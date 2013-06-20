@@ -82,6 +82,8 @@ J_PL_RESULT J_PlSocket::NRead(char *OUT_pBuff, int nLen)
 		nRecvLen += nRet;
 		nTotleLen -= nRet;
 	}
+	if (nLen != nRecvLen)
+		return J_PL_ERROR_RECEIVE;
 
 	return nLen == nRecvLen ? J_PL_NO_ERROR : J_PL_ERROR_RECEIVE;
 }
