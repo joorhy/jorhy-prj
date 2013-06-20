@@ -65,7 +65,12 @@ CTCPSocket::~CTCPSocket()
 	m_handle.sock = j_invalid_socket_val;
 }
 
-int CTCPSocket::Listen(unsigned short nPort, int nListenNum, bool bBlock)
+int CTCPSocket::Listen(j_uint16_t nPort, j_int32_t nListenNum, j_boolean_t bBlock)
+{
+	return Listen(m_handle, nPort, nListenNum, bBlock);
+}
+
+int CTCPSocket::Listen(j_socket_t nSock, unsigned short nPort, int nListenNum, bool bBlock)
 {
 	if (!bBlock)
 		SetNonblocking();
@@ -78,20 +83,20 @@ int CTCPSocket::Listen(unsigned short nPort, int nListenNum, bool bBlock)
 	sin_addr.sin_port = htons(nPort);
 	sin_addr.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(m_handle.sock, (struct sockaddr *)&sin_addr, sizeof(struct sockaddr)) == -1)
+    if (bind(nSock.sock, (struct sockaddr *)&sin_addr, sizeof(struct sockaddr)) == -1)
     {
     	J_OS::LOGERROR("CTCPSocket bind error, port = %d", nPort);
 
         return J_SOCKET_ERROR;
     }
 
-    if (listen(m_handle.sock, nListenNum) == -1)
+    if (listen(nSock.sock, nListenNum) == -1)
     {
     	J_OS::LOGERROR("CTCPSocket listen error, port = %d", nPort);
 
     	return J_SOCKET_ERROR;
     }
-    J_OS::LOGINFO("CTCPSocket::Listen sucess, handle = %d", m_handle);
+    J_OS::LOGINFO("CTCPSocket::Listen sucess, handle = %d", nSock.sock);
 
 	return J_OK;
 }

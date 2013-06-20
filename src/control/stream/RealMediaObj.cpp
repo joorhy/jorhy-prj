@@ -37,13 +37,13 @@ CRealMediaObj::~CRealMediaObj()
 	J_OS::LOGINFO("CRealMediaObj::~CRealMediaObj destroyed socket =  %d", m_nSocket);
 }
 
-int CRealMediaObj::Process(int nIoType)
+int CRealMediaObj::Process(J_AsioDataBase &asioData)
 {
 	int nRet = J_OK;
 	J_CommandFilter *videoCommand = dynamic_cast<J_CommandFilter *>(m_pObj);
 	if (videoCommand != NULL)
 	{
-		if (nIoType == jo_io_read)
+		if (asioData.ioCall == J_AsioDataBase::j_read_e)
 		{
 			m_resid = videoCommand->GetResid();
 			switch (videoCommand->GetCommandType())
@@ -63,31 +63,21 @@ int CRealMediaObj::Process(int nIoType)
 				break;
 			}
 		}
-		else if (nIoType == jo_io_write)
+		else if (asioData.ioCall == J_AsioDataBase::j_write_e)
 		{
 			if (!m_bStart)
 			{
 				J_OS::LOGINFO("CRealMediaObj::Process !m_bStart socket = %d", m_nSocket);
 				return J_OK;
 			}
-			
-			/*TLock(m_locker);
-			if (m_taskNum == 0)
-			{
-				CRealTask * pTask = new CRealTask;
-				pTask->m_pParam = this;
-				CThreadPool::Instance()->AddTask(pTask);
-				++m_taskNum;
-			}
-			TUnlock(m_locker);*/
-			return OnWriteData();
+			return OnWriteData(asioData);
 		}
 	}
 
 	return nRet;
 }
 
-int CRealMediaObj::OnWriteData()
+int CRealMediaObj::OnWriteData(J_AsioDataBase &asioData)
 {
 	int nRet = J_OK;
 	J_RequestFilter *pAccess = dynamic_cast<J_RequestFilter *>(m_pObj);
@@ -112,18 +102,14 @@ int CRealMediaObj::OnWriteData()
 							m_lastFrameNum = m_streamHeader.frameNum;
 							
 						m_nextFrameTime = CTime::Instance()->GetLocalTime(0);
-						if ((nRet = m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen)) < 0)
-						{
-							J_OS::LOGERROR("CRealMediaObj::OnWrite Data error");
-							return J_SOCKET_ERROR;
-						}
+						asioData.ioWrite.buf = m_pConvetBuff;
+						asioData.ioWrite.bufLen = nDataLen;
+						asioData.ioWrite.whole = true;
 						m_nextFrameTime = CTime::Instance()->GetLocalTime(0) - m_nextFrameTime;
-						//J_OS::LOGINFO("m_nextFrameTime = %d", m_nextFrameTime);
 						break;
 					}
 					else
 					{
-						//m_nextFrameTime -= 40;
 						m_nextFrameTime = 0;
 						continue;
 					}
@@ -131,12 +117,14 @@ int CRealMediaObj::OnWriteData()
 				else
 				{
 					m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
-					//return J_OK;
 					continue;
 				}
 			}
 			else
 			{
+				asioData.ioWrite.buf = m_pConvetBuff;
+				asioData.ioWrite.bufLen = 0;
+				asioData.ioWrite.whole = true;
 				return J_OK;
 			}
 		}
@@ -147,6 +135,9 @@ int CRealMediaObj::OnWriteData()
 		}
 		else
 		{
+			asioData.ioWrite.buf = m_pConvetBuff;
+			asioData.ioWrite.bufLen = 0;
+			asioData.ioWrite.whole = true;
 			usleep(1);
 			return J_OK;
 		}

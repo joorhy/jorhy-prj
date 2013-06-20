@@ -48,5 +48,7 @@
 #define J_NOT_FOUND        		-36	//查询失败
 
 #define J_THREAD_CREATE_ERROR	-37//创建线程失败
+#define J_DATA_NOT_READY		-38//数据未就绪
+#define J_WIAT_NEXT_CMD			-39//等待下一条指令
 
 #endif //~__X_ERROR_TYPE_H_

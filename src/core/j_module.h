@@ -198,10 +198,10 @@ struct J_MediaParser : virtual public J_Obj
 struct J_MediaObj : virtual public J_Obj
 {
 	///处理事务
-	///@param[in]	nIoType 事务类型,见NvrType.h
+	///@param[in]	asioData 异步IO数据
 	///@param[in]	nCmdType 命令类型
 	///@return 		参见x_error_type.h
-	virtual int Process(int nIoType) = 0;
+	virtual int Process(J_AsioDataBase &asioData) = 0;
 
 	///清除Client资源
 	///@return 		参见x_error_type.h
@@ -358,7 +358,7 @@ struct J_RequestFilter : virtual public J_Obj
 	///命令解析
 	///@param[in]	nSocket	
 	///@return		见x_error_type.h
-	virtual j_result_t Parser(j_socket_t nSocket) = 0;
+	virtual j_result_t Parser(J_AsioDataBase &asioData) = 0;
 	
 	///获取资源类型
 	///@return	成功-资源类型,失败-NULL
@@ -375,7 +375,7 @@ struct J_RequestFilter : virtual public J_Obj
 	///完成会话
 	///@param[in]	nSocket	
 	///@return		见x_error_type.h
-	virtual j_result_t Complete(j_socket_t nSocket) = 0;
+	virtual j_result_t Complete(J_AsioDataBase &asioData) = 0;
 };
 
 struct J_MuxFilter : virtual public J_Obj
@@ -397,28 +397,26 @@ struct J_MuxFilter : virtual public J_Obj
 	virtual j_result_t Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0) = 0;
 };
 
-struct J_AsioDataBase;
 struct J_AsioUser : public J_Obj
 {
-	///连接事件触发(用于网络IO)
+	///连接事件完成(用于网络IO)
 	///@param[in]	asioData IO数据集
-	///@return		见x_error_type.h
-	virtual j_result_t OnAccept(const J_AsioDataBase &asioData, int nRet) = 0;
+	///@param[in]	错误码,见x_error_type.h	
+	virtual void OnAccept(const J_AsioDataBase &asioData, int nRet) = 0;
 
-	///读事件触发
+	///读事件完成
 	///@param[in]	asioData IO数据集
-	///@return		见x_error_type.h
-	virtual j_result_t OnRead(const J_AsioDataBase &asioData, int nRet) = 0;
+	///@param[in]	错误码,见x_error_type.h
+	virtual void OnRead(const J_AsioDataBase &asioData, int nRet) = 0;
 
-	///写事件触发
+	///写事件完成
 	///@param[in]	asioData IO数据集
-	///@return		见x_error_type.h
-	virtual j_result_t OnWrite(const J_AsioDataBase &asioData, int nRet) = 0;
+	///@param[in]	错误码,见x_error_type.h
+	virtual void OnWrite(const J_AsioDataBase &asioData, int nRet) = 0;
 
-	///断线事件触发(用于网络IO)
-	///@param[in]	asioData IO数据集
-	///@return		见x_error_type.h
-	virtual j_result_t OnBroken(const J_AsioDataBase &asioData, int nRet) = 0;
+	///断线事件完成(用于网络IO)
+	///@param[in]	错误码,见x_error_type.h
+	virtual void OnBroken(const J_AsioDataBase &asioData, int nRet) = 0;
 };
 
 struct J_CommandParser : public J_Obj

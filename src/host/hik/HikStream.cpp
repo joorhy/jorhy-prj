@@ -47,6 +47,14 @@ int CHikStream::Startup()
 	m_bStartup = true;
 	CRdAsio::Instance()->Init();
 	CRdAsio::Instance()->AddUser(m_nSocket, this);
+	//读取4字节头信息
+	m_asioData.ioUser = this;
+	m_asioData.ioRead.buf = m_pRecvBuff;
+	m_asioData.ioRead.bufLen = 4;
+	m_asioData.ioRead.whole = true;
+	m_nState = HIK_READ_HEAD;
+	m_nOffset = 0;
+	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", this);
@@ -69,71 +77,64 @@ int CHikStream::Shutdown()
 	return J_OK;
 }
 
-int CHikStream::OnRead(int nfd)
+void CHikStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 {
 	if (!m_bStartup)
 	{
 		J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket);
-		return J_SOCKET_ERROR;
+		return;
 	}
 
+	j_result_t nResult = 0;
+	J_StreamHeader streamHeader;
 	TLock(m_locker);
-	int nOffset = 0;
-	int nDataLen = recv(nfd, m_pRecvBuff, 4, MSG_WAITALL);
-	if (nDataLen < 0)
+	m_nOffset += m_asioData.ioRead.bufLen;
+	m_asioData.ioRead.whole = true;
+	switch (m_nState)
 	{
-		J_OS::LOGERROR("CHikStream::OnWork recv data error");
-		TUnlock(m_locker);
-		return J_SOCKET_ERROR;
-	}
-	nOffset += 4;
+		case HIK_READ_HEAD:
+			if (memcmp(m_pRecvBuff, PACK_HEAD, 4) == 0)
+				m_asioData.ioRead.bufLen = 10;
+			else if ((memcmp(m_pRecvBuff, PSM_HEAD, 4) == 0)
+				|| (memcmp(m_pRecvBuff, VIDEO_HEAD, 4) == 0)
+				|| (memcmp(m_pRecvBuff, AUDIO_HEAD, 4) == 0))
+				m_asioData.ioRead.bufLen = 2;
 	
-	int nNextLen = 0;
-	if (memcmp(m_pRecvBuff, PACK_HEAD, 4) == 0)
-	{
-		nDataLen = recv(nfd, m_pRecvBuff + 4, 10, MSG_WAITALL);
-		nOffset += 10;
-		nNextLen = (*(m_pRecvBuff + 13) & 0x07);
-	}
-	else if ((memcmp(m_pRecvBuff, PSM_HEAD, 4) == 0)
-		|| (memcmp(m_pRecvBuff, VIDEO_HEAD, 4) == 0)
-		|| (memcmp(m_pRecvBuff, AUDIO_HEAD, 4) == 0))
-	{
-		nDataLen = recv(nfd, m_pRecvBuff + 4, 2, MSG_WAITALL);
-		nOffset += 2;
-		nNextLen = (((*(m_pRecvBuff + 4) & 0xFF) << 8) + (*(m_pRecvBuff + 5) & 0xFF)); 
-	}
-	
-	if (nNextLen > 0)
-	{
-		nDataLen = recv(nfd, m_pRecvBuff + nOffset, nNextLen, MSG_WAITALL);
-		nOffset += nNextLen;
-	}
-
-	if (nNextLen > 0)
-	{
-		m_parser.InputData(m_pRecvBuff, nOffset);
-		int nRet = 0;
-		J_StreamHeader streamHeader;
-		nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
-		if (nRet == J_OK)
-		{
-			TLock(m_vecLocker);
-			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-			for (; it != m_vecRingBuffer.end(); it++)
+			m_asioData.ioRead.buf = m_pRecvBuff + m_nOffset;
+			m_nState = HIK_READ_PS_HEAD;
+			break;
+		case HIK_READ_PS_HEAD:
+			if (m_asioData.ioRead.bufLen == 10)
+				m_asioData.ioRead.bufLen = (*(m_asioData.ioRead.buf + 9) & 0x07);
+			else if (m_asioData.ioRead.bufLen == 2)
+				m_asioData.ioRead.bufLen = (((*(m_asioData.ioRead.buf) & 0xFF) << 8) + (*(m_asioData.ioRead.buf + 1) & 0xFF));
+			m_asioData.ioRead.buf = m_pRecvBuff + m_nOffset;
+			m_nState = HIK_READ_DATA;
+			break;
+		case HIK_READ_DATA:
+			m_parser.InputData(m_pRecvBuff, m_nOffset);
+			nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
+			if (nResult == J_OK)
 			{
-				//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
-				(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+				TLock(m_vecLocker);
+				std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+				for (; it != m_vecRingBuffer.end(); it++)
+				{
+					//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
+					(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+				}
+				TUnlock(m_vecLocker);
 			}
-			TUnlock(m_vecLocker);
-		}
+			m_asioData.ioRead.bufLen = 4;
+			m_asioData.ioRead.buf = m_pRecvBuff;
+			m_nState = HIK_READ_HEAD;
+			m_nOffset = 0;
 	}
+	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
-
-	return J_OK;
 }
 
-int CHikStream::OnBroken(int nfd)
+void CHikStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
 {
     J_OS::LOGINFO("CHikStream::OnBroken");
     TLock(m_locker);
@@ -149,8 +150,7 @@ int CHikStream::OnBroken(int nfd)
         (*it)->PushBuffer(m_pRecvBuff, streamHeader);
     }
     TUnlock(m_vecLocker);
+	CRdAsio::Instance()->DelUser(m_nSocket);
 
     TUnlock(m_locker);
-
-    return J_OK;
 }

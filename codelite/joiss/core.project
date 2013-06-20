@@ -3,7 +3,6 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="../../src/core/x_asio.cpp"/>
     <File Name="../../src/core/x_file.cpp"/>
     <File Name="../../src/core/x_loadso.cpp"/>
     <File Name="../../src/core/x_lock.cpp"/>
@@ -20,6 +19,7 @@
     <File Name="../../src/core/x_http.cpp"/>
     <File Name="../../src/core/x_mem_pool.cpp"/>
     <File Name="../../src/core/x_ping.cpp"/>
+    <File Name="../../src/core/x_asio.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/core/j_includes.h"/>

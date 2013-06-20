@@ -11,13 +11,13 @@ CVoiceIcomObj::~CVoiceIcomObj()
 
 }
 
-int CVoiceIcomObj::Process(int nIoType)
+int CVoiceIcomObj::Process(J_AsioDataBase &asioData)
 {
 	int nRet = J_OK;
 	J_CommandFilter *videoCommand = dynamic_cast<J_CommandFilter *>(m_pObj);
 	if (videoCommand != NULL)
 	{
-		if (nIoType == jo_io_read)
+		if (asioData.ioCall == J_AsioDataBase::j_read_e)
 		{
 			m_resid = videoCommand->GetResid();
 			switch (videoCommand->GetCommandType())
@@ -37,7 +37,7 @@ int CVoiceIcomObj::Process(int nIoType)
 				break;
 			}
 		}
-		else if (nIoType == jo_io_write)
+		else if (asioData.ioCall == J_AsioDataBase::j_write_e)
 		{
 			if (!m_bStart)
 				return J_OK;
@@ -49,16 +49,14 @@ int CVoiceIcomObj::Process(int nIoType)
 				int nDataLen = 0;
 				pAccess->Convert(m_pDataBuff, m_streamHeader, m_pConvetBuff, nDataLen);
 
-				if (m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen) < 0)
-				{
-					J_OS::LOGERROR("CVoiceIcomObj::OnWrite Data error");
-					return J_SOCKET_ERROR;
-				}
+				asioData.ioWrite.buf = m_pConvetBuff;
+				asioData.ioWrite.bufLen = nDataLen;
+				asioData.ioWrite.whole = true;
 			}
 			else
 			{
 				usleep(1);
-				return J_OK;
+				return J_DATA_NOT_READY;
 			}
 		}
 	}

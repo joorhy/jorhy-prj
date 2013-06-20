@@ -29,10 +29,10 @@ public:
 
 public:
 	///J_ProtocolFilter
-	virtual int Parser(j_socket_t nSocket);
+	virtual int Parser(J_AsioDataBase &asioData);
 	virtual const char *GetResourceType(); 
 	virtual int Convert(const j_char_t *pInputData, J_StreamHeader &streamHeader, j_char_t *pOutputData, int &nOutLen);
-	virtual int Complete(j_socket_t nSocket);
+	virtual int Complete(J_AsioDataBase &asioData);
 
 private:
 	bool GetPS(const char *pData, int nLen);
@@ -66,6 +66,9 @@ private:
 	unsigned int m_audio_ssrc;
 
 	std::string m_strVodParam;
+	j_char_t m_read_buff[1024];
+	j_int32_t m_read_len;
+	j_char_t m_send_buff[1024];
 };
 
 FILTER_BEGIN_MAKER(rtsp)

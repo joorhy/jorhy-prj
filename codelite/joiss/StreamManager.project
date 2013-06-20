@@ -5,9 +5,9 @@
   <VirtualDirectory Name="src">
     <File Name="../../src/control/stream/DeviceControl.cpp"/>
     <File Name="../../src/control/stream/RealMediaObj.cpp"/>
-    <File Name="../../src/control/stream/StreamManager.cpp"/>
     <File Name="../../src/control/stream/VodMediaObj.cpp"/>
     <File Name="../../src/control/stream/VoiceIcomObj.cpp"/>
+    <File Name="../../src/control/stream/StreamManager.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/control/stream/DeviceControl.h"/>

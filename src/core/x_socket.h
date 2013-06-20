@@ -19,6 +19,7 @@ public:
 
 public:
 	int Listen(j_uint16_t nPort, j_int32_t nListenNum = 10, j_boolean_t bBlock = true);
+	int Listen(j_socket_t nSock, j_uint16_t nPort, j_int32_t nListenNum = 10, j_boolean_t bBlock = true);
 	int Connect(const j_char_t *pAddr, j_uint16_t nPort/*, struct timeval *tv = NULL*/);
 	int Disconnect();
 	int Read(j_char_t *pBuff, j_int32_t nLen);

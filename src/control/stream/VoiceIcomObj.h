@@ -12,7 +12,7 @@ public:
 
 public:
 	///J_Client
-	virtual int Process(int nIoType);
+	virtual int Process(J_AsioDataBase &asioData);
 	virtual int Clearn();
 	virtual int Run(bool bFlag);
 

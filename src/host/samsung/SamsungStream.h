@@ -18,22 +18,17 @@ public:
     virtual j_result_t Startup();
     virtual j_result_t Shutdown();
     ///AsioUser
-    virtual j_result_t OnAccept(j_int32_t nfd)
-    {
-        return J_OK;
-    }
-    virtual j_result_t OnRead(j_int32_t nfd);
-    virtual j_result_t OnWrite(j_int32_t nfd)
-    {
-        return J_OK;
-    }
-    virtual j_result_t OnBroken(j_int32_t nfd);
+	virtual void OnAccept(const J_AsioDataBase &asioData, int nRet) {}
+	virtual void OnRead(const J_AsioDataBase &asioData, int nRet);
+	virtual void OnWrite(const J_AsioDataBase &asioData, int nRet) {}
+	virtual void OnBroken(const J_AsioDataBase &asioData, int nRet);
 
 private:
     j_socket_t m_nSocket;
     j_boolean_t m_bStartup;
     j_char_t *m_pRecvBuff;//[100 * 1024];
     j_void_t *m_pTCPSocket;
+	J_AsioDataBase m_asioData;
 
     CSamsungParser m_parser;
     j_string_t m_resid;

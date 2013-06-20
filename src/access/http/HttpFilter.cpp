@@ -17,6 +17,8 @@ CHttpFilter::CHttpFilter()
 {
 	m_muxFilter = NULL;
 	memset(m_strResid, 0, sizeof(m_strResid));
+	memset(m_read_buff, 0, sizeof(m_read_buff));
+	m_read_len = 0;
 }
 
 CHttpFilter::~CHttpFilter()
@@ -25,25 +27,17 @@ CHttpFilter::~CHttpFilter()
 		CMuxFactory::Instance()->DelMux(this);
 }
 
-int CHttpFilter::Parser(j_socket_t nSocket)
+int CHttpFilter::Parser(J_AsioDataBase &asioData)
 {
-	J_OS::CTCPSocket readSocket(nSocket);
-	char read_buff[1024] = {0};
-	int read_ret = 0;
-	int totle_recv = 0;
-	do
+	memcpy(m_read_buff + m_read_len, asioData.ioRead.buf, asioData.ioRead.finishedLen);
+	if (strstr(m_read_buff, http_end) == NULL)
 	{
-		read_ret = readSocket.Read(read_buff + totle_recv, sizeof(read_buff));
-		if (read_ret < 0)
-		{
-			return J_SOCKET_ERROR;
-		}
-		if (strstr(read_buff, "HTTP") == NULL)
-			return J_UNKNOW;
-
-		totle_recv += read_ret;
-	} while(strstr(read_buff, http_end) == NULL);
-	CXString x_string(read_buff);
+		m_read_len += asioData.ioRead.finishedLen;
+		asioData.ioRead.bufLen = 1024;
+		asioData.ioRead.whole = false;
+		return J_NOT_COMPLATE;
+	}
+	CXString x_string(m_read_buff);
 
 	CXInteger32 i_command("cmd=", "&");
 	x_string >> i_command;
@@ -58,7 +52,7 @@ int CHttpFilter::Parser(j_socket_t nSocket)
 	x_string >> i_type;
 	m_nStreamType = i_type();
 
-	if (strstr(read_buff, "vod") != NULL)
+	if (strstr(m_read_buff, "vod") != NULL)
 	{
 		CXInteger64U u_start("start=", "&");
 		x_string >> u_start;
@@ -68,7 +62,7 @@ int CHttpFilter::Parser(j_socket_t nSocket)
 		x_string >> u_end;
 		m_endTime = u_end();
 
-		if (strstr(read_buff, "scale=") != NULL)
+		if (strstr(m_read_buff, "scale=") != NULL)
 		{
 			CXInteger32 i_scale("scale=", "&");
 			x_string >> i_scale;
@@ -77,11 +71,11 @@ int CHttpFilter::Parser(j_socket_t nSocket)
 		m_mode = jo_push_mode;
 	}
 
-	if (strstr(read_buff, "stream=raw"))
+	if (strstr(m_read_buff, "stream=raw"))
 	{
 		m_muxFilter = CMuxFactory::Instance()->GetMux(this, "raw");
 	}
-	else if (strstr(read_buff, "stream=ps"))
+	else if (strstr(m_read_buff, "stream=ps"))
 	{
 		m_muxFilter = CMuxFactory::Instance()->GetMux(this, "ps");
 	}
@@ -89,6 +83,8 @@ int CHttpFilter::Parser(j_socket_t nSocket)
 	{
 		m_muxFilter = CMuxFactory::Instance()->GetMux(this, "ts");
 	}
+	memset (m_read_buff, 0, sizeof(m_read_buff));
+	m_read_len = 0;
 
 	return J_OK;
 }
@@ -106,14 +102,11 @@ int CHttpFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, c
 	return m_muxFilter->Convert((const char *)pInputData, streamHeader, pOutputData, nOutLen, (void *)&RATE);
 }
 
-int CHttpFilter::Complete(j_socket_t nSocket)
+int CHttpFilter::Complete(J_AsioDataBase &asioData)
 {
-	J_OS::CTCPSocket writeSocket(nSocket);
-	if (writeSocket.Write_n((char *)res_buff, strlen(res_buff)) < 0)
-	{
-		J_OS::LOGERROR("CHttpFilter::Complete Send Header error");
-		return J_SOCKET_ERROR;
-	}
+	asioData.ioWrite.buf = res_buff;
+	asioData.ioWrite.bufLen = strlen(res_buff);
+	asioData.ioWrite.whole = true;
 
 	return J_OK;
 }

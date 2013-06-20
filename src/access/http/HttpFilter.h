@@ -18,13 +18,15 @@ class CHttpFilter : public J_RequestFilter
 
 	public:
 		///J_ProtocolFilter
-		virtual int Parser(j_socket_t nSocket);
+		virtual int Parser(J_AsioDataBase &asioData);
 		const char *GetResourceType();
 		virtual int Convert(const j_char_t *pInputData, J_StreamHeader &streamHeader, j_char_t *pOutputData, j_int32_t &nOutLen);
-		virtual int Complete(j_socket_t nSocket);
+		virtual int Complete(J_AsioDataBase &asioData);
 
 	private:
 		J_MuxFilter *m_muxFilter;
+		j_char_t m_read_buff[1024];
+		j_int32_t m_read_len;
 };
 
 FILTER_BEGIN_MAKER(http)

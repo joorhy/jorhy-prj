@@ -43,6 +43,12 @@ int CJoStream::Startup()
     m_bStartup = true;
     CRdAsio::Instance()->Init();
     CRdAsio::Instance()->AddUser(m_nSocket, this);
+	m_asioData.ioUser = this;
+	m_asioData.ioRead.buf = (j_char_t *)&m_dataHead;
+	m_asioData.ioRead.bufLen = sizeof(J_DataHead);
+	m_asioData.ioRead.whole = true;
+	m_nState = JO_READ_HEAD;
+	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -63,51 +69,51 @@ int CJoStream::Shutdown()
 	return J_OK;
 }
 
-int CJoStream::OnRead(int nfd)
+void CJoStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 {
     if (!m_bStartup)
     {
         J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket);
-        return J_SOCKET_ERROR;
+        return;
     }
 
+	j_result_t nResult = J_OK;
+	J_StreamHeader streamHeader = {0};
     TLock(m_locker);
-	J_DataHead head = {0};
-    int	nLen = recv(nfd, &head, sizeof(head), MSG_WAITALL);
-    if (nLen < 0)
-    {
-        J_OS::LOGERROR("CJoStream::OnRead recv data error");
-        TUnlock(m_locker);
-        return J_SOCKET_ERROR;
-    }
-	int nLength = ntohl(head.data_len);
-	nLen = recv(nfd, m_pRecvBuff, nLength, MSG_WAITALL);
-    if (nLen > 0)
-    {
-        int nRet = 0;
-		J_StreamHeader streamHeader = {0};
-		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);//ntohll(head.time_stamp);
-		streamHeader.frameType = ntohl(head.frame_type);
-		streamHeader.dataLen = nLength;
-		streamHeader.frameNum = ntohl(head.frame_seq);
-		if (nRet == J_OK)
-		{
-			TLock(m_vecLocker);
-			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-			for (; it != m_vecRingBuffer.end(); it++)
+	switch (m_nState)
+	{
+		case JO_READ_HEAD:
+			m_asioData.ioRead.bufLen = ntohl(m_dataHead.data_len);
+			m_nState = JO_READ_DATA;
+			m_asioData.ioRead.buf = m_pRecvBuff;
+			break;
+		case JO_READ_DATA:
+			m_asioData.ioRead.bufLen = sizeof(J_DataHead);
+			streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);//ntohll(head.time_stamp);
+			streamHeader.frameType = ntohl(m_dataHead.frame_type);
+			streamHeader.dataLen = ntohl(m_dataHead.data_len);;
+			streamHeader.frameNum = ntohl(m_dataHead.frame_seq);
+			if (nResult == J_OK)
 			{
-				(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+				TLock(m_vecLocker);
+				std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+				for (; it != m_vecRingBuffer.end(); it++)
+				{
+					(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+				}
+				TUnlock(m_vecLocker);
 			}
-			TUnlock(m_vecLocker);
-		}
-    }
-
-    TUnlock(m_locker);
-
-    return J_OK;
+			m_nState = JO_READ_HEAD;
+			m_asioData.ioRead.buf = (j_char_t *)&m_dataHead;
+			break;
+	}
+	m_asioData.ioRead.whole = true;
+	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	
+	TUnlock(m_locker);
 }
 
-int CJoStream::OnBroken(int nfd)
+void CJoStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
 {
     J_OS::LOGINFO("CJoStream::OnBroken");
     TLock(m_locker);
@@ -124,6 +130,4 @@ int CJoStream::OnBroken(int nfd)
     TUnlock(m_vecLocker);
 
     TUnlock(m_locker);
-
-    return J_OK;
 }

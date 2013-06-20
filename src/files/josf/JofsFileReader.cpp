@@ -103,19 +103,19 @@ int CNvrFileReader::GetContext(J_MediaContext *&mediaContext)
 
 int CNvrFileReader::GetPacket(char *pBuffer, J_StreamHeader &streamHeader)
 {
-	J_OS::LOGINFO("13");
+	//J_OS::LOGINFO("13");
 	TLock(m_locker);
-	J_OS::LOGINFO("14");
+	//J_OS::LOGINFO("14");
 	if (!m_bRun)
 	{
-		J_OS::LOGINFO("15");
+		//J_OS::LOGINFO("15");
 		TUnlock(m_locker);
-		J_OS::LOGINFO("16");
+		//J_OS::LOGINFO("16");
 		return J_UNKNOW;
 	}
-	J_OS::LOGINFO("17");
+	//J_OS::LOGINFO("17");
 	TUnlock(m_locker);
-	J_OS::LOGINFO("18");
+	//J_OS::LOGINFO("18");
 		
 	int nRet = J_OK;
 	if (m_bPaused)
@@ -180,14 +180,14 @@ int CNvrFileReader::SetPosition(int nPos)
 
 int CNvrFileReader::GetMediaData(j_uint64_t beginTime, int nIval)
 {
-	J_OS::LOGINFO("9");
+	//J_OS::LOGINFO("9");
 	TLock(m_locker);
-	J_OS::LOGINFO("10");
+	//J_OS::LOGINFO("10");
 	m_lastTime += nIval;
 	pthread_cond_signal(&m_cond);
-	J_OS::LOGINFO("11");
+	//J_OS::LOGINFO("11");
 	TUnlock(m_locker);
-	J_OS::LOGINFO("12");
+	//J_OS::LOGINFO("12");
 	
 	return J_OK;
 }
@@ -218,8 +218,8 @@ int CNvrFileReader::ListRecord(uint64_t beginTime, uint64_t endTime)
 	}
 	delete p_historyfile;
 	//测试用
-	//m_fileVec.push_back("3_20130327100136908_20130327100338003.josf");
-	//m_fileVec.push_back("3_20130327100629504_20130327100830028.josf");
+	//m_fileVec.push_back("3_20130527113757533_20130527114000051.josf");
+	//m_fileVec.push_back("3_20130527125825086_20130527130026235.josf");
 
 	return J_OK;
 }
@@ -370,9 +370,9 @@ void CNvrFileReader::OnWork()
 			usleep(1000);
 			continue;
 		}
-		J_OS::LOGINFO("1");
+		//J_OS::LOGINFO("1");
 		TLock(m_locker);
-		J_OS::LOGINFO("2");
+		//J_OS::LOGINFO("2");
 		if (m_pFileId == NULL || ftell(m_pFileId) >= m_fileEnd)
 		{
 			nRet = OpenFile();
@@ -381,9 +381,9 @@ void CNvrFileReader::OnWork()
 				//未处理
 				J_OS::LOGINFO("CNvrFileReader::OnWork() error %d", nRet);
 				m_bRun = false;
-				J_OS::LOGINFO("3");
+				//J_OS::LOGINFO("3");
 				TUnlock(m_locker);
-				J_OS::LOGINFO("4");
+				//J_OS::LOGINFO("4");
 				break;
 			}
 		}
@@ -394,9 +394,9 @@ void CNvrFileReader::OnWork()
 			nReadLen = fread(&m_nextHeader, 1, sizeof(m_nextHeader), m_pFileId);
 			if (nReadLen == 0)
 			{
-				J_OS::LOGINFO("5");
+				//J_OS::LOGINFO("5");
 				TUnlock(m_locker);
-				J_OS::LOGINFO("6");
+				//J_OS::LOGINFO("6");
 				continue;
 			}
 			m_bGoNext = false;
@@ -415,9 +415,9 @@ void CNvrFileReader::OnWork()
 		m_nextTimeStamp = m_nextHeader.timeStamp;
 		streamHeader = m_nextHeader;
 		nReadLen = fread(m_pBuffer, 1, streamHeader.dataLen, m_pFileId);
-		J_OS::LOGINFO("7");
+		//J_OS::LOGINFO("7");
 		TUnlock(m_locker);
-		J_OS::LOGINFO("8");
+		//J_OS::LOGINFO("8");
 		
 		m_buffer->PushBuffer(m_pBuffer, streamHeader);
 		m_lastTime -= 40;

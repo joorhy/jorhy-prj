@@ -13,14 +13,14 @@ public:
 
 public:
 	///J_Client
-	virtual int Process(int nIoType);
+	virtual int Process(J_AsioDataBase &asioData);
 	virtual int Clearn();
 	virtual int Run(bool bFlag);
 	///J_VideoClient
 	virtual const char *GetResid() const;
 	
 public: 
-	int OnWriteData();
+	int OnWriteData(J_AsioDataBase &asioData);
 
 private:
 	//实时视频
@@ -46,22 +46,6 @@ private:
 	j_int64_t m_nextFrameTime;
 	j_int64_t m_lastFrameTime;
 	j_uint32_t m_lastFrameNum;
-};
-
-class CRealTask : public J_Task
-{
-	public:
-		CRealTask() { m_pParam = NULL; }
-		~CRealTask() {}
-		/// J_Task
-		virtual int Run()
-		{
-			CRealMediaObj *pRealMedia = static_cast<CRealMediaObj *>(m_pParam);
-			if (pRealMedia)
-				pRealMedia->OnWriteData();
-				
-			return 0;
-		}
 };
 
 #endif //~__REALMEDIAOBJ_H_

@@ -40,6 +40,11 @@ int CSonyStream::Startup()
     m_bStartup = true;
     CRdAsio::Instance()->Init();
     CRdAsio::Instance()->AddUser(m_nSocket, this);
+	m_asioData.ioUser = this;
+	m_asioData.ioRead.buf = m_pRecvBuff;
+	m_asioData.ioRead.bufLen = RECV_SIZE;
+	m_asioData.ioRead.whole = false;
+	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Startup Startup this = %d", this);
 
@@ -60,63 +65,40 @@ int CSonyStream::Shutdown()
 	return J_OK;
 }
 
-int CSonyStream::OnRead(int nfd)
+void CSonyStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 {
     if (!m_bStartup)
     {
         J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket);
-        return J_SOCKET_ERROR;
+        return;
     }
 
     TLock(m_locker);
 	J_StreamHeader streamHeader = {0};
-    int	nLen = recv(nfd, m_pRecvBuff, RECV_SIZE, 0);
-    if (nLen < 0)
-    {
-        J_OS::LOGERROR("CSonyStream::OnRead recv data error");
-		streamHeader.frameType = jo_media_broken;
-		TLock(m_vecLocker);
-		std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-		for (; it != m_vecRingBuffer.end(); it++)
+	m_parser.InputData(asioData.ioRead.buf, asioData.ioRead.finishedLen);
+	j_result_t nResult = 0;
+	do
+	{
+		nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
+		if (nResult == J_OK)
 		{
-			//J_OS::LOGINFO("begin %lld,%lld", streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
-			//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
-			(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+			TLock(m_vecLocker);
+			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+			for (; it != m_vecRingBuffer.end(); it++)
+			{
+				//J_OS::LOGINFO("begin %lld,%lld", streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
+				//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
+				(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+			}
+			TUnlock(m_vecLocker);
 		}
-		TUnlock(m_vecLocker);
-        TUnlock(m_locker);
-        return J_SOCKET_ERROR;
-    }
-
-    if (nLen > 0)
-    {
-        m_parser.InputData(m_pRecvBuff, nLen);
-        int nRet = 0;
-        do
-        {
-            nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
-            if (nRet == J_OK)
-            {
-                TLock(m_vecLocker);
-                std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-                for (; it != m_vecRingBuffer.end(); it++)
-                {
-                    //J_OS::LOGINFO("begin %lld,%lld", streamHeader.timeStamp, CTime::Instance()->GetLocalTime(0));
-                    //J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
-                    (*it)->PushBuffer(m_pRecvBuff, streamHeader);
-                }
-                TUnlock(m_vecLocker);
-            }
-        }
-        while (nRet == J_OK);
-    }
+	}
+	while (nResult == J_OK);
 
     TUnlock(m_locker);
-
-    return J_OK;
 }
 
-int CSonyStream::OnBroken(int nfd)
+void CSonyStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
 {
     J_OS::LOGINFO("CSonyStream::OnBroken");
     TLock(m_locker);
@@ -134,6 +116,4 @@ int CSonyStream::OnBroken(int nfd)
     TUnlock(m_vecLocker);
 
     TUnlock(m_locker);
-
-    return J_OK;
 }

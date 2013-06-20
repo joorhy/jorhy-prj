@@ -12,7 +12,7 @@ public:
 
 public:
 	///J_Client
-	virtual int Process(int nIoType);
+	virtual int Process(J_AsioDataBase &asioData);
 	virtual int Clearn();
 	virtual int Run(bool bFlag);
 
@@ -24,7 +24,7 @@ private:
 	int SetTime();
 	int SetScale();
 	int ReadData();
-	int WriteData();
+	int WriteData(J_AsioDataBase &asioData);
 
 private:
 	j_socket_t m_nSocket;

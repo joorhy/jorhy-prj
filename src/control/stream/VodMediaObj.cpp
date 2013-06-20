@@ -36,13 +36,13 @@ CVodMediaObj::~CVodMediaObj()
 	J_OS::LOGINFO("CVodMediaObj::~CVodMediaObj destroyed socket =  %d", m_nSocket);
 }
 
-int CVodMediaObj::Process(int nIoType)
+int CVodMediaObj::Process(J_AsioDataBase &asioData)
 {
 	int nRet = J_OK;
 	J_CommandFilter *videoCommand = dynamic_cast<J_CommandFilter *>(m_pObj);
 	if (videoCommand != NULL)
 	{
-		if (nIoType == jo_io_read)
+		if (asioData.ioCall == J_AsioDataBase::j_read_e)
 		{
 			m_resid = videoCommand->GetResid();
 			switch(videoCommand->GetCommandType())
@@ -62,16 +62,16 @@ int CVodMediaObj::Process(int nIoType)
 				nRet = SetScale();
 				break;
 			case jo_read_data:
-				nRet = ReadData();
+				//nRet = ReadData();
 				break;
 			default:
 				J_OS::LOGINFO("CVodMediaObj::Process CommandType unkown type =  %d", videoCommand->GetCommandType());
 				break;
 			}
 		}
-		else if (nIoType == jo_io_write)
+		else if (asioData.ioCall == J_AsioDataBase::j_write_e)
 		{
-			nRet = WriteData();
+			nRet = WriteData(asioData);
 		}
 	}
 
@@ -185,10 +185,16 @@ int CVodMediaObj::ReadData()
 	return J_OK;
 }
 
-int CVodMediaObj::WriteData()
+int CVodMediaObj::WriteData(J_AsioDataBase &asioData)
 {
 	if (!m_bStart)
+	{
+		asioData.ioWrite.buf = m_pConvetBuff;
+		asioData.ioWrite.bufLen = 0;
+		asioData.ioWrite.whole = true;
+		asioData.ioCall = J_AsioDataBase::j_write_e;
 		return J_OK;
+	}
 
 	int nRet = J_OK;
 	memset(&m_streamHeader, 0, sizeof(m_streamHeader));
@@ -210,17 +216,20 @@ int CVodMediaObj::WriteData()
 					if (m_streamHeader.frameType == jo_video_i_frame)
 						m_lastFrameNum = m_streamHeader.frameNum;
 
-					if (m_sendSocket.Write_n(m_pConvetBuff, (uint32_t)nDataLen) < 0)
-					{
-						J_OS::LOGINFO("CVodMediaObj::Process FILE_PALY error");
-						return J_SOCKET_ERROR;
-					}
+					asioData.ioWrite.buf = m_pConvetBuff;
+					asioData.ioWrite.bufLen = nDataLen;
+					asioData.ioWrite.whole = true;
+					asioData.ioCall = J_AsioDataBase::j_write_e;
 				}
 				m_nextFrameTime = 0;
 			}
 			else
 			{
 				m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
+				asioData.ioWrite.buf = m_pConvetBuff;
+				asioData.ioWrite.bufLen = 0;
+				asioData.ioWrite.whole = true;
+				usleep(1000);
 				return J_OK;
 			}
 		}
@@ -232,6 +241,9 @@ int CVodMediaObj::WriteData()
 	}
 	else
 	{
+		asioData.ioWrite.buf = m_pConvetBuff;
+		asioData.ioWrite.bufLen = 0;
+		asioData.ioWrite.whole = true;
 		usleep(1000);
 	}
 	return nRet;

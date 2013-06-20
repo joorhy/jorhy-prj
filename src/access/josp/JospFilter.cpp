@@ -11,6 +11,7 @@ CJospFilter::CJospFilter()
 	m_muxFilter = NULL;
 	m_nRetLen = 0;
 	m_pRetBuff = new char[1024];
+	m_state = J_JOSP_HEAD;
 	memset(m_strResid, 0, sizeof(m_strResid));
 	J_OS::LOGINFO("CJospFilter::CJospFilter()");
 }
@@ -26,79 +27,91 @@ CJospFilter::~CJospFilter()
 	J_OS::LOGINFO("CJospFilter::~CJospFilter()");
 }
 
-int CJospFilter::Parser(j_socket_t nSocket)
+int CJospFilter::Parser(J_AsioDataBase &asioData)
 {
-	J_OS::CTCPSocket readSocket(nSocket);
-	J_CtrlHead ctrlHead = {0};
-	int read_ret = readSocket.Read_n((char *)&ctrlHead, sizeof(J_CtrlHead));
-	if (read_ret < 0)
-		return J_SOCKET_ERROR;
-	
-	switch (ctrlHead.cmd)
+	if (m_state == J_JOSP_HEAD)
 	{
-		case jo_open_stream_req:
-			{
-				J_RealViewData realViewData = {0};
-				read_ret = readSocket.Read_n((char *)&realViewData, sizeof(J_RealViewData));
-				if (read_ret < 0)
-					return J_SOCKET_ERROR;
-					
+		J_CtrlHead *pCtrlHead = (J_CtrlHead *)asioData.ioRead.buf;
+		switch (pCtrlHead->cmd)
+		{
+			case jo_open_stream_req:
 				m_nCommandType = jo_start_real;
-				m_nStreamType = ntohl(realViewData.stream_type);
-				memcpy(m_strResid, realViewData.res_id, strlen(realViewData.res_id));
-				
-				CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
-				J_RealViewRetData *pRetData = (J_RealViewRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
-				memcpy(pRetData->media_code, "JOMS", 4);
-				pRetData->i_frame_ival = 30;
-				pRetData->fps = 25;
-				pRetData->width = 1280;
-				pRetData->height = 960;
-				
-				m_nRetLen = sizeof(J_CtrlHead) + sizeof(J_RealViewRetData);
-			}
-			break;
-		case jo_open_file_req:
-			{
-				J_VodPlayData vodPlayData = {0};
-				read_ret = readSocket.Read_n((char *)&vodPlayData, sizeof(J_VodPlayData));
-				if (read_ret < 0)
-					return J_SOCKET_ERROR;
-					
+				asioData.ioRead.bufLen = sizeof(J_RealViewData);
+				asioData.ioRead.whole = true;
+				break;
+			case jo_open_file_req:
 				m_nCommandType = jo_start_vod;
 				m_mode = jo_push_mode;
-				m_beginTime = ntohl(vodPlayData.begin_time);
-				m_endTime = ntohl(vodPlayData.end_time);
-				memcpy(m_strResid, vodPlayData.res_id, strlen(vodPlayData.res_id));
-				
-				CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_file_rep, sizeof(J_VodPlayRetData));
-				J_VodPlayRetData *pRetData = (J_VodPlayRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
-				memcpy(pRetData->media_code, "JOMS", 4);
-				pRetData->i_frame_ival = 30;
-				pRetData->fps = 25;
-				pRetData->width = 1280;
-				pRetData->height = 960;
-				
-				m_nRetLen = sizeof(J_CtrlHead) + sizeof(J_VodPlayRetData);
-			}
-			break;
-		case jo_req_data_req:
-			{
-				J_RequestData requestData = {0};
-				read_ret = readSocket.Read_n((char *)&requestData, sizeof(J_RequestData));
-				if (read_ret < 0)
-					return J_SOCKET_ERROR;
-					
+				asioData.ioRead.bufLen = sizeof(J_VodPlayData);
+				asioData.ioRead.whole = true;
+				break;
+			case jo_req_data_req:
 				m_nCommandType = jo_read_data;
-				m_beginTime = ntohl(requestData.begin_time);
-				m_endTime = m_beginTime + ntohl(requestData.time_ival);
-				
-				CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_req_data_rep, 0);
-				m_nRetLen = 0;//sizeof(J_CtrlHead);
-			}
-			break;
+				asioData.ioRead.bufLen = sizeof(J_RequestData);
+				asioData.ioRead.whole = true;					
+				break;
+		}
+		m_state = J_JOSP_DATA;
+		return J_NOT_COMPLATE;
 	}
-
+	else if (m_state == J_JOSP_DATA)
+	{
+		switch (m_nCommandType)
+		{
+			case jo_start_real:
+				{
+					J_RealViewData *pRealViewData = (J_RealViewData *)asioData.ioRead.buf;
+					m_nStreamType = ntohl(pRealViewData->stream_type);
+					memcpy(m_strResid, pRealViewData->res_id, strlen(pRealViewData->res_id));
+					
+					CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
+					J_RealViewRetData *pRetData = (J_RealViewRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
+					memcpy(pRetData->media_code, "JOMS", 4);
+					pRetData->i_frame_ival = 30;
+					pRetData->fps = 25;
+					pRetData->width = 1280;
+					pRetData->height = 960;
+					
+					asioData.ioRead.bufLen = sizeof(J_CtrlHead);
+					asioData.ioRead.whole = true;
+					
+					m_nRetLen = sizeof(J_CtrlHead) + sizeof(J_RealViewRetData);
+				}
+				break;
+			case jo_start_vod:
+				{
+					J_VodPlayData *pVodPlayData = (J_VodPlayData *)asioData.ioRead.buf;
+					m_beginTime = ntohl(pVodPlayData->begin_time);
+					m_endTime = ntohl(pVodPlayData->end_time);
+					memcpy(m_strResid, pVodPlayData->res_id, strlen(pVodPlayData->res_id));
+					
+					CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_file_rep, sizeof(J_VodPlayRetData));
+					J_VodPlayRetData *pRetData = (J_VodPlayRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
+					memcpy(pRetData->media_code, "JOMS", 4);
+					pRetData->i_frame_ival = 30;
+					pRetData->fps = 25;
+					pRetData->width = 1280;
+					pRetData->height = 960;
+					
+					m_nRetLen = sizeof(J_CtrlHead) + sizeof(J_VodPlayRetData);
+				}
+				break;
+			case jo_read_data:
+				{
+					J_RequestData *pRequestData = (J_RequestData *)asioData.ioRead.buf;
+					m_beginTime = ntohl(pRequestData->begin_time);
+					m_endTime = m_beginTime + ntohl(pRequestData->time_ival);
+					
+					CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_req_data_rep, 0);
+					m_nRetLen = 0;
+				}		
+				break;
+		}
+		m_state = J_JOSP_HEAD;
+	}
+	//if (m_nCommandType == jo_start_vod)
+	//	return J_WIAT_NEXT_CMD;
+		
 	m_muxFilter = CMuxFactory::Instance()->GetMux(this, "jos");
 
 	return J_OK;
@@ -117,14 +130,14 @@ int CJospFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, c
 	return m_muxFilter->Convert((const char *)pInputData, streamHeader, pOutputData, nOutLen, (void *)&RATE);
 }
 
-int CJospFilter::Complete(j_socket_t nSocket)
+int CJospFilter::Complete(J_AsioDataBase &asioData)
 {
-	J_OS::CTCPSocket writeSocket(nSocket);
-	if (writeSocket.Write_n((char *)m_pRetBuff, m_nRetLen) < 0)
-	{
-		J_OS::LOGERROR("CJospFilter::Complete Send Header error");
-		return J_SOCKET_ERROR;
-	}
+	j_result_t nResult = J_OK;
+	asioData.ioWrite.buf = m_pRetBuff;
+	asioData.ioWrite.bufLen = m_nRetLen;
+	asioData.ioWrite.whole = true;
+	//if (m_nCommandType == jo_start_vod)
+	//	nResult = J_WIAT_NEXT_CMD;
 
-	return J_OK;
+	return nResult;
 }

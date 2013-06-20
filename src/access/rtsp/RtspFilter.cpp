@@ -104,6 +104,9 @@ CRtspFilter::CRtspFilter()
 	m_protocolStatus = J_ProUnReady;
 	m_video_ssrc = 10000UL;
 	m_audio_ssrc = 20000UL;
+	
+	memset(m_read_buff, 0, sizeof(m_read_buff));
+	m_read_len = 0;
 
 	memset(m_strResid, 0, sizeof(m_strResid));
 }
@@ -114,29 +117,20 @@ CRtspFilter::~CRtspFilter()
 		CMuxFactory::Instance()->DelMux(this);
 }
 
-int CRtspFilter::Parser(j_socket_t nSocket)
+int CRtspFilter::Parser(J_AsioDataBase &asioData)
 {
-	J_OS::CTCPSocket readSocket(nSocket);
-	char read_buff[1024] = {0};
-	int read_ret = 0;
-	int totle_recv = 0;
-	do
+	memcpy(m_read_buff + m_read_len, asioData.ioRead.buf, asioData.ioRead.finishedLen);
+	if (strstr(m_read_buff, rtsp_end) == NULL)
 	{
-		read_ret = readSocket.Read(read_buff + totle_recv, sizeof(read_buff));
-		if (read_ret < 0)
-		{
-			return J_SOCKET_ERROR;
-		}
-		if (strstr(read_buff, "RTSP") == NULL)
-			return J_UNKNOW;
-
-		totle_recv += read_ret;
-	} while(strstr(read_buff, rtsp_end) == NULL);
-	
-	ParserUri(read_buff);
+		m_read_len += asioData.ioRead.finishedLen;
+		asioData.ioRead.bufLen = 1024;
+		asioData.ioRead.whole = false;
+		return J_NOT_COMPLATE;
+	}
+	ParserUri(m_read_buff);
 	
 	char send_buff[2048] = {0};
-	switch (ParserHeaders(read_buff))
+	switch (ParserHeaders(m_read_buff))
 	{
 	case RTSP_OPTIONS:
 		sprintf(send_buff, ret_options, m_nCseq);
@@ -161,7 +155,7 @@ int CRtspFilter::Parser(j_socket_t nSocket)
 	case RTSP_PLAY:
 		return J_OK;
 	}
-	readSocket.Write_n(send_buff, strlen(send_buff));
+	//readSocket.Write_n(send_buff, strlen(send_buff));
 
 	return J_NOT_COMPLATE;
 }
@@ -225,12 +219,13 @@ int CRtspFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, c
 	return J_OK;
 }
 
-int CRtspFilter::Complete(j_socket_t nSocket)
+int CRtspFilter::Complete(J_AsioDataBase &asioData)
 {
-	J_OS::CTCPSocket writeSocket(nSocket);
-	char send_buff[1024] = {0};
-	sprintf(send_buff, ret_play, m_nCseq, this, m_content_base, m_content_base);
-	writeSocket.Write_n(send_buff, strlen(send_buff));
+	memset(m_send_buff, 0, sizeof(m_send_buff));
+	sprintf(m_send_buff, ret_play, m_nCseq, this, m_content_base, m_content_base);
+	asioData.ioWrite.buf = m_send_buff;
+	asioData.ioWrite.bufLen = strlen(m_send_buff);
+	asioData.ioWrite.whole = true;
 	
 	return J_OK;
 }

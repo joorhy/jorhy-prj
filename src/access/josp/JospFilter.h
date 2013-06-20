@@ -19,15 +19,21 @@ class CJospFilter : public J_RequestFilter
 
 	public:
 		///J_ProtocolFilter
-		virtual int Parser(j_socket_t nSocket);
+		virtual int Parser(J_AsioDataBase &asioData);
 		const char *GetResourceType();
 		virtual int Convert(const j_char_t *pInputData, J_StreamHeader &streamHeader, j_char_t *pOutputData, j_int32_t &nOutLen);
-		virtual int Complete(j_socket_t nSocket);
+		virtual int Complete(J_AsioDataBase &asioData);
 		
 	private:
+		enum
+		{
+			J_JOSP_HEAD = 1,
+			J_JOSP_DATA
+		};
 		J_MuxFilter *m_muxFilter;
-		int m_nRetLen;
-		char *m_pRetBuff;
+		j_int32_t m_nRetLen;
+		j_char_t *m_pRetBuff;
+		j_int32_t m_state;
 };
 
 FILTER_BEGIN_MAKER(http)

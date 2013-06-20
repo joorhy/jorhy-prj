@@ -6,46 +6,49 @@
 #include "x_lock.h"
 #include "x_msg_queue.h"
 #include "x_media_msg.h"
+#include "x_asio.h"
 
 #include <map>
 #include <string>
 
 #define IS_CLOSE_CMD(x)	(jo_stop_real == (x) || jo_stop_vod == (x) || jo_stop_voice == (x))
 
-class CStreamManager : public CXService<CStreamManager>
+class CStreamManager : public J_AsioUser
 {
 	public:
 		CStreamManager();
 		~CStreamManager();
 
 	public:
-		///CXService
-		virtual int OnAccept(j_socket_t nSocket, const char *pAddr, short nPort);
-		virtual int OnRead(j_socket_t nSocket);
-		virtual int OnWrite(j_socket_t nSocket);
-		virtual int OnBroken(j_socket_t nSocket);
-		virtual j_socket_t GetSocketByResid(const char *pResid);
+		///AsioUser
+		virtual void OnAccept(const J_AsioDataBase &asioData, int nRet);
+		virtual void OnRead(const J_AsioDataBase &asioData, int nRet);
+		virtual void OnWrite(const J_AsioDataBase &asioData, int nRet);
+		virtual void OnBroken(const J_AsioDataBase &asioData, int nRet);
 
 		///CStreamManager
 		int StartService(int nPort, const char *pType);
 		int StopService();
 
 	private:
-		int ParserRequest(j_socket_t nSocket, J_MediaObj *pClient);
-		int ProcessCommand(j_socket_t nSocket, J_Obj *pObj, J_MediaObj *pClient);
-		static void OnMessage(void *user, BaseMessage *pMessage)
-		{
-			(static_cast<CStreamManager *>(user))->ProcMessage(pMessage);
-		}
-		void ProcMessage(BaseMessage *pMessage);
+		int ParserRequest(const J_AsioDataBase &asioData, J_MediaObj *pClient);
+		int ProcessCommand(const J_AsioDataBase &asioData, J_Obj *pObj, J_MediaObj *pClient);
 
-	private:
-		std::map<j_socket_t, J_MediaObj *> m_clientMap;			//socket 与 Client对象的映射关系
+private:
+	struct ClientInfo
+	{
+		J_AsioDataBase *pAsioData;
+		J_MediaObj *pObj;
+	};
+	typedef std::map<j_asio_handle, ClientInfo> ClientMap;
+	ClientMap m_clientMap;			//socket 与 Client对象的映射关系
 
-		typedef std::map<std::string, std::vector<j_socket_t> >  ResidMap;
-		ResidMap m_residMap;
-		std::vector<j_socket_t> m_vecClient;						//存放所有相同Resid请求的socket
-		std::string m_serviceType;
+	typedef std::map<std::string, std::vector<j_socket_t> >  ResidMap;
+	ResidMap m_residMap;
+	std::vector<j_socket_t> m_vecClient;						//存放所有相同Resid请求的socket
+	std::string m_serviceType;
+	j_socket_t m_socket;
+	J_AsioDataBase m_asioData;
 };
 
 #endif // ~__STREAMMANAGER_H_

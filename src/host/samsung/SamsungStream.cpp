@@ -41,6 +41,11 @@ j_result_t CSamsungStream::Startup()
     m_bStartup = true;
     CRdAsio::Instance()->Init();
     CRdAsio::Instance()->AddUser(m_nSocket, this);
+	m_asioData.ioUser = this;
+	m_asioData.ioRead.buf = m_pRecvBuff;
+	m_asioData.ioRead.bufLen = RECV_SIZE;
+	m_asioData.ioRead.whole = false;
+	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
     TUnlock(m_locker);
 
     J_OS::LOGINFO("CSamsungStream::Startup Startup this = %d", this);
@@ -63,53 +68,40 @@ j_result_t CSamsungStream::Shutdown()
     return J_OK;
 }
 
-j_result_t CSamsungStream::OnRead(j_int32_t nfd)
+void CSamsungStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 {
     if (!m_bStartup)
     {
         J_OS::LOGINFO("CSamsungStream:: !m_bStartup socket = %d", m_nSocket);
-        return J_SOCKET_ERROR;
+        return;
     }
 
     TLock(m_locker);
-    //int	nLen = ((J_OS::CTCPSocket *)m_pTCPSocket)->Read(m_pRecvBuff, RECV_SIZE);
-    j_int32_t	nLen = recv(nfd, m_pRecvBuff, RECV_SIZE, 0);
-    if (nLen < 0)
-    {
 
-        J_OS::LOGERROR("CSamsungStream::OnRead recv data error");
-        TUnlock(m_locker);
-        return J_SOCKET_ERROR;
-    }
+	m_parser.InputData(asioData.ioRead.buf, asioData.ioRead.finishedLen);
+	j_result_t nResult = 0;
+	do
+	{
+		J_StreamHeader streamHeader;
+		nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
+		if (nResult == J_OK)
+		{
+			TLock(m_vecLocker);
+			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
+			for (; it != m_vecRingBuffer.end(); it++)
+			{
+				//J_OS::LOGINFO("streamHeader > 0 socket = %d", m_nSocket);
+				(*it)->PushBuffer(m_pRecvBuff, streamHeader);
+			}
+			TUnlock(m_vecLocker);
+		}
+	}
+	while (nResult == J_OK);
 
-    if (nLen > 0)
-    {
-        m_parser.InputData(m_pRecvBuff, nLen);
-        j_result_t nRet = 0;
-        do
-        {
-            J_StreamHeader streamHeader;
-            nRet = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
-            if (nRet == J_OK)
-            {
-                TLock(m_vecLocker);
-                std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
-                for (; it != m_vecRingBuffer.end(); it++)
-                {
-                    //J_OS::LOGINFO("streamHeader > 0 socket = %d", m_nSocket);
-                    (*it)->PushBuffer(m_pRecvBuff, streamHeader);
-                }
-                TUnlock(m_vecLocker);
-            }
-        }
-        while (nRet == J_OK);
-    }
     TUnlock(m_locker);
-
-    return J_OK;
 }
 
-j_result_t CSamsungStream::OnBroken(j_int32_t nfd)
+void CSamsungStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
 {
     J_OS::LOGERROR("CSamsungStream::OnBroken");
     TLock(m_locker);
@@ -127,6 +119,4 @@ j_result_t CSamsungStream::OnBroken(j_int32_t nfd)
     TUnlock(m_vecLocker);
 
     TUnlock(m_locker);
-
-    return J_OK;
 }

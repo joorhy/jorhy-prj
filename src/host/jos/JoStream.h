@@ -19,27 +19,29 @@ public:
 	virtual int Startup();
 	virtual int Shutdown();
     ///AsioUser
-    virtual int OnAccept(int nfd)
-    {
-        return J_OK;
-    }
-    virtual int OnRead(int nfd);
-    virtual int OnWrite(int nfd)
-    {
-        return J_OK;
-    }
-    virtual int OnBroken(int nfd);
+	virtual void OnAccept(const J_AsioDataBase &asioData, int nRet) {}
+	virtual void OnRead(const J_AsioDataBase &asioData, int nRet);
+	virtual void OnWrite(const J_AsioDataBase &asioData, int nRet) {}
+	virtual void OnBroken(const J_AsioDataBase &asioData, int nRet);
 
 private:
+	enum 
+	{
+		JO_READ_HEAD = 1,
+		JO_READ_DATA,
+	};
 	j_socket_t m_nSocket;
-	bool m_bStartup;
-	char *m_pRecvBuff;//[100 * 1024];
+	j_boolean_t m_bStartup;
+	j_char_t *m_pRecvBuff;//[100 * 1024];
 	void *m_pTCPSocket;
 
 	//CJoParser m_parser;
-	std::string m_resid;
+	j_string_t m_resid;
 
 	J_OS::TLocker_t m_locker;
+	J_AsioDataBase m_asioData;
+	j_int32_t m_nState;
+	J_DataHead m_dataHead;
 };
 
 #endif //~__JOSTREAM_H_
