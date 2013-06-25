@@ -9,7 +9,7 @@
 class CStreamRecordBase 
 {};
 
-class CStreamRecord : public J_BaseAdapter<CStreamRecordBase>
+class JO_API CStreamRecord : public J_BaseAdapter<CStreamRecordBase>
 {
 public:
 	CStreamRecord();

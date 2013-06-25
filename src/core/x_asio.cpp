@@ -6,11 +6,17 @@
 CRdAsio::CRdAsio(int)
 {
 	m_bStarted = false;
+#ifdef WIN32
+	WSADATA wsaData; 
+	WSAStartup(MAKEWORD(2,2), &wsaData);
+#endif
 }
 
 CRdAsio::~CRdAsio()
 {
-
+#ifdef WIN32
+	WSACleanup();
+#endif
 }
 
 int CRdAsio::Init()
@@ -18,9 +24,12 @@ int CRdAsio::Init()
 	if (!m_bStarted)
 	{
 #ifdef WIN32
-		FD_ZERO(&m_fdSet); 
-		m_timeout.tv_sec = 1;
-		m_timeout.tv_usec = 0;
+		m_hCompletionPort = INVALID_HANDLE_VALUE;
+		if ((m_hCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0)) == NULL)
+		{
+			J_OS::LOGINFO( "CRdAsio::Init() CreateIoCompletionPort failed with error: %d\n", GetLastError());
+			return J_SOCKET_ERROR;
+		} 
 #else
 		m_epoll_fd = 0;
 		m_epoll_fd = epoll_create(JO_MAX_ASIOSIZE);
@@ -42,7 +51,11 @@ void CRdAsio::Deinit()
 		m_workThread.Release();
 
 #ifdef WIN32
-		FD_ZERO(&m_fdSet); 
+		if (m_hCompletionPort != INVALID_HANDLE_VALUE)
+		{
+			CloseHandle(m_hCompletionPort);
+			m_hCompletionPort = INVALID_HANDLE_VALUE;
+		}
 #else
 		if (m_epoll_fd != 0)
 		{
@@ -61,11 +74,16 @@ int CRdAsio::Listen(J_AsioDataBase *pAsioData)
 		j_socket_t nSocket;
 		nSocket.sock = socket(AF_INET, SOCK_STREAM, 0);
 		int retval;
-		setsockopt(nSocket.sock, SOL_SOCKET, SO_REUSEADDR, &retval, sizeof(int));
+		setsockopt(nSocket.sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&retval, sizeof(int));
 		J_OS::CTCPSocket tcpSocket;
 		if (tcpSocket.Listen(nSocket, pAsioData->ioAccept.peerPort, 1024, false) != J_OK)
 			return J_UNKNOW;
-			
+#ifdef WIN32
+		j_thread_parm parm = {0};
+		parm.entry = CRdAsio::ListenThread;
+		parm.data = this;
+		m_workThread.Create(parm);
+#else
 		m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
 		m_evListen.data.fd = nSocket.sock;
 
@@ -75,6 +93,7 @@ int CRdAsio::Listen(J_AsioDataBase *pAsioData)
 			return J_UNKNOW;
 		}
 		m_listenMap[nSocket] = pAsioData;
+#endif
 	}
 
 	TUnlock(m_listen_locker);
@@ -85,7 +104,11 @@ int CRdAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 {
 	TLock(m_user_locker);
 #ifdef WIN32
-	FD_SET(nSocket.sock, &m_fdSet);
+	if (CreateIoCompletionPort((HANDLE)nSocket.sock, m_hCompletionPort, (DWORD)&nSocket, 0) == NULL)
+	{
+		J_OS::LOGINFO("CRdAsio::AddUser CreateIoCompletionPort failed with error %d\n", GetLastError());
+		return J_SOCKET_ERROR;
+	} 
 #else
 	m_evAsio.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP;
 	m_evAsio.data.fd = nSocket.sock;
@@ -109,6 +132,11 @@ void CRdAsio::DelUser(j_socket_t nSocket)
 {
 	TLock(m_user_locker);
 #ifdef WIN32
+	if (CreateIoCompletionPort((HANDLE)nSocket.sock, NULL, NULL, 0) == NULL)
+	{
+		J_OS::LOGINFO("CRdAsio::DelUser CreateIoCompletionPort failed with error %d\n", GetLastError());
+		return;
+	} 
 #else
 	m_evAsio.events = EPOLLIN | EPOLLRDHUP;
 	m_evAsio.data.fd = nSocket.sock;
@@ -125,6 +153,36 @@ void CRdAsio::DelUser(j_socket_t nSocket)
 void CRdAsio::OnWork()
 {
 #ifdef WIN32
+	DWORD dwBytesTransferred;
+	LPOVERLAPPED Overlapped;
+	j_socket_t *pPerHandleData;
+	J_AsioDataBase *pPerIoData;        
+	DWORD SendBytes, RecvBytes;
+	DWORD Flags;
+	while (m_bStarted)
+	{
+		if (GetQueuedCompletionStatus(m_hCompletionPort, &dwBytesTransferred, (LPDWORD)&pPerHandleData, (LPOVERLAPPED *)&pPerIoData, INFINITE) == 0)
+		{
+			J_OS::LOGINFO("CRdAsio::OnWork GetQueuedCompletionStatus failed with error %d\n", GetLastError());
+			ProcessIoEvent(*pPerHandleData, J_AsioDataBase::j_disconnect_e);
+		}
+		// 检查数据传送完了吗
+		if (dwBytesTransferred == 0)
+		{
+			ProcessIoEvent(*pPerHandleData, J_AsioDataBase::j_disconnect_e);
+			continue;
+		}  
+		if (pPerIoData->ioCall == J_AsioDataBase::j_read_e)
+		{
+			//read
+			ProcessIoEvent(*pPerHandleData, J_AsioDataBase::j_read_e);
+		}
+		else if (pPerIoData->ioCall == J_AsioDataBase::j_write_e)
+		{
+			//write
+			ProcessIoEvent(*pPerHandleData, J_AsioDataBase::j_write_e);
+		}
+	}
 #else
 	int nfds = 0;
 	int i = 0;
@@ -132,7 +190,7 @@ void CRdAsio::OnWork()
 	AsioListenMap::iterator itListen;
 	struct sockaddr_in sonnAddr;
 	socklen_t connLen;
-	int connSocket;
+	j_asio_handle connSocket;
 	pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
 	while (m_bStarted)
 	{
@@ -194,6 +252,33 @@ void CRdAsio::OnWork()
 	}
 #endif
 }
+
+#ifdef WIN32
+void CRdAsio::OnListen()
+{
+	j_socket_t active_fd;
+	struct sockaddr_in sonnAddr;
+	socklen_t connLen;
+	j_asio_handle connSocket;
+	AsioListenMap::iterator itListen =  m_listenMap.begin();
+	if (itListen != m_listenMap.end())
+	{
+		while (true)
+		{
+			if ((connSocket = WSAAccept(itListen->first.sock, (struct sockaddr*)&sonnAddr, NULL, NULL, 0)) == SOCKET_ERROR)
+			{
+				J_OS::LOGINFO("CRdAsio::OnListen WSAAccept() failed with error %d\n", WSAGetLastError());
+				return;
+			} 
+			itListen->second->ioAccept.subHandle = connSocket;
+			itListen->second->ioAccept.peerIP = sonnAddr.sin_addr.s_addr;
+			itListen->second->ioAccept.peerPort = sonnAddr.sin_port;
+			active_fd.sock = connSocket;
+			ProcessAccept(active_fd, itListen->second);
+		}
+	}
+}
+#endif
 
 void CRdAsio::EnableKeepalive(j_socket_t sock)
 {

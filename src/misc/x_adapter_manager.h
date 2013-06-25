@@ -3,7 +3,7 @@
 #include "j_includes.h"
 #include "x_adapter_factory.h"
 
-class CAdapterManager : public SingletonTmpl<CAdapterManager>
+class JO_API CAdapterManager : public SingletonTmpl<CAdapterManager>
 {
 public:
 	CAdapterManager(int);

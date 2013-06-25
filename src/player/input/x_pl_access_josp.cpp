@@ -2,6 +2,7 @@
 #include "x_pl_data_def.h"
 #include "x_pl_error.h"
 #include "x_pl_default_config.h"
+#include "x_pl_log.h"
 #include <assert.h>
 #include <string>
 #include <WinSock.h>
@@ -270,12 +271,13 @@ J_PL_RESULT CXPlJospAccess::ReadBlockFile(char *OUT_buf,int &OUT_len)
 	if(!m_netWork)
 		return J_PL_NO_ERROR;
 
-	br = m_netWork->NRead((char*)&head,sizeof(head));
+	br = m_netWork->NRead((char*)&head,sizeof(JOSP_DataHead));
 	if(br == J_PL_ERROR_RECEIVE)
 		return J_PL_ERROR_ACCESS_END;
 	if(br == J_PL_ERROR_RECEIVE_TIMEOUT)
 		return J_PL_ERROR_ACCESS_ERROR;
 
+	j_pl_info("%d %d\n", ntohl(head.data_len), sizeof(JOSP_DataHead));
 	if(_strnicmp((char*)head.start_code,"JOAV",4) == 0)
 	{
 		int datalen = ntohl(head.data_len);

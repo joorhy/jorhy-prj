@@ -63,6 +63,9 @@ CTCPSocket::~CTCPSocket()
 
 	//J_OS::LOGINFO("CTCPSocket::~CTCPSocket destroyed, handle = %d", m_handle);
 	m_handle.sock = j_invalid_socket_val;
+#ifdef WIN32
+	WSACleanup();
+#endif
 }
 
 int CTCPSocket::Listen(j_uint16_t nPort, j_int32_t nListenNum, j_boolean_t bBlock)

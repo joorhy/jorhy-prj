@@ -36,6 +36,14 @@ private:
 		return 0;
 	}
 	void OnWork();
+#ifdef WIN32
+	static unsigned X_JO_API ListenThread(void *param)
+	{
+		(static_cast<CRdAsio *>(param))->OnListen();
+		return 0;
+	}
+	void OnListen();
+#endif
 	void EnableKeepalive(j_socket_t nSocket);
 	int ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData);
 	int ProcessIoEvent(j_socket_t nSocket, int nType);
@@ -57,8 +65,8 @@ private:
 
 	j_boolean_t m_bStarted;
 #ifdef WIN32
-	fd_set m_fdSet;
-	struct timeval m_timeout;
+	 HANDLE m_hCompletionPort; 
+	 CJoThread m_listenThread;
 #else
 	int m_epoll_fd;
 	struct epoll_event m_evListen;

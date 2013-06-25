@@ -3,6 +3,15 @@
 #include "x_config.h"
 #include "x_manager_factory.h"
 
+#ifdef WIN32
+int CXConfig::m_mcPort = 6004;
+char CXConfig::m_mcAddr[16];
+int CXConfig::m_ssId = 0;
+char CXConfig::m_httpUrl[64];
+char CXConfig::m_configType[32];
+std::vector<J_ServerInfo> CXConfig::m_serverVec;
+#endif
+
 extern CThreadPool g_thread_pool;
 
 #define DATA_BUFF_SIZE (1024 * 1024)
@@ -170,7 +179,7 @@ int CStreamRecord::OnRecord()
 	}
 	else 
 	{
-		usleep(1000);
+		j_sleep(1);
 	}
 
 	return J_OK;
@@ -183,7 +192,7 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 
 	J_RecordInfo recordInfo;
 	CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
-	if (((time_t)(streamHeader.timeStamp / 1000) - m_fileInfo.stime) > (int32_t)recordInfo.timeInterval
+	if (((time_t)(streamHeader.timeStamp / 1000) - m_fileInfo.stime) > (j_int32_t)recordInfo.timeInterval
         || m_nHeaderOffset + sizeof(m_frameHead) > HEAD_BUFF_SIZE)
 	{
 	    CloseFile();

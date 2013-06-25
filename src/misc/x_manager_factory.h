@@ -6,7 +6,7 @@
 
 typedef int (*J_MakeManagerFun)(J_Obj *&);
 
-class CManagerFactory : public SingletonTmpl<CManagerFactory>
+class JO_API CManagerFactory : public SingletonTmpl<CManagerFactory>
 {
 	typedef std::map<std::string, J_MakeManagerFun> ManagerRegistMap;
 	typedef std::map<std::string, J_JoManager *> ManagerMap;

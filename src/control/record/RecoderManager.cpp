@@ -4,21 +4,21 @@
 CRecoderManager::CRecoderManager(int)
 {
     m_bStart = false;
-    m_thread = 0;
-
     Init();
 }
 
 CRecoderManager::~CRecoderManager()
 {
-
     Deinit();
 }
 
 int CRecoderManager::Init()
 {
     m_bStart = true;
-    pthread_create(&m_thread, NULL, CRecoderManager::WorkThread, this);
+	j_thread_parm parm = {0};
+	parm.entry = CRecoderManager::WorkThread;
+	parm.data = this;
+	m_thread.Create(parm);
 
     m_timer.Create(5000, CRecoderManager::TimerThread, this);
 
@@ -32,8 +32,8 @@ int CRecoderManager::Deinit()
 	{
 		m_bStart = false;
 		m_timer.Destroy();
-        pthread_cancel(m_thread);
-		pthread_join(m_thread, NULL);
+		m_bStart = false;
+		m_thread.Release();
 
         J_OS::LOGINFO("CRecoderManager::StopService");
 	}
@@ -134,11 +134,11 @@ void CRecoderManager::OnWork()
     MediaMap::iterator it;
     while (m_bStart)
 	{
-		usleep(10);
+		j_sleep(10);
 	    TLock(m_locker2);
 	    if (m_mediaMap.empty())
 	    {
-	        usleep(1000);
+	        j_sleep(1000);
 	    }
 	    it = m_mediaMap.begin();
         for (;it != m_mediaMap.end(); it++)

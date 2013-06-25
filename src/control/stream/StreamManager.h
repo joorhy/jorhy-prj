@@ -2,7 +2,6 @@
 #define __STREAMMANAGER_H_
 #include "j_includes.h"
 #include "x_adapter_manager.h"
-#include "x_service.h"
 #include "x_lock.h"
 #include "x_msg_queue.h"
 #include "x_media_msg.h"

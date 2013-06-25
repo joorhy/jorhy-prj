@@ -55,7 +55,7 @@ int CVoiceIcomObj::Process(J_AsioDataBase &asioData)
 			}
 			else
 			{
-				usleep(1);
+				//usleep(1);
 				return J_DATA_NOT_READY;
 			}
 		}

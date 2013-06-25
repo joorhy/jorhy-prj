@@ -19,13 +19,13 @@ public:
 	~CXConfig();
 
 public:
-	static int Init();
-	static int GetStreamServerId() { return m_ssId; }
-	static char *GetMCServerAddr() { return m_mcAddr; }
-	static int GetMCServerPort() { return m_mcPort; }
-	static char *GetUrl() { return m_httpUrl; }
-	static char *GetConfigType() { return m_configType; }
-	static std::vector<J_ServerInfo> &GetServerInfo() { return m_serverVec; }
+	static JO_API  int Init();
+	static JO_API int GetStreamServerId() { return m_ssId; }
+	static JO_API char *GetMCServerAddr() { return m_mcAddr; }
+	static JO_API int GetMCServerPort() { return m_mcPort; }
+	static JO_API char *GetUrl() { return m_httpUrl; }
+	static JO_API char *GetConfigType() { return m_configType; }
+	static JO_API std::vector<J_ServerInfo> &GetServerInfo() { return m_serverVec; }
 
 private:
 	static char m_mcAddr[16];

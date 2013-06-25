@@ -7,7 +7,7 @@
 
 typedef int (*J_MakeFileReaderFun)(J_Obj *&, const char *pResid);
 
-class CFileReaderFactory : public SingletonTmpl<CFileReaderFactory>
+class JO_API CFileReaderFactory : public SingletonTmpl<CFileReaderFactory>
 {
 	typedef std::map<j_string_t, J_MakeFileReaderFun> FileReaderRegistMap;
 	typedef std::map<j_socket_t, J_FileReader *> FileReaderMap;

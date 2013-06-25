@@ -144,7 +144,7 @@ int CRealMediaObj::OnWriteData(J_AsioDataBase &asioData)
 			asioData.ioWrite.buf = NULL;
 			asioData.ioWrite.bufLen = 0;
 			asioData.ioWrite.whole = false;
-			usleep(1);
+			//usleep(1);
 			return J_OK;
 		}
 	}

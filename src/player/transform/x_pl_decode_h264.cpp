@@ -95,9 +95,7 @@ int CXPlDecodeH264::CopyData(AVFrame *frame,char *OUT_buf,int *OUT_len)
 		len		+= width;
 		pYuvData+= frame->linesize[0];
 		OUT_buf += width;
-
 	}
-	
 
 	pYuvData = frame->data[1];
 	height = m_pContext->height / 2;

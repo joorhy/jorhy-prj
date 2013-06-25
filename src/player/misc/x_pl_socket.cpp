@@ -46,6 +46,7 @@ J_PL_RESULT J_PlSocket::NRead(char *OUT_pBuff, int nLen)
 	int timeout = 0;
 	int error;
 
+	j_pl_error("nTotleLen = %d\n",nTotleLen);
 	while (nTotleLen > 0)
 	{
 		int nRet  = 0;

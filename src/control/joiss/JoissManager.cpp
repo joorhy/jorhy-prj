@@ -47,7 +47,7 @@ const j_char_t *CJoissManager::GetResList()
 	pXmlDoc->LinkEndChild(pRootElement);
 	pRootElement->SetAttribute("id", "0");
 	pRootElement->SetAttribute("ipAddr", "192.168.1.106");
-	pRootElement->SetAttribute("desc", "视频主目录");
+	pRootElement->SetAttribute("desc", "");
 	TiXmlElement *pChannelElement = NULL;
 
 	if (sqlite3_get_table(m_sqlite, sql_buff, &dbResult, &nRow, &nColumn, NULL) == SQLITE_OK)

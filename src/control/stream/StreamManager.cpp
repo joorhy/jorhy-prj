@@ -7,7 +7,9 @@
 
 CStreamManager::CStreamManager()
 {
+#ifndef WIN32
 	signal(SIGPIPE, SIG_IGN);
+#endif
 }
 
 CStreamManager::~CStreamManager()

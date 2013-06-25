@@ -6,7 +6,7 @@
 #include "x_timer.h"
 #include "RecordMediaObj.h"
 
-class CRecoderManager : public SingletonTmpl<CRecoderManager>
+class JO_API CRecoderManager : public SingletonTmpl<CRecoderManager>
 {
     public:
         CRecoderManager(int);
@@ -25,12 +25,16 @@ class CRecoderManager : public SingletonTmpl<CRecoderManager>
         int Deinit();
         int StartRecord(const char *pResid);
         int StopRecord(const char *pResid);
-        static void *WorkThread(void *param)
-        {
-            (static_cast<CRecoderManager *>(param))->OnWork();
-            return (void *)0;
-        }
-        void OnWork();
+#ifdef WIN32
+		static unsigned X_JO_API WorkThread(void *param)
+#else
+		static void *WorkThread(void *param)
+#endif
+		{
+			(static_cast<CRecoderManager *>(param))->OnWork();
+			return 0;
+		}
+		void OnWork();
 
         static void TimerThread(void *pUser)
         {
@@ -50,7 +54,7 @@ class CRecoderManager : public SingletonTmpl<CRecoderManager>
         MediaMap m_mediaMap;
 
         bool m_bStart;
-        pthread_t m_thread;
+        CJoThread m_thread;
 
         J_OS::CTimer m_timer;
         typedef std::vector<std::string> RecordVec;
