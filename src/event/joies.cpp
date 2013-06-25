@@ -14,25 +14,46 @@ void OnSignal(int nSigNum)
 	}
 };
 
-int main()
+int main(int argc, char **argv)
 {
-#if 0
-	CPcap pCap;
-	pCap.InitialPcap();
-	signal(SIGINT, OnSignal);
-	while(bRun)
+	if (argc < 2)
 	{
-		usleep(10000);
+		CPcap pCap;
+		pCap.InitialPcap();
+		signal(SIGINT, OnSignal);
+		while(bRun)
+		{
+			usleep(10000);
+		}
+		pCap.DestroyPcap();
 	}
-	pCap.DestroyPcap();
-#else
-        //CXGseScd gseHelper;
-        //gseHelper.Init();
-        //gseHelper.GetAllCtrlBlock();
-        //gseHelper.Deinit();
-		CXGooseCap gseCap;
-        gseCap.TestGoose();
-#endif
+	else
+	{
+		for (int i=1; i<argc; ++i)
+		{
+			if (memcmp("-h", argv[i], 2) == 0)
+			{
+				printf("-h:test goose\n");
+				printf("-c:create goose config by xxx.sdl\n");
+			}
+			else if (memcmp("-c", argv[i], 2) == 0)
+			{
+				CXGseScd gseHelper;
+				gseHelper.Init();
+				gseHelper.GetAllCtrlBlock();
+				gseHelper.Deinit();
+			}
+			else if(memcmp("-t", argv[i], 2) == 0)
+			{
+				CXGooseCap gseCap;
+				gseCap.TestGoose();
+			}
+			else
+			{
+				printf("%s command illegal\n");
+			}
+		}
+	}
 
 	return 0;
 }

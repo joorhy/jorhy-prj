@@ -12,12 +12,6 @@ const char *gse_filter_exp = "ether proto 0x88B8";
 CXGooseCap::CXGooseCap()
 {
     m_stNum = 0;
-
-	/*CXGseScd gseHelper;
-	gseHelper.Init();
-	gseHelper.GetAllCtrlBlock();
-	gseHelper.Deinit();*/
-    //m_sdlParser.LoadXMLFile("20120728.scd");
 }
 
 CXGooseCap::~CXGooseCap()
@@ -387,7 +381,6 @@ int CXGooseCap::GSE_SendJson(int cid, int nid, int type, const u_char *data)
         //assert(false);
 		break;
 	}
-
     json_object_put(alm_body);
     return J_OK;
 }

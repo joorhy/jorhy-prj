@@ -102,8 +102,8 @@ int CXGseScd::GetAllCtrlBlock()
     GSE_GocbMap::iterator it = m_gocbMap.begin();
     for (; it!=m_gocbMap.end(); it++)
     {
-		if (it->first == 1337 || it->first == 1338 || 
-			it->first == 1339 || it->first == 1340 || it->first == 1341)
+		//if (it->first == 1337 || it->first == 1338 || 
+		//	it->first == 1339 || it->first == 1340 || it->first == 1341)
 		{
 			json_object *gocb_json = json_object_new_object();
 			json_object_object_add(gocb_json, (char *)"cid", json_object_new_int(it->first));
@@ -111,6 +111,7 @@ int CXGseScd::GetAllCtrlBlock()
 			sprintf(str_appid, "%02x%02x", ((it->first-1000) >> 8) &0xFF, (it->first-1000) & 0xFF);
 			json_object_object_add(gocb_json, (char *)"appid", json_object_new_string(str_appid));
 			json_object_object_add(gocb_json, (char *)"desc", json_object_new_string((char *)it->second->desc.c_str()));
+			printf("%s %s\n", str_appid, it->second->desc.c_str());
 			json_object *gocb_array = json_object_new_array();
 			int n = it->second->all_data.size();
 			for (int i=0; i<n; i++)
@@ -173,6 +174,7 @@ int CXGseScd::ParseIEDs(TiXmlNode *pRootNode)
                             TiXmlElement *pGSECtrlElement = pGSECtrlNode->ToElement();
                             gocb_name = pGSECtrlElement->Attribute("name");
                             datset_name = pGSECtrlElement->Attribute("datSet");
+							printf("%s\n", datset_name.c_str());
 
                             //生成一条记录
                             u_int32_t appid = 0;
@@ -185,6 +187,11 @@ int CXGseScd::ParseIEDs(TiXmlNode *pRootNode)
                                 continue;
 
                             }
+							
+							if (appid == 1328)
+							{
+								printf("%d\n", appid);
+							}
                             GSE_DataSetInfo *pDataSetInfo = new GSE_DataSetInfo;
                             if (MakeDataSetInfo(pLN0Node, datset_name, pDataSetInfo) != J_OK)
                             {
