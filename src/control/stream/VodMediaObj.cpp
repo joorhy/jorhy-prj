@@ -73,6 +73,10 @@ int CVodMediaObj::Process(J_AsioDataBase &asioData)
 		{
 			nRet = WriteData(asioData);
 		}
+		else
+		{
+			assert(false);
+		}
 	}
 
 	return nRet;
@@ -189,9 +193,9 @@ int CVodMediaObj::WriteData(J_AsioDataBase &asioData)
 {
 	if (!m_bStart)
 	{
-		asioData.ioWrite.buf = m_pConvetBuff;
+		asioData.ioWrite.buf = NULL;
 		asioData.ioWrite.bufLen = 0;
-		asioData.ioWrite.whole = true;
+		asioData.ioWrite.whole = false;
 		asioData.ioCall = J_AsioDataBase::j_write_e;
 		return J_OK;
 	}
@@ -216,6 +220,7 @@ int CVodMediaObj::WriteData(J_AsioDataBase &asioData)
 					if (m_streamHeader.frameType == jo_video_i_frame)
 						m_lastFrameNum = m_streamHeader.frameNum;
 
+					//printf("%s %d %d\n", m_pConvetBuff, m_streamHeader.dataLen, sizeof(J_DataHead));
 					asioData.ioWrite.buf = m_pConvetBuff;
 					asioData.ioWrite.bufLen = nDataLen;
 					asioData.ioWrite.whole = true;
@@ -226,10 +231,11 @@ int CVodMediaObj::WriteData(J_AsioDataBase &asioData)
 			else
 			{
 				m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
-				asioData.ioWrite.buf = m_pConvetBuff;
+				asioData.ioWrite.buf = NULL;
 				asioData.ioWrite.bufLen = 0;
-				asioData.ioWrite.whole = true;
-				usleep(1000);
+				asioData.ioWrite.whole = false;
+				asioData.ioCall = J_AsioDataBase::j_write_e;
+				//usleep(1000);
 				return J_OK;
 			}
 		}
@@ -241,10 +247,12 @@ int CVodMediaObj::WriteData(J_AsioDataBase &asioData)
 	}
 	else
 	{
-		asioData.ioWrite.buf = m_pConvetBuff;
+		asioData.ioWrite.buf = NULL;
 		asioData.ioWrite.bufLen = 0;
-		asioData.ioWrite.whole = true;
-		usleep(1000);
+		asioData.ioWrite.whole = false;
+		asioData.ioCall = J_AsioDataBase::j_write_e;
+		//usleep(1);
+		return J_OK;
 	}
 	return nRet;
 }

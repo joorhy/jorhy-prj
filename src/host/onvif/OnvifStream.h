@@ -11,7 +11,7 @@ class COnvifStreamBase : public J_MediaStream
 class COnvifStream : public J_BaseVideoStream<COnvifStreamBase>
 {
 public:
-	COnvifStream(void *pTCPSocket, std::string resid);
+	COnvifStream(void *pTCPSocket, j_string_t resid);
 	~COnvifStream();
 
 public:
@@ -19,10 +19,10 @@ public:
 	virtual int Startup();
 	virtual int Shutdown();
     ///AsioUser
-	virtual void OnAccept(const J_AsioDataBase &asioData, int nRet) {}
-	virtual void OnRead(const J_AsioDataBase &asioData, int nRet);
-	virtual void OnWrite(const J_AsioDataBase &asioData, int nRet) {}
-	virtual void OnBroken(const J_AsioDataBase &asioData, int nRet);
+	virtual void OnAccept(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual void OnRead(const J_AsioDataBase *pAsioData, int nRet);
+	virtual void OnWrite(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 
 private:
 	enum 

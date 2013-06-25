@@ -21,9 +21,9 @@ public:
 	void Deinit();
 	int AddUser(j_socket_t nSocket, J_AsioUser *pUser);
 	void DelUser(j_socket_t nSocket);
-	int Listen(J_AsioDataBase &asioData);
-	int Read(j_socket_t nSocket, J_AsioDataBase &asioData);
-	int Write(j_socket_t nSocket, J_AsioDataBase &asioData);
+	int Listen(J_AsioDataBase *pAsioData);
+	int Read(j_socket_t nSocket, J_AsioDataBase *pAsioData);
+	int Write(j_socket_t nSocket, J_AsioDataBase *pAsioData);
 	
 private:
 #ifdef WIN32

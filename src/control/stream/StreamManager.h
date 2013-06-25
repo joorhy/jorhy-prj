@@ -21,18 +21,18 @@ class CStreamManager : public J_AsioUser
 
 	public:
 		///AsioUser
-		virtual void OnAccept(const J_AsioDataBase &asioData, int nRet);
-		virtual void OnRead(const J_AsioDataBase &asioData, int nRet);
-		virtual void OnWrite(const J_AsioDataBase &asioData, int nRet);
-		virtual void OnBroken(const J_AsioDataBase &asioData, int nRet);
+		virtual void OnAccept(const J_AsioDataBase *pAsioData, int nRet);
+		virtual void OnRead(const J_AsioDataBase *pAsioData, int nRet);
+		virtual void OnWrite(const J_AsioDataBase *pAsioData, int nRet);
+		virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 
 		///CStreamManager
 		int StartService(int nPort, const char *pType);
 		int StopService();
 
 	private:
-		int ParserRequest(const J_AsioDataBase &asioData, J_MediaObj *pClient);
-		int ProcessCommand(const J_AsioDataBase &asioData, J_Obj *pObj, J_MediaObj *pClient);
+		int ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *pClient);
+		int ProcessCommand(const J_AsioDataBase *pAsioData, J_Obj *pObj, J_MediaObj *pClient);
 
 private:
 	struct ClientInfo

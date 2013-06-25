@@ -44,7 +44,7 @@ int CSonyStream::Startup()
 	m_asioData.ioRead.buf = m_pRecvBuff;
 	m_asioData.ioRead.bufLen = RECV_SIZE;
 	m_asioData.ioRead.whole = false;
-	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Startup Startup this = %d", this);
 
@@ -65,7 +65,7 @@ int CSonyStream::Shutdown()
 	return J_OK;
 }
 
-void CSonyStream::OnRead(const J_AsioDataBase &asioData, int nRet)
+void CSonyStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
     if (!m_bStartup)
     {
@@ -75,7 +75,7 @@ void CSonyStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 
     TLock(m_locker);
 	J_StreamHeader streamHeader = {0};
-	m_parser.InputData(asioData.ioRead.buf, asioData.ioRead.finishedLen);
+	m_parser.InputData(pAsioData->ioRead.buf, pAsioData->ioRead.finishedLen);
 	j_result_t nResult = 0;
 	do
 	{
@@ -98,7 +98,7 @@ void CSonyStream::OnRead(const J_AsioDataBase &asioData, int nRet)
     TUnlock(m_locker);
 }
 
-void CSonyStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
+void CSonyStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
     J_OS::LOGINFO("CSonyStream::OnBroken");
     TLock(m_locker);

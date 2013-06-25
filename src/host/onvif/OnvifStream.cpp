@@ -45,7 +45,7 @@ int COnvifStream::Startup()
 	m_asioData.ioRead.bufLen = 4;
 	m_asioData.ioRead.whole = true;
 	m_nState = ONVIF_READ_HEAD;
-	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -66,7 +66,7 @@ int COnvifStream::Shutdown()
 	return J_OK;
 }
 
-void COnvifStream::OnRead(const J_AsioDataBase &asioData, int nRet)
+void COnvifStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
     if (!m_bStartup)
     {
@@ -80,12 +80,12 @@ void COnvifStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 	switch (m_nState)
 	{
 		case ONVIF_READ_HEAD:
-			m_asioData.ioRead.buf = m_pRecvBuff + asioData.ioRead.bufLen;
+			m_asioData.ioRead.buf = m_pRecvBuff + pAsioData->ioRead.bufLen;
 			m_asioData.ioRead.bufLen = ((m_asioData.ioRead.buf[2] & 0xFF) << 8) + (m_asioData.ioRead.buf[3] & 0xFF);
 			m_nState = ONVIF_READ_DATA;
 			break;
 		case ONVIF_READ_DATA:
-			m_parser.InputData(m_pRecvBuff, asioData.ioRead.bufLen + 4);
+			m_parser.InputData(m_pRecvBuff, pAsioData->ioRead.bufLen + 4);
 			nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
 			if (nResult == J_OK)
 			{
@@ -105,12 +105,12 @@ void COnvifStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 			break;
 	}
 	m_asioData.ioRead.whole = true;
-	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
 
     TUnlock(m_locker);
 }
 
-void COnvifStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
+void COnvifStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
     J_OS::LOGINFO("COnvifStream::OnBroken");
     TLock(m_locker);

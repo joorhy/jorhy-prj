@@ -373,7 +373,7 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
 	
 	//发送并接受数据
-	J_OS::LOGINFO(json_object_to_json_string(jsojt));
+	//J_OS::LOGINFO(json_object_to_json_string(jsojt));
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)

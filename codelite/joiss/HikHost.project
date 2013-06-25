@@ -4,12 +4,12 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="../../src/host/hik/HikAdapter.cpp"/>
-    <File Name="../../src/host/hik/HikChannel.cpp"/>
     <File Name="../../src/host/hik/HikIntercom.cpp"/>
     <File Name="../../src/host/hik/HikParser.cpp"/>
     <File Name="../../src/host/hik/HikStream.cpp"/>
     <File Name="../../src/host/hik/HikVodStream.cpp"/>
     <File Name="../../src/host/hik/HikParser2.cpp"/>
+    <File Name="../../src/host/hik/HikChannel.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/host/hik/HikAdapter.h"/>

@@ -48,7 +48,7 @@ int CJoStream::Startup()
 	m_asioData.ioRead.bufLen = sizeof(J_DataHead);
 	m_asioData.ioRead.whole = true;
 	m_nState = JO_READ_HEAD;
-	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -69,7 +69,7 @@ int CJoStream::Shutdown()
 	return J_OK;
 }
 
-void CJoStream::OnRead(const J_AsioDataBase &asioData, int nRet)
+void CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
     if (!m_bStartup)
     {
@@ -108,12 +108,12 @@ void CJoStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 			break;
 	}
 	m_asioData.ioRead.whole = true;
-	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
 	
 	TUnlock(m_locker);
 }
 
-void CJoStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
+void CJoStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
     J_OS::LOGINFO("CJoStream::OnBroken");
     TLock(m_locker);

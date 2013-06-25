@@ -81,7 +81,7 @@ int CRealMediaObj::OnWriteData(J_AsioDataBase &asioData)
 {
 	int nRet = J_OK;
 	J_RequestFilter *pAccess = dynamic_cast<J_RequestFilter *>(m_pObj);
-	while (true)
+	//while (true)
 	{
 		memset(&m_streamHeader, 0, sizeof(m_streamHeader));
 		nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, m_streamHeader);
@@ -106,25 +106,31 @@ int CRealMediaObj::OnWriteData(J_AsioDataBase &asioData)
 						asioData.ioWrite.bufLen = nDataLen;
 						asioData.ioWrite.whole = true;
 						m_nextFrameTime = CTime::Instance()->GetLocalTime(0) - m_nextFrameTime;
-						break;
+						//break;
 					}
 					else
 					{
 						m_nextFrameTime = 0;
-						continue;
+						asioData.ioWrite.buf = NULL;
+						asioData.ioWrite.bufLen = 0;
+						asioData.ioWrite.whole = false;
+						//continue;
 					}
 				}
 				else
 				{
 					m_nextFrameTime -= m_streamHeader.timeStamp - m_lastFrameTime;
-					continue;
+					asioData.ioWrite.buf = NULL;
+					asioData.ioWrite.bufLen = 0;
+					asioData.ioWrite.whole = false;
+					//continue;
 				}
 			}
 			else
 			{
-				asioData.ioWrite.buf = m_pConvetBuff;
+				asioData.ioWrite.buf = NULL;
 				asioData.ioWrite.bufLen = 0;
-				asioData.ioWrite.whole = true;
+				asioData.ioWrite.whole = false;
 				return J_OK;
 			}
 		}
@@ -135,9 +141,9 @@ int CRealMediaObj::OnWriteData(J_AsioDataBase &asioData)
 		}
 		else
 		{
-			asioData.ioWrite.buf = m_pConvetBuff;
+			asioData.ioWrite.buf = NULL;
 			asioData.ioWrite.bufLen = 0;
-			asioData.ioWrite.whole = true;
+			asioData.ioWrite.whole = false;
 			usleep(1);
 			return J_OK;
 		}

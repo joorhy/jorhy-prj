@@ -402,21 +402,21 @@ struct J_AsioUser : public J_Obj
 	///连接事件完成(用于网络IO)
 	///@param[in]	asioData IO数据集
 	///@param[in]	错误码,见x_error_type.h	
-	virtual void OnAccept(const J_AsioDataBase &asioData, int nRet) = 0;
+	virtual void OnAccept(const J_AsioDataBase *pAsioData, int nRet) = 0;
 
 	///读事件完成
 	///@param[in]	asioData IO数据集
 	///@param[in]	错误码,见x_error_type.h
-	virtual void OnRead(const J_AsioDataBase &asioData, int nRet) = 0;
+	virtual void OnRead(const J_AsioDataBase *pAsioData, int nRet) = 0;
 
 	///写事件完成
 	///@param[in]	asioData IO数据集
 	///@param[in]	错误码,见x_error_type.h
-	virtual void OnWrite(const J_AsioDataBase &asioData, int nRet) = 0;
+	virtual void OnWrite(const J_AsioDataBase *pAsioData, int nRet) = 0;
 
 	///断线事件完成(用于网络IO)
 	///@param[in]	错误码,见x_error_type.h
-	virtual void OnBroken(const J_AsioDataBase &asioData, int nRet) = 0;
+	virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet) = 0;
 };
 
 struct J_CommandParser : public J_Obj

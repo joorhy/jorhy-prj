@@ -54,7 +54,7 @@ int CHikStream::Startup()
 	m_asioData.ioRead.whole = true;
 	m_nState = HIK_READ_HEAD;
 	m_nOffset = 0;
-	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", this);
@@ -77,7 +77,7 @@ int CHikStream::Shutdown()
 	return J_OK;
 }
 
-void CHikStream::OnRead(const J_AsioDataBase &asioData, int nRet)
+void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
 	if (!m_bStartup)
 	{
@@ -130,11 +130,11 @@ void CHikStream::OnRead(const J_AsioDataBase &asioData, int nRet)
 			m_nState = HIK_READ_HEAD;
 			m_nOffset = 0;
 	}
-	CRdAsio::Instance()->Read(m_nSocket, m_asioData);
+	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
 	TUnlock(m_locker);
 }
 
-void CHikStream::OnBroken(const J_AsioDataBase &asioData, int nRet)
+void CHikStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
     J_OS::LOGINFO("CHikStream::OnBroken");
     TLock(m_locker);

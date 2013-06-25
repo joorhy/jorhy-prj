@@ -19,10 +19,10 @@ public:
 	virtual int Startup();
 	virtual int Shutdown();
     ///AsioUser
-	virtual void OnAccept(const J_AsioDataBase &asioData, int nRet) {}
-	virtual void OnRead(const J_AsioDataBase &asioData, int nRet);
-	virtual void OnWrite(const J_AsioDataBase &asioData, int nRet) {}
-	virtual void OnBroken(const J_AsioDataBase &asioData, int nRet);
+	virtual void OnAccept(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual void OnRead(const J_AsioDataBase *pAsioData, int nRet);
+	virtual void OnWrite(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 
 private:
 	j_socket_t m_nSocket;
