@@ -232,6 +232,8 @@ struct J_AsioDataBase
 		j_char_t *buf;				///< 接收数据缓冲区
 		j_int32_t bufLen;			///< 接收数据缓冲区字节数
 		j_boolean_t whole;			///< TRUE-等到全部数据接收完才算成功, FALSE-接收到数据立即成功
+		
+		j_char_t until_buf[16];
 
 		j_boolean_t peerClosed;		///< TRUE-对端已经关闭, FALSE-没有
 		j_int32_t finishedLen;		///< 已经接收的数据字节数

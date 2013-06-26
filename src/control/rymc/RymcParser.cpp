@@ -6,7 +6,8 @@ static const char *http_end = "\r\n\r\n";
 
 CRymcParser::CRymcParser()
 {
-
+	memset(m_read_buff, 0, sizeof(m_read_buff));
+	m_state = RYMC_HEAD;
 }
 
 CRymcParser::~CRymcParser()
@@ -16,46 +17,45 @@ CRymcParser::~CRymcParser()
 
 int CRymcParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
 {
+	printf("%s\n", pAddr);
 	return J_OK;
 }
 
-int CRymcParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nRespLen)
+int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out)
 {
-	J_OS::CTCPSocket ReadSocket(nSocket);
-	char read_buff[2048] = {0};
-	int read_ret = 0;
-	int totle_recv = 0;
-	char *p = NULL;
-	do
+	memcpy(m_read_buff + m_read_len, pAsioData_in->ioRead.buf, pAsioData_in->ioRead.finishedLen);
+	m_read_len += pAsioData_in->ioRead.finishedLen;
+	printf("%s\n", pAsioData_in->ioRead.buf);
+	memset(pAsioData_in->ioRead.buf, 0, 2048);
+	if (m_state == RYMC_HEAD)
 	{
-		read_ret = ReadSocket.Read(read_buff + totle_recv, sizeof(read_buff));
-		if (read_ret < 0)
+		if (strstr(m_read_buff, http_end) == NULL)
 		{
-			return J_SOCKET_ERROR;
+			pAsioData_in->ioRead.bufLen = 1;
+			pAsioData_in->ioRead.whole = true;
+			return J_NOT_COMPLATE;
 		}
-		if (strstr(read_buff, "HTTP") == NULL && strstr(read_buff, "POST") == NULL)
-			return J_OK;
+		m_state = RYMC_BODY;
+	}
 
-		totle_recv += read_ret;
-	} while((p = strstr(read_buff, http_end)) == NULL);
-
-	CXString x_string(read_buff);
+	CXString x_string(m_read_buff);
 	CXInteger32 i_command("Content-Length: ", "\r\n");
 	x_string >> i_command;
 
-	int body_recv = i_command() - (totle_recv - (p - read_buff) - 4);
-	while (body_recv > 0)
+	if (m_state == RYMC_BODY)
 	{
-		read_ret = ReadSocket.Read(read_buff + totle_recv, sizeof(read_buff));
-		if (read_ret < 0)
+		j_char_t *p = strstr(m_read_buff, http_end);
+		int body_recv = i_command();
+		if (body_recv > 0)
 		{
-			return J_SOCKET_ERROR;
+			pAsioData_in->ioRead.bufLen = body_recv;
+			pAsioData_in->ioRead.whole = true;
+			m_state = RYMC_FINISH;
+			return J_NOT_COMPLATE;
 		}
-		totle_recv += read_ret;
-		body_recv -= read_ret;
 	}
 	
-	CHttpHelper httpHelper(read_buff);
+	CHttpHelper httpHelper(m_read_buff);
 	std::string strBody = httpHelper.GetBody();
 	if(strBody.empty())
 	{
@@ -131,10 +131,18 @@ int CRymcParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nResp
 	httpHelper.SetStatue(200);
 	httpHelper.SetBody(json_object_to_json_string(ret_obj));
 	
-	nRespLen = strlen(httpHelper.GetString());
-	pResponse = new char[nRespLen + 1];
-	pResponse[nRespLen] = '0';
+	j_int32_t nRespLen = strlen(httpHelper.GetString());
+	j_char_t *pResponse = new char[nRespLen + 1];
+	pResponse[nRespLen] = '\0';
 	memcpy(pResponse, httpHelper.GetString(), nRespLen);
+	
+	pAsioData_out->ioWrite.buf = pResponse;
+    pAsioData_out->ioWrite.bufLen = nRespLen;
+	pAsioData_out->ioWrite.whole = true;
+	
+	memset(m_read_buff, 0, sizeof(m_read_buff));
+	m_state = RYMC_HEAD;
+	m_read_len = 0;
 
 	return J_OK;
 }

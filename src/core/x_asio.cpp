@@ -19,6 +19,15 @@ CRdAsio::~CRdAsio()
 #endif
 }
 
+CRdAsio::CRdAsio()
+{
+	m_bStarted = false;
+#ifdef WIN32
+	WSADATA wsaData; 
+	WSAStartup(MAKEWORD(2,2), &wsaData);
+#endif
+}
+
 int CRdAsio::Init()
 {
 	if (!m_bStarted)
@@ -68,7 +77,6 @@ void CRdAsio::Deinit()
 
 int CRdAsio::Listen(J_AsioDataBase *pAsioData)
 {
-	TLock(m_listen_locker);
 	if (pAsioData->ioUser != NULL)
 	{
 		j_socket_t nSocket;
@@ -76,27 +84,17 @@ int CRdAsio::Listen(J_AsioDataBase *pAsioData)
 		int retval;
 		setsockopt(nSocket.sock, SOL_SOCKET, SO_REUSEADDR, (const char *)&retval, sizeof(int));
 		J_OS::CTCPSocket tcpSocket;
-		if (tcpSocket.Listen(nSocket, pAsioData->ioAccept.peerPort, 1024, false) != J_OK)
+		if (tcpSocket.Listen(nSocket, pAsioData->ioAccept.peerPort, 10, false) != J_OK)
 			return J_UNKNOW;
-#ifdef WIN32
+			
+		m_listenSocket = nSocket;
+		m_listenAsioData = pAsioData;
+		
 		j_thread_parm parm = {0};
 		parm.entry = CRdAsio::ListenThread;
 		parm.data = this;
 		m_workThread.Create(parm);
-#else
-		m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
-		m_evListen.data.fd = nSocket.sock;
-
-		if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, nSocket.sock, &m_evListen) < 0)
-		{
-			J_OS::LOGERROR("CRdAsio::Listen epoll set insertion error");
-			return J_UNKNOW;
-		}
-		m_listenMap[nSocket] = pAsioData;
-#endif
 	}
-
-	TUnlock(m_listen_locker);
 	return J_OK;
 }
 
@@ -142,12 +140,47 @@ void CRdAsio::DelUser(j_socket_t nSocket)
 	m_evAsio.data.fd = nSocket.sock;
 	epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, nSocket.sock, &m_evAsio);
 #endif
+	j_close_socket(nSocket.sock);
 	AsioUserMap::iterator it = m_userMap.find(nSocket);
 	if (it != m_userMap.end())
 		m_userMap.erase(it);
 		
 	J_OS::LOGINFO("CRdAsio::DelUser epoll set insertion sucess fd = %d", nSocket.sock);
 	TUnlock(m_user_locker);
+	
+	TLock(m_read_locker);
+	AsioDataMap::iterator itData = m_readMap.find(nSocket);
+	if (itData != m_readMap.end())
+	{
+		J_AsioDataBase *pDataBase = NULL;
+		while (!itData->second.empty())
+		{
+			pDataBase = itData->second.front();
+			itData->second.pop();
+			if (pDataBase->ioRead.buf != NULL)
+				delete pDataBase->ioRead.buf;
+			delete pDataBase;
+		}
+		m_readMap.erase(itData);
+	}
+	TUnlock(m_read_locker);
+	
+	TLock(m_write_locker);
+	AsioDataMap::iterator itData2 = m_writeMap.find(nSocket);
+	if (itData2 != m_writeMap.end())
+	{
+		J_AsioDataBase *pDataBase = NULL;
+		while (!itData2->second.empty())
+		{
+			pDataBase = itData2->second.front();
+			itData2->second.pop();
+			if (pDataBase->ioWrite.buf != NULL)
+				delete pDataBase->ioWrite.buf;
+			delete pDataBase;
+		}
+		m_readMap.erase(itData2);
+	}
+	TUnlock(m_write_locker);
 }
 
 void CRdAsio::OnWork()
@@ -187,13 +220,13 @@ void CRdAsio::OnWork()
 	int nfds = 0;
 	int i = 0;
 	j_socket_t active_fd;
-	AsioListenMap::iterator itListen;
 	struct sockaddr_in sonnAddr;
 	socklen_t connLen;
 	j_asio_handle connSocket;
 	pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
 	while (m_bStarted)
 	{
+		usleep(1);
 		pthread_testcancel();
 		nfds = epoll_wait(m_epoll_fd, m_evConnect, 1, 200);
 		if (nfds < 0)
@@ -206,27 +239,16 @@ void CRdAsio::OnWork()
 			else
 				break;
 		}
+		else if (nfds == 0)
+		{
+			continue;
+			//J_OS::LOGERROR("nfds == 0 CXService::OnThread epoll error");
+		}
 
 		for (i = 0; i < nfds; i++)
 		{
 			active_fd.sock = m_evConnect[i].data.fd;
-			if ((itListen = m_listenMap.find(active_fd)) != m_listenMap.end())
-			{
-				//accept
-				connLen = sizeof(struct sockaddr_in);
-				connSocket = accept(active_fd.sock, (struct sockaddr *)&sonnAddr, &connLen);
-				if (connSocket < 0)
-				{
-					J_OS::LOGERROR("CXService::OnThread accept error");
-					continue;
-				}
-				itListen->second->ioAccept.subHandle = connSocket;
-				itListen->second->ioAccept.peerIP = sonnAddr.sin_addr.s_addr;
-				itListen->second->ioAccept.peerPort = sonnAddr.sin_port;
-				active_fd.sock = connSocket;
-				ProcessAccept(active_fd, itListen->second);
-			}
-			else if ((m_evConnect[i].events & EPOLLRDHUP) && (m_evConnect[i].events & EPOLLIN))
+			if ((m_evConnect[i].events & EPOLLRDHUP) && (m_evConnect[i].events & EPOLLIN))
 			{
 				//broken
 				ProcessIoEvent(active_fd, J_AsioDataBase::j_disconnect_e);
@@ -253,33 +275,39 @@ void CRdAsio::OnWork()
 #endif
 }
 
-#ifdef WIN32
 void CRdAsio::OnListen()
 {
 	j_socket_t active_fd;
 	struct sockaddr_in sonnAddr;
 	socklen_t connLen;
 	j_asio_handle connSocket;
-	AsioListenMap::iterator itListen =  m_listenMap.begin();
-	if (itListen != m_listenMap.end())
+	while (true)
 	{
-		while (true)
+		if ((connSocket = accept(m_listenSocket.sock, (struct sockaddr*)&sonnAddr, &connLen)) < 0)
 		{
-			if ((connSocket = WSAAccept(itListen->first.sock, (struct sockaddr*)&sonnAddr, NULL, NULL, 0)) == SOCKET_ERROR)
-			{
-				J_OS::LOGINFO("CRdAsio::OnListen WSAAccept() failed with error %d\n", WSAGetLastError());
-				return;
-			} 
-			itListen->second->ioAccept.subHandle = connSocket;
-			itListen->second->ioAccept.peerIP = sonnAddr.sin_addr.s_addr;
-			itListen->second->ioAccept.peerPort = sonnAddr.sin_port;
-			active_fd.sock = connSocket;
-			ProcessAccept(active_fd, itListen->second);
-		}
+			J_OS::LOGINFO("CRdAsio::OnListen WSAAccept() failed with error");
+			return;
+		} 
+		m_listenAsioData->ioAccept.subHandle = connSocket;
+		m_listenAsioData->ioAccept.peerIP = sonnAddr.sin_addr.s_addr;
+		m_listenAsioData->ioAccept.peerPort = sonnAddr.sin_port;
+		active_fd.sock = connSocket;
+		ProcessAccept(active_fd, m_listenAsioData);
 	}
 }
-#endif
 
+
+void CRdAsio::ModifyListen()
+{
+	m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
+	m_evListen.data.fd = m_listenSocket.sock;
+
+	if (epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, m_listenSocket.sock, &m_evListen) < 0)
+	{
+		J_OS::LOGERROR("CRdAsio::ModifyListen epoll set insertion error");
+	}
+}
+	
 void CRdAsio::EnableKeepalive(j_socket_t sock)
 {
 	//开启tcp探测
@@ -304,6 +332,15 @@ void CRdAsio::EnableKeepalive(j_socket_t sock)
 
 int CRdAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 {
+	TLock(m_user_locker);
+	AsioUserMap::iterator it = m_userMap.find(nSocket);
+	if (it == m_userMap.end())
+	{
+		TUnlock(m_user_locker);
+		return -1;
+	}
+	TUnlock(m_user_locker);
+	
 	TLock(m_read_locker);
 	AsioDataMap::iterator itData = m_readMap.find(nSocket);
 	if (itData == m_readMap.end())
@@ -322,6 +359,15 @@ int CRdAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 
 int CRdAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 {
+	TLock(m_user_locker);
+	AsioUserMap::iterator it = m_userMap.find(nSocket);
+	if (it == m_userMap.end())
+	{
+		TUnlock(m_user_locker);
+		return -1;
+	}
+	TUnlock(m_user_locker);
+	
 	TLock(m_write_locker);
 	AsioDataMap::iterator itData = m_writeMap.find(nSocket);
 	if (itData == m_writeMap.end())
@@ -329,14 +375,10 @@ int CRdAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 		std::queue<J_AsioDataBase *> dataQ;
 		dataQ.push(pAsioData);
 		m_writeMap[nSocket] = dataQ;
-		//if (pAsioData->ioWrite.bufLen > 0)
-		//	printf("push 1 --- %d %s\n", (int)pAsioData, pAsioData->ioWrite.buf);
 	}
 	else
 	{
 		itData->second.push(pAsioData);
-		//if (pAsioData->ioWrite.bufLen > 0)
-		//	printf("push 2 --- %d %s\n", (int)pAsioData, pAsioData->ioWrite.buf);
 	}
 	TUnlock(m_write_locker);
 	return J_OK;
@@ -379,6 +421,16 @@ int CRdAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 						break;
 					}
 				}
+				if (nReadLen < 0)
+				{
+					j_int32_t n = 0;
+					while (strstr(pDataBase->ioRead.buf, pDataBase->ioRead.until_buf) == NULL)
+					{
+						nRet = recv(nSocket.sock, pDataBase->ioRead.buf + n, 1, 0);
+						n += nRet;
+					}
+					nRet = n;
+				}
 			}
 			TUnlock(m_read_locker);
 			if (nRet > 0)
@@ -420,11 +472,12 @@ int CRdAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 					nWriteLen -= nRet;
 					nSendLen += nRet;
 				}
-				//printf("%d \n", nWriteLen);
 			}
 			TUnlock(m_write_locker);
 			if (pDataBase != NULL && nRet >= 0)
 			{
+				//if (pDataBase->ioWrite.buf != NULL)
+				//	printf("%s \n", pDataBase->ioWrite.buf);
 				pDataBase->ioWrite.finishedLen = nRet;
 				pDataBase->ioHandle = nSocket.sock;
 				pDataBase->ioCall = J_AsioDataBase::j_write_e;
@@ -432,22 +485,25 @@ int CRdAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 				pAsioUser->OnWrite(pDataBase, J_OK);
 			}
 			break;
-			
-			case J_AsioDataBase::j_disconnect_e:
+		case J_AsioDataBase::j_disconnect_e:
+		{
+			J_AsioUser *pAsioUser = NULL;
+			TLock(m_user_locker);
+			AsioUserMap::iterator itUser = m_userMap.find(nSocket);
+			if (itUser != m_userMap.end())
 			{
-				TLock(m_read_locker);
-				AsioUserMap::iterator itUser = m_userMap.find(nSocket);
-				if (itUser != m_userMap.end())
-				{
-					J_AsioDataBase asioData;
-					asioData.ioHandle = nSocket.sock;
-					J_AsioUser *pAsioUser = static_cast<J_AsioUser *>(itUser->second);
-					pAsioUser->OnBroken(&asioData, J_SOCKET_ERROR);
-					//m_userMap.erase(itUser);
-				}
-				TUnlock(m_read_locker);
-				break;
+				pAsioUser = static_cast<J_AsioUser *>(itUser->second);
+				//m_userMap.erase(itUser);
 			}
+			TUnlock(m_user_locker);
+			if (pAsioUser != NULL)
+			{
+				J_AsioDataBase asioData;
+				asioData.ioHandle = nSocket.sock;
+				pAsioUser->OnBroken(&asioData, J_SOCKET_ERROR);
+			}
+			break;
+		}
 	}
 		
 	return J_OK;

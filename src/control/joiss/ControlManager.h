@@ -1,31 +1,34 @@
 #ifndef __CONTROLMANAGER_H_
 #define __CONTROLMANAGER_H_
 #include "j_includes.h"
-#include "x_service.h"
+#include "x_asio.h"
 
 #define MAX_READ_SIZE 1024
 #define TEST_JO_UI
 
-class CControlManager : public CXService<CControlManager>
+class CControlManager : public J_AsioUser
 {
 	public:
 		CControlManager();
 		~CControlManager();
 
 	public:
-		///CXService
-		virtual int OnAccept(j_socket_t nSocket, const char *pAddr, short nPort);
-		virtual int OnRead(j_socket_t nSocket);
-		virtual int OnWrite(j_socket_t nSocket);
-		virtual int OnBroken(j_socket_t nSocket);
-		virtual j_socket_t GetSocketByResid(const char *pResid){ return j_socket_t(); }
+		///AsioUser
+		virtual void OnAccept(const J_AsioDataBase *pAsioData, int nRet);
+		virtual void OnRead(const J_AsioDataBase *pAsioData, int nRet);
+		virtual void OnWrite(const J_AsioDataBase *pAsioData, int nRet);
+		virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 
 		///CStreamManager
-		int StartService(int nPort, const char *pCommandType);
-		int StopService();
+		j_result_t StartService(j_int32_t nPort, const j_char_t *pCommandType);
+		j_result_t StopService();
 	private:
 		J_CommandParser *m_pCommandParser;
-		int m_nPort;
+		j_int32_t m_nPort;
+		J_AsioDataBase m_asioData;
+		j_char_t m_read_buff[2048];
+		j_string_t m_serviceType;
+		CRdAsio m_asio;
 };
 
 #endif //~__CONTROLMANAGER_H_

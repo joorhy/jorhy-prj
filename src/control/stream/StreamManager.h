@@ -45,9 +45,10 @@ private:
 	typedef std::map<std::string, std::vector<j_socket_t> >  ResidMap;
 	ResidMap m_residMap;
 	std::vector<j_socket_t> m_vecClient;						//存放所有相同Resid请求的socket
-	std::string m_serviceType;
+	j_string_t m_serviceType;
 	j_socket_t m_socket;
 	J_AsioDataBase m_asioData;
+	CRdAsio m_asio;
 };
 
 #endif // ~__STREAMMANAGER_H_

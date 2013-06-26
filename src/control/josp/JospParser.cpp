@@ -6,6 +6,7 @@
 
 CJospParser::CJospParser()
 {
+	m_state = JOSP_HEAD;
 	J_OS::LOGINFO("CJospParser::CJospParser()");
 }
 
@@ -22,35 +23,63 @@ int CJospParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
     m_networkMap[nSocket] = info;
 }
 
-int CJospParser::ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nRespLen)
+int CJospParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out)
 {
-	J_OS::CTCPSocket ReadSocket(nSocket);
-	char read_buff[1500] = {0};
-	int read_ret = ReadSocket.Read(read_buff, sizeof(read_buff));
-	
-    assert(memcmp(read_buff, "JOSP", 4) == 0);
+	if (m_state == JOSP_HEAD)
+	{
+		m_command = pAsioData_in->ioRead.buf[5] & 0xFF;
+		pAsioData_in->ioRead.buf = pAsioData_in->ioRead.buf + sizeof(J_CtrlHead);
+		pAsioData_in->ioRead.whole = true;
+		switch(m_command)
+		{
+			case jo_login_req:
+				pAsioData_in->ioRead.bufLen = sizeof(J_LoginData);
+				break;
+			case jo_logout_req: case jo_list_res_req:
+				m_state = JOSP_DATA;
+				goto parser_command;
+			case jo_ptz_control_req:
+				pAsioData_in->ioRead.bufLen = sizeof(J_PTZCtlData);
+				break;
+			case jo_rcd_search_req:
+				pAsioData_in->ioRead.bufLen = sizeof(J_RecordData);
+				break;
+			default:
+				fprintf(stderr, "CJospParser::ProcessRequest Unknow type = %d\n", m_command);
+				break;
+		}
+		m_state = JOSP_DATA;
+		return J_NOT_COMPLATE;
+	}
+
+parser_command:
     int nRet = J_OK;
-    switch(read_buff[5])
-    {
-        case jo_login_req:
-            nRet = OnLogin(nSocket, read_buff, pResponse, nRespLen);
-            break;
-        case jo_logout_req:
-            nRet = OnLogout(read_buff, pResponse, nRespLen);
-            break;
-        case jo_list_res_req:
-            nRet = OnGetResList(read_buff, pResponse, nRespLen);
-            break;
-        case jo_ptz_control_req:
-            nRet = OnPtzControl(read_buff, pResponse, nRespLen);
-            break;
-		case jo_rcd_search_req:
-			nRet = OnRcdSearch(read_buff, pResponse, nRespLen);
-			break;
-		default:
-			fprintf(stderr, "CJospParser::ProcessRequest Unknow type = %d\n", read_buff[5]);
-			break;
-    }
+	if (m_state == JOSP_DATA)
+	{
+		j_char_t *read_buff = pAsioData_in->ioRead.buf + sizeof(J_CtrlHead);
+		switch(m_command)
+		{
+			case jo_login_req:
+				nRet = OnLogin(pAsioData_in->ioHandle, read_buff, pAsioData_out);
+				break;
+			case jo_logout_req:
+				nRet = OnLogout(read_buff, pAsioData_out);
+				break;
+			case jo_list_res_req:
+				nRet = OnGetResList(read_buff, pAsioData_out);
+				break;
+			case jo_ptz_control_req:
+				nRet = OnPtzControl(read_buff, pAsioData_out);
+				break;
+			case jo_rcd_search_req:
+				nRet = OnRcdSearch(read_buff, pAsioData_out);
+				break;
+			default:
+				fprintf(stderr, "CJospParser::ProcessRequest Unknow type = %d\n", read_buff[5]);
+				break;
+		}		
+	}
+
     return nRet;
 }
 
@@ -72,10 +101,11 @@ int CJospParser::DelUser(j_socket_t nSocket)
     return J_OK;
 }
 
-int CJospParser::OnLogin(j_socket_t nSocket, const char *pRequest, char *&pResponse, int &nRespLen)
+int CJospParser::OnLogin(j_socket_t nSocket, const char *pRequest, J_AsioDataBase *pAsioData_out)
 {
     J_CtrlPacket *ctrlHead = (J_CtrlPacket *)pRequest;
     J_LoginData *loninData = (J_LoginData *)(ctrlHead->data);
+	j_char_t *pResponse = NULL;
     if (m_ivsManager.CheckUser(loninData->user_name, loninData->pass_word))
     {
         uuid_t userId;
@@ -109,15 +139,17 @@ int CJospParser::OnLogin(j_socket_t nSocket, const char *pRequest, char *&pRespo
     {
         MakeHeader(pResponse, NULL, jo_login_rep, jo_intact_pack, 0, 0, 1);
     }
-    nRespLen = sizeof(J_CtrlHead);
+	pAsioData_out->ioWrite.buf = pResponse;
+    pAsioData_out->ioWrite.bufLen = sizeof(J_CtrlHead);
+	pAsioData_out->ioWrite.whole = true;
 
     return J_OK;
 }
 
-int CJospParser::OnLogout(const char *pRequest, char *&pResponse, int &nRespLen)
+int CJospParser::OnLogout(const char *pRequest, J_AsioDataBase *pAsioData_out)
 {
     J_CtrlHead *ctrlHead = (J_CtrlHead *)pRequest;
-	pResponse = new char[sizeof(J_CtrlHead)];
+	j_char_t *pResponse = new char[sizeof(J_CtrlHead)];
     if (m_userMap.find((const char *)ctrlHead->user_id) != m_userMap.end())
     {
         MakeHeader(pResponse, (char *)ctrlHead->user_id, jo_logout_rep, jo_intact_pack, 0, 0, J_OK);
@@ -127,14 +159,17 @@ int CJospParser::OnLogout(const char *pRequest, char *&pResponse, int &nRespLen)
     {
         MakeHeader(pResponse, (char *)ctrlHead->user_id, jo_logout_rep, jo_intact_pack, 0, 0, 1);
     }
-    nRespLen = sizeof(J_CtrlHead);
+	pAsioData_out->ioWrite.buf = pResponse;
+    pAsioData_out->ioWrite.bufLen = sizeof(J_CtrlHead);
+	pAsioData_out->ioWrite.whole = true;
 
     return J_OK;
 }
 
-int CJospParser::OnGetResList(const char *pRequest, char *&pResponse, int &nRespLen)
+int CJospParser::OnGetResList(const char *pRequest, J_AsioDataBase *pAsioData_out)
 {
-    nRespLen = 0;
+    j_int32_t nRespLen = 0;
+	j_char_t *pResponse = NULL;
     J_CtrlHead *resHead = (J_CtrlHead *)pRequest;
     if (m_userMap.find((const char *)resHead->user_id) != m_userMap.end())
     {
@@ -150,13 +185,17 @@ int CJospParser::OnGetResList(const char *pRequest, char *&pResponse, int &nResp
         MakeHeader(pResponse, (char *)resHead->user_id, jo_list_res_rep, jo_intact_pack, 0, 0, 1);
     }
     nRespLen += sizeof(J_CtrlHead);
+	
+	pAsioData_out->ioWrite.buf = pResponse;
+    pAsioData_out->ioWrite.bufLen = nRespLen;
+	pAsioData_out->ioWrite.whole = true;
     return J_OK;
 }
 
-int CJospParser::OnPtzControl(const char *pRequest, char *&pResponse, int &nRespLen)
+int CJospParser::OnPtzControl(const char *pRequest, J_AsioDataBase *pAsioData_out)
 {
     int nRet = J_OK;
-	pResponse = new char[sizeof(J_CtrlHead)];
+	j_char_t *pResponse = new char[sizeof(J_CtrlHead)];
     J_CtrlPacket *ctrlHead = (J_CtrlPacket *)pRequest;
     J_PTZCtlData *ptzCtrlData = (J_PTZCtlData *)(ctrlHead->data);
     if (m_userMap.find((const char *)ctrlHead->head.user_id) != m_userMap.end())
@@ -168,15 +207,18 @@ int CJospParser::OnPtzControl(const char *pRequest, char *&pResponse, int &nResp
     {
         MakeHeader(pResponse, (char *)ctrlHead->head.user_id, jo_ptz_control_rep, jo_intact_pack, 0, 0, 1);
     }
-    nRespLen = sizeof(J_CtrlHead);
+	pAsioData_out->ioWrite.buf = pResponse;
+    pAsioData_out->ioWrite.bufLen = sizeof(J_CtrlHead);
+	pAsioData_out->ioWrite.whole = true;
 
     return nRet;
 }
 
-int CJospParser::OnRcdSearch(const char *pRequest, char *&pResponse, int &nRespLen)
+int CJospParser::OnRcdSearch(const char *pRequest, J_AsioDataBase *pAsioData_out)
 {
-	int nRet = J_OK;
-	pResponse = new char[100 *1024];
+	j_result_t nRet = J_OK;
+	j_int32_t nRespLen = 0;
+	j_char_t *pResponse = new char[100 *1024];
 	
 	J_CtrlPacket *ctrlHead = (J_CtrlPacket *)pRequest;
     J_RecordData *rcdCtrlData = (J_RecordData *)(ctrlHead->data);
@@ -191,6 +233,10 @@ int CJospParser::OnRcdSearch(const char *pRequest, char *&pResponse, int &nRespL
         MakeHeader(pResponse, (char *)ctrlHead->head.user_id, jo_rcd_search_rep, jo_intact_pack, 0, 0, 1);
     }
 	nRespLen += sizeof(J_CtrlHead);
+	
+	pAsioData_out->ioWrite.buf = pResponse;
+    pAsioData_out->ioWrite.bufLen = nRespLen;
+	pAsioData_out->ioWrite.whole = true;
 	
 	return nRet;
 }

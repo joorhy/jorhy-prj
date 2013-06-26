@@ -20,17 +20,17 @@ CStreamManager::~CStreamManager()
 int CStreamManager::StartService(int nPort, const char *pType)
 {
 	m_serviceType = pType;
-	CRdAsio::Instance()->Init();
+	m_asio.Init();
 	m_asioData.ioAccept.peerPort = nPort;
 	m_asioData.ioUser = this;
-	CRdAsio::Instance()->Listen(&m_asioData);
+	m_asio.Listen(&m_asioData);
 	
 	return J_OK;
 }
 
 int CStreamManager::StopService()
 {
-	CRdAsio::Instance()->Deinit();
+	m_asio.Deinit();
 	return J_OK;
 }
 
@@ -38,7 +38,7 @@ void CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 {
 	j_socket_t nSocket;
 	nSocket.sock = pAsioData->ioAccept.subHandle;
-	CRdAsio::Instance()->AddUser(nSocket, this);
+	m_asio.AddUser(nSocket, this);
 	J_AsioDataBase *pDataBase = new J_AsioDataBase;
 	memset(pDataBase, 0, sizeof(J_AsioDataBase));
 	pDataBase->ioRead.buf = new j_char_t[1024];
@@ -58,7 +58,7 @@ void CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 	info.pAsioData = pDataBase;
 	info.pObj = NULL;
 	m_clientMap[nSocket.sock] = info;
-	CRdAsio::Instance()->Read(nSocket, pDataBase);
+	m_asio.Read(nSocket, pDataBase);
 }
 
 void CStreamManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
@@ -92,9 +92,7 @@ void CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 		nResult = pClient->Process(*pDataBase);
 		if (nResult == J_OK)
 		{
-			//if (pDataBase->ioWrite.bufLen > 0)
-			//	printf("CRdAsio::Instance()->Write \n");
-			CRdAsio::Instance()->Write(pDataBase->ioHandle, pDataBase);
+			m_asio.Write(pDataBase->ioHandle, pDataBase);
 		}
 		else
 		{
@@ -123,7 +121,7 @@ void CStreamManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 	}
 
 	m_clientMap.erase(it);
-	CRdAsio::Instance()->DelUser(pAsioData->ioHandle);
+	m_asio.DelUser(pAsioData->ioHandle);
 }
 
 int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *pClient)
@@ -153,7 +151,7 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 		{
 			nRet = ProcessCommand(asioData, protocolFilter, pClient);
 		}*/
-		CRdAsio::Instance()->Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
+		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
 	}
 
 	return nRet;
@@ -216,7 +214,7 @@ int CStreamManager::ProcessCommand(const J_AsioDataBase *pAsioData, J_Obj *pObj,
 		/*if (nRet == J_WIAT_NEXT_CMD)
 		{
 			pAsioData->ioUser = this;
-			CRdAsio::Instance()->Write(asioData.ioHandle, (J_AsioDataBase&)*pAsioData);
+			m_asio.Write(asioData.ioHandle, (J_AsioDataBase&)*pAsioData);
 			return J_OK;
 		}*/
 		delete pDataBase;
@@ -228,8 +226,8 @@ int CStreamManager::ProcessCommand(const J_AsioDataBase *pAsioData, J_Obj *pObj,
 	pDataBase->ioHandle = pAsioData->ioHandle;
 	pDataBase->ioCall = J_AsioDataBase::j_write_e;
 	//if (pDataBase->ioWrite.bufLen > 0)
-	//	printf("CRdAsio::Instance()->Write 2\n");
-	CRdAsio::Instance()->Write(pDataBase->ioHandle, pDataBase);
+	//	printf("m_asio.Write 2\n");
+	m_asio.Write(pDataBase->ioHandle, pDataBase);
 	
 	pClient->Run();
 	if (IS_CLOSE_CMD(videoCommand->GetCommandType()))

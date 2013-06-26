@@ -433,7 +433,7 @@ struct J_CommandParser : public J_Obj
 	///@param[in]	pResponse 返回数据
 	///@param[out]	nRespLen 返回数据长度
 	///@return		见x_error_type.h
-	virtual j_result_t ProcessRequest(j_socket_t nSocket, char *&pResponse, int &nRespLen) = 0;
+	virtual j_result_t ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out) = 0;
 	
 	///删除用户
 	///@param[in]	nSocket 用户ID

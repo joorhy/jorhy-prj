@@ -97,6 +97,7 @@ r_register *StreamServerResgister(int ssid,char *uri)
 	json_object_object_add(helpjs,(char *)"id",json_object_new_int(ssid));
 	json_object_object_add(jsojt,(char *)"parm",helpjs);
 
+	printf("%s\n", json_object_to_json_string(jsojt));
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
 	json_object_put(jsojt);
 	if(json_buf == NULL)

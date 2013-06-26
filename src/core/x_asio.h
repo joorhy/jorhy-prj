@@ -13,7 +13,7 @@ public:
 	CRdAsio(int);
 	~CRdAsio();
 
-private:
+public:
 	CRdAsio();
 
 public:
@@ -38,12 +38,16 @@ private:
 	void OnWork();
 #ifdef WIN32
 	static unsigned X_JO_API ListenThread(void *param)
+#else
+	static void *ListenThread(void *param)
+#endif
 	{
 		(static_cast<CRdAsio *>(param))->OnListen();
 		return 0;
 	}
 	void OnListen();
-#endif
+
+	void ModifyListen();
 	void EnableKeepalive(j_socket_t nSocket);
 	int ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData);
 	int ProcessIoEvent(j_socket_t nSocket, int nType);
@@ -51,8 +55,8 @@ private:
 private:
 	typedef std::map<j_socket_t, J_AsioUser *>AsioUserMap;
 	AsioUserMap m_userMap;
-	typedef std::map<j_socket_t, J_AsioDataBase *>AsioListenMap;
-	AsioListenMap m_listenMap;
+	j_socket_t m_listenSocket;
+	J_AsioDataBase *m_listenAsioData;
 	typedef std::map<j_socket_t, std::queue<J_AsioDataBase *> >AsioDataMap;
 	AsioDataMap m_readMap;
 	AsioDataMap m_writeMap;

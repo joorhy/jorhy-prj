@@ -10,6 +10,9 @@
 CControlManager::CControlManager()
 {
 	m_pCommandParser = NULL;
+#ifndef WIN32
+	signal(SIGPIPE, SIG_IGN);
+#endif
 }
 
 CControlManager::~CControlManager()
@@ -18,56 +21,117 @@ CControlManager::~CControlManager()
 		CParserFactory::Instance()->DelParser(m_nPort);
 }
 
-int CControlManager::StartService(int nPort, const char *pCommandType)
+j_result_t CControlManager::StartService(j_int32_t nPort, const j_char_t *pCommandType)
 {
 	m_nPort = nPort;
+	m_serviceType = pCommandType;
+	m_asio.Init();
+	m_asioData.ioAccept.peerPort = nPort;
+	m_asioData.ioUser = this;
+	m_asio.Listen(&m_asioData);
+	
 	m_pCommandParser = CParserFactory::Instance()->GetParser(nPort, pCommandType);
 	if (m_pCommandParser == NULL)
 		return J_UNKNOW;
 		
-	return Start(nPort);
+	return J_OK;
 }
 
-int CControlManager::StopService()
+j_result_t CControlManager::StopService()
 {
 	if (m_pCommandParser != NULL)
 	{
 		delete m_pCommandParser;
 		m_pCommandParser = NULL;
 	}
-	return Stop();
-}
-
-///CXService
-int CControlManager::OnAccept(j_socket_t nSocket, const char *pAddr, short nPort)
-{
-	m_pCommandParser->AddUser(nSocket, pAddr, nPort);
+	m_asio.Deinit();
+	
 	return J_OK;
 }
 
-int CControlManager::OnRead(j_socket_t nSocket)
+///AsioUser
+void CControlManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 {
-	int write_len = 0;
-	char *write_buff = NULL;
-	m_pCommandParser->ProcessRequest(nSocket, write_buff, write_len);
-	if (write_len > 0)
+	j_socket_t nSocket;
+	nSocket.sock = pAsioData->ioAccept.subHandle;
+	//struct in_addr addr_in = {0};
+	//addr_in.s_addr = pAsioData->ioAccept.peerIP;
+	//m_pCommandParser->AddUser(nSocket, inet_ntoa(addr_in), pAsioData->ioAccept.peerPort);
+
+	m_asio.AddUser(nSocket, this);
+	J_AsioDataBase *pDataBase = new J_AsioDataBase;
+	memset(pDataBase, 0, sizeof(J_AsioDataBase));
+	pDataBase->ioRead.buf = new j_char_t[2048];
+	if (m_serviceType == "mcsp")
 	{
-		J_OS::CTCPSocket writeSocket(nSocket);
-        writeSocket.Write_n(write_buff, write_len);
-		delete write_buff;
+		pDataBase->ioRead.bufLen = -1;
+		pDataBase->ioRead.whole = true;
+		memcpy(pDataBase->ioRead.until_buf, "\r\n\r\n", 4);
 	}
-
-	return J_OK;
+	else if(m_serviceType == "josp")
+	{
+		pDataBase->ioRead.bufLen = sizeof(J_CtrlHead);
+		pDataBase->ioRead.whole = true;
+	}
+	pDataBase->ioUser = this;
+	pDataBase->ioCall = J_AsioDataBase::j_read_e;
+	pDataBase->ioHandle = nSocket.sock;
+	m_asio.Read(nSocket, pDataBase);
 }
 
-int CControlManager::OnWrite(j_socket_t nSocket)
+void CControlManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
-	usleep(1000);
-	return J_OK;
+	J_AsioDataBase *pDataBase = new J_AsioDataBase;
+	memset(pDataBase, 0, sizeof(J_AsioDataBase));
+	pDataBase->ioCall = J_AsioDataBase::j_write_e;
+	pDataBase->ioHandle = pAsioData->ioHandle;
+	pDataBase->ioUser = this;
+	j_result_t nResult = m_pCommandParser->ProcessRequest((J_AsioDataBase *)pAsioData, pDataBase);
+	if (nResult == J_OK)
+	{
+		j_socket_t nSocket;
+		nSocket.sock = pDataBase->ioHandle;
+		m_asio.Write(pDataBase->ioHandle, pDataBase);
+		if (pAsioData->ioRead.buf != NULL)
+			delete pAsioData->ioRead.buf;
+		delete pAsioData;
+		
+		J_AsioDataBase *pDataBase2 = new J_AsioDataBase;
+		memset(pDataBase2, 0, sizeof(J_AsioDataBase));
+		pDataBase2->ioRead.buf = new j_char_t[2048];
+		if (m_serviceType == "mcsp")
+		{
+			pDataBase2->ioRead.bufLen = -1;
+			pDataBase2->ioRead.whole = true;
+			memcpy(pDataBase2->ioRead.until_buf, "\r\n\r\n", 4);
+		}
+		else if(m_serviceType == "josp")
+		{
+			pDataBase2->ioRead.bufLen = sizeof(J_CtrlHead);
+			pDataBase2->ioRead.whole = true;
+		}
+		pDataBase2->ioUser = this;
+		pDataBase2->ioCall = J_AsioDataBase::j_read_e;
+		pDataBase2->ioHandle = nSocket.sock;
+		m_asio.Read(nSocket, pDataBase2);
+	}
+	else
+	{
+		delete pDataBase;
+		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
+	}
 }
 
-int CControlManager::OnBroken(j_socket_t nSocket)
+void CControlManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 {
-    m_pCommandParser->DelUser(nSocket);
-	return J_OK;
+	if (pAsioData->ioWrite.buf != NULL)
+		delete pAsioData->ioWrite.buf;
+	delete pAsioData;
+}
+
+void CControlManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
+{
+	printf("CControlManager::OnBroken %d\n", pAsioData->ioHandle);
+    m_pCommandParser->DelUser(pAsioData->ioHandle);
+	m_asio.DelUser(pAsioData->ioHandle);
 }

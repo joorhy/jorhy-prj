@@ -24,7 +24,7 @@ class CRymcParser : public J_CommandParser
 
 	public:
 		virtual int AddUser(j_socket_t nSocket, const j_char_t *pAddr, j_int16_t nPort);
-		virtual	int ProcessRequest(j_socket_t nSocket, j_char_t *&pResponse, j_int32_t &nRespLen);
+		virtual	int ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out);
 		virtual	int DelUser(j_socket_t nSocket);
 
 	private:
@@ -33,7 +33,16 @@ class CRymcParser : public J_CommandParser
 		int RecordSearch(const char *pResid, time_t beginTime, time_t endTime);
 
 	private:
+		enum
+		{
+			RYMC_HEAD,
+			RYMC_BODY,
+			RYMC_FINISH,
+		};
 		CDeviceControl m_deviceControl;
+		j_char_t m_read_buff[2048];
+		j_int32_t m_read_len;
+		j_int32_t m_state;
 };
 
 PARSER_BEGIN_MAKER(mcsp)
