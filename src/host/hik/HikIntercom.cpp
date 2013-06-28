@@ -77,13 +77,17 @@ int CHikIntercom::StartVoice()
 		return J_DEV_BROKEN;
 	}
 
-	pthread_create(&sendThread, NULL, CHikIntercom::WorkThread, this);
+	j_thread_parm parm = {0};
+	parm.entry = CHikIntercom::WorkThread;
+	parm.data = this;
+	sendThread.Create(parm);
 
 	return J_OK;
 }
 
 int CHikIntercom::StopVoice()
 {
+	sendThread.Release();
 	return J_OK;
 }
 

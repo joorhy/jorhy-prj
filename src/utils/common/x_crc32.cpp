@@ -68,7 +68,7 @@ unsigned int crc32_table[256] =
 	0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4
 };
 
-unsigned long get_crc32(const char *buffer, unsigned int size)
+CRC_DLLAPI unsigned long get_crc32(const char *buffer, unsigned int size)
 {
 	unsigned long crc32_reg = 0xFFFFFFFF;
 	unsigned long cntByte,temp1,temp2,temp3;

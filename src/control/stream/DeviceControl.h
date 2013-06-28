@@ -3,7 +3,7 @@
 #include "RecordMediaObj.h"
 #include "x_timer.h"
 
-class CDeviceControl
+class JO_API CDeviceControl
 {
 public:
 	CDeviceControl();

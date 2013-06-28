@@ -11,7 +11,7 @@ class CHikStreamBase : public J_MediaStream
 class CHikStream : public J_BaseVideoStream<CHikStreamBase>
 {
 public:
-	CHikStream(void *pTCPSocket, std::string resid);
+	CHikStream(void *pTCPSocket, j_string_t resid);
 	~CHikStream();
 
 public:
@@ -32,13 +32,13 @@ private:
 	};
 	j_socket_t m_nSocket;
 
-	pthread_t m_recvThread;
-	bool m_bStartup;
+	CJoThread m_recvThread;
+	j_boolean_t m_bStartup;
 	char *m_pRecvBuff;//[100 * 1024];
 	void *m_pTCPSocket;
 
 	CHikParser2 m_parser;
-	std::string m_resid;
+	j_string_t m_resid;
 
 	J_OS::TLocker_t m_locker;
 	J_AsioDataBase m_asioData;

@@ -47,7 +47,6 @@ private:
 	}
 	void OnListen();
 
-	void ModifyListen();
 	void EnableKeepalive(j_socket_t nSocket);
 	int ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData);
 	int ProcessIoEvent(j_socket_t nSocket, int nType);

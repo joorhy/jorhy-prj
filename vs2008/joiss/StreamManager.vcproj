@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../src/core;../../src/misc;../../src/utils;../../src/control/stream;../../src/control/record"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;STREAMMANAGER_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

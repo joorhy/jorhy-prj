@@ -8,6 +8,7 @@
 #include <Mstcpip.h>
 #include <windows.h>
 #include <ws2tcpip.h>
+#include <iphlpapi.h>
 #else
 #include <stdint.h>
 #include <pthread.h>
@@ -62,6 +63,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <stdexcept>
 
 #include "x_errtype.h"
 
@@ -84,6 +86,8 @@ typedef unsigned long long 			j_uint64_t;
 typedef std::string							j_string_t;	
 typedef std::vector<j_string_t>		j_vec_str_t;
 
+typedef unsigned char					j_uuid_t[16];
+
 #ifdef WIN32
 #define j_thread_t						HANDLE
 #define j_invalid_thread_val		NULL
@@ -105,6 +109,12 @@ typedef std::vector<j_string_t>		j_vec_str_t;
 #else
 #define j_sleep(x)	usleep(x*1000)
 #define j_close_socket(x)	close(x)
+#endif
+
+#ifdef WIN32
+#define j_atoll(x) _atoi64(x)
+#else
+#define j_atoll(x) atoll(x)
 #endif
 
 #ifdef WIN32

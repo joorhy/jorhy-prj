@@ -28,16 +28,26 @@ private:
 		(static_cast<CHikVodStream *>((void *)pUser))->ExchangeData();
 	}
 	void ExchangeData();
+
+#ifdef WIN32
+	static unsigned X_JO_API WorkThread(void *param)
+#else
 	static void *WorkThread(void *param)
+#endif
 	{
 		(static_cast<CHikVodStream *>(param))->OnWork();
-		return (void *)0;
+		return 0;
 	}
 	void OnWork();
+
+#ifdef WIN32
+	static unsigned X_JO_API ParserThread(void *param)
+#else
 	static void *ParserThread(void *param)
+#endif
 	{
 		(static_cast<CHikVodStream *>(param))->OnParser();
-		return (void *)0;
+		return 0;
 	}
 	void OnParser();
 	void Convert2HikTime(time_t utcTime, HikTime &hikTime);
@@ -52,30 +62,30 @@ private:
 	J_OS::CTCPSocket *m_recvSocket;
 	J_OS::CTimer m_timer;
 
-	pthread_t m_parserThread;
-	pthread_t m_recvThread;
-	bool m_bPlay;
-	char *m_pRecvBuff;
-	char *m_pPackBuff;
+	CJoThread m_parserThread;
+	CJoThread m_recvThread;
+	j_boolean_t m_bPlay;
+	j_char_t *m_pRecvBuff;
+	j_char_t *m_pPackBuff;
 
 	CHikParser m_parser;
-	bool m_bPaused;
-	unsigned int m_fileTotleLen;
+	j_boolean_t m_bPaused;
+	j_uint32_t m_fileTotleLen;
 
 	FILE *m_pWrite;
 	FILE *m_pRead;
 	J_OS::TLocker_t m_fileLock;
-	unsigned long m_fileLen;
-	unsigned long m_readFileLen;
+	j_uint32_t m_fileLen;
+	j_uint32_t m_readFileLen;
 
-	int m_nChannelNum;
-	bool m_bEndFile;
-	bool m_bFirstFile;
+	j_int32_t m_nChannelNum;
+	j_boolean_t m_bEndFile;
+	j_boolean_t m_bFirstFile;
 
-	unsigned int m_nLastRecvTime;	//单位 ms
-	unsigned int m_nDuration;
-	std::queue<std::string> m_fileQue;
-	std::string m_curFileName;
+	j_uint32_t m_nLastRecvTime;	//单位 ms
+	j_uint32_t m_nDuration;
+	std::queue<j_string_t> m_fileQue;
+	j_string_t m_curFileName;
 };
 
 #endif //~__HIKVODSTREAM_H_

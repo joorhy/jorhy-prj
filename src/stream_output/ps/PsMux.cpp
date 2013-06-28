@@ -58,11 +58,11 @@ int CPsMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *
 	return J_OK;
 }
 
-int CPsMux::MakePESHead(char *pHead, int nDataLen, uint64_t timeStamp, bool isAudio)
+int CPsMux::MakePESHead(char *pHead, int nDataLen, j_uint64_t timeStamp, bool isAudio)
 {
 		memset(pHead, 0, 20);
 		int nLen = nDataLen + 14;
-		uint64_t uPts = timeStamp * 90;//CTime::Instance()->GetLocalTime(0) * 90;
+		j_uint64_t uPts = timeStamp * 90;//CTime::Instance()->GetLocalTime(0) * 90;
 		///封装PES头
 		pHead[0] = 0x00; pHead[1] = 0x00; pHead[2] = 0x01; pHead[3] = 0xE0;//Packetized Elementary Stream Header
 		if (isAudio)
@@ -88,13 +88,13 @@ int CPsMux::MakePESHead(char *pHead, int nDataLen, uint64_t timeStamp, bool isAu
 		return 20;
 }
 
-int CPsMux::MakePSHead(char *pHead, uint64_t timeStamp, int nRate)
+int CPsMux::MakePSHead(char *pHead, j_uint64_t timeStamp, int nRate)
 {
 	memset(pHead, 0, 20);
 	///封装PS头
 	pHead[0] = 0x00; pHead[1] = 0x00; pHead[2] = 0x01; pHead[3] = 0xBA;//Packed  Header
 
-	uint64_t uScr = timeStamp * 90;//CTime::Instance()->GetLocalTime(0) * 90;
+	j_uint64_t uScr = timeStamp * 90;//CTime::Instance()->GetLocalTime(0) * 90;
 	pHead[4] = (0x01 << 6) | (((uScr >> 30) & 0x07) << 3) | (0x01 << 2)  | ((uScr >> 28) & 0x03);
 	pHead[5] = ((uScr >> 20) & 0xFF);
 	pHead[6] = (((uScr >> 15) & 0x1f) << 3) | (0x01 << 2) | ((uScr >> 13) & 0x03);
@@ -102,7 +102,7 @@ int CPsMux::MakePSHead(char *pHead, uint64_t timeStamp, int nRate)
 	pHead[8] = ((uScr & 0x1f) << 3) | (0x01 << 2);
 	pHead[9] = 0x01;
 
-	uint32_t muxRate = (nRate * 1024 + (50 -1)) / 50;
+	j_uint64_t muxRate = (nRate * 1024 + (50 -1)) / 50;
 	pHead[10] = (muxRate >> 14) & 0xFF;
 	pHead[11] = (muxRate >> 6) & 0xFF;
 	pHead[12] = ((muxRate & 0x3F) << 2) | 0x03;

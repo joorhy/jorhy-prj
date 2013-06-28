@@ -63,7 +63,7 @@ int main(int argc,char **argv)
     signal(SIGINT, OnSignal);
 	while(bRun)
 	{
-		usleep(10000);
+		j_sleep(10);
 	}
 
 end:

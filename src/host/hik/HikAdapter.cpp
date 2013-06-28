@@ -7,7 +7,7 @@
 
 CHikAdapter::CHikAdapter(int nDvrId, const char *pAddr, int nPort,
 		const char *pUsername, const char *pPassword) :
-	m_userId(0), m_threadAlarm(0), m_pAlarmSock(NULL), m_bStartAlarm(false)
+	m_userId(0),  m_pAlarmSock(NULL), m_bStartAlarm(false)
 {
 	memset(m_remoteIP, 0, sizeof(m_remoteIP));
 	memset(m_username, 0, sizeof(m_username));
@@ -89,7 +89,10 @@ int CHikAdapter::EnableAlarm()
 		return J_INVALID_DEV;
 
 	m_bStartAlarm = true;
-	pthread_create(&m_threadAlarm, NULL, CHikAdapter::AlarmThread, this);
+	j_thread_parm parm = {0};
+	parm.entry = CHikAdapter::AlarmThread;
+	parm.data = this;
+	m_threadAlarm.Create(parm);
 
 	return J_OK;
 }
@@ -107,8 +110,7 @@ int CHikAdapter::DisableAlarm()
 		m_pAlarmSock = NULL;
 	}
 
-	pthread_cancel(m_threadAlarm);
-	pthread_join(m_threadAlarm, NULL);
+	m_threadAlarm.Release();
 
 	return J_OK;
 }
@@ -252,9 +254,13 @@ int CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 	int nRetDataLen = retHead.len - sizeof(HikRetHead);
 	if (nRetDataLen > 0)
 	{
-		char retDataBuf[nRetDataLen + 1];
-		if (cmdSocket.Read((char*) retDataBuf, nRetDataLen) < 0)
+		char *pRetDataBuf = new char[nRetDataLen + 1];
+		if (cmdSocket.Read((char*) pRetDataBuf, nRetDataLen) < 0)
+		{
+			delete pRetDataBuf;
 			return J_INVALID_DEV;
+		}
+		delete pRetDataBuf;
 	}
 
 	return J_OK;
@@ -263,6 +269,55 @@ int CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 int CHikAdapter::GetLocalNetInfo(unsigned long & ipAddr, unsigned char* mac)
 {
 	int ret = -1;
+#ifdef WIN32
+	PIP_ADAPTER_INFO pAdapterInfo;
+	PIP_ADAPTER_INFO pAdapter = NULL;
+	DWORD dwRetVal=0;
+	pAdapterInfo = (IP_ADAPTER_INFO*)malloc(sizeof(IP_ADAPTER_INFO));
+	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+	if(GetAdaptersInfo(pAdapterInfo,&ulOutBufLen) != ERROR_SUCCESS)
+	{
+		GlobalFree(pAdapterInfo);
+		pAdapterInfo=(IP_ADAPTER_INFO*)malloc(ulOutBufLen);
+	}
+
+	if((dwRetVal=GetAdaptersInfo(pAdapterInfo,&ulOutBufLen)) == NO_ERROR)
+	{
+		pAdapter=pAdapterInfo;
+		while(pAdapter)
+		{
+			if(strstr(pAdapter->Description,"PCI") >= 0//pAdapter->Description中包含"PCI"为：物理网卡
+				|| pAdapter->Type==71          //pAdapter->Type是71为：无线网卡
+				)
+			{
+				printf("--------\n");
+				printf("AdapterName:%s\n",pAdapter->AdapterName);
+				printf("AdapterDesc:%s\n",pAdapter->Description);
+				printf("AdapterAddr:");
+				for(UINT i=0;i<pAdapter->AddressLength;i++)
+				{
+					sprintf((char *)(mac+2*i), "%02X",pAdapter->Address[i]);
+				}
+				printf("AdapterType:%d\n",pAdapter->Type);
+				printf("IPAddress:%s\n",pAdapter->IpAddressList.IpAddress.String);
+				printf("IPMask:%s\n",pAdapter->IpAddressList.IpMask.String);
+			}
+			pAdapter=pAdapter->Next;
+		}
+		//可能网卡有多IP,因此通过循环去判断
+		IP_ADDR_STRING *pIpAddrString =&(pAdapter->IpAddressList);
+		do 
+		{
+			ipAddr = inet_addr(pIpAddrString->IpAddress.String);
+			pIpAddrString=pIpAddrString->Next;
+		} while (pIpAddrString);
+	}
+	else
+	{
+		printf("CalltoGetAdaptersInfofailed\n");
+	}
+
+#else
 	const char* devname = "eth0";
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	struct ifreq req;
@@ -284,6 +339,7 @@ int CHikAdapter::GetLocalNetInfo(unsigned long & ipAddr, unsigned char* mac)
 		}
 	}
 	close(sock);
+#endif
 
 	return ret;
 }

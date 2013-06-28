@@ -53,7 +53,7 @@ const char *CMCManager::GetResList()
 	pXmlDoc->LinkEndChild(pRootElement);
 	pRootElement->SetAttribute("id", "0");
 	pRootElement->SetAttribute("ipAddr", "192.168.1.106");
-	pRootElement->SetAttribute("desc", "视频主目录");
+	pRootElement->SetAttribute("desc", "video directory");
 	TiXmlElement *pChannelElement = NULL;
 
 	if (mysql_query(m_conn, sql_buff))
@@ -98,22 +98,22 @@ int CMCManager::GetRcdList(const char *pResid, time_t begin_time, time_t end_tim
 	time_t cur_end = 0;
 	while ((dbRow = mysql_fetch_row(dbResult)) != NULL)
 	{
-		cur_begin = atoll(dbRow[0]);
+		cur_begin = j_atoll(dbRow[0]);
 		if (cur_end == 0)//初始化
 		{
 			begin = cur_begin;
-			cur_end = atoll(dbRow[1]);
+			cur_end = j_atoll(dbRow[1]);
 		}
 		else if (cur_end - cur_begin > 5)
 		{
 			J_FileInfo *pInfo = (J_FileInfo *)(pDataBuff + nOffset);
 			pInfo->tStartTime = begin;
-			pInfo->tStoptime = atoll(dbRow[1]); 
+			pInfo->tStoptime = j_atoll(dbRow[1]); 
 			nOffset += sizeof(J_FileInfo);
 			cur_end = 0;
 		}
 		else
-			cur_end = atoll(dbRow[1]);
+			cur_end = j_atoll(dbRow[1]);
 	}
 	J_FileInfo *pInfo = (J_FileInfo *)(pDataBuff + nOffset);
 	pInfo->tStartTime = begin;

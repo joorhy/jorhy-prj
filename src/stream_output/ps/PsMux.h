@@ -22,10 +22,10 @@ public:
 	virtual int Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0);
 
 private:
-	int MakePESHead(char *pHead, int nDataLen, uint64_t timeStamp, bool isAudio = false);
-	int MakePSHead(char *pHead, uint64_t timeStamp, int nRate);
+	int MakePESHead(char *pHead, int nDataLen, j_uint64_t timeStamp, bool isAudio = false);
+	int MakePSHead(char *pHead, j_uint64_t timeStamp, int nRate);
 	int MakePSMHead(char *pHead, bool isAudio = false);
-	uint32_t GetTickCount();
+	j_uint32_t GetTickCount();
 
 private:
 	int m_nSeqNum;

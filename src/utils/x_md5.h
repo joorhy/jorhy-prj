@@ -22,6 +22,18 @@ documentation and/or software.
 #include <time.h>
 #include <string.h>
 
+#ifdef WIN32
+
+#ifdef UTILS_LIB_EXPORTS
+#define MD5_DLLAPI	_declspec(dllexport)
+#else
+#define MD5_DLLAPI	_declspec(dllimport)
+#endif
+
+#else
+#define MD5_DLLAPI
+#endif
+
 #define MD 5
 
 /* GLOBAL.H - RSAREF types and constants
@@ -145,10 +157,10 @@ Rotation is separate from addition to prevent recomputation.
  (a) = ROTATE_LEFT ((a), (s)); \
  (a) += (b); \
   }
-void MD5Init (MD5_CTX *context);
-void MD5Update(MD5_CTX *context, unsigned char *input,unsigned int inputLen);
+void MD5_DLLAPI MD5Init (MD5_CTX *context);
+void MD5_DLLAPI MD5Update(MD5_CTX *context, unsigned char *input,unsigned int inputLen);
+void MD5_DLLAPI MD5Final (unsigned char digest[16], MD5_CTX *context);
 
-void MD5Final (unsigned char digest[16], MD5_CTX *context);
 static void MD5Transform  (UINT4 [4], unsigned char [64]) ;
 static void Encode(unsigned char *, UINT4 *, unsigned int);
 static void Decode (UINT4 *, unsigned char *, unsigned int);

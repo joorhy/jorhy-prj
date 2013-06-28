@@ -6,7 +6,7 @@
 
 typedef int (*J_MakeMuxFun)(J_Obj *&);
 
-class CMuxFactory : public SingletonTmpl<CMuxFactory>
+class JO_API CMuxFactory : public SingletonTmpl<CMuxFactory>
 {
 	typedef std::map<std::string, J_MakeMuxFun> MuxRegistMap;
 	typedef std::map<void *, J_MuxFilter *> MuxMap;

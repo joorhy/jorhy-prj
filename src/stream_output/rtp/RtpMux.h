@@ -13,7 +13,7 @@ public:
 	~rtp_helper();
 
 protected:
-	int get_rtp_head(char *head, int i_length, int payload_type, uint64_t timeStamp, bool is_video, bool is_mark);
+	int get_rtp_head(char *head, int i_length, int payload_type, j_uint64_t timeStamp, j_boolean_t is_video, j_boolean_t is_mark);
 
 public:
 	typedef struct rtp_head_s
@@ -62,8 +62,8 @@ public:
 	virtual int Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0);
 
 private:
-	int PrepareAudioData(const char *pData, int nLen, uint64_t timeStamp, char *pOutputData, int &nOutLen);
-	int PrepareVideoData(const char *pData, int nLen, uint64_t timeStamp, char *pOutputData, int &nOutLen);
+	int PrepareAudioData(const char *pData, int nLen, j_uint64_t timeStamp, char *pOutputData, int &nOutLen);
+	int PrepareVideoData(const char *pData, int nLen, j_uint64_t timeStamp, char *pOutputData, int &nOutLen);
 
 protected:
 	typedef struct  nalu_header_s

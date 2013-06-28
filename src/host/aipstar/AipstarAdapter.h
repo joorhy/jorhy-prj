@@ -39,7 +39,11 @@ private:
 	j_char_t *GetRemotePw() const { return (j_char_t *)m_password; }
 	HANDLE GetClientHandle() const { return m_devHandle; }
 
+#ifdef WIN32 
+	static BOOL CALLBACK OnConnectCallBack(HANDLE hHandle, BOOL bConnect, unsigned int dResult, void *context)
+#else
 	static BOOL OnConnectCallBack(HANDLE hHandle, BOOL bConnect, unsigned int dResult, void *context)
+#endif
 	{
 		printf("connect = %d\n", bConnect);
 		CAipstarAdapter *pThis = static_cast<CAipstarAdapter *>(context);

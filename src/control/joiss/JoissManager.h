@@ -4,7 +4,7 @@
 #include "DeviceControl.h"
 #include "sqlite3.h"
 
-class CJoissManager
+class JO_API CJoissManager
 {
 public:
     CJoissManager();

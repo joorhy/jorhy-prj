@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../src/utils"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JSON_LIB_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;UTILS_LIB_EXPORTS;TINYXML_LIB_EXPORTS;JSON_LIB_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				ModuleDefinitionFile=""
+				ModuleDefinitionFile="../../src/utils/sqlite3/sqlite3.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -214,6 +214,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\utils\faac\psychkni.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\utils\sqlite3\sqlite3.def"
 				>
 			</File>
 			<File
@@ -391,10 +395,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\utils\sqlite3ext.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\utils\tinystr.h"
 				>
 			</File>
@@ -512,10 +512,6 @@
 		<Filter
 			Name="sqlite3"
 			>
-			<File
-				RelativePath="..\..\src\utils\sqlite3\shell.c"
-				>
-			</File>
 			<File
 				RelativePath="..\..\src\utils\sqlite3\sqlite3.c"
 				>

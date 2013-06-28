@@ -92,6 +92,22 @@ void CXCond::Wait(CTLock &mutex)
 		mutex._Lock();
 }
 
+j_result_t CXCond::TimeWait(CTLock &mutex, j_uint32_t sec, j_uint32_t nsec)
+{
+	int nRet = 1;
+#ifdef WIN32
+#else
+	struct timespec tspec = {0};
+	tspec.tv_sec = time(0) + s; 
+	tspec.tvnsec = ns;
+	pthread_mutex_lock(&m_cond.mutex);
+	nRet = pthread_cond_timedwait(&m_cond.handle, &m_cond.mutex, &tspec);
+	pthread_mutex_unlock(&m_cond.mutex);
+#endif
+
+	return nRet > 0 ? J_OK : J_UNKNOW;
+}
+
 CPLock::CPLock()
 {
 	m_lock.hFile = j_invalid_filemap_val;

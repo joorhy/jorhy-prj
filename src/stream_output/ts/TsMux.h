@@ -29,11 +29,11 @@ public:
 	virtual int Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0);
 
 private:
-	int MakePESHead(char *pHead, int nDataLen, uint64_t timeStamp, bool isAudio = false);
+	int MakePESHead(char *pHead, int nDataLen, j_uint64_t timeStamp, j_boolean_t isAudio = false);
 	int MakePAT(char *pHead);
 	int MakePMT(char *pHead);
-	int MakePCR(char *pHead, uint64_t timeStamp);
-	int MakePacket(char *pHead, const char *pInputData, int nLen, bool bIsAudio = false, bool bIsStart = false);
+	int MakePCR(char *pHead, j_uint64_t timeStamp);
+	int MakePacket(char *pHead, const char *pInputData, int nLen, j_boolean_t bIsAudio = false, j_boolean_t bIsStart = false);
 
 private:
 	int m_nPATCounter;

@@ -5,8 +5,6 @@
 #include "x_adapter_manager.h"
 #include "x_parser_factory.h"
 
-#include <uuid.h>
-
 CControlManager::CControlManager()
 {
 	m_pCommandParser = NULL;

@@ -20,7 +20,11 @@ public:
 	virtual j_result_t Shutdown();
 
 protected:
+#ifdef WIN32
+	static void CALL_METHOD OnStreamCallBack(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE *pBuffer, void *pUser)
+#else
 	static void OnStreamCallBack(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, BYTE *pBuffer, void *pUser)
+#endif
 	{
 		CAironixStream *pThis = static_cast<CAironixStream *>(pUser);
 		if (pThis != NULL)

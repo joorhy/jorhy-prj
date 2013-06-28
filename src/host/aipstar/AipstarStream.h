@@ -26,7 +26,11 @@ public:
 	int Broken();
 
 protected:
+#ifdef WIN32
+	static int CALLBACK OnStreamCallBack(HANDLE hHandle, tmRealStreamInfo_t *streamInfo, void *context)
+#else
 	static int OnStreamCallBack(HANDLE hHandle, tmRealStreamInfo_t *streamInfo, void *context)
+#endif
 	{
 		CAipstarStream *pThis = static_cast<CAipstarStream *>(context);
 		if (pThis != NULL)

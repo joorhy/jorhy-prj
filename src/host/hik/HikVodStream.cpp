@@ -1,4 +1,5 @@
 #include "HikVodStream.h"
+#include "x_file.h"
 
 #define RECV_SIZE (1024 * 1024)
 #define PACKET_BUFF_SIZE (1024 * 1024)
@@ -16,8 +17,6 @@ CHikVodStream::CHikVodStream(void *pOwner, int nChannelNum)
 {
 	m_pRingBuffer = NULL;
 	m_recvSocket = NULL;
-	m_recvThread = 0;
-	m_parserThread = 0;
 	m_bPlay = false;
 	m_bPaused = false;
 	m_pWrite = NULL;
@@ -128,8 +127,15 @@ int CHikVodStream::Play(time_t beginTime, time_t endTime, CRingBuffer *&pRingBuf
 	m_timer.Create(3 * 1000, CHikVodStream::OnTimer, this);
 
 	m_bPlay = true;
-	pthread_create(&m_recvThread, NULL, CHikVodStream::WorkThread, this);
-	pthread_create(&m_parserThread, NULL, CHikVodStream::ParserThread, this);
+	/*j_thread_parm parm = {0};
+	parm.entry = CHikVodStream::WorkThread;
+	parm.data = this;
+	m_recvThread.Create(parm);
+
+	j_thread_parm parm2 = {0};
+	parm2.entry = CHikVodStream::ParserThread;
+	parm2.data = this;
+	m_parserThread.Create(parm2);*/
 
 	pRingBuffer = m_pRingBuffer;
 
@@ -144,11 +150,8 @@ int CHikVodStream::Stop()
 		return J_OK;
 
 	m_bPlay = false;
-	pthread_cancel(m_recvThread);
-	pthread_join(m_recvThread, NULL);
-
-	pthread_cancel(m_parserThread);
-	pthread_join(m_parserThread, NULL);
+	m_recvThread.Release();
+	m_parserThread.Release();
 
 	if (m_recvSocket != NULL)
 	{
@@ -244,7 +247,7 @@ void CHikVodStream::ExchangeData()
 
 void CHikVodStream::OnWork()
 {
-	pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
+	//pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
 	HikRecvFileHead recvFileHead;
 	while (true)
 	{
@@ -319,7 +322,7 @@ void CHikVodStream::OnWork()
 		{
 			J_OS::LOGINFO("CHikVodStream::OnWork() file state = %d", recvFileHead.state);
 		}
-		pthread_testcancel();
+		//pthread_testcancel();
 	}
 	J_OS::LOGINFO("CHikVodStream::OnWork pthread_exit");
 }
@@ -328,20 +331,20 @@ void CHikVodStream::OnParser()
 {
 	//char *pReadBuff = new char[8 * 1024];
 	char pReadBuff[8 * 1024] = {0};
-	bool bParser = true;
-	pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
+	j_boolean_t bParser = true;
+	//pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
 	while (true)
 	{
 		if (m_bPaused)
 		{
-			usleep(10000);
+			j_sleep(10);
 			continue;
 		}
 
 		if (CTime::Instance()->GetLocalTime(0) - m_nLastRecvTime >= m_nDuration)
 		{
 			int nRet = 0;
-			bool bGetOneFrameVideo = false;
+			j_boolean_t bGetOneFrameVideo = false;
 			do
 			{
 				J_StreamHeader streamHeader;
@@ -430,10 +433,10 @@ void CHikVodStream::OnParser()
 		}
 		else
 		{
-			usleep(1000);
+			j_sleep(1);
 		}
 
-		pthread_testcancel();
+		//pthread_testcancel();
 	}
 	J_OS::LOGINFO("CHikVodStream::OnParser pthread_exit");
 }
@@ -453,14 +456,8 @@ FILE *CHikVodStream::CreateFile()
 {
 	char tmpDir[32] = {0};
 	sprintf(tmpDir, "hik%u_%d", this, m_nChannelNum);
-	if (access(tmpDir, F_OK) != 0)
-	{
-		if (mkdir(tmpDir, S_IRWXU | S_IRWXG | S_IRWXO) < 0)
-		{
-			J_OS::LOGINFO("CHikVodStream::CreateFile mkdir error");
-			return NULL;
-		}
-	}
+	CXFile fileHelper;
+	fileHelper.CreateDir(tmpDir);
 
 	char fileName[128] = {0};
 	sprintf(fileName, "%s/%s_%d.mp4", tmpDir, CTime::Instance()->GetLocalTime().c_str(), this);
@@ -480,11 +477,8 @@ void CHikVodStream::ClearnQue()
 {
 	char tmpDir[32] = {0};
 	sprintf(tmpDir, "hik%u_%d", this, m_nChannelNum);
-	if (access(tmpDir, F_OK) != 0)
-	{
-			J_OS::LOGERROR("CHikVodStream::ClearnQue no Dir, %s", tmpDir);
-			return;
-	}
+	CXFile fileHelper;
+	fileHelper.CreateDir(tmpDir);
 
 	char shCmd[32] = {0};
 	sprintf(shCmd, "rm -rf %s", tmpDir);

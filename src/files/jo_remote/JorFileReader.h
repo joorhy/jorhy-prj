@@ -3,7 +3,7 @@
 #include "j_includes.h"
 #include "x_module_manager_def.h"
 #include "x_socket.h"
-#include <pthread.h>
+#include "x_thread.h"
 
 #include "JorFileHelper.h"
 
@@ -24,34 +24,38 @@ public:
 	virtual int GetPacket(char *pBuffer, J_StreamHeader &streamHeader);
 	virtual int Pause();
 	virtual int SetScale(float nScale = 1);
-	virtual int SetTime(uint64_t s_time, uint64_t e_time);
+	virtual int SetTime(j_uint64_t s_time, j_uint64_t e_time);
 	virtual int SetPosition(int nPos);
 	virtual int GetMediaData(j_uint64_t beginTime, int nIval);
 
 private:
-	int OpenFile(uint64_t s_time, uint64_t e_time);
+	int OpenFile(j_uint64_t s_time, j_uint64_t e_time);
 	void CloseFile();
+#ifdef WIN32
+	static unsigned X_JO_API WorkThread(void *pUser)
+#else
 	static void *WorkThread(void *pUser)
+#endif
 	{
 		CJorFileReader *pThis = (CJorFileReader *)pUser;
 			pThis->OnWork();
-		return (void *)0;
+		return 0;
 	}
 	void OnWork();
 
 private:
 	J_OS::CTCPSocket *m_recvSocket;
-	std::string m_resid;
+	j_string_t m_resid;
 	CJorFileHelper m_jorHelper;
-	bool m_bPaused;
+	j_boolean_t m_bPaused;
 	J_OS::TLocker_t m_locker;
 	
-	pthread_t m_thread;
-	pthread_mutex_t m_mux;
-	pthread_cond_t m_cond;
-	int m_lastTime;
+	CJoThread m_thread;
+	J_OS::CTLock m_mux;
+	J_OS::CXCond m_cond;
+	j_int32_t m_lastTime;
 	CRingBuffer *m_buffer;
-	bool m_bRun;
+	j_boolean_t m_bRun;
 };
 
 FILEREADER_BEGIN_MAKER(jorf)

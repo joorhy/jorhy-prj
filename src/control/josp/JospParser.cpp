@@ -1,8 +1,7 @@
 #include "JospParser.h"
 #include "x_md5.h"
-#include "x_socket.h"
 
-#include <uuid.h>
+#include "x_socket.h"
 
 CJospParser::CJospParser()
 {
@@ -21,6 +20,7 @@ int CJospParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
     memcpy(info.ip_addr, pAddr, strlen(pAddr));
     info.port = nPort;
     m_networkMap[nSocket] = info;
+	return J_OK;
 }
 
 int CJospParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out)
@@ -108,11 +108,11 @@ int CJospParser::OnLogin(j_socket_t nSocket, const char *pRequest, J_AsioDataBas
 	j_char_t *pResponse = NULL;
     if (m_ivsManager.CheckUser(loninData->user_name, loninData->pass_word))
     {
-        uuid_t userId;
-        uuid_generate(userId);
+        j_uuid_t userId;
+        //uuid_generate(userId);
         MD5_CTX context;
         MD5Init(&context);
-        MD5Update(&context, userId, sizeof(uuid_t));
+        MD5Update(&context, userId, sizeof(j_uuid_t));
         unsigned char md5[16];
         MD5Final(md5, &context);
         char userId_md5[33] = {0};

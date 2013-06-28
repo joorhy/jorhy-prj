@@ -12,7 +12,7 @@
 #define __DVR_DVS_TYPEDEF_H__
 
 #ifdef WIN32 ////////////////////�����Windowsƽ̨
-#include "stdafx.h"
+//#include "stdafx.h"
 typedef DWORD				THREAD_ID;
 
 //����PACKED ��Ҫ���ڽ����Windows�������һ��ʹ��#pragma pack(n)��Linux��һ��ʹ��__attribute__((packed))

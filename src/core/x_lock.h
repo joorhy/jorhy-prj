@@ -38,6 +38,7 @@ public:
 	void Single();
 	void Wait();
 	void Wait(CTLock &mutex);
+	j_result_t TimeWait(CTLock &mutex, j_uint32_t sec, j_uint32_t nsec);
 
 private:
 	j_cond_t m_cond;

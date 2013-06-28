@@ -36,7 +36,11 @@ private:
 	char *GetRemotePw() const { return (char *)m_password; }
 	LONG GetDevID() const { return m_devID; }
 
+#ifdef WIN32
+	static void CALLBACK OnConnectCallBack(LLONG hHandle, char *pDVRIP, LONG nDVRPort, LDWORD dwUser)
+#else
 	static void OnConnectCallBack(long hHandle, char *pDVRIP, int nDVRPort, long dwUser)
+#endif
 	{
 		CDahuaAdapter *pThis = reinterpret_cast<CDahuaAdapter *>(dwUser);
 		if (pThis != NULL)

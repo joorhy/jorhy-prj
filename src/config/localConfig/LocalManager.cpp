@@ -135,6 +135,7 @@ int CLocalManager::StopRecord()
 			}
 		}
 	}
+	return J_OK;
 }
 
 int CLocalManager::OpenDB()

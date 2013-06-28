@@ -295,18 +295,6 @@ void CRdAsio::OnListen()
 		ProcessAccept(active_fd, m_listenAsioData);
 	}
 }
-
-
-void CRdAsio::ModifyListen()
-{
-	m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
-	m_evListen.data.fd = m_listenSocket.sock;
-
-	if (epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, m_listenSocket.sock, &m_evListen) < 0)
-	{
-		J_OS::LOGERROR("CRdAsio::ModifyListen epoll set insertion error");
-	}
-}
 	
 void CRdAsio::EnableKeepalive(j_socket_t sock)
 {

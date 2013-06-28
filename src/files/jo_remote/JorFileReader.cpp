@@ -20,10 +20,11 @@ CJorFileReader::CJorFileReader(const char *pResid)
 	m_bRun = false;
 	m_buffer = new CRingBuffer(0, RECORD_BUFF_SIZE);
 	
-	pthread_mutex_init(&m_mux, NULL);
-	pthread_cond_init(&m_cond, NULL);
 	m_bRun = true;
-	pthread_create(&m_thread, NULL, WorkThread, this);
+	j_thread_parm parm = {0};
+	parm.entry = CJorFileReader::WorkThread;
+	parm.data = this;
+	m_thread.Create(parm);
 }
 
 CJorFileReader::~CJorFileReader()
@@ -31,11 +32,8 @@ CJorFileReader::~CJorFileReader()
 	if (m_bRun)
 	{
 		m_bRun = false;
-		pthread_cancel(m_thread);
-		pthread_join(m_thread, NULL);
+		m_thread.Release();
 	}
-	pthread_mutex_destroy(&m_mux);
-	pthread_cond_destroy(&m_cond);
 	if (m_buffer)
 		delete m_buffer;
 	
@@ -88,7 +86,7 @@ int CJorFileReader::SetScale(float nScale)
 	return J_OK;
 }
 
-int CJorFileReader::SetTime(uint64_t s_time, uint64_t e_time)
+int CJorFileReader::SetTime(j_uint64_t s_time, j_uint64_t e_time)
 {
 	OpenFile(s_time, e_time);
 	return J_OK;
@@ -103,13 +101,13 @@ int CJorFileReader::GetMediaData(j_uint64_t beginTime, int nIval)
 {
 	TLock(m_locker);
 	m_lastTime += 24*60*60*1000;
-	pthread_cond_signal(&m_cond);
+	m_cond.Single();
 	TUnlock(m_locker);
 	
 	return J_OK;
 }
 
-int CJorFileReader::OpenFile(uint64_t s_time, uint64_t e_time)
+int CJorFileReader::OpenFile(j_uint64_t s_time, j_uint64_t e_time)
 {
 	J_DeviceInfo info = {0};
 	//if (CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
@@ -151,16 +149,16 @@ void CJorFileReader::OnWork()
 	{
 		if (m_lastTime == 0)
 		{
-			pthread_mutex_lock(&m_mux);
-			pthread_cond_wait(&m_cond, &m_mux);
+			TLock(m_mux);
+			m_cond.Wait(m_mux);
 			m_jorHelper.ReadFile(m_recvSocket, m_resid.c_str(), 0, 2*60*1000);
 			//m_lastTime += 2*60*1000;
 			//nfd = m_recvSocket->GetHandle();
-			pthread_mutex_unlock(&m_mux);
+			TUnlock(m_mux);
 		}
 		if (m_buffer->GetIdleLength() != RECORD_BUFF_SIZE)
 		{
-			usleep(10000);
+			j_sleep(10);
 			continue;
 		}
 

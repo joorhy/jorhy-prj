@@ -25,7 +25,7 @@ char ascii[256] =
 };
 
 void
-base64_in (unsigned char *buf, char *obuf, int len)
+BASE64_DLLAPI base64_in (unsigned char *buf, char *obuf, int len)
 {
   int i;
   for (i = 0; i < len - 2; i += 3)
@@ -54,7 +54,7 @@ base64_in (unsigned char *buf, char *obuf, int len)
 }
 
 void
-base64_out (char *buf, unsigned char *obuf, int len)
+BASE64_DLLAPI base64_out (char *buf, unsigned char *obuf, int len)
 {
   int nprbytes;
   char *p = buf;

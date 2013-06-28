@@ -16,7 +16,17 @@
 #define INTEROP_RMLT_SCALE_FACTOR_7  22.0f
 #define INTEROP_RMLT_SCALE_FACTOR_14 33.0f
 
+#ifdef WIN32
 
+#ifdef JSON_LIB_EXPORTS
+#define G722_DLLAPI	_declspec(dllexport)
+#else
+#define G722_DLLAPI	_declspec(dllimport)
+#endif
+
+#else
+#define G722_DLLAPI
+#endif
 
 extern "C"
 {

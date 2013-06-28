@@ -6,7 +6,7 @@
 #define MAX_READ_SIZE 1024
 #define TEST_JO_UI
 
-class CControlManager : public J_AsioUser
+class JO_API CControlManager : public J_AsioUser
 {
 	public:
 		CControlManager();

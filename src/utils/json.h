@@ -12,11 +12,11 @@
 #ifndef _json_h_
 #define _json_h_
 
-#ifdef JSON_LIB_EXPORTS
+/*#ifdef JSON_LIB_EXPORTS
 #define DLLAPI	_declspec(dllexport)
 #else
 #define DLLAPI	_declspec(dllimport)
-#endif
+#endif*/
 
 #ifdef __cplusplus
 extern "C" {

@@ -3,7 +3,7 @@
 #include "j_includes.h"
 #include "x_singleton.h"
 
-class CXJoSdk : public SingletonTmpl<CXJoSdk>
+class JO_API CXJoSdk : public SingletonTmpl<CXJoSdk>
 {
 public:
 	CXJoSdk(int) {}

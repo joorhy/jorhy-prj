@@ -120,11 +120,11 @@ int CTsMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *
 	return J_OK;
 }
 
-int CTsMux::MakePESHead(char *pHead, int nDataLen, uint64_t timeStamp, bool isAudio)
+int CTsMux::MakePESHead(char *pHead, int nDataLen, j_uint64_t timeStamp, j_boolean_t isAudio)
 {
 		memset(pHead, 0, 20);
 		int nLen = nDataLen + 14;
-		uint64_t uPts = timeStamp * 90;//CTime::Instance()->GetLocalTime(0) * 90;
+		j_uint64_t uPts = timeStamp * 90;//CTime::Instance()->GetLocalTime(0) * 90;
 		//uint64_t uPts = CTime::Instance()->GetLocalTime(0) * 90;
 		//uint64_t uPts = 0;
 		///封装PES头
@@ -254,7 +254,7 @@ int CTsMux::MakePMT(char *pHead)
 	return J_OK;
 }
 
-int CTsMux::MakePCR(char *pHead, uint64_t timeStamp)
+int CTsMux::MakePCR(char *pHead, j_uint64_t timeStamp)
 {
 	memset(pHead, 0, 188);
 	pHead[0] = 0x47;		//sync_byte
@@ -265,7 +265,7 @@ int CTsMux::MakePCR(char *pHead, uint64_t timeStamp)
 	pHead[4] = 0xB7;		//adaptation_fileld_length
 	pHead[5] = 0x10;
 
-	uint64_t uPcr = timeStamp * 90;
+	j_uint64_t uPcr = timeStamp * 90;
 	//uint64_t uPcr = CTime::Instance()->GetLocalTime(0) * 90;
 	//uint64_t uPcr = m_videoStamp;
 	pHead[6] = (uPcr >> 25) & 0xFF;

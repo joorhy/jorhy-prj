@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../src/control/cms;../../src/core;../../src/misc;../../src/utils;../../src/control/stream;../../src/control/record"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JOISSMANAGER_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -202,6 +202,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\libs\windows\mysql\libmysql.lib"
+			>
+		</File>
+		<File
+			RelativePath="..\..\libs\windows\mysql\mysqlclient.lib"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

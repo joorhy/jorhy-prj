@@ -19,7 +19,7 @@ rtp_helper::~rtp_helper()
 
 }
 
-int rtp_helper::get_rtp_head(char *p_head, int i_length, int payload_type, uint64_t timeStamp, bool is_video, bool is_mark)
+int rtp_helper::get_rtp_head(char *p_head, int i_length, int payload_type, j_uint64_t timeStamp, j_boolean_t is_video, j_boolean_t is_mark)
 {
 	rtp_head_t *head = (rtp_head_t *)p_head;
 	head->vertion = 2;
@@ -97,7 +97,7 @@ int CRtpMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char 
 	return J_OK;
 }
 
-int CRtpMux::PrepareAudioData(const char *pData, int nLen, uint64_t timeStamp, char *pOutputData, int &nOutLen)
+int CRtpMux::PrepareAudioData(const char *pData, int nLen, j_uint64_t timeStamp, char *pOutputData, int &nOutLen)
 {
 	/*static FILE *fp_a = NULL;
 	if (!fp_a)
@@ -140,7 +140,7 @@ int CRtpMux::PrepareAudioData(const char *pData, int nLen, uint64_t timeStamp, c
 	return J_OK;
 }
 
-int CRtpMux::PrepareVideoData(const char *pData, int nLen, uint64_t timeStamp, char *pOutputData, int &nOutLen)
+int CRtpMux::PrepareVideoData(const char *pData, int nLen, j_uint64_t timeStamp, char *pOutputData, int &nOutLen)
 {
 	if (nLen <= 0)
 	{

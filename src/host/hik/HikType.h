@@ -57,24 +57,24 @@ major: bit 24 - 31
 #define 	HIK_CMD_START_RECORD_FILE   		0x030d00
 #define 	HIK_CMD_STOP_RECORD_FILE    		0x030d01
 
-#define 	HIK_CMD_MAIN_MAKE_IFRAME 			0x090100	 	//主码流产生I帧
-#define 	HIK_CMD_SUB_MAKE_IFRAME 			0x090101	 	//子码流产生I帧
+#define 	HIK_CMD_MAIN_MAKE_IFRAME 		0x090100	 	
+#define 	HIK_CMD_SUB_MAKE_IFRAME 			0x090101	 	
 
-#define	HIK_CMD_FIND_FILE					0x030100		//查找文件
-#define	HIK_CMD_PLAYBYFILE				0x030101		//按文件回放，建立连接
-#define	HIK_CMD_PLAYBYTIME				0x030102		//按时间回放，建立连接
-#define 	HIK_CMD_FILE_EXCHANGE			0x030109		//交互命令
-#define 	HIK_CMD_FIND_FILE_V3				0x111040		//搜索文件（V30版本）
+#define		HIK_CMD_FIND_FILE					0x030100		
+#define		HIK_CMD_PLAYBYFILE				0x030101		
+#define		HIK_CMD_PLAYBYTIME				0x030102		
+#define 	HIK_CMD_FILE_EXCHANGE			0x030109	
+#define 	HIK_CMD_FIND_FILE_V3				0x111040		
 
-#define	HIK_CMD_STARTPLAY				0x030103		//开始回放
-#define	HIK_CMD_SETPOS					0x030105		//按文件回放,改变播放的进度
-#define	HIK_CMD_PAUSE					0x030107		//暂停
-#define	HIK_CMD_RESTART				0x030108		//重新开始
-#define 	HIK_CMD_SETSPEED 	      	0x03010d    //设置下载的速度(SDK_V30版本支持)
+#define		HIK_CMD_STARTPLAY				0x030103		
+#define		HIK_CMD_SETPOS					0x030105		
+#define		HIK_CMD_PAUSE					0x030107		
+#define		HIK_CMD_RESTART				0x030108		
+#define 	HIK_CMD_SETSPEED 	      	0x03010d    
 
-//建立报警上传通道
-#define 	HIK_CMD_ALARMCHAN				0x030400		//建立报警上传通道(布防)
-#define 	HIK_CMD_ALARMCHAN_V30			0x111020	 //建立报警上传通道
+/*建立报警上传通道*/
+#define 	HIK_CMD_ALARMCHAN				0x030400		
+#define 	HIK_CMD_ALARMCHAN_V30			0x111020	 
 /*
  Hik Ptz sub command
  */
@@ -95,8 +95,8 @@ major: bit 24 - 31
 #define 	HIK_PTZ_ZOOM_OUT            12
 #define 	HIK_PTZ_FOCUS_NEAR          13
 #define 	HIK_PTZ_FOCUS_FAR           14
-#define 	HIK_PTZ_IRIS_OPEN       	 15  		/* 光圈以速度SS扩大 */
-#define 	HIK_PTZ_IRIS_CLOSE      	 16  		/* 光圈以速度SS缩小 */
+#define 	HIK_PTZ_IRIS_OPEN       	 15  	
+#define 	HIK_PTZ_IRIS_CLOSE      	 16  	
 /*
  values
  */
@@ -109,9 +109,9 @@ major: bit 24 - 31
  returned code
  */
 #define 	HIK_RET_OK              1
-#define 	HIK_NO_SUPPORT			   13		//设备不支持该操作
-#define 	HIK_ERROR_DATA				14		//客户端发送数据有误
-#define 	HIK_INVALID_ID          30		//无此用户
+#define 	HIK_NO_SUPPORT			   13		
+#define 	HIK_ERROR_DATA				14		
+#define 	HIK_INVALID_ID          30		
 
 /*
  Hik struct
@@ -211,38 +211,38 @@ struct HikDevConfig
 
 struct ViewSendData
 {
-	int channelNum;				//通道号
-	int streamType;				//流类型 0-主码流,1-子码流
+	int channelNum;		
+	int streamType;				
 };
 
 struct HikTime
 {
-	unsigned long ulYear;		//年
-	unsigned long ulMonth;		//月
-	unsigned long ulDay;			//日
-	unsigned long ulHour;		//时
-	unsigned long ulMinute; 	//分
-	unsigned long ulSecond;	 	//秒
+	unsigned long ulYear;		
+	unsigned long ulMonth;		
+	unsigned long ulDay;			
+	unsigned long ulHour;		
+	unsigned long ulMinute; 	
+	unsigned long ulSecond;	 	
 };
 
 struct HikFindFile
 {
-	int channelNum;				//通道号
-	int fileType;					//文件类型
-	int lockState;					//锁定状态
-	int needCardNum;				//是否需要卡号
-	char cardNum[20];				//卡号
-	HikTime beginTime;			//开始时间
-	HikTime endTime;				//结束时间
+	int channelNum;				
+	int fileType;					
+	int lockState;					
+	int needCardNum;				
+	char cardNum[20];				
+	HikTime beginTime;			
+	HikTime endTime;				
 };
 
-#define EXCHANGE						2	//交互命令, 每隔５秒给客户端发送命令
-#define NEEDRECVFILEHEAD			19	//按时间回放时需要接收文件头
-#define NEEDRECVDATA					20	//接收数据
-#define BYTIME_ALLFILEEND			21	//按时间回放时全部文件放完
-#define NEEDWAIT						25	//查找文件时需要等待
-#define FILELISTOVER					26	//文件查找完毕
-#define RECVFILEINFO					27	//接收文件信息
+#define EXCHANGE						2	
+#define NEEDRECVFILEHEAD			19	
+#define NEEDRECVDATA					20	
+#define BYTIME_ALLFILEEND			21	
+#define NEEDWAIT						25	
+#define FILELISTOVER					26	
+#define RECVFILEINFO					27	
 
 struct HikFindFileRet
 {
@@ -263,37 +263,37 @@ struct HikFileInfo
 
 typedef struct HikPlayByFileRet
 {
-	unsigned int fileLength;			//文件长度
-	unsigned int totleTime;				//文件总时间(秒)
-	unsigned int totleFrame;			//文件总帧数
-	unsigned int headLength;			//文件头长度
+	unsigned int fileLength;			
+	unsigned int totleTime;				
+	unsigned int totleFrame;			
+	unsigned int headLength;		
 } HikPlayByTimeHead;
 
 struct HikPlayByTime
 {
-	int channelNum;				//通道号
-	HikTime beginTime;			//开始时间
-	HikTime endTime;				//结束时间
+	int channelNum;			
+	HikTime beginTime;		
+	HikTime endTime;		
 };
 
 struct HikPlayByTimeRet
 {
-	char totleLen[8];				//总长度,保留
-	char reserve[16];				//保留
-	unsigned int headLength;	//文件头长度
+	char totleLen[8];	
+	char reserve[16];		
+	unsigned int headLength;	
 };
 
 struct HikRecvFileHead
 {
-	unsigned int length;				//数据长度
-	unsigned int state;				//接收状态
+	unsigned int length;				
+	unsigned int state;			
 };
 
 struct HikPtzData
 {
-	unsigned int channelNum;		//通道号
-	unsigned int cmd;					//控制命令
-	unsigned int param;				//参数
+	unsigned int channelNum;	
+	unsigned int cmd;					
+	unsigned int param;				
 };
 
 struct HikRecvAlarmHead
@@ -304,20 +304,20 @@ struct HikRecvAlarmHead
 
 struct HikAlarmInfo
 {
-	unsigned long ulAlarmType;				/*0-信号量报警, 1-硬盘满, 2-信号丢失，3－移动侦测，4－硬盘未格式化,5-写硬盘出错,6-遮挡报警，7-制式不匹配, 8-非法访问*/
-	unsigned long ulAlarmInputNumber;	/*按位,第0位对应第0个输入端口,dwAlarmType为0时需要设置*/
-	unsigned long ulAlarmOutputNumber;	/*按位,第0位对应第0个输出端口, */
-	unsigned long ulAlarmRelateChannel;	/*按位，第0位对应第0个通道*/
-	unsigned long ulChannel;				/*按位,第0位对应第0个通道，dwAlarmType为2或3,6时需要设置*/
-	unsigned long ulDiskNumber;			/*按位,第0位对应第0个硬盘,dwAlarmType为1,4,5时需要设置*/
+	unsigned long ulAlarmType;				
+	unsigned long ulAlarmInputNumber;	
+	unsigned long ulAlarmOutputNumber;	
+	unsigned long ulAlarmRelateChannel;	
+	unsigned long ulChannel;				
+	unsigned long ulDiskNumber;			
 };
 
 ///语音对讲
-#define 	HIK_GET_COMPRESSCFG_ADX			0x110042		//获取对讲音频压缩参数
-#define 	HIK_SET_COMPRESSCFG_ADX			0x110043		//设置对讲音频压缩参数
-#define	HIK_GET_COMPRESSCFG_AUD_EX		0x110044		//获取当前生效的对讲音频压缩参数
-#define	HIK_START_VOICECOM				0x030500		//开始语音对讲
-#define 	HIK_START_VOICECOM_V30			0x111030		//开始语音对象（SDK_V30版本支持）
+#define 	HIK_GET_COMPRESSCFG_ADX			0x110042		
+#define 	HIK_SET_COMPRESSCFG_ADX			0x110043		
+#define	HIK_GET_COMPRESSCFG_AUD_EX		0x110044		
+#define	HIK_START_VOICECOM				0x030500	
+#define 	HIK_START_VOICECOM_V30			0x111030		
 
 struct HikReserve4
 {
@@ -326,9 +326,8 @@ struct HikReserve4
 
 struct HikRecvVoiceHead
 {
-	unsigned int length;				//数据长度
-	unsigned int state;				//接收状态
+	unsigned int length;				
+	unsigned int state;				
 };
 
 #endif //~ __HikType_h_
-

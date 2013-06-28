@@ -109,7 +109,7 @@ int CDahuaChannel::PtzControl(int nCmd, int nParam)
 	else
 	{
 		int nSpeed = nParam / 32 + 1;
-		int nSpeed2 = sqrt(nSpeed * nSpeed / 2);
+		int nSpeed2 = sqrt((double)(nSpeed * nSpeed / 2));
 		switch (nCmd)
 		{
 		case jo_ptz_up:

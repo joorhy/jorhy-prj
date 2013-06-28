@@ -6,7 +6,7 @@
 #include "x_file.h"
 #include "x_lock.h"
 #include "x_timer.h"
-#include <pthread.h>
+#include "x_thread.h"
 
 class CNvrFileReader : public J_FileReader
 {
@@ -22,18 +22,18 @@ public:
 
 public:
 	virtual int GetContext(J_MediaContext *&mediaContext);
-	virtual int GetPacket(char *pBuffer, J_StreamHeader &streamHeader);
+	virtual int GetPacket(j_char_t *pBuffer, J_StreamHeader &streamHeader);
 	virtual int Pause();
 	virtual int SetScale(float nScale = 1);
-	virtual int SetTime(uint64_t s_time, uint64_t e_time);
-	virtual int SetPosition(int nPos);
-	virtual int GetMediaData(j_uint64_t beginTime, int nIval);
+	virtual int SetTime(j_uint64_t s_time, j_uint64_t e_time);
+	virtual int SetPosition(j_int32_t nPos);
+	virtual int GetMediaData(j_uint64_t beginTime, j_int32_t nIval);
 
 private:
-	int ListRecord(uint64_t beginTime, uint64_t endTime);
+	int ListRecord(j_uint64_t beginTime, j_uint64_t endTime);
 	int OpenFile();
 	void CloseFile();
-	int CalcPosition(uint64_t timeStamp, uint32_t interval = 120);
+	int CalcPosition(j_uint64_t timeStamp, j_uint32_t interval = 120);
 
 	static void TimerThread(unsigned long ulUser)
 	{
@@ -42,40 +42,44 @@ private:
 			pThis->OnTimer();
 	}
 	void OnTimer();
+#ifdef WIN32
+	static unsigned X_JO_API WorkThread(void *pUser)
+#else
 	static void *WorkThread(void *pUser)
+#endif
 	{
 		CNvrFileReader *pThis = (CNvrFileReader *)pUser;
 			pThis->OnWork();
-		return (void *)0;
+		return 0;
 	}
 	void OnWork();
 
 private:
-	typedef std::list<std::string> RecordMap;
+	typedef std::list<j_string_t> RecordMap;
 	RecordMap m_fileVec;
-	typedef std::map<uint64_t, J_FrameHeader> FrameMap;
+	typedef std::map<j_uint64_t, J_FrameHeader> FrameMap;
 	FrameMap m_frameMap;
 	FrameMap m_iFrameMap;
-	std::string m_resid;
+	j_string_t m_resid;
 	J_OS::CTimer m_timer;
 	J_OS::TLocker_t m_locker;
 
 	CXFile m_file;
 	FILE *m_pFileId;
 	float m_nScale;
-	bool m_bPaused;
-	bool m_bGoNext;
+	j_boolean_t m_bPaused;
+	j_boolean_t m_bGoNext;
 	long m_fileEnd;
 	J_StreamHeader m_nextHeader;
-	volatile uint64_t m_nextTimeStamp;
+	volatile j_uint64_t m_nextTimeStamp;
 	
-	pthread_t m_thread;
-	pthread_mutex_t m_mux;
-	pthread_cond_t m_cond;
-	int m_lastTime;
+	CJoThread m_thread;
+	J_OS::CTLock m_mux;
+	J_OS::CXCond m_cond;
+	j_int32_t m_lastTime;
 	CRingBuffer *m_buffer;
-	char *m_pBuffer;
-	bool m_bRun;
+	j_char_t *m_pBuffer;
+	j_boolean_t m_bRun;
 };
 
 FILEREADER_BEGIN_MAKER(jofs)

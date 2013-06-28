@@ -2,10 +2,6 @@
 #include "x_errtype.h"
 #include "x_jo_sdk.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <arpa/inet.h>
-
 CJospHelper::CJospHelper()
 {
 	m_nSeq = 0;

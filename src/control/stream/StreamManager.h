@@ -12,7 +12,7 @@
 
 #define IS_CLOSE_CMD(x)	(jo_stop_real == (x) || jo_stop_vod == (x) || jo_stop_voice == (x))
 
-class CStreamManager : public J_AsioUser
+class JO_API CStreamManager : public J_AsioUser
 {
 	public:
 		CStreamManager();

@@ -322,24 +322,24 @@ bool CRtspFilter::GetConfig(const char *pData, int nLen)
 	if (!(((fixedHeader[0] & 0xFF) == 0xFF) && ((fixedHeader[1] & 0xF0) == 0xF0)))
 		return false;
 
-	uint8_t profile = (fixedHeader[2] & 0xC0) >> 6;
+	j_uint8_t profile = (fixedHeader[2] & 0xC0) >> 6;
 	if (profile == 3)
 	{
 		J_OS::LOGINFO("Bad profile: 3 in first frame of ADTS");
 		return false;
 	}
 
-	uint8_t sampling_frequency_index = (fixedHeader[2] & 0x3C) >> 2;
+	j_uint8_t sampling_frequency_index = (fixedHeader[2] & 0x3C) >> 2;
 	if (samplingFrequencyTable[sampling_frequency_index] == 0)
 	{
 		J_OS::LOGINFO("Bad sampling_frequency_index: in first frame of ADTS");
 		return false;
 	}
 
-	uint8_t channel_configuration = ((fixedHeader[2] & 0x01) << 2) | ((fixedHeader[3] & 0xC0) >> 6);
+	j_uint8_t channel_configuration = ((fixedHeader[2] & 0x01) << 2) | ((fixedHeader[3] & 0xC0) >> 6);
 
-	unsigned char audioSpecificConfig[2] = {0};
-	u_int8_t audioObjectType = profile + 1;
+	j_uint8_t audioSpecificConfig[2] = {0};
+	j_uint8_t audioObjectType = profile + 1;
 	audioSpecificConfig[0] = (audioObjectType << 3) | (sampling_frequency_index >> 1);
 	audioSpecificConfig[1] = (sampling_frequency_index << 7) | (channel_configuration << 3);
 	sprintf(m_config, "%02X%02X", audioSpecificConfig[0] & 0xFF, audioSpecificConfig[1] & 0xFF);
@@ -374,7 +374,7 @@ int CRtspFilter::ParserUri(const char *request)
 		{
 			CXFloat2 u_npt("Range: npt=", "-");
 			x_string >> u_npt;
-			m_beginTime = (uint64_t)(u_npt() * 1000);
+			m_beginTime = (j_uint64_t)(u_npt() * 1000);
 		}
 
 		CXInteger64U u_end("end=", "&");

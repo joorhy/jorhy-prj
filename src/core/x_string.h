@@ -1,10 +1,6 @@
 #ifndef __X_STRING_H_
 #define __X_STRING_H_
-#include <string>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdexcept>
+#include "j_common.h"
 
 /***************************************用****法****示****例***********************************************
  	#include "Utility/include/x_string.h"
@@ -310,7 +306,7 @@ struct CXTillFirst
 	}
 };
 
-class CXString
+class JO_API CXString
 {
 public:
 	CXString();

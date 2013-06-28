@@ -26,11 +26,15 @@ private:
 	CHikAdapter *m_pAdapter;
 	J_OS::CTCPSocket *m_recvSocket;
 
-	pthread_t sendThread;
+	CJoThread sendThread;
+#ifdef WIN32 
+	static unsigned X_JO_API WorkThread(void *param)
+#else
 	static void *WorkThread(void *param)
+#endif
 	{
 		(static_cast<CHikIntercom *>(param))->OnWork();
-		return (void *)0;
+		return 0;
 	}
 	void OnWork();
 };

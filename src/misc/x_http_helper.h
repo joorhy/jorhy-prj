@@ -2,7 +2,7 @@
 #define __X_HTTP_HELPER_H_
 #include "j_includes.h"
 
-class CHttpHelper
+class JO_API CHttpHelper
 {
 public:
 	CHttpHelper(const char *pRequest);

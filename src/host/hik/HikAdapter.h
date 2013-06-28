@@ -4,6 +4,7 @@
 #include "x_module_manager_def.h"
 #include "x_timer.h"
 #include "x_socket.h"
+#include "x_thread.h"
 
 class CHikAdapterBase : public J_DevAdapter
 							 , public J_DevInput
@@ -56,11 +57,15 @@ private:
 	}
 	void UserExchange();
 
+#ifdef WIN32
+	static unsigned X_JO_API AlarmThread(void *param)
+#else
 	static void *AlarmThread(void *param)
+#endif
 	{
 		(static_cast<CHikAdapter *>(param))->OnAlarm();
 
-		return (void *)0;
+		return 0;
 	}
 	void OnAlarm();
 
@@ -75,9 +80,9 @@ private:
 	J_DevStatus m_status;
 	J_OS::CTimer m_timer;
 
-	pthread_t m_threadAlarm;
+	CJoThread m_threadAlarm;
 	J_OS::CTCPSocket *m_pAlarmSock;
-	bool m_bStartAlarm;
+	j_boolean_t m_bStartAlarm;
 };
 
 ADAPTER_BEGIN_MAKER(hik)

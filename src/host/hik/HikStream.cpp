@@ -11,8 +11,7 @@ const char AUDIO_HEAD[5] = { 0x00, 0x00, 0x01, 0xC0 };
 
 #define RECV_SIZE (1024 * 1024)
 CHikStream::CHikStream(void *pTCPSocket, std::string resid)
-: m_recvThread(0)
-, m_bStartup(false)
+: m_bStartup(false)
 , m_pRecvBuff(NULL)
 , m_resid(resid)
 {

@@ -195,7 +195,7 @@ int CHikChannel::EmunFileByTime(time_t beginTime, time_t endTime,
 
 			nFindState = ntohl(findFileRet.state);
 			if (nFindState == NEEDWAIT)
-				sleep(1);
+				j_sleep(1000);
 		}
 		else if (nFindState == RECVFILEINFO)
 		{
