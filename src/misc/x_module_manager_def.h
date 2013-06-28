@@ -8,64 +8,81 @@
 #include "x_filereader_factory.h"
 #include "x_parser_factory.h"
 
+#define REGISTER_DECLARE()\
+	extern "C"\
+	{\
+	void __declspec(dllexport)  Register();\
+	}
 ///Adapter
-#define ADAPTER_BEGIN_MAKER(type)\
-	static int adapter_##type =
-
-#define ADAPTER_ENTER_MAKER(adapterType, maker)\
-	SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter((adapterType), (maker))
-
-#define ADAPTER_END_MAKER()\
-	;
+#define ADAPTER_IMPLEMENT_BEGIN(type) \	
+	extern "C"\
+	{\
+		void __declspec(dllexport)  Register()\
+		{\
+#define ADAPTER_IMPLEMENT_ENTRY(type, maker)
+			SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter((type), (maker));\
+#define ADAPTER_IMPLEMENT_END()\
+		}\
+	}
 
 ///Filter
-#define FILTER_BEGIN_MAKER(type)\
-	static int filter_##type =
-
-#define FILTER_ENTER_MAKER(filterType, maker)\
-	SingletonTmpl<CFilterFactory>::Instance()->RegisterFilter((filterType), (maker))
-
-#define FILTER_END_MAKER()\
-	;
+#define FILTER_IMPLEMENT_BEGIN(type) \	
+extern "C"\
+	{\
+		void __declspec(dllexport)  Register()\
+		{\
+#define FILTER_IMPLEMENT_ENTRY(type, maker)
+		SingletonTmpl<CFilterFactory>::Instance()->RegisterFilter((filterType), (maker));\
+#define FILTER_IMPLEMENT_END()\
+		}\
+	}
 
 ///Mux
-#define MUX_BEGIN_MAKER(type)\
-	static int mux_##type =
-
-#define MUX_ENTER_MAKER(muxType, maker)\
-	SingletonTmpl<CMuxFactory>::Instance()->RegisterMux((muxType), (maker))
-
-#define MUX_END_MAKER()\
-	;
+#define MUX_IMPLEMENT_BEGIN(type) \	
+extern "C"\
+	{\
+		void __declspec(dllexport)  Register()\
+		{\
+#define MUX_IMPLEMENT_ENTRY(type, maker)
+		SingletonTmpl<CMuxFactory>::Instance()->RegisterMux((muxType), (maker));\
+#define MUX_IMPLEMENT_END()\
+		}\
+	}
 
 ///Manager
-#define MANAGER_BEGIN_MAKER(type)\
-	static int manager_##type =
-
-#define MANAGER_ENTER_MAKER(managerType, maker)\
-	SingletonTmpl<CManagerFactory>::Instance()->RegisterManager((managerType), (maker))
-
-#define MANAGER_END_MAKER()\
-	;
+#define MANAGER_IMPLEMENT_BEGIN(type) \	
+extern "C"\
+	{\
+		void __declspec(dllexport)  Register()\
+		{\
+#define MANAGER_IMPLEMENT_ENTRY(type, maker)
+			SingletonTmpl<CManagerFactory>::Instance()->RegisterManager((managerType), (maker));\
+#define MANAGER_IMPLEMENT_END()\
+		}\
+	}
 
 ///FileReader
-#define FILEREADER_BEGIN_MAKER(type)\
-	static int file_reader_##type =
-
-#define FILEREADER_ENTER_MAKER(fileReaderType, maker)\
-	SingletonTmpl<CFileReaderFactory>::Instance()->RegisterFileReader((fileReaderType), (maker))
-
-#define FILEREADER_END_MAKER()\
-	;
+#define FILEREADER_IMPLEMENT_BEGIN(type) \	
+extern "C"\
+	{\
+		void __declspec(dllexport)  Register()\
+		{\
+#define FILEREADER_IMPLEMENT_ENTRY(type, maker)
+		SingletonTmpl<CFileReaderFactory>::Instance()->RegisterFileReader((fileReaderType), (maker));\
+#define FILEREADER_IMPLEMENT_END()\
+		}\
+	}
 	
 ///CommandParser
-#define PARSER_BEGIN_MAKER(type)\
-	static int command_parser_##type =
-
-#define PARSER_ENTER_MAKER(commandParserType, maker)\
-	SingletonTmpl<CParserFactory>::Instance()->RegisterParser((commandParserType), (maker))
-
-#define PARSER_END_MAKER()\
-	;
+#define PARSER_IMPLEMENT_BEGIN(type) \	
+extern "C"\
+	{\
+		void __declspec(dllexport)  Register()\
+		{\
+#define PARSER_IMPLEMENT_ENTRY(type, maker)
+			SingletonTmpl<CParserFactory>::Instance()->RegisterParser((commandParserType), (maker));\
+#define PARSER_IMPLEMENT_END()\
+		}\
+	}
 
 #endif //~__ModuleManagerDef_h_

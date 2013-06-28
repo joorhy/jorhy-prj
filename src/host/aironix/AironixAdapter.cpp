@@ -86,3 +86,11 @@ j_result_t CAironixAdapter::Logout()
 {
 	printf("connect = %d\n", bConnect);
 }*/
+
+extern "C"
+{
+	void __declspec(dllexport)  Register()
+	{
+		SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
+	}
+}

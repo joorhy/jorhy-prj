@@ -447,3 +447,11 @@ void CHikAdapter::OnAlarm()
 		}
 	}
 }
+
+extern "C"
+{
+	void __declspec(dllexport)  Register()
+	{
+		SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
+	}
+}

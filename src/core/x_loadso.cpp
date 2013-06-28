@@ -2,6 +2,8 @@
 #include "x_errtype.h"
 #include "x_log.h"
 
+typedef void (*Register_fun)();
+
 CXLoadso::CXLoadso()
 {
 
@@ -68,6 +70,9 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 				J_OS::LOGINFO("CXLoadso::LoadSo LoadLibrary, err = %s", GetLastError());
 				continue;
 			}
+			Register_fun fun = (Register_fun)GetProcAddress(module.handle, "Register");
+			int n = GetLastError();
+			fun();
 			m_vecHandle.push_back(module);
 		}
 	} while (FindNextFile(hFind, &FindFileData));  

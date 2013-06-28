@@ -85,8 +85,13 @@ private:
 	j_boolean_t m_bStartAlarm;
 };
 
-ADAPTER_BEGIN_MAKER(hik)
+extern "C"
+{
+	void __declspec(dllexport)  Register();
+}
+
+/*ADAPTER_BEGIN_MAKER(hik)
 	ADAPTER_ENTER_MAKER("hik", CHikAdapter::Maker)
-ADAPTER_END_MAKER()
+ADAPTER_END_MAKER()*/
 
 #endif //~__HIKADAPTER_H_

@@ -8,6 +8,7 @@
 CAdapterFactory::CAdapterFactory()
 {
 	m_bRegiste = false;
+	m_adapterRegistMap.clear();
 	//m_timer.Create(1 * 1000, CAdapterFactory::TimerThread, this);
 }
 

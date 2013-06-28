@@ -90,3 +90,11 @@ void CDahuaAdapter::OnConnect(LONG hHandle, char *pDVRIP, LONG nDVRPort, DWORD d
 	m_status = jo_dev_ready;
 	J_OS::LOGINFO("CDahuaAdapter::OnConnect = %d\n", hHandle);
 }
+
+extern "C"
+{
+	void __declspec(dllexport)  Register()
+	{
+		SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
+	}
+}

@@ -139,3 +139,11 @@ void CAipstarAdapter::UserExchange()
 
 	//J_OS::LOGINFO("CAipstarAdapter::UserExchange");
 }
+
+extern "C"
+{
+void __declspec(dllexport)  Register()
+{
+	SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
+}
+}
