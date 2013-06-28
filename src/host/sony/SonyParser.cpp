@@ -90,7 +90,7 @@ int CSonyParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 		return J_NOT_COMPLATE;//不足一包数据
 	}
 
-    streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+    streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 	if (IS_H264_DATA(m_pDataBuff))
 	{
 		memcpy(pData, m_pDataBuff, nOffset);

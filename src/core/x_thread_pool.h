@@ -6,14 +6,11 @@
 #include "x_singleton.h"
 #include "x_thread.h"
 
-class JO_API CThreadPool : public SingletonTmpl<CThreadPool>
+class JO_API CThreadPool
 {
 public:
-	CThreadPool(int);
+	CThreadPool();
 	~CThreadPool();
-	
-protected:
-	CThreadPool() {}
 	
 public:
 	///添加任务到线程池

@@ -81,14 +81,14 @@ int CVoiceIcomObj::Run(bool bFlag)
 
 int CVoiceIcomObj::StartVoice()
 {
-	int nRet = CAdapterManager::Instance()->StartVoice(m_resid.c_str(), m_nSocket);
+	int nRet = SingletonTmpl<CAdapterManager>::Instance()->StartVoice(m_resid.c_str(), m_nSocket);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CVoiceIcomObj::StartVoice StartVoice error ret = %d", nRet);
 		return nRet;
 	}
 
-	nRet = CAdapterManager::Instance()->GetRingBuffer(m_resid.c_str(), 0, m_nSocket, m_pRingBuffer);
+	nRet = SingletonTmpl<CAdapterManager>::Instance()->GetRingBuffer(m_resid.c_str(), 0, m_nSocket, m_pRingBuffer);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CVoiceIcomObj::StartVoice GetRingBuffer error ret = %d", nRet);
@@ -106,7 +106,7 @@ int CVoiceIcomObj::StopVoice()
 	if (m_bStart)
 	{
 		m_bStart = false;
-		int nRet = CAdapterManager::Instance()->StopVoice(m_resid.c_str(), m_nSocket);
+		int nRet = SingletonTmpl<CAdapterManager>::Instance()->StopVoice(m_resid.c_str(), m_nSocket);
 		if (nRet < 0)
 		{
 			J_OS::LOGINFO("CVoiceIcomObj::StopVoice StopVoice error ret = %d", nRet);

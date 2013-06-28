@@ -25,7 +25,11 @@ CXConfig::~CXConfig()
 int CXConfig::Init()
 {
 	fstream fin;
+#ifdef _DEBUG
+	fin.open("Debug\\x_conf.json", ifstream::in);
+#else
 	fin.open("x_conf.json", ifstream::in);
+#endif
 
 	ostringstream sout_temp;
 	sout_temp << fin.rdbuf();

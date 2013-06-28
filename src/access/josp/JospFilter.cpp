@@ -19,7 +19,7 @@ CJospFilter::CJospFilter()
 CJospFilter::~CJospFilter()
 {
 	if (m_muxFilter)
-		CMuxFactory::Instance()->DelMux(this);
+		SingletonTmpl<CMuxFactory>::Instance()->DelMux(this);
 	
 	if (m_pRetBuff)
 		delete m_pRetBuff;
@@ -64,7 +64,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 					m_nStreamType = ntohl(pRealViewData->stream_type);
 					memcpy(m_strResid, pRealViewData->res_id, strlen(pRealViewData->res_id));
 					
-					CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
+					SingletonTmpl<CXJoSdk>::Instance()->MakeRespHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
 					J_RealViewRetData *pRetData = (J_RealViewRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
 					memcpy(pRetData->media_code, "JOMS", 4);
 					pRetData->i_frame_ival = 30;
@@ -85,7 +85,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 					m_endTime = ntohl(pVodPlayData->end_time);
 					memcpy(m_strResid, pVodPlayData->res_id, strlen(pVodPlayData->res_id));
 					
-					CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_open_file_rep, sizeof(J_VodPlayRetData));
+					SingletonTmpl<CXJoSdk>::Instance()->MakeRespHeader(m_pRetBuff, jo_open_file_rep, sizeof(J_VodPlayRetData));
 					J_VodPlayRetData *pRetData = (J_VodPlayRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
 					memcpy(pRetData->media_code, "JOMS", 4);
 					pRetData->i_frame_ival = 30;
@@ -102,7 +102,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 					m_beginTime = ntohl(pRequestData->begin_time);
 					m_endTime = m_beginTime + ntohl(pRequestData->time_ival);
 					
-					CXJoSdk::Instance()->MakeRespHeader(m_pRetBuff, jo_req_data_rep, 0);
+					SingletonTmpl<CXJoSdk>::Instance()->MakeRespHeader(m_pRetBuff, jo_req_data_rep, 0);
 					m_nRetLen = 0;
 				}		
 				break;
@@ -112,7 +112,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 	//if (m_nCommandType == jo_start_vod)
 	//	return J_WIAT_NEXT_CMD;
 		
-	m_muxFilter = CMuxFactory::Instance()->GetMux(this, "jos");
+	m_muxFilter = SingletonTmpl<CMuxFactory>::Instance()->GetMux(this, "jos");
 
 	return J_OK;
 }

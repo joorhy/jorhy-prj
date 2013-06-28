@@ -134,6 +134,6 @@ int CRemoteManager::GetRecordInfo(J_RecordInfo &recordInfo)
 
 int CRemoteManager::StartRecord()
 { 
-	CRecoderManager::Instance()->Single();
+	SingletonTmpl<CRecoderManager>::Instance()->Single();
 	return J_OK; 
 }

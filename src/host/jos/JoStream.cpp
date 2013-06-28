@@ -89,7 +89,7 @@ void CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			break;
 		case JO_READ_DATA:
 			m_asioData.ioRead.bufLen = sizeof(J_DataHead);
-			streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);//ntohll(head.time_stamp);
+			streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);//ntohll(head.time_stamp);
 			streamHeader.frameType = ntohl(m_dataHead.frame_type);
 			streamHeader.dataLen = ntohl(m_dataHead.data_len);;
 			streamHeader.frameNum = ntohl(m_dataHead.frame_seq);
@@ -119,7 +119,7 @@ void CJoStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
-    streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+    streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 
     TLock(m_vecLocker);
     std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();

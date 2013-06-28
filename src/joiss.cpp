@@ -81,7 +81,7 @@ end:
 		delete (*itControlManager);
 	}
 	loadSo.JoUnloadSo();
-	CThreadPool::Instance()->Destroy();
+	SingletonTmpl<CThreadPool>::Instance()->Destroy();
 
 	return 0;
 }

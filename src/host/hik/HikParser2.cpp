@@ -140,7 +140,7 @@ int CHikParser2::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 	if (m_bIsComplate)
 	{
 		//获得时间戳
-		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+		streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 		streamHeader.frameType = (memcmp(m_pOutBuff, H264_SPS_HEAD, 5) == 0) ? jo_video_i_frame : jo_video_p_frame;
 		streamHeader.dataLen = m_nFrameLen;
 		m_nDataLen -= m_nFrameLen;

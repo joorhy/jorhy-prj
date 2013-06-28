@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				ModuleDefinitionFile="../../src/utils/sqlite3/sqlite3.def"
+				ModuleDefinitionFile="../../src/utils/utils.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"

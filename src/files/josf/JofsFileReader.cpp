@@ -224,7 +224,7 @@ int CNvrFileReader::OpenFile()
 	char fileName[512] = {0};
 	char filePath[512] = {0};
 	J_RecordInfo recordInfo;
-	CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
+	SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
 	sprintf(fileName, "%s/%s", m_file.GetVodDir(recordInfo.vodPath, filePath), (*it).c_str());
 	m_fileVec.pop_front();
 

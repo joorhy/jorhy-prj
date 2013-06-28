@@ -30,7 +30,7 @@ CHikVodStream::CHikVodStream(void *pOwner, int nChannelNum)
 	if (NULL == m_pPackBuff)
 		m_pPackBuff = new char[PACKET_BUFF_SIZE];
 
-	m_nLastRecvTime = CTime::Instance()->GetLocalTime(0);
+	m_nLastRecvTime = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 	m_nDuration = TIME_DURATION;
 	m_curFileName.clear();
 
@@ -341,7 +341,7 @@ void CHikVodStream::OnParser()
 			continue;
 		}
 
-		if (CTime::Instance()->GetLocalTime(0) - m_nLastRecvTime >= m_nDuration)
+		if (SingletonTmpl<CTime>::Instance()->GetLocalTime(0) - m_nLastRecvTime >= m_nDuration)
 		{
 			int nRet = 0;
 			j_boolean_t bGetOneFrameVideo = false;
@@ -427,7 +427,7 @@ void CHikVodStream::OnParser()
 				if (streamHeader.frameType == jo_video_p_frame && nRet == J_OK)
 				{
 					bGetOneFrameVideo = true;
-					m_nLastRecvTime = CTime::Instance()->GetLocalTime(0);
+					m_nLastRecvTime = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 				}
 			} while (nRet == J_OK && !bGetOneFrameVideo);
 		}
@@ -460,7 +460,7 @@ FILE *CHikVodStream::CreateFile()
 	fileHelper.CreateDir(tmpDir);
 
 	char fileName[128] = {0};
-	sprintf(fileName, "%s/%s_%d.mp4", tmpDir, CTime::Instance()->GetLocalTime().c_str(), this);
+	sprintf(fileName, "%s/%s_%d.mp4", tmpDir, SingletonTmpl<CTime>::Instance()->GetLocalTime().c_str(), this);
 
 	FILE *fp = fopen(fileName, "wb+");
 	if (fp != NULL)

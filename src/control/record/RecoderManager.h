@@ -6,19 +6,16 @@
 #include "x_timer.h"
 #include "RecordMediaObj.h"
 
-class JO_API CRecoderManager : public SingletonTmpl<CRecoderManager>
+class JO_API CRecoderManager
 {
     public:
-        CRecoderManager(int);
+        CRecoderManager();
         ~CRecoderManager();
     public:
         ///CRecoderManager
         int AddRecord(const char *pResid);
         int DelRecord(const char *pResid);
 		void Single() { m_cond.Single(); } 
-
-    protected:
-        CRecoderManager() {}
 
     private:
         int Init();

@@ -95,7 +95,7 @@ int COnvifParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 		if (m_pOutBuff[4] == 0x67)
 			streamHeader.frameType = jo_video_i_frame;
 		streamHeader.dataLen = m_nOffset;
-		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+		streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 		streamHeader.frameNum = m_frameNum++;
 		m_frameNum %= 0xFFFFFFFF;
 		memcpy(pData, m_pOutBuff, m_nOffset);

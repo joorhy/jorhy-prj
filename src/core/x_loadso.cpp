@@ -26,6 +26,9 @@ int CXLoadso::JoLoadSo()
     }
     //LoadSo(currentPath, "plugins/access");
     //LoadSo(currentPath, "plugins/config");
+#ifdef _DEBUG
+	sprintf(currentPath, "%s\\Debug", currentPath);
+#endif
 	LoadSo(currentPath, "plugins");
 
     return J_OK;
@@ -39,8 +42,8 @@ int CXLoadso::JoUnloadSo()
 int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 {
     char modPath[256] = {0};
-    sprintf(modPath, "%s/%s", pPath, subPath);
 #ifdef WIN32
+	sprintf(modPath, "%s\\%s\\*.dll", pPath, subPath);
 	WIN32_FIND_DATA FindFileData;  
 	HANDLE hFind;  
 
@@ -55,7 +58,7 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 	do  
 	{   
 		memset(modName, 0, sizeof(modName));
-		sprintf(modName, "./%s/%s", subPath, FindFileData.cFileName);
+		sprintf(modName, "%s\\%s", subPath, FindFileData.cFileName);
 		if (strstr(modName, ".dll") != NULL)
 		{
 			j_module_t module;
@@ -68,8 +71,9 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 			m_vecHandle.push_back(module);
 		}
 	} while (FindNextFile(hFind, &FindFileData));  
-	CloseHandle(hFind);
+	FindClose(hFind);
 #else
+	sprintf(modPath, "%s/%s", pPath, subPath);
     struct dirent *ent = NULL;
     DIR *pDir = NULL;
     pDir = opendir(modPath);

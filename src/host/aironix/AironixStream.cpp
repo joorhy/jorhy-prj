@@ -36,7 +36,7 @@ j_void_t CAironixStream::OnRecv(LONG lLiveHandle, NET_SDK_FRAME_INFO frameInfo, 
 	{
 		J_StreamHeader streamHeader;
 		streamHeader.dataLen = frameInfo.length;
-		streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+		streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 		//J_OS::LOGINFO("streamId = %d", frameInfo.streamID);
 		if (frameInfo.frameType == 1)
 		{

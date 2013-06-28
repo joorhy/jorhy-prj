@@ -3,14 +3,11 @@
 #include "j_includes.h"
 #include "x_adapter_factory.h"
 
-class JO_API CAdapterManager : public SingletonTmpl<CAdapterManager>
+class JO_API CAdapterManager
 {
 public:
-	CAdapterManager(int);
-	~CAdapterManager();
-
-protected:
 	CAdapterManager();
+	~CAdapterManager();
 
 public:
 	int StartVideo(const char *pResId, int nStreamType, const j_socket_t nSocket);	//启动某一路视频

@@ -2,7 +2,7 @@
 #include "x_thread_pool.h"
 #include "x_log.h"
 
-CThreadPool::CThreadPool(int)
+CThreadPool::CThreadPool()
 {
 	m_bShutDown = false;
 }

@@ -7,17 +7,15 @@ class SingletonTmpl
 public:
 	static CBase *Instance()
 	{
-		if (0 == m_instance)
-			m_instance = new CBase(0);
-
-		return m_instance;
+		return &m_instance;
 	}
 
-private:
-	static CBase *m_instance;
+protected:
+	typedef CBase object_type; 
+	static CBase m_instance;
 };
 
 template <typename CBase>
-CBase * SingletonTmpl<CBase>::m_instance = 0;
+typename SingletonTmpl<CBase>::object_type SingletonTmpl<CBase>::m_instance;
 
 #endif //~__SINGLETON_H_

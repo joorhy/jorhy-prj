@@ -88,7 +88,7 @@ int CJoChannel::StartView()
 	}
 	
 	J_DeviceInfo info = {0};
-	if (CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
+	if (SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
 		return J_INVALID_DEV;
 	//strcpy(info.devIp, "192.168.1.6");
 	info.devPort = 8002;

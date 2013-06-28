@@ -6,16 +6,13 @@
 
 typedef int (*J_MakeFilterFun)(J_Obj *&);
 
-class JO_API CFilterFactory : public SingletonTmpl<CFilterFactory>
+class JO_API CFilterFactory
 {
 	typedef std::map<std::string, J_MakeFilterFun> FilterRegistMap;
 	typedef std::map<j_socket_t, J_RequestFilter *> FilterMap;
 public:
-	CFilterFactory(int) {}
+	CFilterFactory() {}
 	~CFilterFactory() {}
-
-protected:
-    CFilterFactory() {}
 
 public:
 	///注册Filter类

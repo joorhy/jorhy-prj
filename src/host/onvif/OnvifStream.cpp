@@ -116,7 +116,7 @@ void COnvifStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
-    streamHeader.timeStamp = CTime::Instance()->GetLocalTime(0);
+    streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
 
     TLock(m_vecLocker);
     std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();

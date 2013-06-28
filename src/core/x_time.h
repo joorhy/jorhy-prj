@@ -3,12 +3,9 @@
 #include "j_type.h"
 #include "x_singleton.h"
 
-class JO_API CTime : public SingletonTmpl<CTime>
+class JO_API CTime
 {
 public:
-    CTime(int) {}
-
-protected:
     CTime() {}
 
 public:

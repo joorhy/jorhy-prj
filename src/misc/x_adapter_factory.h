@@ -13,17 +13,14 @@ enum OBJ_TYPE
 	OBJ_CHANNEL
 };
 
-class JO_API CAdapterFactory : public SingletonTmpl<CAdapterFactory>
+class JO_API CAdapterFactory 
 {
 	typedef std::map<std::string, J_MakeAdapterFun> AdapterRegistMap;
 	typedef std::map<std::string, J_Obj*> AdapterMap;				//存放所有DVR设备的对象
 	typedef std::map<J_ChannelKey, void*> ChannelMap;				//存放所有Channel的对象
 public:
-	CAdapterFactory(int);
-	~CAdapterFactory();
-
-protected:
 	CAdapterFactory();
+	~CAdapterFactory();
 
 public:
 	///注册Adapter类

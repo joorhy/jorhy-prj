@@ -1,7 +1,7 @@
 #include "x_msg_queue.h"
 #include "x_log.h"
 
-CXMessageQueue::CXMessageQueue(int)
+CXMessageQueue::CXMessageQueue()
 {
 	j_thread_parm threadParm = {0};
 	threadParm.entry = CXMessageQueue::RouteMessage;

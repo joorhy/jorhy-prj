@@ -5,15 +5,15 @@
 
 #define TYPE_OR_ID_SIZE 8
 
-CAdapterFactory::CAdapterFactory(int)
+CAdapterFactory::CAdapterFactory()
 {
 	m_bRegiste = false;
-	m_timer.Create(1 * 1000, CAdapterFactory::TimerThread, this);
+	//m_timer.Create(1 * 1000, CAdapterFactory::TimerThread, this);
 }
 
 CAdapterFactory::~CAdapterFactory()
 {
-	m_timer.Destroy();
+	//m_timer.Destroy();
 }
 
 int CAdapterFactory::RegisterAdapter(const char *adapterType, J_MakeAdapterFun pFun)
@@ -60,7 +60,7 @@ void *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_T
 
 
         J_ChannelInfo channelInfo;
-        int nRet = CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
+        int nRet = SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
         if (nRet != J_OK)
         {
             J_OS::LOGINFO("CAdapterFactory::CreateInstence GetDevinfoByChannel error, resid = %s", pResId);
@@ -164,7 +164,7 @@ void CAdapterFactory::OnTimer()
 	int nRet = J_OK;
 	char dev_id[TYPE_OR_ID_SIZE];
 	std::vector<J_DeviceInfo> devList;
-	nRet = CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->ListDevices(devList);
+	nRet = SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->ListDevices(devList);
 	if (nRet == J_OK)
 	{
 		std::vector<J_DeviceInfo>::iterator itDvr = devList.begin();
@@ -205,6 +205,6 @@ void CAdapterFactory::OnTimer()
 			}
 		}
 		m_bRegiste = true;
-		CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->StartRecord();
+		SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->StartRecord();
 	}
 }

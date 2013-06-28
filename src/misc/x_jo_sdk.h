@@ -3,14 +3,11 @@
 #include "j_includes.h"
 #include "x_singleton.h"
 
-class JO_API CXJoSdk : public SingletonTmpl<CXJoSdk>
+class JO_API CXJoSdk
 {
 public:
-	CXJoSdk(int) {}
-	~CXJoSdk() {}
-	
-protected:
 	CXJoSdk() {}
+	~CXJoSdk() {}
 	
 public:
 	int MakeReqHeader(j_char_t *pBuff, j_char_t *pUserID, j_uint8_t byCmd, j_uint8_t byFlag, j_uint16_t sqNum, j_uint16_t exLength, j_uint8_t byRet = 0x00);

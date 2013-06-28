@@ -6,16 +6,13 @@
 
 typedef int (*J_MakeParserFun)(J_Obj *&);
 
-class JO_API CParserFactory : public SingletonTmpl<CParserFactory>
+class JO_API CParserFactory
 {
-	typedef std::map<std::string, J_MakeParserFun> ParserRegistMap;
+	typedef std::map<j_string_t, J_MakeParserFun> ParserRegistMap;
 	typedef std::map<int, J_CommandParser *> ParserMap;
 public:
-	CParserFactory(int) {}
+	CParserFactory() {}
 	~CParserFactory() {}
-
-protected:
-    CParserFactory() {}
 
 public:
 	///注册Filter类

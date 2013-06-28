@@ -1,7 +1,7 @@
 #include "RecoderManager.h"
 #include "RecordMediaObj.h"
 
-CRecoderManager::CRecoderManager(int)
+CRecoderManager::CRecoderManager()
 {
     m_bStart = false;
     Init();

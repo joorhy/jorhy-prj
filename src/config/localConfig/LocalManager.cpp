@@ -113,7 +113,7 @@ int CLocalManager::StartRecord()
 			}
 		}
 	}
-	CRecoderManager::Instance()->Single();
+	SingletonTmpl<CRecoderManager>::Instance()->Single();
 	
 	return J_OK;
 }
