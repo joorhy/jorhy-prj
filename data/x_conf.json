@@ -3,22 +3,26 @@
 	{
 		"id":1,
 		"type":"mc",
-		"ip":"192.168.1.10",
-		"port":8080
-	}
+		"ip":"192.168.1.12",
+		"port":8080,
+		"db_addr":"192.168.1.6",
+		"db_port":3306,
+		"db_user":"root",
+		"db_pw":"jennyzhan",
+	},
 	"Server":
 	[
 		{
 			"stream_type":"http",
 			"stream_port":6000,
-			"control_type":"mc",
+			"control_type":"mcsp",
 			"control_port":8000,
 		},
 		{
 			"stream_type":"josp",
-			"stream_port":6002,
+			"stream_port":8002,
 			"control_type":"josp",
-			"control_port":6003,
+			"control_port":8008,
 		},
-	]
+	],
 }
