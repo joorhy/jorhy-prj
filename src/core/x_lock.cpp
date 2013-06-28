@@ -98,8 +98,8 @@ j_result_t CXCond::TimeWait(CTLock &mutex, j_uint32_t sec, j_uint32_t nsec)
 #ifdef WIN32
 #else
 	struct timespec tspec = {0};
-	tspec.tv_sec = time(0) + s; 
-	tspec.tvnsec = ns;
+	tspec.tv_sec = time(0) + sec; 
+	tspec.tv_nsec = nsec;
 	pthread_mutex_lock(&m_cond.mutex);
 	nRet = pthread_cond_timedwait(&m_cond.handle, &m_cond.mutex, &tspec);
 	pthread_mutex_unlock(&m_cond.mutex);

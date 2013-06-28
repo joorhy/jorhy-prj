@@ -74,18 +74,6 @@
     <File Name="../../src/utils/tinyxml/tinyxmlerror.cpp"/>
     <File Name="../../src/utils/tinyxml/tinyxmlparser.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="uuid">
-    <File Name="../../src/utils/uuid/clear.c"/>
-    <File Name="../../src/utils/uuid/compare.c"/>
-    <File Name="../../src/utils/uuid/copy.c"/>
-    <File Name="../../src/utils/uuid/gen_uuid.c"/>
-    <File Name="../../src/utils/uuid/isnull.c"/>
-    <File Name="../../src/utils/uuid/pack.c"/>
-    <File Name="../../src/utils/uuid/parse.c"/>
-    <File Name="../../src/utils/uuid/unpack.c"/>
-    <File Name="../../src/utils/uuid/unparse.c"/>
-    <File Name="../../src/utils/uuid/uuid_time.c"/>
-  </VirtualDirectory>
   <VirtualDirectory Name="g722_1">
     <File Name="../../src/utils/g722_1/G722_1_1C_Float.c"/>
   </VirtualDirectory>
