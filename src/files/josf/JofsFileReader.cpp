@@ -182,7 +182,7 @@ int CNvrFileReader::GetMediaData(j_uint64_t beginTime, j_int32_t nIval)
 
 int CNvrFileReader::ListRecord(j_uint64_t beginTime, j_uint64_t endTime)
 {
-	r_historyfile *p_historyfile = GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
+	r_historyfile *p_historyfile = SingletonTmpl<CXSdk>::Instance()->GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
 	if (p_historyfile == NULL)
 	{
 	    J_OS::LOGINFO("CNvrFileReader::ListRecord GetHistoryFile Error");

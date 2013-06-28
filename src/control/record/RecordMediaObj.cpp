@@ -172,7 +172,7 @@ int CStreamRecord::OnRecord()
 		//m_fileInfo.etime = streamHeader.timeStamp / 1000;
 		m_record.filenum.push_back(m_fileInfo);
 		//J_OS::LOGINFO(m_fileInfo.file.c_str());
-		GetRecordNotice(m_record, CXConfig::GetUrl());
+		SingletonTmpl<CXSdk>::Instance()->GetRecordNotice(m_record, CXConfig::GetUrl());
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 		m_record.filenum.clear();
 		return J_DEV_BROKEN;
@@ -197,7 +197,7 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 	{
 	    CloseFile();
 		m_record.filenum.push_back(m_fileInfo);;
-		GetRecordNotice(m_record, CXConfig::GetUrl());
+		SingletonTmpl<CXSdk>::Instance()->GetRecordNotice(m_record, CXConfig::GetUrl());
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 		m_record.filenum.clear();
 		CreateFile(NULL);

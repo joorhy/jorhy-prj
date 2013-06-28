@@ -1,7 +1,4 @@
 #include "x_sdk.h"
-#include "x_http.h"
-
-CXHttp httpHelper;
 
 #define clean_all() \
     if (!is_error(json_helper) && json_helper != NULL)\
@@ -10,30 +7,30 @@ CXHttp httpHelper;
         json_helper = NULL;\
     }\
 
-char *HttpCommunicate(char *body,char *uri)
+char *CXSdk::HttpCommunicate(char *body,char *uri)
 {
 	j_char_t *resrvdata = NULL;
 	j_char_t *ret_data = NULL;
-	httpHelper.SetUri(uri);
-	httpHelper.SetType(x_http_type_post);
-	httpHelper.SetBody(body,strlen(body));
-	httpHelper.Prepare();
-	if(httpHelper.Process() != J_OK)
+	m_httpHelper.SetUri(uri);
+	m_httpHelper.SetType(x_http_type_post);
+	m_httpHelper.SetBody(body,strlen(body));
+	m_httpHelper.Prepare();
+	if(m_httpHelper.Process() != J_OK)
 	{
 	    J_OS::LOGINFO("HttpCommunicate MC Error");
 		return NULL;
 	}
-	j_int32_t ret_val = httpHelper.GetStatusCode();
+	j_int32_t ret_val = m_httpHelper.GetStatusCode();
 	switch(ret_val)
 	{
-	case 200:	resrvdata = httpHelper.GetBody();
+	case 200:	resrvdata = m_httpHelper.GetBody();
 				if (resrvdata == NULL)
 					return NULL;
 				
 				//J_OS::LOGINFO("%d", httpHelper.GetBodyLen());
-				ret_data = new char[httpHelper.GetBodyLen() + 1];
-				memset(ret_data, 0, httpHelper.GetBodyLen() + 1);
-				strncpy(ret_data, resrvdata, httpHelper.GetBodyLen());
+				ret_data = new char[m_httpHelper.GetBodyLen() + 1];
+				memset(ret_data, 0, m_httpHelper.GetBodyLen() + 1);
+				strncpy(ret_data, resrvdata, m_httpHelper.GetBodyLen());
 				break;
 	default:
         J_OS::LOGINFO("HttpCommunicate MC Error, code = %d", ret_val);
@@ -43,7 +40,7 @@ char *HttpCommunicate(char *body,char *uri)
 	return ret_data;
 }
 
-static int get_int(json_object *p_object, const char *p_key)
+int CXSdk::get_int(json_object *p_object, const char *p_key)
 {
     if (p_object == NULL)
         return 0;
@@ -57,7 +54,7 @@ static int get_int(json_object *p_object, const char *p_key)
 	return -1;
 }
 
-static char *get_string(json_object *p_object, const char *p_key)
+char *CXSdk::get_string(json_object *p_object, const char *p_key)
 {
     if (p_object == NULL)
         return (char *)"";
@@ -71,7 +68,7 @@ static char *get_string(json_object *p_object, const char *p_key)
 	return (char *)"";
 }
 
-static json_object *get_object(json_object *p_object, const char *p_key)
+json_object *CXSdk::get_object(json_object *p_object, const char *p_key)
 {
     if (p_object == NULL)
         return NULL;
@@ -85,7 +82,7 @@ static json_object *get_object(json_object *p_object, const char *p_key)
 	return NULL;
 }
 
-r_register *StreamServerResgister(int ssid,char *uri)
+r_register *CXSdk::StreamServerResgister(int ssid,char *uri)
 {
 	char *json_buf = NULL;
 	r_register *r_data = NULL;
@@ -186,7 +183,7 @@ r_register *StreamServerResgister(int ssid,char *uri)
 	return r_data;
 }
 
-r_devconfig *GetDevConfigByResid(char *resid,char *uri)
+r_devconfig *CXSdk::GetDevConfigByResid(char *resid,char *uri)
 {
 	r_devconfig *r_data = NULL;
 	if (strstr(resid, ".") != NULL)
@@ -263,7 +260,7 @@ r_devconfig *GetDevConfigByResid(char *resid,char *uri)
 	return r_data;
 }
 
-r_ssconfig *GetSSConfigByResid(char *resid,char *uri)
+r_ssconfig *CXSdk::GetSSConfigByResid(char *resid,char *uri)
 {
 	r_ssconfig *r_data = NULL;
 	char *json_buf = NULL;
@@ -318,7 +315,7 @@ r_ssconfig *GetSSConfigByResid(char *resid,char *uri)
 	return r_data;
 }
 
-int GetRealTimePermission(char *resid,char *uid,char *uri)
+int CXSdk::GetRealTimePermission(char *resid,char *uid,char *uri)
 {
 	char *json_buf = NULL;
 	int r_data = -1;
@@ -357,7 +354,7 @@ int GetRealTimePermission(char *resid,char *uid,char *uri)
 	return r_data;
 }
 
-r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,char *uri)
+r_historyfile *CXSdk::GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,char *uri)
 {
 	char *json_buf = NULL;
 	r_historyfile *r_data = NULL;
@@ -435,7 +432,7 @@ r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,ch
 	return r_data;
 }
 
-int GetWarningMsg(char *resid,int type,char *uri)
+int CXSdk::GetWarningMsg(char *resid,int type,char *uri)
 {
 	char *json_buf = NULL;
 	int r_data = -1;
@@ -474,7 +471,7 @@ int GetWarningMsg(char *resid,int type,char *uri)
 	return r_data;
 }
 
-int GetRecordNotice(s_record &record,char *uri)
+int CXSdk::GetRecordNotice(s_record &record,char *uri)
 {
 	char *json_buf = NULL;
 	int r_data = -1;

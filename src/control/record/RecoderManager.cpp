@@ -4,12 +4,12 @@
 CRecoderManager::CRecoderManager()
 {
     m_bStart = false;
-    Init();
+    //Init();
 }
 
 CRecoderManager::~CRecoderManager()
 {
-    Deinit();
+    //Deinit();
 }
 
 int CRecoderManager::Init()
