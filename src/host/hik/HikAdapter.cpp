@@ -2,8 +2,9 @@
 #include "HikChannel.h"
 #include "HikIntercom.h"
 #include "HikType.h"
-
 #include "x_adapter_manager.h"
+
+JO_IMPLEMENT_INTERFACE(Adapter, "hik", CHikAdapter::Maker)
 
 CHikAdapter::CHikAdapter(int nDvrId, const char *pAddr, int nPort,
 		const char *pUsername, const char *pPassword) :
@@ -445,13 +446,5 @@ void CHikAdapter::OnAlarm()
 					recvHead.length - sizeof(HikRecvAlarmHead));
 			//J_OS::LOGINFO("CHikAdapter::OnAlarm alarmState Undefined");
 		}
-	}
-}
-
-extern "C"
-{
-	void __declspec(dllexport)  Register()
-	{
-		SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
 	}
 }

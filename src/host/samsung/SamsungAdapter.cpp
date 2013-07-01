@@ -1,6 +1,8 @@
 #include "SamsungAdapter.h"
 #include "SamsungChannel.h"
 
+JO_IMPLEMENT_INTERFACE(Adapter, "samsung", CSamsungAdapter::Maker)
+
 CSamsungAdapter::CSamsungAdapter(j_int32_t nDvrId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 {
     memset(m_remoteIP, 0, sizeof(m_remoteIP));

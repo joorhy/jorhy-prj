@@ -2,6 +2,4 @@
 #define __X_INCLUDE_H_
 #include "x_config.h"
 
-static int x_conf = CXConfig::Init();
-
 #endif //~__X_INCLUDE_H_

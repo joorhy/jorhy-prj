@@ -82,8 +82,4 @@ private:
 	j_boolean_t m_bRun;
 };
 
-FILEREADER_BEGIN_MAKER(jofs)
-	FILEREADER_ENTER_MAKER("jofs", CNvrFileReader::Maker)
-FILEREADER_END_MAKER()
-
 #endif //~__JOFS_FILE_READER_H_

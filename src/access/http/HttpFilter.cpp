@@ -13,6 +13,8 @@ const char *res_buff = "HTTP/1.1 200 OK\r\n"
 						  "Content-Range: bytes 0-\r\n"
 						  "Progma: no-cache\r\n\r\n";
 
+JO_IMPLEMENT_INTERFACE(Filter, "http", CHttpFilter::Maker)
+
 CHttpFilter::CHttpFilter()
 {
 	m_muxFilter = NULL;

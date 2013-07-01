@@ -39,8 +39,4 @@ class CJoAdapter : J_BaseAdapter<CJoAdapterBase>
         char m_password[64];
 };
 
-ADAPTER_BEGIN_MAKER(joh)
-	ADAPTER_ENTER_MAKER("joh", CJoAdapter::Maker)
-ADAPTER_END_MAKER()
-
 #endif //~__JOADAPTER_H_

@@ -1,6 +1,8 @@
 #include "PsMux.h"
 #include "x_crc32.h"
 
+JO_IMPLEMENT_INTERFACE(Mux, "ps", CPsMux::Maker)
+
 CPsMux::CPsMux()
 {
 	m_nSeqNum = rand();

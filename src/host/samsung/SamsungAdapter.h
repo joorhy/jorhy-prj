@@ -78,8 +78,4 @@ private:
     J_OS::CTCPSocket m_loginSocket;
 };
 
-ADAPTER_BEGIN_MAKER(samsung)
-ADAPTER_ENTER_MAKER("samsung", CSamsungAdapter::Maker)
-ADAPTER_END_MAKER()
-
 #endif //~__SAMSUNGADAPTER_H_

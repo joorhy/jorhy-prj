@@ -47,8 +47,4 @@ private:
 	int m_audioStamp;
 };
 
-MUX_BEGIN_MAKER(ts)
-	MUX_ENTER_MAKER("ts", CTsMux::Maker)
-MUX_END_MAKER()
-
 #endif //~__TS_MUX_H_

@@ -33,8 +33,4 @@ private:
 	CDeviceControl m_deviceControl;
 };
 
-MANAGER_BEGIN_MAKER(local)
-	MANAGER_ENTER_MAKER("local", CLocalManager::Maker)
-MANAGER_END_MAKER()
-
 #endif //~__LOCALMANAGER_H_

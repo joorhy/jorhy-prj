@@ -1,6 +1,8 @@
 #include "LocalManager.h"
 #include "RecoderManager.h"
 
+JO_IMPLEMENT_INTERFACE(Manager, "local", CLocalManager::Maker)
+
 CLocalManager::CLocalManager()
 {
 	m_sqlite = NULL;

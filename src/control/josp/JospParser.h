@@ -46,9 +46,4 @@ private:
 		j_int32_t m_command;
 };
 
-
-PARSER_BEGIN_MAKER(josp)
-	PARSER_ENTER_MAKER("josp", CJospParser::Maker)
-PARSER_END_MAKER()
-
 #endif // __JOSPPARSER_H_

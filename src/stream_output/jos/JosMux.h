@@ -24,8 +24,4 @@ private:
 	int m_nFrameSeq;
 };
 
-MUX_BEGIN_MAKER(jos)
-	MUX_ENTER_MAKER("jos", CJosMux::Maker)
-MUX_END_MAKER()
-
 #endif //~__JOSMUX_H_

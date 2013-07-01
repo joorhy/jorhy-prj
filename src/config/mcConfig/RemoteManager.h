@@ -32,8 +32,4 @@ private:
 	J_OS::TLocker_t m_locker;
 };
 
-MANAGER_BEGIN_MAKER(remote)
-	MANAGER_ENTER_MAKER("mc", CRemoteManager::Maker)
-MANAGER_END_MAKER()
-
 #endif //~__REMOTEMANAGER_H_

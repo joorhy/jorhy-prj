@@ -3,6 +3,8 @@
 #include "x_adapter_manager.h"
 #include "DahuaChannel.h"
 
+JO_IMPLEMENT_INTERFACE(Adapter, "dahua", CDahuaAdapter::Maker)
+
 CDahuaAdapter::CDahuaAdapter(int nDevId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
 	m_devID = 0;
@@ -89,12 +91,4 @@ void CDahuaAdapter::OnConnect(LONG hHandle, char *pDVRIP, LONG nDVRPort, DWORD d
 {
 	m_status = jo_dev_ready;
 	J_OS::LOGINFO("CDahuaAdapter::OnConnect = %d\n", hHandle);
-}
-
-extern "C"
-{
-	void __declspec(dllexport)  Register()
-	{
-		SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
-	}
 }

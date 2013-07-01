@@ -31,8 +31,4 @@ private:
 	int m_nSeqNum;
 };
 
-MUX_BEGIN_MAKER(ps)
-	MUX_ENTER_MAKER("ps", CPsMux::Maker)
-MUX_END_MAKER()
-
 #endif //~__PS_MUX_H_

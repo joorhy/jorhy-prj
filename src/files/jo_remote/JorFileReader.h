@@ -58,8 +58,4 @@ private:
 	j_boolean_t m_bRun;
 };
 
-FILEREADER_BEGIN_MAKER(jorf)
-	FILEREADER_ENTER_MAKER("jorf", CJorFileReader::Maker)
-FILEREADER_END_MAKER()
-
 #endif //~__JOR_FILE_READER_H_

@@ -8,6 +8,8 @@
 #define TIMER_INTERVAL	128
 #define RECORD_BUFF_SIZE 	(1024 * 1024 * 5)
 
+JO_IMPLEMENT_INTERFACE(FileReader, "jofs", CNvrFileReader::Maker)
+
 CNvrFileReader::CNvrFileReader(const char *pResid)
 {
 	m_resid = pResid;

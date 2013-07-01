@@ -3,6 +3,8 @@
 #include "AironixChannel.h"
 #include "DVR_NET_SDK.h"
 
+JO_IMPLEMENT_INTERFACE(Adapter, "aironix", CAironixAdapter::Maker)
+
 CAironixAdapter::CAironixAdapter(j_int32_t nDevId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 {
 	//m_devHandle = NULL;
@@ -86,11 +88,3 @@ j_result_t CAironixAdapter::Logout()
 {
 	printf("connect = %d\n", bConnect);
 }*/
-
-extern "C"
-{
-	void __declspec(dllexport)  Register()
-	{
-		SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
-	}
-}

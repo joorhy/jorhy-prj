@@ -1,6 +1,8 @@
 #include "JoAdapter.h"
 #include "JoChannel.h"
 
+JO_IMPLEMENT_INTERFACE(Adapter, "joh", CJoAdapter::Maker)
+
 CJoAdapter::CJoAdapter(int nDvrId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
 	memset(m_remoteIP, 0, sizeof(m_remoteIP));

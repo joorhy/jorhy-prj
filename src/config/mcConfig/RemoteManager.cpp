@@ -3,6 +3,8 @@
 #include "x_config.h"
 #include "x_sdk.h"
 
+JO_IMPLEMENT_INTERFACE(Manager, "mc", CRemoteManager::Maker)
+
 CRemoteManager::CRemoteManager()
 {
 	m_regInfo = NULL;

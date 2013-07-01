@@ -3,6 +3,8 @@
 
 #define PES_MAX_LEN	60000
 
+JO_IMPLEMENT_INTERFACE(Mux, "ts", CTsMux::Maker)
+
 CTsMux::CTsMux()
 {
 	m_nPATCounter = 0;

@@ -1,7 +1,8 @@
 #include "JospParser.h"
 #include "x_md5.h"
-
 #include "x_socket.h"
+
+JO_IMPLEMENT_INTERFACE(Parser, "josp", CJospParser::Maker)
 
 CJospParser::CJospParser()
 {

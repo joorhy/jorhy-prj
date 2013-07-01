@@ -84,14 +84,4 @@ private:
 	J_OS::CTCPSocket *m_pAlarmSock;
 	j_boolean_t m_bStartAlarm;
 };
-
-extern "C"
-{
-	void __declspec(dllexport)  Register();
-}
-
-/*ADAPTER_BEGIN_MAKER(hik)
-	ADAPTER_ENTER_MAKER("hik", CHikAdapter::Maker)
-ADAPTER_END_MAKER()*/
-
 #endif //~__HIKADAPTER_H_

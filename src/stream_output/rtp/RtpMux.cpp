@@ -2,6 +2,8 @@
 
 #define MAX_RTP_DATA_LENGTH	8100
 
+JO_IMPLEMENT_INTERFACE(Mux, "rtp", CRtpMux::Maker)
+
 rtp_helper::rtp_helper()
 {
 	m_video_seq_num = 0;

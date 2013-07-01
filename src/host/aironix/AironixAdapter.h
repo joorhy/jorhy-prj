@@ -58,14 +58,4 @@ private:
 	j_int32_t m_userId;
 	j_int32_t m_userSubId;
 };
-
-extern "C"
-{
-	void __declspec(dllexport)  Register();
-}
-
-/*ADAPTER_BEGIN_MAKER(Aironix)
-	ADAPTER_ENTER_MAKER("aironix", CAironixAdapter::Maker)
-ADAPTER_END_MAKER()*/
-
 #endif //~__AIRONIXADAPTER_H_

@@ -62,11 +62,6 @@ private:
 	LONG m_devID;
 };
 
-extern "C"
-{
-	void __declspec(dllexport)  Register();
-}
-
 /*ADAPTER_BEGIN_MAKER(Dahua)
 	ADAPTER_ENTER_MAKER("dahua", CDahuaAdapter::Maker)
 ADAPTER_END_MAKER()*/

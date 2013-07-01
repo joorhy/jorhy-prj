@@ -7,14 +7,11 @@
 #include "x_socket.h"
 #include "x_thread.h"
 
-class JO_API CRdAsio : public SingletonTmpl<CRdAsio>
+class JO_API CRdAsio
 {
 public:
-	CRdAsio(int);
-	~CRdAsio();
-
-public:
 	CRdAsio();
+	~CRdAsio();
 
 public:
 	int Init();

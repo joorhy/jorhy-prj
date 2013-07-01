@@ -25,8 +25,11 @@ void OnSignal(int nSigNum)
 
 int main(int argc,char **argv)
 {
-    CXLoadso loadSo;
+	//初始化配置参数
+	CXConfig::Init();
+
     ///加载模块
+	CXLoadso loadSo;
     if (loadSo.JoLoadSo() != J_OK)
     {
         J_OS::LOGINFO("main loadSo JoLoadSo error");

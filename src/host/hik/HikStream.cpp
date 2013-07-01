@@ -44,8 +44,8 @@ int CHikStream::Startup()
 
 	TLock(m_locker);
 	m_bStartup = true;
-	CRdAsio::Instance()->Init();
-	CRdAsio::Instance()->AddUser(m_nSocket, this);
+	SingletonTmpl<CRdAsio>::Instance()->Init();
+	SingletonTmpl<CRdAsio>::Instance()->AddUser(m_nSocket, this);
 	//读取4字节头信息
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = m_pRecvBuff;
@@ -53,7 +53,7 @@ int CHikStream::Startup()
 	m_asioData.ioRead.whole = true;
 	m_nState = HIK_READ_HEAD;
 	m_nOffset = 0;
-	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
+	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", this);
@@ -68,7 +68,7 @@ int CHikStream::Shutdown()
 
 	TLock(m_locker);
 	m_bStartup = false;
-	CRdAsio::Instance()->DelUser(m_nSocket);
+	SingletonTmpl<CRdAsio>::Instance()->DelUser(m_nSocket);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Shutdown Shutdown this = %d", this);
@@ -129,7 +129,7 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			m_nState = HIK_READ_HEAD;
 			m_nOffset = 0;
 	}
-	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
+	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
 	TUnlock(m_locker);
 }
 
@@ -149,7 +149,7 @@ void CHikStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
         (*it)->PushBuffer(m_pRecvBuff, streamHeader);
     }
     TUnlock(m_vecLocker);
-	CRdAsio::Instance()->DelUser(m_nSocket);
+	SingletonTmpl<CRdAsio>::Instance()->DelUser(m_nSocket);
 
     TUnlock(m_locker);
 }

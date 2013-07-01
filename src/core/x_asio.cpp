@@ -3,7 +3,7 @@
 #include "j_module.h"
 #include "x_socket.h"
 
-CRdAsio::CRdAsio(int)
+CRdAsio::CRdAsio()
 {
 	m_bStarted = false;
 #ifdef WIN32
@@ -16,15 +16,6 @@ CRdAsio::~CRdAsio()
 {
 #ifdef WIN32
 	WSACleanup();
-#endif
-}
-
-CRdAsio::CRdAsio()
-{
-	m_bStarted = false;
-#ifdef WIN32
-	WSADATA wsaData; 
-	WSAStartup(MAKEWORD(2,2), &wsaData);
 #endif
 }
 

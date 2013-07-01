@@ -38,9 +38,4 @@ class COnvifAdapter : J_BaseAdapter<COnvifAdapterBase>
         char m_username[64];
         char m_password[64];
 };
-
-ADAPTER_BEGIN_MAKER(onvif)
-	ADAPTER_ENTER_MAKER("onvif", COnvifAdapter::Maker)
-ADAPTER_END_MAKER()
-
 #endif //~__ONVIFADAPTER_H_

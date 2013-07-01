@@ -1,7 +1,8 @@
 #include "AipstarAdapter.h"
-
 #include "x_adapter_manager.h"
 #include "AipstarChannel.h"
+
+JO_IMPLEMENT_INTERFACE(Adapter, "aipstar", CAipstarAdapter::Maker)
 
 CAipstarAdapter::CAipstarAdapter(j_int32_t nDevId, const j_char_t *pAddr, j_int32_t nPort, const j_char_t *pUsername, const j_char_t *pPassword)
 {
@@ -138,12 +139,4 @@ void CAipstarAdapter::UserExchange()
 	}
 
 	//J_OS::LOGINFO("CAipstarAdapter::UserExchange");
-}
-
-extern "C"
-{
-void __declspec(dllexport)  Register()
-{
-	SingletonTmpl<CAdapterFactory>::Instance()->RegisterAdapter("aipstar", CAipstarAdapter::Maker);
-}
 }

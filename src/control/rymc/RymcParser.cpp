@@ -4,6 +4,8 @@
 
 static const char *http_end = "\r\n\r\n";
 
+JO_IMPLEMENT_INTERFACE(Parser, "mcsp", CRymcParser::Maker)
+
 CRymcParser::CRymcParser()
 {
 	memset(m_read_buff, 0, sizeof(m_read_buff));

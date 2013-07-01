@@ -45,8 +45,4 @@ class CRymcParser : public J_CommandParser
 		j_int32_t m_state;
 };
 
-PARSER_BEGIN_MAKER(mcsp)
-	PARSER_ENTER_MAKER("mcsp", CRymcParser::Maker)
-PARSER_END_MAKER()
-
 #endif //~__RYMC_PARSER_H_

@@ -49,8 +49,4 @@ class CSonyAdapter : J_BaseAdapter<CSonyAdapterBase>
         CXPing m_ping;
 };
 
-ADAPTER_BEGIN_MAKER(sony)
-	ADAPTER_ENTER_MAKER("sony", CSonyAdapter::Maker)
-ADAPTER_END_MAKER()
-
 #endif //~__SONYADAPTER_H_

@@ -36,8 +36,4 @@ class CJospFilter : public J_RequestFilter
 		j_int32_t m_state;
 };
 
-FILTER_BEGIN_MAKER(http)
-	FILTER_ENTER_MAKER("josp", CJospFilter::Maker)
-FILTER_END_MAKER()
-
 #endif //~__JOSP_H_

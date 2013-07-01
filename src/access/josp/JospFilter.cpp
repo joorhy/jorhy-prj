@@ -6,6 +6,8 @@
 
 const int RATE = 1024;
 
+JO_IMPLEMENT_INTERFACE(Filter, "josp", CJospFilter::Maker)
+
 CJospFilter::CJospFilter()
 {
 	m_muxFilter = NULL;

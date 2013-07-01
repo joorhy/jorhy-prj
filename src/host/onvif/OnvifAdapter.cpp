@@ -1,6 +1,8 @@
 #include "OnvifAdapter.h"
 #include "OnvifChannel.h"
 
+JO_IMPLEMENT_INTERFACE(Adapter, "onvif", COnvifAdapter::Maker)
+
 COnvifAdapter::COnvifAdapter(int nDvrId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
 	memset(m_remoteIP, 0, sizeof(m_remoteIP));

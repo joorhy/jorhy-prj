@@ -1,6 +1,8 @@
 #include "SonyAdapter.h"
 #include "SonyChannel.h"
 
+JO_IMPLEMENT_INTERFACE(Adapter, "sony", CSonyAdapter::Maker)
+
 CSonyAdapter::CSonyAdapter(int nDvrId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
 	memset(m_remoteIP, 0, sizeof(m_remoteIP));

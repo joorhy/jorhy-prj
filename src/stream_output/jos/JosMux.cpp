@@ -4,6 +4,8 @@ extern "C"
 #include "x_inet.h"
 }
 
+JO_IMPLEMENT_INTERFACE(Mux, "jos", CJosMux::Maker)
+
 CJosMux::CJosMux()
 {
 	J_OS::LOGINFO("CJosMux::CJosMux()");

@@ -67,7 +67,7 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 			module.handle = LoadLibrary(modName);
 			if (module.handle == j_invalid_module_val)
 			{
-				J_OS::LOGINFO("CXLoadso::LoadSo LoadLibrary, err = %s", GetLastError());
+				J_OS::LOGINFO("CXLoadso::LoadSo LoadLibrary, %s err = %d", modName, GetLastError());
 				continue;
 			}
 			Register_fun fun = (Register_fun)GetProcAddress(module.handle, "Register");

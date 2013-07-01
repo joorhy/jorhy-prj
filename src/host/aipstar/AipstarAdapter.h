@@ -75,15 +75,4 @@ private:
 	CXPing m_ping;
 	void *m_pChannel;
 };
-
-extern "C"
-{
-void __declspec(dllexport)  Register();
-}
-
-
-/*ADAPTER_BEGIN_MAKER(Aipstar)
-	ADAPTER_ENTER_MAKER("aipstar", CAipstarAdapter::Maker)
-ADAPTER_END_MAKER()*/
-
 #endif //~__AIPSTARADAPTER_H_

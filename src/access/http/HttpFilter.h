@@ -29,8 +29,4 @@ class CHttpFilter : public J_RequestFilter
 		j_int32_t m_read_len;
 };
 
-FILTER_BEGIN_MAKER(http)
-	FILTER_ENTER_MAKER("http", CHttpFilter::Maker)
-FILTER_END_MAKER()
-
 #endif //~__HTTP_H_

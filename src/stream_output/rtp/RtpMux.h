@@ -95,8 +95,4 @@ private:
 	rtp_helper helper;
 };
 
-MUX_BEGIN_MAKER(rtp)
-	MUX_ENTER_MAKER("rtp", CRtpMux::Maker)
-MUX_END_MAKER()
-
 #endif //~__RTPMUX_H_
