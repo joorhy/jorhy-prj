@@ -38,14 +38,14 @@ int COnvifStream::Startup()
 
     TLock(m_locker);
     m_bStartup = true;
-    CRdAsio::Instance()->Init();
-    CRdAsio::Instance()->AddUser(m_nSocket, this);
+    SingletonTmpl<CRdAsio>::Instance()->Init();
+    SingletonTmpl<CRdAsio>::Instance()->AddUser(m_nSocket, this);
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = m_pRecvBuff;
 	m_asioData.ioRead.bufLen = 4;
 	m_asioData.ioRead.whole = true;
 	m_nState = ONVIF_READ_HEAD;
-	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
+	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -59,7 +59,7 @@ int COnvifStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    CRdAsio::Instance()->DelUser(m_nSocket);
+    SingletonTmpl<CRdAsio>::Instance()->DelUser(m_nSocket);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Shutdown Shutdown this = %d", this);
 
@@ -105,7 +105,7 @@ void COnvifStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			break;
 	}
 	m_asioData.ioRead.whole = true;
-	CRdAsio::Instance()->Read(m_nSocket, &m_asioData);
+	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
 
     TUnlock(m_locker);
 }

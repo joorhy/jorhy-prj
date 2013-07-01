@@ -87,6 +87,8 @@ const char *ret_teardown =
 
 const char *ret_setup_unsport =
 	"RTSP/1.0 461 Unsupported Transport\r\n\r\n";
+	
+JO_IMPLEMENT_INTERFACE(Filter, "rtsp", CRtspFilter::Maker)
 
 CRtspFilter::CRtspFilter()
 {

@@ -11,7 +11,7 @@
 #define JO_IMPLEMENT_INTERFACE(_name, _type, _fun)\
 extern "C"\
 {\
-	void __declspec(dllexport)  Register()\
+	void Register()\
 	{\
 		SingletonTmpl<C##_name##Factory>::Instance()->Register##_name((_type), (_fun));\
 	}\

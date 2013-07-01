@@ -102,6 +102,8 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
                 J_OS::LOGINFO("CXLoadso::LoadSo dlopen, err = %s", dlerror());
                 continue;
             }
+			Register_fun fun = (Register_fun)dlsym(module.handle, "Register");
+			fun();
             m_vecHandle.push_back(module);
         }
     }

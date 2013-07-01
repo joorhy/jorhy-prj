@@ -71,8 +71,4 @@ private:
 	j_char_t m_send_buff[1024];
 };
 
-FILTER_BEGIN_MAKER(rtsp)
-	FILTER_ENTER_MAKER("rtsp", CRtspFilter::Maker)
-FILTER_END_MAKER()
-
 #endif //~__RTSP_H_
