@@ -5,7 +5,15 @@
     {\
         json_object_put(json_helper);\
         json_helper = NULL;\
-    }\
+    }
+
+CXSdk* single_sdk = NULL;
+CXSdk* X_JO_API GetSdkLayer()
+{
+	if (single_sdk == NULL)
+		single_sdk = new CXSdk();
+	return single_sdk;
+}
 
 char *CXSdk::HttpCommunicate(char *body,char *uri)
 {
@@ -103,7 +111,7 @@ r_register *CXSdk::StreamServerResgister(int ssid,char *uri)
 		return NULL;
 	}
 
-	//json_helper = json_object_new_object();
+	json_helper = json_object_new_object();
 	json_helper = json_tokener_parse(json_buf);
 	//J_OS::LOGINFO(json_buf);
 	if(is_error(json_helper))
@@ -178,7 +186,7 @@ r_register *CXSdk::StreamServerResgister(int ssid,char *uri)
 	json_object_put(otemp);
 	json_object_put(otemp2);
 	json_object_put(cha);
-	clean_all();
+	//clean_all();
 
 	return r_data;
 }

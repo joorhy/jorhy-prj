@@ -172,7 +172,7 @@ int CStreamRecord::OnRecord()
 		//m_fileInfo.etime = streamHeader.timeStamp / 1000;
 		m_record.filenum.push_back(m_fileInfo);
 		//J_OS::LOGINFO(m_fileInfo.file.c_str());
-		SingletonTmpl<CXSdk>::Instance()->GetRecordNotice(m_record, CXConfig::GetUrl());
+		GetSdkLayer()->GetRecordNotice(m_record, CXConfig::GetUrl());
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 		m_record.filenum.clear();
 		return J_DEV_BROKEN;
@@ -191,13 +191,13 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 
 	J_RecordInfo recordInfo;
-	SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
+	GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
 	if (((time_t)(streamHeader.timeStamp / 1000) - m_fileInfo.stime) > (j_int32_t)recordInfo.timeInterval
         || m_nHeaderOffset + sizeof(m_frameHead) > HEAD_BUFF_SIZE)
 	{
 	    CloseFile();
 		m_record.filenum.push_back(m_fileInfo);;
-		SingletonTmpl<CXSdk>::Instance()->GetRecordNotice(m_record, CXConfig::GetUrl());
+		GetSdkLayer()->GetRecordNotice(m_record, CXConfig::GetUrl());
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 		m_record.filenum.clear();
 		CreateFile(NULL);
@@ -323,7 +323,7 @@ int CStreamRecord::Init()
 {
     memset(m_vodDir, 0, sizeof(m_vodDir));
     J_RecordInfo recordInfo;
-	SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
+	GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
 	m_file.GetVodDir(recordInfo.vodPath, m_vodDir);
 	char vodDirTemp[256] = {0};
 	sprintf(vodDirTemp, "%s/.temp", m_vodDir);

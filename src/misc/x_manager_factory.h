@@ -30,4 +30,7 @@ private:
 	J_OS::TLocker_t m_lock;
 };
 
+extern JO_API CManagerFactory* single_manager;
+extern JO_API CManagerFactory* X_JO_API GetManagerFactoryLayer();  
+
 #endif //~__MANAGERFACTORY_H_

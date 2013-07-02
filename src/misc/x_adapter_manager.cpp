@@ -12,7 +12,7 @@ CAdapterManager::~CAdapterManager()
 
 int CAdapterManager::StartVideo(const char *pResId, int nStreamType, const j_socket_t nSocket)
 {
-	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
+	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pChannelStream == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StartVideo channel not exist, resid = %s", pResId);
@@ -64,7 +64,7 @@ int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_sock
 	if (it2 == it->second.ringBufferMap.end())
 		return J_NOT_EXIST;
 
-	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
+	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pChannelStream->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
 	{
 		//(static_cast<J_VideoStream *>(m_streamMap[pResId]))->Shutdown();
@@ -74,10 +74,10 @@ int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_sock
 		{
            // key.stream_type = nStreamType == 0 ? 1 : 0;
 			DelRingBuffer(pResId, nStreamType == 0 ? 1 : 0, nSocket);
-			SingletonTmpl<CAdapterFactory>::Instance()->RemoveInstance(pResId, OBJ_CHANNEL, nStreamType == 0 ? 1 : 0);
+			GetAdapterFactoryLayer()->RemoveInstance(pResId, OBJ_CHANNEL, nStreamType == 0 ? 1 : 0);
             //m_streamMap.erase(key);
 		}
-		SingletonTmpl<CAdapterFactory>::Instance()->RemoveInstance(pResId, OBJ_CHANNEL, nStreamType);
+		GetAdapterFactoryLayer()->RemoveInstance(pResId, OBJ_CHANNEL, nStreamType);
 	}
 	//DelRingBuffer(pResId, nStreamType, nSocket);
 
@@ -87,7 +87,7 @@ int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_sock
 int CAdapterManager::StartVoice(const char *pResId, const j_socket_t nSocket)
 {
     int nStreamType = 0;
-	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
+	J_ChannelStream *pChannelStream = static_cast<J_ChannelStream *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pChannelStream == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StartVoice channel not exist, resid = %s", pResId);
@@ -130,7 +130,7 @@ int CAdapterManager::StopVoice(const char *pResId, const j_socket_t nSocket)
 	if (it2 == it->second.ringBufferMap.end())
 		return J_NOT_EXIST;
 
-	J_ChannelStream *pVoiceChannel = static_cast<J_ChannelStream *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, key.stream_type));
+	J_ChannelStream *pVoiceChannel = static_cast<J_ChannelStream *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, key.stream_type));
 	if (pVoiceChannel->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
 	{
 		m_streamMap.erase(it);
@@ -143,7 +143,7 @@ int CAdapterManager::StopVoice(const char *pResId, const j_socket_t nSocket)
 int CAdapterManager::GetParser(const char *pResId, J_StreamParser *&pObj)
 {
     int nStreamType = 0;
-	J_StreamParser *pVideoParser = static_cast<J_StreamParser *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
+	J_StreamParser *pVideoParser = static_cast<J_StreamParser *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pVideoParser == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StartRecord channel not exist, resid = %s", pResId);
@@ -165,7 +165,7 @@ int CAdapterManager::GetParser(const char *pResId, J_StreamParser *&pObj)
 int CAdapterManager::DelParser(const char *pResId)
 {
     int nStreamType = 0;
-	J_StreamParser *pVideoParser = static_cast<J_StreamParser *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
+	J_StreamParser *pVideoParser = static_cast<J_StreamParser *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pVideoParser == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StopRecord channel not exist, resid = %s", pResId);
@@ -187,7 +187,7 @@ int CAdapterManager::DelParser(const char *pResId)
 int CAdapterManager::FindVodFile(const char *pResid, time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList)
 {
     int nStreamType = 0;
-	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResid, OBJ_CHANNEL, nStreamType));
+	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(GetAdapterFactoryLayer()->GetInstance(pResid, OBJ_CHANNEL, nStreamType));
 	if (pRemoteVod == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::GetVodStream channel not exist, resid = %s", pResid);
@@ -211,7 +211,7 @@ int CAdapterManager::OnAlarm(int nDvrId, int nChannel, int nAlarmType)
 int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_RemoteVod *&pObj)
 {
     int nStreamType = 0;
-	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
+	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pRemoteVod == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::GetVodStream channel not exist, resid = %s", pResId);
@@ -233,7 +233,7 @@ int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_Remo
 int CAdapterManager::DelVodStream(j_socket_t nSocket, const char *pResId)
 {
     int nStreamType = 0;
-	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
+	J_RemoteVod *pRemoteVod = static_cast<J_RemoteVod *>(GetAdapterFactoryLayer()->GetInstance(pResId, OBJ_CHANNEL, nStreamType));
 	if (pRemoteVod == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::DelVodStream channel not exist, resid = %s", pResId);

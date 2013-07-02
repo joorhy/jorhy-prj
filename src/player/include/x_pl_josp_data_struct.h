@@ -90,9 +90,10 @@ struct JOSP_DataHead
 	unsigned char start_code[4];	//魔术字段 JOAV
 	unsigned int data_len;			//数据长度(不包括头)
 	unsigned int frame_type;		//3-I帧,4-B帧,5-P帧,6-音频帧
-	long long time_stamp;			//时间戳
 	unsigned long frame_seq;		//帧序列号
 	int b_last_frame;					//BOOL类型,结束标志
+	int reserve;							//预留
+	long long time_stamp;			//时间戳
 }; 
 
 #pragma pack(pop)				//恢复对齐状态

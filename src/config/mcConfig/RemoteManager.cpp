@@ -18,7 +18,7 @@ CRemoteManager::~CRemoteManager()
 
 int CRemoteManager::GetDeviceInfo(const char *pResid, J_DeviceInfo &devInfo)
 {
-	r_ssconfig *ssConfig = SingletonTmpl<CXSdk>::Instance()->GetSSConfigByResid((char *)pResid, CXConfig::GetUrl());
+	r_ssconfig *ssConfig = GetSdkLayer()->GetSSConfigByResid((char *)pResid, CXConfig::GetUrl());
 	if (ssConfig == NULL)
 	{
 		J_OS::LOGINFO("CCmsConf::GetDeviceInfo error, resid = %s", pResid);
@@ -37,7 +37,7 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 {
     TLock(m_locker);
     if (m_regInfo == NULL)
-        m_regInfo = SingletonTmpl<CXSdk>::Instance()->StreamServerResgister(CXConfig::GetStreamServerId(), CXConfig::GetUrl());
+        m_regInfo = GetSdkLayer()->StreamServerResgister(CXConfig::GetStreamServerId(), CXConfig::GetUrl());
 
 	if (m_regInfo)
 	{
@@ -100,7 +100,7 @@ int CRemoteManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 
 int CRemoteManager::GetChannelInfo(const char *channelId, J_ChannelInfo &channelInfo)
 {
-	r_devconfig *devConfig = SingletonTmpl<CXSdk>::Instance()->GetDevConfigByResid((char *)channelId, CXConfig::GetUrl());
+	r_devconfig *devConfig = GetSdkLayer()->GetDevConfigByResid((char *)channelId, CXConfig::GetUrl());
 	if (devConfig == NULL)
 	{
 		J_OS::LOGINFO("CCmsConf::GetChannelInfo error, resid = %s", channelId);
@@ -119,7 +119,7 @@ int CRemoteManager::GetRecordInfo(J_RecordInfo &recordInfo)
 {
     TLock(m_locker);
     if (m_regInfo == NULL)
-        m_regInfo = SingletonTmpl<CXSdk>::Instance()->StreamServerResgister(CXConfig::GetStreamServerId(), CXConfig::GetUrl());
+        m_regInfo = GetSdkLayer()->StreamServerResgister(CXConfig::GetStreamServerId(), CXConfig::GetUrl());
 
 	if (m_regInfo)
 	{

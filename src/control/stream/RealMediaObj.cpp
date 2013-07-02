@@ -157,7 +157,7 @@ int CRealMediaObj::Clearn()
 	StopVideo();
 	if (m_pObj)
 	{
-		SingletonTmpl<CFilterFactory>::Instance()->DelFilter(m_nSocket);
+		GetFilterFactoryLayer()->DelFilter(m_nSocket);
 		m_pObj = NULL;
 	}
 	J_OS::LOGINFO("CRealMediaObj::OnBroken socket = %d broken", m_nSocket);

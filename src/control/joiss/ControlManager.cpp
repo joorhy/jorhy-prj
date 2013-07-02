@@ -16,7 +16,7 @@ CControlManager::CControlManager()
 CControlManager::~CControlManager()
 {
 	if (m_pCommandParser != NULL)
-		SingletonTmpl<CParserFactory>::Instance()->DelParser(m_nPort);
+		GetParserFactoryLayer()->DelParser(m_nPort);
 }
 
 j_result_t CControlManager::StartService(j_int32_t nPort, const j_char_t *pCommandType)
@@ -28,7 +28,7 @@ j_result_t CControlManager::StartService(j_int32_t nPort, const j_char_t *pComma
 	m_asioData.ioUser = this;
 	m_asio.Listen(&m_asioData);
 	
-	m_pCommandParser = SingletonTmpl<CParserFactory>::Instance()->GetParser(nPort, pCommandType);
+	m_pCommandParser = GetParserFactoryLayer()->GetParser(nPort, pCommandType);
 	if (m_pCommandParser == NULL)
 		return J_UNKNOW;
 		

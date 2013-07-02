@@ -6,7 +6,7 @@ CAipstarChannel::CAipstarChannel(const j_char_t *pResid, j_void_t *pOwner, j_int
 	m_bOpened = false;
 	m_nChannel = nChannel;
 
-	m_pAdapter = (CAipstarAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<CAipstarAdapter *> ((J_Obj *)pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -224,12 +224,9 @@ j_result_t CAipstarChannel::StopView()
 
 int CAipstarChannel::Broken()
 {
-	J_OS::LOGINFO("3");
 	if (m_pStream != NULL)
 	{
-		J_OS::LOGINFO("4");
 		(static_cast<CAipstarStream *> (m_pStream))->Broken();
-		J_OS::LOGINFO("5");
 		return J_OK;
 	}
 		

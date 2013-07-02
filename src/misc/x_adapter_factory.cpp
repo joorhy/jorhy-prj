@@ -5,16 +5,34 @@
 
 #define TYPE_OR_ID_SIZE 8
 
+CAdapterFactory* single_adapter = NULL;
+CAdapterFactory* X_JO_API GetAdapterFactoryLayer()
+{
+	if (single_adapter == NULL)
+		single_adapter = new CAdapterFactory();
+	return single_adapter;
+}
+
 CAdapterFactory::CAdapterFactory()
 {
 	m_bRegiste = false;
 	m_adapterRegistMap.clear();
-	//m_timer.Create(1 * 1000, CAdapterFactory::TimerThread, this);
 }
 
 CAdapterFactory::~CAdapterFactory()
 {
-	//m_timer.Destroy();
+	
+}
+
+int CAdapterFactory::Init()
+{
+	m_timer.Create(1 * 1000, CAdapterFactory::TimerThread, this);
+	return J_OK;
+}
+
+void CAdapterFactory::Deinit()
+{
+	m_timer.Destroy();
 }
 
 int CAdapterFactory::RegisterAdapter(const char *adapterType, J_MakeAdapterFun pFun)
@@ -61,7 +79,7 @@ void *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_T
 
 
         J_ChannelInfo channelInfo;
-        int nRet = SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
+        int nRet = GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
         if (nRet != J_OK)
         {
             J_OS::LOGINFO("CAdapterFactory::CreateInstence GetDevinfoByChannel error, resid = %s", pResId);
@@ -165,7 +183,7 @@ void CAdapterFactory::OnTimer()
 	int nRet = J_OK;
 	char dev_id[TYPE_OR_ID_SIZE];
 	std::vector<J_DeviceInfo> devList;
-	nRet = SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->ListDevices(devList);
+	nRet = GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->ListDevices(devList);
 	if (nRet == J_OK)
 	{
 		std::vector<J_DeviceInfo>::iterator itDvr = devList.begin();
@@ -206,6 +224,6 @@ void CAdapterFactory::OnTimer()
 			}
 		}
 		m_bRegiste = true;
-		SingletonTmpl<CManagerFactory>::Instance()->GetManager(CXConfig::GetConfigType())->StartRecord();
+		GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->StartRecord();
 	}
 }

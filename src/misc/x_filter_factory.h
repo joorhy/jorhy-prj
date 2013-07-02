@@ -30,4 +30,7 @@ private:
 	J_OS::TLocker_t m_lock;
 };
 
+extern JO_API CFilterFactory* single_filter;
+extern JO_API CFilterFactory* X_JO_API GetFilterFactoryLayer();  
+
 #endif //~__FILTERFACTORY_H_

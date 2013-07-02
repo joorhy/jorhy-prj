@@ -40,6 +40,7 @@ int CJosMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char 
 	
 	memcpy(pOutputData + sizeof(J_DataHead), pInputData, streamHeader.dataLen);
 	nOutLen = streamHeader.dataLen + sizeof(J_DataHead);
+	printf("%d   %d\n", sizeof(J_DataHead), streamHeader.dataLen);
 	
 	//J_OS::LOGINFO("data_len = %d", streamHeader.dataLen);
 

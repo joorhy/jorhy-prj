@@ -29,4 +29,7 @@ private:
 	CXHttp m_httpHelper;
 };
 
+extern JO_API CXSdk* single_sdk;
+extern JO_API CXSdk* X_JO_API GetSdkLayer();  
+
 #endif //~_X_SDK_H_

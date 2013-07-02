@@ -94,6 +94,7 @@ int CXPing::RecvPacket()
     struct sockaddr_in from;
 #ifdef WIN32
     j_int32_t from_len = sizeof(from);
+	return J_OK;
 #else
 	socklen_t from_len = sizeof(from);
 #endif

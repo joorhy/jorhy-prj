@@ -28,7 +28,7 @@ int CDeviceControl::PtzControl(const char *pResid, int nCmd, int nParam)
 		return J_NOT_EXIST;
 
     int nStreamType = 1;
-	J_PtzControl *pPtzControl = dynamic_cast<J_PtzControl *>((J_ChannelStream *)SingletonTmpl<CAdapterFactory>::Instance()->GetInstance(pResid, OBJ_CHANNEL, nStreamType));
+	J_PtzControl *pPtzControl = dynamic_cast<J_PtzControl *>((J_ChannelStream *)GetAdapterFactoryLayer()->GetInstance(pResid, OBJ_CHANNEL, nStreamType));
 	if (pPtzControl == NULL)
 	{
 		J_OS::LOGINFO("CDeviceControl::PtzControl GetInstence error");

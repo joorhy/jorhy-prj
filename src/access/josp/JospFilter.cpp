@@ -21,7 +21,7 @@ CJospFilter::CJospFilter()
 CJospFilter::~CJospFilter()
 {
 	if (m_muxFilter)
-		SingletonTmpl<CMuxFactory>::Instance()->DelMux(this);
+		GetMuxFactoryLayer()->DelMux(this);
 	
 	if (m_pRetBuff)
 		delete m_pRetBuff;
@@ -114,7 +114,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 	//if (m_nCommandType == jo_start_vod)
 	//	return J_WIAT_NEXT_CMD;
 		
-	m_muxFilter = SingletonTmpl<CMuxFactory>::Instance()->GetMux(this, "jos");
+	m_muxFilter = GetMuxFactoryLayer()->GetMux(this, "jos");
 
 	return J_OK;
 }

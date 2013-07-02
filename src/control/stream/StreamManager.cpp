@@ -53,6 +53,7 @@ void CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 		pDataBase->ioRead.whole = true;
 	}
 	pDataBase->ioUser = this;
+	pDataBase->ioCall = J_AsioDataBase::j_read_e;
 	
 	ClientInfo info;
 	info.pAsioData = pDataBase;
@@ -89,7 +90,11 @@ void CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 		pDataBase->ioCall = J_AsioDataBase::j_write_e;
 		pDataBase->ioHandle = pAsioData->ioHandle;
 		pDataBase->ioUser = this;
-		nResult = pClient->Process(*pDataBase);
+		while (pDataBase->ioWrite.bufLen <= 0)
+		{
+			nResult = pClient->Process(*pDataBase);
+			j_sleep(1);
+		}
 		if (nResult == J_OK)
 		{
 			m_asio.Write(pDataBase->ioHandle, pDataBase);
@@ -109,6 +114,7 @@ void CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 
 void CStreamManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
+	J_OS::LOGINFO("OnBroken");
 	ClientMap::iterator it = m_clientMap.find(pAsioData->ioHandle);
 	if (it == m_clientMap.end())
 		return;
@@ -131,7 +137,7 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 		return J_UNKNOW;
 		
 	int nRet = J_OK;
-	J_RequestFilter *protocolFilter = SingletonTmpl<CFilterFactory>::Instance()->GetFilter(pAsioData->ioHandle, m_serviceType.c_str());
+	J_RequestFilter *protocolFilter = GetFilterFactoryLayer()->GetFilter(pAsioData->ioHandle, m_serviceType.c_str());
 	if (protocolFilter == NULL)
 	{
 		return J_PARAM_ERROR;

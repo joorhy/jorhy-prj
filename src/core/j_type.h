@@ -399,9 +399,10 @@ struct J_DataHead
 	j_char_t start_code[4];		//魔术字段 JOAV
 	j_uint32_t data_len;		//数据长度(不包括头)
 	j_uint32_t frame_type;		//3-I帧,4-B帧,5-P帧,6-音频帧
-	j_int64_t time_stamp;		//时间戳
 	j_uint32_t frame_seq;		//帧序列号
 	j_int32_t b_last_frame;		//数据结束标准
+	j_int32_t reserve;				//预留
+	j_int64_t time_stamp;		//时间戳
 };
 
 #endif //~__J_TYPE_H_

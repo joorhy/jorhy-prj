@@ -30,4 +30,7 @@ private:
 	J_OS::TLocker_t m_lock;
 };
 
+extern JO_API CMuxFactory* single_mux;
+extern JO_API CMuxFactory* X_JO_API GetMuxFactoryLayer();  
+
 #endif //~__MUXFACTORY_H_

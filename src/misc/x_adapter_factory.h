@@ -24,6 +24,8 @@ public:
 	~CAdapterFactory();
 
 public:
+	int Init();
+	void Deinit();
 	///注册Adapter类
 	///@param[in] 	adapterType adapter 类型 1-海康,2-大华
 	///@param[in] 	J_MakeAdapterFun Adapter的构造函数
@@ -70,4 +72,7 @@ private:
 	DeviceMap m_devMap;
 	bool m_bRegiste;
 };
+extern JO_API CAdapterFactory* single_adapter;
+extern JO_API CAdapterFactory* X_JO_API GetAdapterFactoryLayer();  
+
 #endif //~__ADAPTERFACTORY_H_

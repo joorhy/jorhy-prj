@@ -1,6 +1,14 @@
 #include "x_filereader_factory.h"
 #include "x_string.h"
 
+CFileReaderFactory* single_filereader = NULL;
+CFileReaderFactory* X_JO_API GetFileReaderFactoryLayer()
+{
+	if (single_filereader == NULL)
+		single_filereader = new CFileReaderFactory();
+	return single_filereader;
+}
+
 int CFileReaderFactory::RegisterFileReader(const char *fileReaderType, J_MakeFileReaderFun pFun)
 {
 	FileReaderRegistMap::iterator it = m_fileReaderRegistMap.find(fileReaderType);
