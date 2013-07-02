@@ -38,14 +38,14 @@ int COnvifStream::Startup()
 
     TLock(m_locker);
     m_bStartup = true;
-    SingletonTmpl<CRdAsio>::Instance()->Init();
-    SingletonTmpl<CRdAsio>::Instance()->AddUser(m_nSocket, this);
+    GetAsioLayer()->Init();
+    GetAsioLayer()->AddUser(m_nSocket, this);
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = m_pRecvBuff;
 	m_asioData.ioRead.bufLen = 4;
 	m_asioData.ioRead.whole = true;
 	m_nState = ONVIF_READ_HEAD;
-	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
+	GetAsioLayer()->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -59,7 +59,7 @@ int COnvifStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    SingletonTmpl<CRdAsio>::Instance()->DelUser(m_nSocket);
+    GetAsioLayer()->DelUser(m_nSocket);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Shutdown Shutdown this = %d", this);
 
@@ -105,7 +105,7 @@ void COnvifStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			break;
 	}
 	m_asioData.ioRead.whole = true;
-	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
+	GetAsioLayer()->Read(m_nSocket, &m_asioData);
 
     TUnlock(m_locker);
 }
@@ -116,7 +116,7 @@ void COnvifStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
-    streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
+    streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
 
     TLock(m_vecLocker);
     std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();

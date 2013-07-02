@@ -40,8 +40,11 @@ private:
 	typedef std::map<J_ChannelKey, StreamInfo> StreamMap;
 	StreamMap m_streamMap;
 
-	std::map<std::string, void *> m_parserMap;			//void *代表J_VideoParser对象
+	std::map<j_string_t, void *> m_parserMap;			//void *代表J_VideoParser对象
 	std::map<j_socket_t, void *> m_vodMap;						//void *代表J_VideoVodStream对象
 };
+
+extern JO_API CAdapterManager* single_adapter_manager;
+extern JO_API CAdapterManager* X_JO_API GetAdapterManagerLayer();  
 
 #endif // ~__AdapterManager_h_

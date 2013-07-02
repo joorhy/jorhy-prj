@@ -48,7 +48,9 @@ private:
 	J_OS::CTLock m_threadMutex;
 	J_OS::CXCond m_threadCond;
 	CJoThread m_thread;
-	bool m_bShutDown; 
+	j_boolean_t m_bShutDown; 
 };
+extern JO_API CThreadPool* single_thread_pool;
+extern JO_API CThreadPool* X_JO_API GetThreadPoolLayer();  
 
 #endif // __X_THREAD_POOL_H_

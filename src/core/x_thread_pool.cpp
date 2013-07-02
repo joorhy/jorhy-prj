@@ -2,6 +2,14 @@
 #include "x_thread_pool.h"
 #include "x_log.h"
 
+CThreadPool* single_thread_pool = NULL;
+CThreadPool* X_JO_API GetThreadPoolLayer()
+{
+	if (single_thread_pool == NULL)
+		single_thread_pool = new CThreadPool();
+	return single_thread_pool;
+}
+
 CThreadPool::CThreadPool()
 {
 	m_bShutDown = false;

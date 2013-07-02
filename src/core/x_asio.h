@@ -7,11 +7,11 @@
 #include "x_socket.h"
 #include "x_thread.h"
 
-class JO_API CRdAsio
+class JO_API CXAsio
 {
 public:
-	CRdAsio();
-	~CRdAsio();
+	CXAsio();
+	~CXAsio();
 
 public:
 	int Init();
@@ -29,7 +29,7 @@ private:
 	static void *WorkThread(void *param)
 #endif
 	{
-		(static_cast<CRdAsio *>(param))->OnWork();
+		(static_cast<CXAsio *>(param))->OnWork();
 		return 0;
 	}
 	void OnWork();
@@ -39,7 +39,7 @@ private:
 	static void *ListenThread(void *param)
 #endif
 	{
-		(static_cast<CRdAsio *>(param))->OnListen();
+		(static_cast<CXAsio *>(param))->OnListen();
 		return 0;
 	}
 	void OnListen();
@@ -74,5 +74,8 @@ private:
 	struct epoll_event m_evConnect[JO_MAX_ASIOSIZE];
 #endif
 };
+
+extern JO_API CXAsio* single_asio;
+extern JO_API CXAsio* X_JO_API GetAsioLayer();  
 
 #endif //~__X_RD_ASIO_H_

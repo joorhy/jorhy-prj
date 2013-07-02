@@ -115,7 +115,7 @@ int CLocalManager::StartRecord()
 			}
 		}
 	}
-	SingletonTmpl<CRecoderManager>::Instance()->Single();
+	GetRecoderManagerLayer()->Single();
 	
 	return J_OK;
 }

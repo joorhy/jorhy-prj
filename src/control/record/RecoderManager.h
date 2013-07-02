@@ -60,5 +60,7 @@ class JO_API CRecoderManager
         J_OS::CTLock m_locker2;
 		J_OS::CXCond m_cond;
 };
+extern JO_API CRecoderManager* single_recoder_manager;
+extern JO_API CRecoderManager* X_JO_API GetRecoderManagerLayer();  
 
 #endif //~__RECODERMANAGER_H_

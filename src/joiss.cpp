@@ -86,7 +86,7 @@ end:
 	}
 	GetAdapterFactoryLayer()->Deinit();
 	loadSo.JoUnloadSo();
-	SingletonTmpl<CThreadPool>::Instance()->Destroy();
+	GetThreadPoolLayer()->Destroy();
 
 	return 0;
 }

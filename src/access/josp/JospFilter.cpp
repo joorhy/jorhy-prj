@@ -66,7 +66,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 					m_nStreamType = ntohl(pRealViewData->stream_type);
 					memcpy(m_strResid, pRealViewData->res_id, strlen(pRealViewData->res_id));
 					
-					SingletonTmpl<CXJoSdk>::Instance()->MakeRespHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
+					GetJoSdkLayer()->MakeRespHeader(m_pRetBuff, jo_open_stream_rep, sizeof(J_RealViewRetData));
 					J_RealViewRetData *pRetData = (J_RealViewRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
 					memcpy(pRetData->media_code, "JOMS", 4);
 					pRetData->i_frame_ival = 30;
@@ -87,7 +87,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 					m_endTime = ntohl(pVodPlayData->end_time);
 					memcpy(m_strResid, pVodPlayData->res_id, strlen(pVodPlayData->res_id));
 					
-					SingletonTmpl<CXJoSdk>::Instance()->MakeRespHeader(m_pRetBuff, jo_open_file_rep, sizeof(J_VodPlayRetData));
+					GetJoSdkLayer()->MakeRespHeader(m_pRetBuff, jo_open_file_rep, sizeof(J_VodPlayRetData));
 					J_VodPlayRetData *pRetData = (J_VodPlayRetData *)(m_pRetBuff + sizeof(J_CtrlHead));
 					memcpy(pRetData->media_code, "JOMS", 4);
 					pRetData->i_frame_ival = 30;
@@ -104,7 +104,7 @@ int CJospFilter::Parser(J_AsioDataBase &asioData)
 					m_beginTime = ntohl(pRequestData->begin_time);
 					m_endTime = m_beginTime + ntohl(pRequestData->time_ival);
 					
-					SingletonTmpl<CXJoSdk>::Instance()->MakeRespHeader(m_pRetBuff, jo_req_data_rep, 0);
+					GetJoSdkLayer()->MakeRespHeader(m_pRetBuff, jo_req_data_rep, 0);
 					m_nRetLen = 0;
 				}		
 				break;

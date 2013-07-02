@@ -28,7 +28,7 @@ class JO_API CControlManager : public J_AsioUser
 		J_AsioDataBase m_asioData;
 		j_char_t m_read_buff[2048];
 		j_string_t m_serviceType;
-		CRdAsio m_asio;
+		CXAsio m_asio;
 };
 
 #endif //~__CONTROLMANAGER_H_

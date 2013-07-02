@@ -1,5 +1,13 @@
 #include "x_adapter_manager.h"
 
+CAdapterManager* single_adapter_manager = NULL;
+CAdapterManager* X_JO_API GetAdapterManagerLayer()
+{
+	if (single_adapter_manager == NULL)
+		single_adapter_manager = new CAdapterManager();
+	return single_adapter_manager;
+}
+
 CAdapterManager::CAdapterManager()
 {
 

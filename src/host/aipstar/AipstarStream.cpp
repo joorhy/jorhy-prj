@@ -35,7 +35,7 @@ j_void_t CAipstarStream::OnRecv(HANDLE hHandle, tmRealStreamInfo_t *streamInfo)
 	{
 		J_StreamHeader streamHeader = {0};
 		streamHeader.dataLen = streamInfo->iBufferSize - 8;
-		streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
+		streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
 		if (streamInfo->byFrameType == 0)
 		{
 			streamHeader.frameType = (streamInfo->byKeyFrame ? jo_video_i_frame : jo_video_p_frame);

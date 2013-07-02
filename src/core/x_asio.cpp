@@ -3,7 +3,15 @@
 #include "j_module.h"
 #include "x_socket.h"
 
-CRdAsio::CRdAsio()
+CXAsio* single_asio = NULL;
+CXAsio* X_JO_API GetAsioLayer()
+{
+	if (single_asio == NULL)
+		single_asio = new CXAsio();
+	return single_asio;
+}
+
+CXAsio::CXAsio()
 {
 	m_bStarted = false;
 #ifdef WIN32
@@ -12,14 +20,14 @@ CRdAsio::CRdAsio()
 #endif
 }
 
-CRdAsio::~CRdAsio()
+CXAsio::~CXAsio()
 {
 #ifdef WIN32
 	WSACleanup();
 #endif
 }
 
-int CRdAsio::Init()
+int CXAsio::Init()
 {
 	if (!m_bStarted)
 	{
@@ -36,14 +44,14 @@ int CRdAsio::Init()
 #endif
 		m_bStarted = true;
 		j_thread_parm parm = {0};
-		parm.entry = CRdAsio::WorkThread;
+		parm.entry = CXAsio::WorkThread;
 		parm.data = this;
 		m_workThread.Create(parm);
 	}
 	return J_OK;
 }
 
-void CRdAsio::Deinit()
+void CXAsio::Deinit()
 {
 	if (m_bStarted)
 	{
@@ -66,7 +74,7 @@ void CRdAsio::Deinit()
 	}
 }
 
-int CRdAsio::Listen(J_AsioDataBase *pAsioData)
+int CXAsio::Listen(J_AsioDataBase *pAsioData)
 {
 	if (pAsioData->ioUser != NULL)
 	{
@@ -82,14 +90,14 @@ int CRdAsio::Listen(J_AsioDataBase *pAsioData)
 		m_listenAsioData = pAsioData;
 		
 		j_thread_parm parm = {0};
-		parm.entry = CRdAsio::ListenThread;
+		parm.entry = CXAsio::ListenThread;
 		parm.data = this;
 		m_workThread.Create(parm);
 	}
 	return J_OK;
 }
 
-int CRdAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
+int CXAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 {
 	TLock(m_user_locker);
 #ifdef WIN32
@@ -117,7 +125,7 @@ int CRdAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 	return J_OK;
 }
 
-void CRdAsio::DelUser(j_socket_t nSocket)
+void CXAsio::DelUser(j_socket_t nSocket)
 {
 	TLock(m_user_locker);
 #ifdef WIN32
@@ -174,7 +182,7 @@ void CRdAsio::DelUser(j_socket_t nSocket)
 	TUnlock(m_write_locker);
 }
 
-void CRdAsio::OnWork()
+void CXAsio::OnWork()
 {
 #ifdef WIN32
 	DWORD dwBytesTransferred;
@@ -269,7 +277,7 @@ void CRdAsio::OnWork()
 #endif
 }
 
-void CRdAsio::OnListen()
+void CXAsio::OnListen()
 {
 	j_socket_t active_fd;
 	struct sockaddr_in sonnAddr;
@@ -290,7 +298,7 @@ void CRdAsio::OnListen()
 	}
 }
 	
-void CRdAsio::EnableKeepalive(j_socket_t sock)
+void CXAsio::EnableKeepalive(j_socket_t sock)
 {
 	//开启tcp探测
 	int keepAlive = 1; 		// 开启keepalive属性
@@ -312,7 +320,7 @@ void CRdAsio::EnableKeepalive(j_socket_t sock)
 #endif
 }
 
-int CRdAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
+int CXAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 {
 	TLock(m_user_locker);
 	AsioUserMap::iterator it = m_userMap.find(nSocket);
@@ -349,7 +357,7 @@ int CRdAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	return 0;
 }
 
-int CRdAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
+int CXAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 {
 	TLock(m_user_locker);
 	AsioUserMap::iterator it = m_userMap.find(nSocket);
@@ -387,7 +395,7 @@ int CRdAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	return J_OK;
 }
 
-int CRdAsio::ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData)
+int CXAsio::ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData)
 {
 	TLock(m_listen_locker);
 	J_AsioUser *pAsioUser = static_cast<J_AsioUser *>(asioData->ioUser);
@@ -396,7 +404,7 @@ int CRdAsio::ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData)
 	return J_OK;
 }
 
-int CRdAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
+int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 {
 	AsioDataMap::iterator itData;
 	int nRet = 0;

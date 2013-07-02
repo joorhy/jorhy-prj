@@ -15,7 +15,7 @@ CJospHelper::~CJospHelper()
 int CJospHelper::OpenStream(J_OS::CTCPSocket *recvSocket, const char *pResid, int nStreamType)
 {
 	char temp_buff[2048] = {0};
-	SingletonTmpl<CXJoSdk>::Instance()->MakeReqHeader(temp_buff, NULL, jo_open_stream_req, jo_intact_pack, 0, sizeof(J_RealViewData));
+	GetJoSdkLayer()->MakeReqHeader(temp_buff, NULL, jo_open_stream_req, jo_intact_pack, 0, sizeof(J_RealViewData));
 	J_RealViewData *pRealViewData = (J_RealViewData *)(temp_buff + sizeof(J_CtrlHead));
 	
 	const char *pNextId = strstr(pResid, ".");

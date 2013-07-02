@@ -55,7 +55,7 @@ int CDahuaParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 		if (m_frame.nBodyLength == 0)
 			return J_NOT_COMPLATE;
 			
-		streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
+		streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
 		streamHeader.dataLen = 0;
 		if (m_frame.nType == FRAME_TYPE_VIDEO)
 		{

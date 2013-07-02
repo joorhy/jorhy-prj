@@ -14,4 +14,7 @@ public:
 	int MakeRespHeader(j_char_t *pBuffer, j_uint8_t byCmd, j_uint16_t exLength, j_uint8_t byRet = 0x00);
 };
 
+extern JO_API CXJoSdk* single_josdk;
+extern JO_API CXJoSdk* X_JO_API GetJoSdkLayer();  
+
 #endif //~__X_JO_SDK_H_

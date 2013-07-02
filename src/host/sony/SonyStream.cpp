@@ -38,13 +38,13 @@ int CSonyStream::Startup()
 
     TLock(m_locker);
     m_bStartup = true;
-    SingletonTmpl<CRdAsio>::Instance()->Init();
-    SingletonTmpl<CRdAsio>::Instance()->AddUser(m_nSocket, this);
+    GetAsioLayer()->Init();
+    GetAsioLayer()->AddUser(m_nSocket, this);
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = m_pRecvBuff;
 	m_asioData.ioRead.bufLen = RECV_SIZE;
 	m_asioData.ioRead.whole = false;
-	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
+	GetAsioLayer()->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Startup Startup this = %d", this);
 
@@ -58,7 +58,7 @@ int CSonyStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    SingletonTmpl<CRdAsio>::Instance()->DelUser(m_nSocket);
+    GetAsioLayer()->DelUser(m_nSocket);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Shutdown Shutdown this = %d", this);
 
@@ -104,7 +104,7 @@ void CSonyStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
-    streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
+    streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
 
     TLock(m_vecLocker);
     std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();

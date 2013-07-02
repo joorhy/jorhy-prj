@@ -1,5 +1,13 @@
 #include "x_jo_sdk.h"
 
+CXJoSdk* single_josdk = NULL;
+CXJoSdk* X_JO_API GetJoSdkLayer()
+{
+	if (single_josdk == NULL)
+		single_josdk = new CXJoSdk();
+	return single_josdk;
+}
+
 int CXJoSdk::MakeReqHeader(j_char_t *pBuffer, j_char_t *pUserID, j_uint8_t byCmd, j_uint8_t byFlag, j_uint16_t sqNum, j_uint16_t exLength, j_uint8_t byRet)
 {
     J_CtrlHead *ctrlHeader = (J_CtrlHead *)pBuffer;

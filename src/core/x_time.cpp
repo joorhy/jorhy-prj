@@ -1,6 +1,14 @@
 #include "x_time.h"
 #include "j_common.h"
 
+CTime* single_time = NULL;
+CTime* X_JO_API GetTimeLayer()
+{
+	if (single_time == NULL)
+		single_time = new CTime();
+	return single_time;
+}
+
 j_string_t CTime::GetLocalTime()
 {
 	time_t curTime;

@@ -111,14 +111,14 @@ int CStreamRecord::StartPreRecord(const char *pResid, int nStreamType, int nTime
 
 	J_Add_Ref(this);
 
-	int nRet = SingletonTmpl<CAdapterManager>::Instance()->StartVideo(pResid, nStreamType, m_nSocket);
+	int nRet = GetAdapterManagerLayer()->StartVideo(pResid, nStreamType, m_nSocket);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CStreamRecord::StartPreRecord StartVideo error ret = %d", nRet);
 		return nRet;
 	}
 
-	nRet = SingletonTmpl<CAdapterManager>::Instance()->GetRingBuffer(pResid, nStreamType, m_nSocket, m_pRingBuffer);
+	nRet = GetAdapterManagerLayer()->GetRingBuffer(pResid, nStreamType, m_nSocket, m_pRingBuffer);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CStreamRecord::StartPreRecord GetRingBuffer error ret = %d", nRet);
@@ -137,7 +137,7 @@ int CStreamRecord::StopPreRecord(const char *pResid, int nStreamType, bool isSto
 	if (!isStopVideo)
 		return J_OK;
 
-	int nRet = SingletonTmpl<CAdapterManager>::Instance()->StopVideo(pResid, nStreamType, m_nSocket);
+	int nRet = GetAdapterManagerLayer()->StopVideo(pResid, nStreamType, m_nSocket);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CStreamRecord::StopPreRecord StopVideo error ret = %d", nRet);
@@ -253,7 +253,7 @@ int CStreamRecord::CreateFile(char *pFileName)
 	memcpy(m_fileHead.type, "head", 4);
 	memcpy(m_fileBody.type, "body", 4);
 
-	sprintf(m_fileName, "%s_%s", m_resid.c_str(), SingletonTmpl<CTime>::Instance()->GetLocalTime().c_str());
+	sprintf(m_fileName, "%s_%s", m_resid.c_str(), GetTimeLayer()->GetLocalTime().c_str());
 	char fileName[256] = {0};
 	sprintf(fileName, "%s/.temp/%s", m_vodDir, m_fileName);
 
@@ -307,7 +307,7 @@ int CStreamRecord::CloseFile()
 	char fileName[128] = {0};
 	sprintf(oldFileName, "%s/.temp/%s", m_vodDir, m_fileName);
 	std::string strETime;
-	m_fileInfo.etime = SingletonTmpl<CTime>::Instance()->GetLocalTime(strETime);
+	m_fileInfo.etime = GetTimeLayer()->GetLocalTime(strETime);
 	sprintf(fileName, "%s_%s.josf", m_fileName, strETime.c_str());
 	sprintf(newFileName, "%s/%s", m_vodDir, fileName);
 

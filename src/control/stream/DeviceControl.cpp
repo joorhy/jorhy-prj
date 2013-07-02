@@ -14,12 +14,12 @@ CDeviceControl::~CDeviceControl()
 
 int CDeviceControl::StartRecord(const char *pResid)
 {
-	return SingletonTmpl<CRecoderManager>::Instance()->AddRecord(pResid);
+	return GetRecoderManagerLayer()->AddRecord(pResid);
 }
 
 int CDeviceControl::StopRecord(const char *pResid)
 {
-	return SingletonTmpl<CRecoderManager>::Instance()->DelRecord(pResid);
+	return GetRecoderManagerLayer()->DelRecord(pResid);
 }
 
 int CDeviceControl::PtzControl(const char *pResid, int nCmd, int nParam)

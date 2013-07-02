@@ -41,14 +41,14 @@ int CJoStream::Startup()
 
     TLock(m_locker);
     m_bStartup = true;
-    SingletonTmpl<CRdAsio>::Instance()->Init();
-    SingletonTmpl<CRdAsio>::Instance()->AddUser(m_nSocket, this);
+    GetAsioLayer()->Init();
+    GetAsioLayer()->AddUser(m_nSocket, this);
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = (j_char_t *)&m_dataHead;
 	m_asioData.ioRead.bufLen = sizeof(J_DataHead);
 	m_asioData.ioRead.whole = true;
 	m_nState = JO_READ_HEAD;
-	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
+	GetAsioLayer()->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -62,7 +62,7 @@ int CJoStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    SingletonTmpl<CRdAsio>::Instance()->DelUser(m_nSocket);
+    GetAsioLayer()->DelUser(m_nSocket);
     TUnlock(m_locker);
 	J_OS::LOGINFO("CJoStream::Shutdown Shutdown this = %d", this);
 
@@ -89,7 +89,7 @@ void CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			break;
 		case JO_READ_DATA:
 			m_asioData.ioRead.bufLen = sizeof(J_DataHead);
-			streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);//ntohll(head.time_stamp);
+			streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);//ntohll(head.time_stamp);
 			streamHeader.frameType = ntohl(m_dataHead.frame_type);
 			streamHeader.dataLen = ntohl(m_dataHead.data_len);;
 			streamHeader.frameNum = ntohl(m_dataHead.frame_seq);
@@ -108,7 +108,7 @@ void CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			break;
 	}
 	m_asioData.ioRead.whole = true;
-	SingletonTmpl<CRdAsio>::Instance()->Read(m_nSocket, &m_asioData);
+	GetAsioLayer()->Read(m_nSocket, &m_asioData);
 	
 	TUnlock(m_locker);
 }
@@ -119,7 +119,7 @@ void CJoStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
-    streamHeader.timeStamp = SingletonTmpl<CTime>::Instance()->GetLocalTime(0);
+    streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
 
     TLock(m_vecLocker);
     std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();

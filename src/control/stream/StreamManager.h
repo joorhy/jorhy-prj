@@ -48,7 +48,7 @@ private:
 	j_string_t m_serviceType;
 	j_socket_t m_socket;
 	J_AsioDataBase m_asioData;
-	CRdAsio m_asio;
+	CXAsio m_asio;
 };
 
 #endif // ~__STREAMMANAGER_H_
