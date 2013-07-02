@@ -279,7 +279,6 @@ void CRdAsio::OnListen()
 	{
 		if ((connSocket = accept(m_listenSocket.sock, (struct sockaddr*)&sonnAddr, &connLen)) == j_invalid_socket_val)
 		{
-			J_OS::LOGINFO("%d", WSAGetLastError());
 			J_OS::LOGERROR("CRdAsio::OnListen WSAAccept() failed with error");
 			return;
 		} 
