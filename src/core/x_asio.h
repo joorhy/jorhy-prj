@@ -75,7 +75,6 @@ private:
 #endif
 };
 
-extern JO_API CXAsio* single_asio;
-extern JO_API CXAsio* X_JO_API GetAsioLayer();  
+JO_DECLARE_SINGLETON(XAsio)
 
 #endif //~__X_RD_ASIO_H_

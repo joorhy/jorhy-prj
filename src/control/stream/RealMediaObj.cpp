@@ -101,11 +101,11 @@ int CRealMediaObj::OnWriteData(J_AsioDataBase &asioData)
 						if (m_streamHeader.frameType == jo_video_i_frame)
 							m_lastFrameNum = m_streamHeader.frameNum;
 							
-						m_nextFrameTime = GetTimeLayer()->GetLocalTime(0);
+						m_nextFrameTime = JoTime->GetLocalTime(0);
 						asioData.ioWrite.buf = m_pConvetBuff;
 						asioData.ioWrite.bufLen = nDataLen;
 						asioData.ioWrite.whole = true;
-						m_nextFrameTime = GetTimeLayer()->GetLocalTime(0) - m_nextFrameTime;
+						m_nextFrameTime = JoTime->GetLocalTime(0) - m_nextFrameTime;
 						//break;
 					}
 					else
@@ -157,7 +157,7 @@ int CRealMediaObj::Clearn()
 	StopVideo();
 	if (m_pObj)
 	{
-		GetFilterFactoryLayer()->DelFilter(m_nSocket);
+		JoFilterFactory->DelFilter(m_nSocket);
 		m_pObj = NULL;
 	}
 	J_OS::LOGINFO("CRealMediaObj::OnBroken socket = %d broken", m_nSocket);
@@ -174,14 +174,14 @@ int CRealMediaObj::Run(bool bFlag)
 
 int CRealMediaObj::StartVideo()
 {
-	int nRet = GetAdapterManagerLayer()->StartVideo(m_resid.c_str(), m_nStreamType, m_nSocket);
+	int nRet = JoAdapterManager->StartVideo(m_resid.c_str(), m_nStreamType, m_nSocket);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CRealMediaObj::StartVideo StartVideo error ret = %d", nRet);
 		return nRet;
 	}
 
-	nRet = GetAdapterManagerLayer()->GetRingBuffer(m_resid.c_str(), m_nStreamType, m_nSocket, m_pRingBuffer);
+	nRet = JoAdapterManager->GetRingBuffer(m_resid.c_str(), m_nStreamType, m_nSocket, m_pRingBuffer);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CVideoClient::StartVideo GetRingBuffer error ret = %d", nRet);
@@ -199,7 +199,7 @@ int CRealMediaObj::StopVideo()
 	if (m_bStart)
 	{
 		m_bStart = false;
-		int nRet = GetAdapterManagerLayer()->StopVideo(m_resid.c_str(), m_nStreamType, m_nSocket);
+		int nRet = JoAdapterManager->StopVideo(m_resid.c_str(), m_nStreamType, m_nSocket);
 		if (nRet < 0)
 		{
 			J_OS::LOGINFO("CRealMediaObj::StopVideo StopVideo error ret = %d", nRet);

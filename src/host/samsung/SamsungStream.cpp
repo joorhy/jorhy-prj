@@ -39,13 +39,13 @@ j_result_t CSamsungStream::Startup()
 
     TLock(m_locker);
     m_bStartup = true;
-    GetAsioLayer()->Init();
-    GetAsioLayer()->AddUser(m_nSocket, this);
+    JoXAsio->Init();
+    JoXAsio->AddUser(m_nSocket, this);
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = m_pRecvBuff;
 	m_asioData.ioRead.bufLen = RECV_SIZE;
 	m_asioData.ioRead.whole = false;
-	GetAsioLayer()->Read(m_nSocket, &m_asioData);
+	JoXAsio->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 
     J_OS::LOGINFO("CSamsungStream::Startup Startup this = %d", this);
@@ -60,7 +60,7 @@ j_result_t CSamsungStream::Shutdown()
 
     TLock(m_locker);
     m_bStartup = false;
-    GetAsioLayer()->DelUser(m_nSocket);
+    JoXAsio->DelUser(m_nSocket);
     TUnlock(m_locker);
 
     J_OS::LOGINFO("CSamsungStream::Shutdown Shutdown this = %d", this);
@@ -107,7 +107,7 @@ void CSamsungStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
-    streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
+    streamHeader.timeStamp = JoTime->GetLocalTime(0);
 
     TLock(m_vecLocker);
     j_vec_buffer_t::iterator it = m_vecRingBuffer.begin();

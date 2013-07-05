@@ -137,7 +137,7 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 		return J_UNKNOW;
 		
 	int nRet = J_OK;
-	J_RequestFilter *protocolFilter = GetFilterFactoryLayer()->GetFilter(pAsioData->ioHandle, m_serviceType.c_str());
+	J_RequestFilter *protocolFilter = JoFilterFactory->GetFilter(pAsioData->ioHandle, m_serviceType.c_str());
 	if (protocolFilter == NULL)
 	{
 		return J_PARAM_ERROR;

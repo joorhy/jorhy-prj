@@ -1,6 +1,55 @@
 #ifndef __JO_COMMON_H_
 #define __JO_COMMON_H_
 
+#define JO_DECLARE_SINGLETON(_name) \
+	extern JO_API C##_name* Single_##_name; \
+	extern JO_API C##_name* X_JO_API Get##_name##Layer();  
+
+#define  JO_IMPLEMENT_SINGLETON(_name) \
+	C##_name* Single_##_name = NULL; \
+	C##_name* X_JO_API Get##_name##Layer() \
+	{\
+		if (Single_##_name == NULL) \
+			Single_##_name = new C##_name(); \
+		return Single_##_name; \
+	}
+
+#define JO_INSTANSE(_name) \
+	Get##_name##Layer()
+
+#define JoAdapterFactory \
+	JO_INSTANSE(AdapterFactory)
+#define JoAdapterManager \
+	JO_INSTANSE(AdapterManager)
+#define JoDecoderFactory \
+	JO_INSTANSE(DecoderFactory)
+#define JoFileReaderFactory \
+	JO_INSTANSE(FileReaderFactory)
+#define JoFilterFactory \
+	JO_INSTANSE(FilterFactory)
+#define JoXJoSdk \
+	JO_INSTANSE(XJoSdk)
+#define JoManagerFactory \
+	JO_INSTANSE(ManagerFactory)
+#define JoMuxFactory \
+	JO_INSTANSE(MuxFactory)
+#define JoParserFactory \
+	JO_INSTANSE(ParserFactory)
+#define JoPlayerFactory \
+	JO_INSTANSE(PlayerFactory)
+#define JoXSdk \
+	JO_INSTANSE(XSdk)
+#define JoXAsio \
+	JO_INSTANSE(XAsio)
+#define JoThreadPool \
+	JO_INSTANSE(ThreadPool)
+#define JoTime \
+	JO_INSTANSE(Time)
+#define JoRecoderManager \
+	JO_INSTANSE(RecoderManager)
+#define JoPlayManager \
+	JO_INSTANSE(PlayManager)
+
 #ifdef WIN32
 #include <process.h>
 #include <io.h>
@@ -322,5 +371,10 @@ struct J_AsioDataBase
 		j_char_t ioCallData[MAX_CALL_DATA];
 	};
 };
+
+#ifdef WIN32
+typedef HWND j_wnd_t;
+#else
+#endif
 
 #endif //~__JO_COMMON_H_

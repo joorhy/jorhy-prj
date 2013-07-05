@@ -1,12 +1,6 @@
 #include "x_mux_factory.h"
 
-CMuxFactory* single_mux = NULL;
-CMuxFactory* X_JO_API GetMuxFactoryLayer()
-{
-	if (single_mux == NULL)
-		single_mux = new CMuxFactory();
-	return single_mux;
-}
+JO_IMPLEMENT_SINGLETON(MuxFactory)
 
 int CMuxFactory::RegisterMux(const char *muxType, J_MakeMuxFun pFun)
 {

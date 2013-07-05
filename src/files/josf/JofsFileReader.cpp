@@ -184,7 +184,7 @@ int CNvrFileReader::GetMediaData(j_uint64_t beginTime, j_int32_t nIval)
 
 int CNvrFileReader::ListRecord(j_uint64_t beginTime, j_uint64_t endTime)
 {
-	r_historyfile *p_historyfile = GetSdkLayer()->GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
+	r_historyfile *p_historyfile = JoXSdk->GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
 	if (p_historyfile == NULL)
 	{
 	    J_OS::LOGINFO("CNvrFileReader::ListRecord GetHistoryFile Error");
@@ -226,7 +226,7 @@ int CNvrFileReader::OpenFile()
 	char fileName[512] = {0};
 	char filePath[512] = {0};
 	J_RecordInfo recordInfo;
-	GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
+	JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
 	sprintf(fileName, "%s/%s", m_file.GetVodDir(recordInfo.vodPath, filePath), (*it).c_str());
 	m_fileVec.pop_front();
 

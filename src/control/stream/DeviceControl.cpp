@@ -14,12 +14,12 @@ CDeviceControl::~CDeviceControl()
 
 int CDeviceControl::StartRecord(const char *pResid)
 {
-	return GetRecoderManagerLayer()->AddRecord(pResid);
+	return JoRecoderManager->AddRecord(pResid);
 }
 
 int CDeviceControl::StopRecord(const char *pResid)
 {
-	return GetRecoderManagerLayer()->DelRecord(pResid);
+	return JoRecoderManager->DelRecord(pResid);
 }
 
 int CDeviceControl::PtzControl(const char *pResid, int nCmd, int nParam)

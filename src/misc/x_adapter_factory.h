@@ -24,7 +24,11 @@ public:
 	~CAdapterFactory();
 
 public:
+	///启动定时器
+	///@return 		参考x_error_type.h
 	int Init();
+
+	///停止定时器
 	void Deinit();
 	///注册Adapter类
 	///@param[in] 	adapterType adapter 类型 1-海康,2-大华
@@ -53,6 +57,16 @@ public:
 	///@return 		参考x_error_type.h
 	int RemoveInstance(const char *pResId, OBJ_TYPE nType, int nStreamType);
 
+	///构造设备适配器
+	///@param[in]	pDevType 设备类型
+	///@param[in]	nDevId 设备ID
+	///@param[in]	pDevIp 设备IP
+	///@param[in]	nDevPort 设备端口号
+	///@param[in]	pUsername 用户名
+	///@param[in]	pPasswd 密码
+	///@return 		参考x_error_type.h
+	int MakeAdapterDev(const char *pDevType, int nDevId, const char *pDevIp, int nDevPort, const char *pUsername, const char *pPasswd);
+
 private:
 	static void TimerThread(void *pUser)
 	{
@@ -72,7 +86,6 @@ private:
 	DeviceMap m_devMap;
 	bool m_bRegiste;
 };
-extern JO_API CAdapterFactory* single_adapter;
-extern JO_API CAdapterFactory* X_JO_API GetAdapterFactoryLayer();  
+JO_DECLARE_SINGLETON(AdapterFactory)
 
 #endif //~__ADAPTERFACTORY_H_

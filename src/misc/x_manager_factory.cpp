@@ -1,12 +1,6 @@
 #include "x_manager_factory.h"
 
-CManagerFactory* single_manager = NULL;
-CManagerFactory* X_JO_API GetManagerFactoryLayer()
-{
-	if (single_manager == NULL)
-		single_manager = new CManagerFactory();
-	return single_manager;
-}
+JO_IMPLEMENT_SINGLETON(ManagerFactory)
 
 int CManagerFactory::RegisterManager(const char *managerType, J_MakeManagerFun pFun)
 {

@@ -449,6 +449,41 @@ struct J_EventParser : public J_Obj
 	virtual j_result_t AnalyzePacket(const unsigned char *pEventData) = 0;
 };
 
+struct J_PlayerObj : public J_Obj
+{
+	///播放视频
+	///@param	 hWnd 播放窗口
+	///@return	 参见x_errtype.j
+	virtual j_result_t PlayMedia(j_wnd_t hWnd) = 0;
+	///停止播放
+	///@return	 参见x_errtype.j
+	virtual j_result_t StopMedia() = 0;
+	///处理媒体数据
+	///@return	 参见x_errtype.j
+	virtual j_result_t ProcessMedia() = 0;
+};
+
+struct J_Player : public J_Obj
+{
+	///播放视频
+	///@param	 hWnd 播放窗口
+	///@return	 参见x_errtype.j
+	virtual j_result_t Play(j_wnd_t hWnd) = 0;
+	///停止播放
+	///@return	 参见x_errtype.j
+	virtual j_result_t Stop() = 0;
+	///填充数据
+	///@param	 pData 数据缓存区
+	///@param	 nLen 数据长度
+	///@return	 参见x_errtype.j
+	virtual j_result_t InputData(j_char_t *pData, j_int32_t nLen) = 0;
+};
+
+struct J_Decoder :public J_Obj
+{
+
+};
+
 template <typename CBase>
 class J_BaseVideoStream : public CBase
 {

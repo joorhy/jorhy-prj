@@ -7,13 +7,7 @@
         json_helper = NULL;\
     }
 
-CXSdk* single_sdk = NULL;
-CXSdk* X_JO_API GetSdkLayer()
-{
-	if (single_sdk == NULL)
-		single_sdk = new CXSdk();
-	return single_sdk;
-}
+JO_IMPLEMENT_SINGLETON(XSdk)
 
 char *CXSdk::HttpCommunicate(char *body,char *uri)
 {

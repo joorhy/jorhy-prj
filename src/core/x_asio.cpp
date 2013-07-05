@@ -3,13 +3,7 @@
 #include "j_module.h"
 #include "x_socket.h"
 
-CXAsio* single_asio = NULL;
-CXAsio* X_JO_API GetAsioLayer()
-{
-	if (single_asio == NULL)
-		single_asio = new CXAsio();
-	return single_asio;
-}
+JO_IMPLEMENT_SINGLETON(XAsio)
 
 CXAsio::CXAsio()
 {

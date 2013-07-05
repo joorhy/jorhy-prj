@@ -26,7 +26,7 @@ CHttpFilter::CHttpFilter()
 CHttpFilter::~CHttpFilter()
 {
 	if (m_muxFilter)
-		GetMuxFactoryLayer()->DelMux(this);
+		JoMuxFactory->DelMux(this);
 }
 
 int CHttpFilter::Parser(J_AsioDataBase &asioData)
@@ -75,15 +75,15 @@ int CHttpFilter::Parser(J_AsioDataBase &asioData)
 
 	if (strstr(m_read_buff, "stream=raw"))
 	{
-		m_muxFilter = GetMuxFactoryLayer()->GetMux(this, "raw");
+		m_muxFilter = JoMuxFactory->GetMux(this, "raw");
 	}
 	else if (strstr(m_read_buff, "stream=ps"))
 	{
-		m_muxFilter = GetMuxFactoryLayer()->GetMux(this, "ps");
+		m_muxFilter = JoMuxFactory->GetMux(this, "ps");
 	}
 	else
 	{
-		m_muxFilter = GetMuxFactoryLayer()->GetMux(this, "ts");
+		m_muxFilter = JoMuxFactory->GetMux(this, "ts");
 	}
 	memset (m_read_buff, 0, sizeof(m_read_buff));
 	m_read_len = 0;

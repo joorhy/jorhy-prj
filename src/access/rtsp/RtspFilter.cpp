@@ -116,7 +116,7 @@ CRtspFilter::CRtspFilter()
 CRtspFilter::~CRtspFilter()
 {
 	if (m_muxFilter)
-		GetMuxFactoryLayer()->DelMux(this);
+		JoMuxFactory->DelMux(this);
 }
 
 int CRtspFilter::Parser(J_AsioDataBase &asioData)
@@ -394,15 +394,15 @@ int CRtspFilter::ParserUri(const char *request)
 
 	if (strstr(request, "stream=rtp-tcp"))
 	{
-		m_muxFilter = GetMuxFactoryLayer()->GetMux(this, "rtp");
+		m_muxFilter = JoMuxFactory->GetMux(this, "rtp");
 	}
 	else if (strstr(request, "stream=rtp-udp"))
 	{
-		m_muxFilter = GetMuxFactoryLayer()->GetMux(this, "rtp");
+		m_muxFilter = JoMuxFactory->GetMux(this, "rtp");
 	}
 	else
 	{
-		m_muxFilter = GetMuxFactoryLayer()->GetMux(this, "rtp");
+		m_muxFilter = JoMuxFactory->GetMux(this, "rtp");
 	}
 
 	return J_OK;

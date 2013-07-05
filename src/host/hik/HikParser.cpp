@@ -178,7 +178,7 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 	unsigned char aacOutBuff[2048] = {0};
 
 	//获得时间戳
-	streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
+	streamHeader.timeStamp = JoTime->GetLocalTime(0);
 	m_bIsComplate = false;
 	while (!m_bIsComplate)
 	{

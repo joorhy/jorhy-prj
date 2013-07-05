@@ -24,8 +24,8 @@ public:
 
 private:
 	//实时视频
-	int StartVideo();
-	int StopVideo();
+	j_result_t StartVideo();
+	j_result_t StopVideo();
 
 private:
 	j_socket_t m_nSocket;

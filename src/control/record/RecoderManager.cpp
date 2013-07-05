@@ -1,13 +1,7 @@
 #include "RecoderManager.h"
 #include "RecordMediaObj.h"
 
-CRecoderManager* single_recoder_manager = NULL;
-CRecoderManager* X_JO_API GetRecoderManagerLayer()
-{
-	if (single_recoder_manager == NULL)
-		single_recoder_manager = new CRecoderManager();
-	return single_recoder_manager;
-}
+JO_IMPLEMENT_SINGLETON(RecoderManager)
 
 CRecoderManager::CRecoderManager()
 {

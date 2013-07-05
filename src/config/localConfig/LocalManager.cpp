@@ -115,7 +115,7 @@ int CLocalManager::StartRecord()
 			}
 		}
 	}
-	GetRecoderManagerLayer()->Single();
+	JoRecoderManager->Single();
 	
 	return J_OK;
 }

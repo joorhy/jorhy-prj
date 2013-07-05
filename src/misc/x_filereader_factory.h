@@ -30,8 +30,6 @@ private:
 	FileReaderMap m_fileReaderMap;
 	J_OS::TLocker_t m_lock;
 };
-
-extern JO_API CFileReaderFactory* single_filereader;
-extern JO_API CFileReaderFactory* X_JO_API GetFileReaderFactoryLayer();  
+JO_DECLARE_SINGLETON(FileReaderFactory)
 
 #endif // __FILEREADERFACTORY_H_

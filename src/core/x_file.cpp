@@ -259,8 +259,8 @@ int CXFile::GetFilesByTime(const char *pDir, const char *pResid, time_t begin_ti
 			strBeginTime = it->substr(nPos1 + 1, 17);
 			strEndTime = it->substr(nPos2 + 1, 17);
 			J_FileInfo info = {0};
-			info.tStartTime = GetTimeLayer()->ConvertToTime_t(strBeginTime.c_str());
-			info.tStoptime = GetTimeLayer()->ConvertToTime_t(strEndTime.c_str());
+			info.tStartTime = JoTime->ConvertToTime_t(strBeginTime.c_str());
+			info.tStoptime = JoTime->ConvertToTime_t(strEndTime.c_str());
 			info.fileName = *it;
 			
 			vecFileInfo.push_back(info);

@@ -15,6 +15,6 @@ public:
 	j_uint64_t GetLocalTime(j_int32_t) const;
 	j_time_t ConvertToTime_t(const j_char_t *pLogTime);
 };
-extern JO_API CTime* single_time;
-extern JO_API CTime* X_JO_API GetTimeLayer();  
+JO_DECLARE_SINGLETON(Time)
+
 #endif //~__X_TIME_H_

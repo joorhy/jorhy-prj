@@ -88,12 +88,12 @@ int CVodMediaObj::Clearn()
 
 	if (m_pObj)
 	{
-		GetFilterFactoryLayer()->DelFilter(m_nSocket);
+		JoFilterFactory->DelFilter(m_nSocket);
 		m_pObj = NULL;
 	}
 	if (m_pReader)
 	{
-		GetFileReaderFactoryLayer()->DelFileReader(m_nSocket);
+		JoFileReaderFactory->DelFileReader(m_nSocket);
 		m_pReader = NULL;
 	}
 
@@ -122,7 +122,7 @@ int CVodMediaObj::OpenFile()
 		PauseFile();
 
 	if (m_pReader == NULL)
-		m_pReader = GetFileReaderFactoryLayer()->GetFileReader(m_nSocket
+		m_pReader = JoFileReaderFactory->GetFileReader(m_nSocket
 		, dynamic_cast<J_RequestFilter *>(m_pObj)->GetResourceType(), m_resid.c_str());
 	
 	J_VodCommandFilter *vodTimeCommand = dynamic_cast<J_VodCommandFilter *>(m_pObj);
@@ -146,7 +146,7 @@ int CVodMediaObj::CloseFile()
 		return J_OK;
 
 	m_bStart = false;
-	GetFileReaderFactoryLayer()->DelFileReader(m_nSocket);
+	JoFileReaderFactory->DelFileReader(m_nSocket);
 	m_pHeader = NULL;
 
 	m_fileid.clear();

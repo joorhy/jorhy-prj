@@ -118,7 +118,7 @@ int CHikAdapter::DisableAlarm()
 
 int CHikAdapter::EventAlarm(int nDvrId, int nChannel, int nAlarmType)
 {
-	return GetAdapterManagerLayer()->OnAlarm(nDvrId, nChannel,
+	return JoAdapterManager->OnAlarm(nDvrId, nChannel,
 			nAlarmType);
 }
 

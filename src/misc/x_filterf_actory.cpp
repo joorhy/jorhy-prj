@@ -1,13 +1,7 @@
 #include "x_filter_factory.h"
 #include "x_string.h"
 
-CFilterFactory* single_filter = NULL;
-CFilterFactory* X_JO_API GetFilterFactoryLayer()
-{
-	if (single_filter == NULL)
-		single_filter = new CFilterFactory();
-	return single_filter;
-}
+JO_IMPLEMENT_SINGLETON(FilterFactory)
 
 int CFilterFactory::RegisterFilter(const char *filterType, J_MakeFilterFun pFun)
 {

@@ -5,13 +5,7 @@
 
 #define TYPE_OR_ID_SIZE 8
 
-CAdapterFactory* single_adapter = NULL;
-CAdapterFactory* X_JO_API GetAdapterFactoryLayer()
-{
-	if (single_adapter == NULL)
-		single_adapter = new CAdapterFactory();
-	return single_adapter;
-}
+JO_IMPLEMENT_SINGLETON(AdapterFactory)
 
 CAdapterFactory::CAdapterFactory()
 {
@@ -79,7 +73,7 @@ void *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_T
 
 
         J_ChannelInfo channelInfo;
-        int nRet = GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
+        int nRet = JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
         if (nRet != J_OK)
         {
             J_OS::LOGINFO("CAdapterFactory::CreateInstence GetDevinfoByChannel error, resid = %s", pResId);
@@ -175,6 +169,27 @@ int CAdapterFactory::RemoveInstance(const char *pResId, OBJ_TYPE nType, int nStr
 	return J_OK;
 }
 
+int CAdapterFactory::MakeAdapterDev(const char *pDevType, int nDevId, const char *pDevIp, int nDevPort, const char *pUsername, const char *pPasswd)
+{
+	AdapterRegistMap::iterator itRegister = m_adapterRegistMap.find(pDevType);
+	if (itRegister == m_adapterRegistMap.end())
+	{
+		J_OS::LOGINFO("CAdapterFactory::MakeAdapterDev Adapter not registed, adapterType = %s", pDevType);
+		return J_UNKNOW;
+	}
+
+	J_Obj *pObj = NULL;
+	itRegister->second(pObj, nDevId, pDevIp, nDevPort, pUsername, pPasswd);
+	if (pObj != NULL)
+	{
+		char dev_id[TYPE_OR_ID_SIZE];
+		memset(dev_id, 0, sizeof(dev_id));
+		sprintf(dev_id, "%d", nDevId);
+		m_adapterMap[dev_id] = pObj;
+	}
+	return J_OK;
+}
+
 void CAdapterFactory::OnTimer()
 {
 	if (m_bRegiste)
@@ -183,7 +198,7 @@ void CAdapterFactory::OnTimer()
 	int nRet = J_OK;
 	char dev_id[TYPE_OR_ID_SIZE];
 	std::vector<J_DeviceInfo> devList;
-	nRet = GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->ListDevices(devList);
+	nRet = JoManagerFactory->GetManager(CXConfig::GetConfigType())->ListDevices(devList);
 	if (nRet == J_OK)
 	{
 		std::vector<J_DeviceInfo>::iterator itDvr = devList.begin();
@@ -203,27 +218,12 @@ void CAdapterFactory::OnTimer()
 		{
 			if (itDev->second.devStatus == jo_dev_broken)
 			{
-				AdapterRegistMap::iterator itRegister = m_adapterRegistMap.find(itDev->second.devType);
-				if (itRegister == m_adapterRegistMap.end())
-				{
-					J_OS::LOGINFO("CAdapterFactory::OnTimer Adapter not registed, adapterType = %d", itDvr->devType);
-					continue;
-				}
-
-				J_Obj *pObj = NULL;
-				itRegister->second(pObj, itDev->second.devId, itDev->second.devIp,
-						itDev->second.devPort, itDev->second.userName, itDev->second.passWd);
-				if (pObj != NULL)
-				{
-					char dev_id[TYPE_OR_ID_SIZE];
-					memset(dev_id, 0, sizeof(dev_id));
-					sprintf(dev_id, "%d", itDev->second.devId);
-					itDev->second.devStatus = jo_dev_ready;
-					m_adapterMap[dev_id] = pObj;
-				}
+					if (MakeAdapterDev(itDev->second.devType, itDev->second.devId, itDev->second.devIp,
+						itDev->second.devPort, itDev->second.userName, itDev->second.passWd) == J_OK)
+						itDev->second.devStatus = jo_dev_ready;
 			}
 		}
 		m_bRegiste = true;
-		GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->StartRecord();
+		JoManagerFactory->GetManager(CXConfig::GetConfigType())->StartRecord();
 	}
 }

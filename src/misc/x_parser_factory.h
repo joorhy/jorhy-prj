@@ -30,7 +30,6 @@ private:
 	J_OS::TLocker_t m_lock;
 };
 
-extern JO_API CParserFactory* single_parser;
-extern JO_API CParserFactory* X_JO_API GetParserFactoryLayer();  
+JO_DECLARE_SINGLETON(ParserFactory)
 
 #endif //~__PARSERFACTORY_H_

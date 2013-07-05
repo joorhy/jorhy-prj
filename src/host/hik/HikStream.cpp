@@ -44,8 +44,8 @@ int CHikStream::Startup()
 
 	TLock(m_locker);
 	m_bStartup = true;
-	GetAsioLayer()->Init();
-	GetAsioLayer()->AddUser(m_nSocket, this);
+	JoXAsio->Init();
+	JoXAsio->AddUser(m_nSocket, this);
 	//读取4字节头信息
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = m_pRecvBuff;
@@ -53,7 +53,7 @@ int CHikStream::Startup()
 	m_asioData.ioRead.whole = true;
 	m_nState = HIK_READ_HEAD;
 	m_nOffset = 0;
-	GetAsioLayer()->Read(m_nSocket, &m_asioData);
+	JoXAsio->Read(m_nSocket, &m_asioData);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", this);
@@ -68,7 +68,7 @@ int CHikStream::Shutdown()
 
 	TLock(m_locker);
 	m_bStartup = false;
-	GetAsioLayer()->DelUser(m_nSocket);
+	JoXAsio->DelUser(m_nSocket);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Shutdown Shutdown this = %d", this);
@@ -129,7 +129,7 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			m_nState = HIK_READ_HEAD;
 			m_nOffset = 0;
 	}
-	GetAsioLayer()->Read(m_nSocket, &m_asioData);
+	JoXAsio->Read(m_nSocket, &m_asioData);
 	TUnlock(m_locker);
 }
 
@@ -139,7 +139,7 @@ void CHikStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TLock(m_locker);
     J_StreamHeader streamHeader = {0};
     streamHeader.frameType = jo_media_broken;
-    streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
+    streamHeader.timeStamp = JoTime->GetLocalTime(0);
 
     TLock(m_vecLocker);
     std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
@@ -149,7 +149,7 @@ void CHikStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
         (*it)->PushBuffer(m_pRecvBuff, streamHeader);
     }
     TUnlock(m_vecLocker);
-	GetAsioLayer()->DelUser(m_nSocket);
+	JoXAsio->DelUser(m_nSocket);
 
     TUnlock(m_locker);
 }

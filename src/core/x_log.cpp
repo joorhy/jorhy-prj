@@ -58,7 +58,7 @@ int CLog::WriteLogInfo(const char *format, ...)
 	nArgLen = vsprintf(m_dataBuff, format, arg_ptr);
 	va_end(arg_ptr);
 
-	j_string_t strLocalTime = GetTimeLayer()->GetLocalTime();
+	j_string_t strLocalTime = JoTime->GetLocalTime();
 	fwrite(strLocalTime.c_str(), 1, strLocalTime.length(), (FILE *)m_pFile);
 	fwrite(" : ", 1, 3, (FILE *)m_pFile);
 	fwrite(m_dataBuff, 1, nArgLen, (FILE *)m_pFile);
@@ -86,7 +86,7 @@ int CLog::WriteLogError(const char *format, ...)
 	nArgLen = vsprintf(dataBuff, format, arg_ptr);
 	va_end(arg_ptr);
 
-	j_string_t strLocalTime = GetTimeLayer()->GetLocalTime();
+	j_string_t strLocalTime = JoTime->GetLocalTime();
 	fwrite(strLocalTime.c_str(), 1, strLocalTime.length(), (FILE *)m_pFile);
 	fwrite(" : ", 1, 3, (FILE *)m_pFile);
 	fwrite(dataBuff, 1, nArgLen, (FILE *)m_pFile);
@@ -112,7 +112,7 @@ int CLog::CreateFile()
 #endif
 
 	char fileName[256] = {0};
-	sprintf(fileName, "%s/%s.log", vodDir, GetTimeLayer()->GetLocalTime().c_str());
+	sprintf(fileName, "%s/%s.log", vodDir, JoTime->GetLocalTime().c_str());
 
 #ifdef WIN32
 	if (_access(vodDir, 0) != 0)

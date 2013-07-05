@@ -185,6 +185,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\misc\x_decoder_factory.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\misc\x_filereader_factory.h"
 				>
 			</File>
@@ -221,6 +225,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\misc\x_player_factory.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\misc\x_sdk.h"
 				>
 			</File>
@@ -244,6 +252,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\misc\x_config.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\misc\x_decoder_factory.cpp"
 				>
 			</File>
 			<File
@@ -276,6 +288,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\misc\x_parser_factory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\misc\x_player_factory.cpp"
 				>
 			</File>
 			<File

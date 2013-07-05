@@ -1,13 +1,7 @@
 #include "x_parser_factory.h"
 #include "x_string.h"
 
-CParserFactory* single_parser = NULL;
-CParserFactory* X_JO_API GetParserFactoryLayer()
-{
-	if (single_parser == NULL)
-		single_parser = new CParserFactory();
-	return single_parser;
-}
+JO_IMPLEMENT_SINGLETON(ParserFactory)
 
 int CParserFactory::RegisterParser(const char *parserType, J_MakeParserFun pFun)
 {

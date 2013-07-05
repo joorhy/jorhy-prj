@@ -160,7 +160,7 @@ j_result_t CSamsungParser::GetOnePacket(j_char_t *pData, J_StreamHeader &streamH
             }
             else
             {
-                streamHeader.timeStamp = GetTimeLayer()->GetLocalTime(0);
+                streamHeader.timeStamp = JoTime->GetLocalTime(0);
                 streamHeader.frameType = m_curFrameType;
                 streamHeader.dataLen = m_nOutSize;
                 memcpy(pData, m_pOutBuff, m_nOutSize);

@@ -50,7 +50,6 @@ private:
 	CJoThread m_thread;
 	j_boolean_t m_bShutDown; 
 };
-extern JO_API CThreadPool* single_thread_pool;
-extern JO_API CThreadPool* X_JO_API GetThreadPoolLayer();  
+JO_DECLARE_SINGLETON(ThreadPool)
 
 #endif // __X_THREAD_POOL_H_

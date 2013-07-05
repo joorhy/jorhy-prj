@@ -111,14 +111,14 @@ int CStreamRecord::StartPreRecord(const char *pResid, int nStreamType, int nTime
 
 	J_Add_Ref(this);
 
-	int nRet = GetAdapterManagerLayer()->StartVideo(pResid, nStreamType, m_nSocket);
+	int nRet = JoAdapterManager->StartVideo(pResid, nStreamType, m_nSocket);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CStreamRecord::StartPreRecord StartVideo error ret = %d", nRet);
 		return nRet;
 	}
 
-	nRet = GetAdapterManagerLayer()->GetRingBuffer(pResid, nStreamType, m_nSocket, m_pRingBuffer);
+	nRet = JoAdapterManager->GetRingBuffer(pResid, nStreamType, m_nSocket, m_pRingBuffer);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CStreamRecord::StartPreRecord GetRingBuffer error ret = %d", nRet);
@@ -137,7 +137,7 @@ int CStreamRecord::StopPreRecord(const char *pResid, int nStreamType, bool isSto
 	if (!isStopVideo)
 		return J_OK;
 
-	int nRet = GetAdapterManagerLayer()->StopVideo(pResid, nStreamType, m_nSocket);
+	int nRet = JoAdapterManager->StopVideo(pResid, nStreamType, m_nSocket);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CStreamRecord::StopPreRecord StopVideo error ret = %d", nRet);
@@ -172,7 +172,7 @@ int CStreamRecord::OnRecord()
 		//m_fileInfo.etime = streamHeader.timeStamp / 1000;
 		m_record.filenum.push_back(m_fileInfo);
 		//J_OS::LOGINFO(m_fileInfo.file.c_str());
-		GetSdkLayer()->GetRecordNotice(m_record, CXConfig::GetUrl());
+		JoXSdk->GetRecordNotice(m_record, CXConfig::GetUrl());
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 		m_record.filenum.clear();
 		return J_DEV_BROKEN;
@@ -191,13 +191,13 @@ void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeade
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 
 	J_RecordInfo recordInfo;
-	GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
+	JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
 	if (((time_t)(streamHeader.timeStamp / 1000) - m_fileInfo.stime) > (j_int32_t)recordInfo.timeInterval
         || m_nHeaderOffset + sizeof(m_frameHead) > HEAD_BUFF_SIZE)
 	{
 	    CloseFile();
 		m_record.filenum.push_back(m_fileInfo);;
-		GetSdkLayer()->GetRecordNotice(m_record, CXConfig::GetUrl());
+		JoXSdk->GetRecordNotice(m_record, CXConfig::GetUrl());
 		m_fileInfo.stime = streamHeader.timeStamp / 1000;
 		m_record.filenum.clear();
 		CreateFile(NULL);
@@ -253,7 +253,7 @@ int CStreamRecord::CreateFile(char *pFileName)
 	memcpy(m_fileHead.type, "head", 4);
 	memcpy(m_fileBody.type, "body", 4);
 
-	sprintf(m_fileName, "%s_%s", m_resid.c_str(), GetTimeLayer()->GetLocalTime().c_str());
+	sprintf(m_fileName, "%s_%s", m_resid.c_str(), JoTime->GetLocalTime().c_str());
 	char fileName[256] = {0};
 	sprintf(fileName, "%s/.temp/%s", m_vodDir, m_fileName);
 
@@ -307,7 +307,7 @@ int CStreamRecord::CloseFile()
 	char fileName[128] = {0};
 	sprintf(oldFileName, "%s/.temp/%s", m_vodDir, m_fileName);
 	std::string strETime;
-	m_fileInfo.etime = GetTimeLayer()->GetLocalTime(strETime);
+	m_fileInfo.etime = JoTime->GetLocalTime(strETime);
 	sprintf(fileName, "%s_%s.josf", m_fileName, strETime.c_str());
 	sprintf(newFileName, "%s/%s", m_vodDir, fileName);
 
@@ -323,7 +323,7 @@ int CStreamRecord::Init()
 {
     memset(m_vodDir, 0, sizeof(m_vodDir));
     J_RecordInfo recordInfo;
-	GetManagerFactoryLayer()->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
+	JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
 	m_file.GetVodDir(recordInfo.vodPath, m_vodDir);
 	char vodDirTemp[256] = {0};
 	sprintf(vodDirTemp, "%s/.temp", m_vodDir);

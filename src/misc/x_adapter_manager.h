@@ -44,7 +44,6 @@ private:
 	std::map<j_socket_t, void *> m_vodMap;						//void *代表J_VideoVodStream对象
 };
 
-extern JO_API CAdapterManager* single_adapter_manager;
-extern JO_API CAdapterManager* X_JO_API GetAdapterManagerLayer();  
+JO_DECLARE_SINGLETON(AdapterManager)
 
 #endif // ~__AdapterManager_h_

@@ -35,7 +35,7 @@ int main(int argc,char **argv)
         J_OS::LOGINFO("main loadSo JoLoadSo error");
         return 0;
     }
-	GetAdapterFactoryLayer()->Init();
+	JoAdapterFactory->Init();
 	
 	//CThreadPool::Instance()->Create(2);
 
@@ -84,9 +84,9 @@ end:
 		(*itControlManager)->StopService();
 		delete (*itControlManager);
 	}
-	GetAdapterFactoryLayer()->Deinit();
+	JoAdapterFactory->Deinit();
 	loadSo.JoUnloadSo();
-	GetThreadPoolLayer()->Destroy();
+	JoThreadPool->Destroy();
 
 	return 0;
 }
