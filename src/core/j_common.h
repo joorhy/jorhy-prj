@@ -84,6 +84,7 @@
 #include <netdb.h>
 #include <setjmp.h>
 #include <netinet/tcp.h>
+#include <X11/Xlib.h>
 #endif
 
 #include <math.h>
@@ -375,6 +376,7 @@ struct J_AsioDataBase
 #ifdef WIN32
 typedef HWND j_wnd_t;
 #else
+typedef Drawable j_wnd_t;
 #endif
 
 #endif //~__JO_COMMON_H_

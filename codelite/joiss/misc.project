@@ -15,6 +15,8 @@
     <File Name="../../src/misc/x_jo_sdk.cpp"/>
     <File Name="../../src/misc/x_adapter_factory.cpp"/>
     <File Name="../../src/misc/x_inet.cpp"/>
+    <File Name="../../src/misc/x_decoder_factory.cpp"/>
+    <File Name="../../src/misc/x_player_factory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/misc/x_config.h"/>
@@ -31,6 +33,8 @@
     <File Name="../../src/misc/x_filter_factory.h"/>
     <File Name="../../src/misc/x_adapter_factory.h"/>
     <File Name="../../src/misc/x_jo_sdk.h"/>
+    <File Name="../../src/misc/x_decoder_factory.h"/>
+    <File Name="../../src/misc/x_player_factory.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
