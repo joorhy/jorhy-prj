@@ -2,6 +2,7 @@
 #define __PLAYMANAGER_H_
 #include "j_includes.h"
 #include "x_loadso.h"
+#include "x_thread.h"
 
 struct J_PlayManagerInfo
 {
