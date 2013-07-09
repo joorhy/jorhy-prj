@@ -71,6 +71,7 @@ private:
 	CXLoadso m_loadSo;
 	AdapterMap m_adapterMap;
 	StreamMap m_streamMap;
+	CJoThread m_thread;
 	J_OS::CTLock m_streamLocker;
 	J_OS::CTLock m_adapterLocker;
 };

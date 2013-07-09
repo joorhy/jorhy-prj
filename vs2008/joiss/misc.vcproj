@@ -229,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\misc\x_render_factory.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\misc\x_sdk.h"
 				>
 			</File>
@@ -292,6 +296,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\misc\x_player_factory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\misc\x_render_factory.cpp"
 				>
 			</File>
 			<File

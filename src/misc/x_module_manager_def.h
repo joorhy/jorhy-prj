@@ -7,6 +7,9 @@
 #include "x_manager_factory.h"
 #include "x_filereader_factory.h"
 #include "x_parser_factory.h"
+#include "x_decoder_factory.h"
+#include "x_render_factory.h"
+#include "x_player_factory.h"
 #ifdef WIN32
 #define MODULE_API  __declspec(dllexport) 
 #else

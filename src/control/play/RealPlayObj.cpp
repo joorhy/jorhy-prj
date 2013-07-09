@@ -59,7 +59,7 @@ j_result_t CRealPlayObj::ProcessMedia()
 					m_lastFrameNum = m_streamHeader.frameNum;
 
 				m_nextFrameTime = JoTime->GetLocalTime(0);
-				JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->InputData(m_pDataBuff, m_streamHeader.dataLen);
+				JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->InputData(m_pDataBuff, m_streamHeader);
 				m_nextFrameTime = JoTime->GetLocalTime(0) - m_nextFrameTime;
 			}
 			else

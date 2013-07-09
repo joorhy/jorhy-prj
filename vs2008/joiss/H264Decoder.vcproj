@@ -170,12 +170,20 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\src\decoder\h264\H264Decoder.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="src"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\..\src\decoder\h264\H264Decoder.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

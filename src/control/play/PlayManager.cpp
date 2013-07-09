@@ -54,6 +54,11 @@ j_result_t CPlayManager::Init()
 		return J_UNKNOW;
 	}
 	m_bStart = true;
+	j_thread_parm parm = {0};
+	parm.entry = CPlayManager::WorkThread;
+	parm.data = this;
+	m_thread.Create(parm);
+
 	return J_OK;
 }
 

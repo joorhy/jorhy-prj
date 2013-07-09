@@ -23,6 +23,8 @@
 	JO_INSTANSE(AdapterManager)
 #define JoDecoderFactory \
 	JO_INSTANSE(DecoderFactory)
+#define JoRenderFactory \
+	JO_INSTANSE(RenderFactory)
 #define JoFileReaderFactory \
 	JO_INSTANSE(FileReaderFactory)
 #define JoFilterFactory \
@@ -375,8 +377,10 @@ struct J_AsioDataBase
 
 #ifdef WIN32
 typedef HWND j_wnd_t;
+#define j_invalid_wnd NULL
 #else
 typedef Drawable j_wnd_t;
+#define j_invalid_wnd 0
 #endif
 
 #endif //~__JO_COMMON_H_
