@@ -61,6 +61,7 @@ int CXPing::SetAddr(const char *pAddr)
 
 int CXPing::SendPacket()
 {
+	return J_OK;
     int packet_size = Pack(1, 56);
 BEGIN_SEND:
     if (int nRet = sendto(m_socket, m_sendPacket, packet_size, 0,
@@ -91,10 +92,10 @@ BEGIN_SEND:
 
 int CXPing::RecvPacket()
 {
+	return J_OK;
     struct sockaddr_in from;
 #ifdef WIN32
     j_int32_t from_len = sizeof(from);
-	return J_OK;
 #else
 	socklen_t from_len = sizeof(from);
 #endif
