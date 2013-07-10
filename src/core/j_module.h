@@ -476,12 +476,38 @@ struct J_Player : public J_Obj
 	///@param	 pData 数据缓存区
 	///@param	 nLen 数据长度
 	///@return	 参见x_errtype.j
-	virtual j_result_t InputData(j_char_t *pData, j_int32_t nLen) = 0;
+	virtual j_result_t InputData(j_char_t *pData, J_StreamHeader &streamHeader) = 0;
 };
 
-struct J_Decoder :public J_Obj
+struct J_Decoder : public J_Obj
 {
+	///初始化解码器
+	///@return	 参见x_errtype.j
+	virtual j_result_t InidDecoder() = 0;
+	///解码一帧数据
+	///@param	 pInputData 解码前数据
+	///@param	 nInputLen 解码前数据长度
+	///@param	 pOutuptData 解码后数据
+	///@param	 nOutputLen 解码后数据长度
+	///@return	 参见x_errtype.j
+	virtual j_result_t DecodeOneFrame(j_char_t *pInputData, j_int32_t nInputLen, j_char_t *pOutuptData, j_int32_t &nOutputLen) = 0;
+	///释放解码器
+	///@return	 参见x_errtype.j
+	virtual j_result_t DeinitDecoder() = 0;
+};
 
+struct J_Render : public J_Obj
+{
+	///初始化Render
+	///@return	 参见x_errtype.j
+	virtual j_result_t InitRender() = 0;
+	///显示图像
+	///@param	 pData YUV数据
+	///@param	 nLen 数据长度
+	virtual j_result_t DisplayFrame(j_char_t *pData, j_int32_t nLen) = 0;
+	///释放Render
+	///@return	 参见x_errtype.j
+	virtual j_result_t DeinitRender() = 0;
 };
 
 template <typename CBase>

@@ -2,6 +2,7 @@
 #define __PLAYMANAGER_H_
 #include "j_includes.h"
 #include "x_loadso.h"
+#include "x_thread.h"
 
 struct J_PlayManagerInfo
 {
@@ -71,6 +72,7 @@ private:
 	CXLoadso m_loadSo;
 	AdapterMap m_adapterMap;
 	StreamMap m_streamMap;
+	CJoThread m_thread;
 	J_OS::CTLock m_streamLocker;
 	J_OS::CTLock m_adapterLocker;
 };
