@@ -41,7 +41,7 @@ private:
 	j_string_t m_resid;
 
 	J_OS::TLocker_t m_locker;
-	J_AsioDataBase m_asioData;
+	J_AsioDataBase *m_asioData;
 	j_int32_t m_nState;
 	j_int32_t m_nOffset;
 };

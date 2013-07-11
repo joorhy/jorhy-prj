@@ -23,7 +23,7 @@ CRealMediaObj::CRealMediaObj(j_socket_t nSocket, int nStreamType, J_Obj *pObj)
 	m_lastFrameTime = 0;
 	m_lastFrameNum = 0;
 
-	J_OS::LOGINFO("CRealMediaObj::CRealMediaObj created socket =  %d", m_nSocket);
+	J_OS::LOGINFO("CRealMediaObj::CRealMediaObj created socket =  %d", m_nSocket.sock);
 }
 
 CRealMediaObj::~CRealMediaObj()
@@ -31,10 +31,10 @@ CRealMediaObj::~CRealMediaObj()
 	if (m_pDataBuff != NULL)
 		delete m_pDataBuff;
 	
-	if (m_pConvetBuff != NULL)
-		delete m_pConvetBuff;
+	/*if (m_pConvetBuff != NULL)
+		delete m_pConvetBuff;*/
 
-	J_OS::LOGINFO("CRealMediaObj::~CRealMediaObj destroyed socket =  %d", m_nSocket);
+	J_OS::LOGINFO("CRealMediaObj::~CRealMediaObj destroyed socket =  %d", m_nSocket.sock);
 }
 
 int CRealMediaObj::Process(J_AsioDataBase &asioData)
@@ -50,12 +50,12 @@ int CRealMediaObj::Process(J_AsioDataBase &asioData)
 			{
 			case jo_start_real:
 				nRet = StartVideo();
-				J_OS::LOGINFO("CRealMediaObj::Process StartVideo socket =  %d ret = %d", m_nSocket, nRet);
+				J_OS::LOGINFO("CRealMediaObj::Process StartVideo socket =  %d ret = %d", m_nSocket.sock, nRet);
 				break;
 			case jo_stop_real:
 			{
 				nRet = StopVideo();
-				J_OS::LOGINFO("CRealMediaObj::Process StopVideo socket =  %d ret = %d", m_nSocket, nRet);
+				J_OS::LOGINFO("CRealMediaObj::Process StopVideo socket =  %d ret = %d", m_nSocket.sock, nRet);
 				break;
 			}
 			default:
@@ -67,7 +67,7 @@ int CRealMediaObj::Process(J_AsioDataBase &asioData)
 		{
 			if (!m_bStart)
 			{
-				J_OS::LOGINFO("CRealMediaObj::Process !m_bStart socket = %d", m_nSocket);
+				J_OS::LOGINFO("CRealMediaObj::Process !m_bStart socket = %d", m_nSocket.sock);
 				return J_OK;
 			}
 			return OnWriteData(asioData);
@@ -160,7 +160,7 @@ int CRealMediaObj::Clearn()
 		JoFilterFactory->DelFilter(m_nSocket);
 		m_pObj = NULL;
 	}
-	J_OS::LOGINFO("CRealMediaObj::OnBroken socket = %d broken", m_nSocket);
+	J_OS::LOGINFO("CRealMediaObj::OnBroken socket = %d broken", m_nSocket.sock);
 
 	return J_OK;
 }
@@ -189,7 +189,7 @@ int CRealMediaObj::StartVideo()
 	}
 	//m_bStart = true;
 
-	J_OS::LOGINFO("CRealMediaObj::StartVideo socket =  %d start", m_nSocket);
+	J_OS::LOGINFO("CRealMediaObj::StartVideo socket =  %d start", m_nSocket.sock);
 
 	return J_OK;
 }
@@ -206,7 +206,7 @@ int CRealMediaObj::StopVideo()
 			return nRet;
 		}
 
-		J_OS::LOGINFO("CRealMediaObj::StopVideo socket =  %d stop", m_nSocket);
+		J_OS::LOGINFO("CRealMediaObj::StopVideo socket =  %d stop", m_nSocket.sock);
 	}
 
 	return J_OK;

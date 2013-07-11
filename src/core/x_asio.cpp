@@ -151,7 +151,10 @@ void CXAsio::DelUser(j_socket_t nSocket)
 			pDataBase = itData->second.front();
 			itData->second.pop();
 			if (pDataBase->ioRead.buf != NULL)
+			{
 				delete pDataBase->ioRead.buf;
+				pDataBase->ioRead.buf = NULL;
+			}
 			delete pDataBase;
 		}
 		m_readMap.erase(itData);

@@ -19,6 +19,8 @@ CHikStream::CHikStream(void *pTCPSocket, std::string resid)
 	m_nSocket = ((J_OS::CTCPSocket *)pTCPSocket)->GetHandle();
 	if (NULL == m_pRecvBuff)
 		m_pRecvBuff = new char[RECV_SIZE];
+	
+	m_asioData = new J_AsioDataBase;
 
 	m_parser.Init();
 
@@ -28,11 +30,11 @@ CHikStream::CHikStream(void *pTCPSocket, std::string resid)
 CHikStream::~CHikStream()
 {
 	m_parser.Deinit();
-	if (m_pRecvBuff != NULL)
+	/*if (m_pRecvBuff != NULL)
 	{
 		delete m_pRecvBuff;
 		m_pRecvBuff = NULL;
-	}
+	}*/
 
 	J_OS::LOGINFO("CHikStream::~CHikStream destroy this = %d", this);
 }
@@ -47,13 +49,13 @@ int CHikStream::Startup()
 	JoXAsio->Init();
 	JoXAsio->AddUser(m_nSocket, this);
 	//读取4字节头信息
-	m_asioData.ioUser = this;
-	m_asioData.ioRead.buf = m_pRecvBuff;
-	m_asioData.ioRead.bufLen = 4;
-	m_asioData.ioRead.whole = true;
+	m_asioData->ioUser = this;
+	m_asioData->ioRead.buf = m_pRecvBuff;
+	m_asioData->ioRead.bufLen = 4;
+	m_asioData->ioRead.whole = true;
 	m_nState = HIK_READ_HEAD;
 	m_nOffset = 0;
-	JoXAsio->Read(m_nSocket, &m_asioData);
+	JoXAsio->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
 
 	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", this);
@@ -80,34 +82,34 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
 	if (!m_bStartup)
 	{
-		J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket);
+		J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket.sock);
 		return;
 	}
 
 	j_result_t nResult = 0;
 	J_StreamHeader streamHeader;
 	TLock(m_locker);
-	m_nOffset += m_asioData.ioRead.bufLen;
-	m_asioData.ioRead.whole = true;
+	m_nOffset += m_asioData->ioRead.bufLen;
+	m_asioData->ioRead.whole = true;
 	switch (m_nState)
 	{
 		case HIK_READ_HEAD:
 			if (memcmp(m_pRecvBuff, PACK_HEAD, 4) == 0)
-				m_asioData.ioRead.bufLen = 10;
+				m_asioData->ioRead.bufLen = 10;
 			else if ((memcmp(m_pRecvBuff, PSM_HEAD, 4) == 0)
 				|| (memcmp(m_pRecvBuff, VIDEO_HEAD, 4) == 0)
 				|| (memcmp(m_pRecvBuff, AUDIO_HEAD, 4) == 0))
-				m_asioData.ioRead.bufLen = 2;
+				m_asioData->ioRead.bufLen = 2;
 	
-			m_asioData.ioRead.buf = m_pRecvBuff + m_nOffset;
+			m_asioData->ioRead.buf = m_pRecvBuff + m_nOffset;
 			m_nState = HIK_READ_PS_HEAD;
 			break;
 		case HIK_READ_PS_HEAD:
-			if (m_asioData.ioRead.bufLen == 10)
-				m_asioData.ioRead.bufLen = (*(m_asioData.ioRead.buf + 9) & 0x07);
-			else if (m_asioData.ioRead.bufLen == 2)
-				m_asioData.ioRead.bufLen = (((*(m_asioData.ioRead.buf) & 0xFF) << 8) + (*(m_asioData.ioRead.buf + 1) & 0xFF));
-			m_asioData.ioRead.buf = m_pRecvBuff + m_nOffset;
+			if (m_asioData->ioRead.bufLen == 10)
+				m_asioData->ioRead.bufLen = (*(m_asioData->ioRead.buf + 9) & 0x07);
+			else if (m_asioData->ioRead.bufLen == 2)
+				m_asioData->ioRead.bufLen = (((*(m_asioData->ioRead.buf) & 0xFF) << 8) + (*(m_asioData->ioRead.buf + 1) & 0xFF));
+			m_asioData->ioRead.buf = m_pRecvBuff + m_nOffset;
 			m_nState = HIK_READ_DATA;
 			break;
 		case HIK_READ_DATA:
@@ -124,12 +126,12 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 				}
 				TUnlock(m_vecLocker);
 			}
-			m_asioData.ioRead.bufLen = 4;
-			m_asioData.ioRead.buf = m_pRecvBuff;
+			m_asioData->ioRead.bufLen = 4;
+			m_asioData->ioRead.buf = m_pRecvBuff;
 			m_nState = HIK_READ_HEAD;
 			m_nOffset = 0;
 	}
-	JoXAsio->Read(m_nSocket, &m_asioData);
+	JoXAsio->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
 }
 
