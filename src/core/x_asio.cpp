@@ -334,8 +334,10 @@ int CXAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	buf.buf = pAsioData->ioRead.buf;
 	buf.len = pAsioData->ioRead.bufLen;
 	pAsioData->ioHandle = nSocket.sock;
-	if (WSARecv(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioRead.finishedLen, &Flags, pAsioData, NULL) ==SOCKET_ERROR)
+	if (WSARecv(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioRead.finishedLen, &Flags, pAsioData, NULL) == SOCKET_ERROR)
+	{
 		J_OS::LOGINFO("WSARecv error = %d", WSAGetLastError());
+	}
 #else
 	TLock(m_read_locker);
 	AsioDataMap::iterator itData = m_readMap.find(nSocket);
@@ -395,7 +397,7 @@ int CXAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 int CXAsio::ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData)
 {
 	TLock(m_listen_locker);
-	J_AsioUser *pAsioUser = static_cast<J_AsioUser *>(asioData->ioUser);
+	J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(asioData->ioUser);
 	pAsioUser->OnAccept(asioData, J_OK);
 	TUnlock(m_listen_locker);
 	return J_OK;
@@ -473,7 +475,7 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 						//printf("nRet = %d \n", nRet);
 						J_AsioDataBase asioData;
 						asioData.ioHandle = nSocket.sock;
-						J_AsioUser *pAsioUser = static_cast<J_AsioUser *>(pDataBase->ioUser);
+						J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(pDataBase->ioUser);
 						pAsioUser->OnBroken(&asioData, J_SOCKET_ERROR);
 						break;
 					}
@@ -489,7 +491,7 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 				pDataBase->ioWrite.finishedLen = nRet;
 				pDataBase->ioHandle = nSocket.sock;
 				pDataBase->ioCall = J_AsioDataBase::j_write_e;
-				J_AsioUser *pAsioUser = static_cast<J_AsioUser *>(pDataBase->ioUser);
+				J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(pDataBase->ioUser);
 				pAsioUser->OnWrite(pDataBase, J_OK);
 			}
 			break;

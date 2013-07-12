@@ -222,8 +222,8 @@ int CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 	if (cmdSocket.GetHandle().sock == j_invalid_socket_val)
 		return J_INVALID_DEV;
 
-	HikCommHead commHead;
-	memset(&commHead, 0, sizeof(HikCommHead));
+	HikCommHead commHead = {0};
+	//memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead) + nDataLen);
 	commHead.protoType = 90/*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99*/;
 	commHead.command = htonl(nCmd);
@@ -291,27 +291,21 @@ int CHikAdapter::GetLocalNetInfo(unsigned long & ipAddr, unsigned char* mac)
 				|| pAdapter->Type==71          //pAdapter->Type是71为：无线网卡
 				)
 			{
-				printf("--------\n");
-				printf("AdapterName:%s\n",pAdapter->AdapterName);
-				printf("AdapterDesc:%s\n",pAdapter->Description);
-				printf("AdapterAddr:");
 				for(UINT i=0;i<pAdapter->AddressLength;i++)
 				{
-					sprintf((char *)(mac+2*i), "%02X",pAdapter->Address[i]);
+					mac[i] = pAdapter->Address[i];
 				}
-				printf("AdapterType:%d\n",pAdapter->Type);
-				printf("IPAddress:%s\n",pAdapter->IpAddressList.IpAddress.String);
-				printf("IPMask:%s\n",pAdapter->IpAddressList.IpMask.String);
+
+				//可能网卡有多IP,因此通过循环去判断
+				IP_ADDR_STRING *pIpAddrString =&(pAdapter->IpAddressList);
+				do 
+				{
+					ipAddr = inet_addr(pIpAddrString->IpAddress.String);
+					pIpAddrString=pIpAddrString->Next;
+				} while (pIpAddrString);
 			}
 			pAdapter=pAdapter->Next;
 		}
-		//可能网卡有多IP,因此通过循环去判断
-		IP_ADDR_STRING *pIpAddrString =&(pAdapter->IpAddressList);
-		do 
-		{
-			ipAddr = inet_addr(pIpAddrString->IpAddress.String);
-			pIpAddrString=pIpAddrString->Next;
-		} while (pIpAddrString);
 	}
 	else
 	{

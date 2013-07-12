@@ -49,10 +49,12 @@ int CHikStream::Startup()
 	JoXAsio->Init();
 	JoXAsio->AddUser(m_nSocket, this);
 	//读取4字节头信息
+	memset(m_asioData, 0, sizeof(J_AsioDataBase));
 	m_asioData->ioUser = this;
 	m_asioData->ioRead.buf = m_pRecvBuff;
 	m_asioData->ioRead.bufLen = 4;
 	m_asioData->ioRead.whole = true;
+	m_asioData->ioCall = J_AsioDataBase::j_read_e;
 	m_nState = HIK_READ_HEAD;
 	m_nOffset = 0;
 	JoXAsio->Read(m_nSocket, m_asioData);
@@ -117,6 +119,10 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
 			if (nResult == J_OK)
 			{
+				//static FILE *fp = NULL;
+				//if (fp == NULL)
+				//	fp = fopen("test.h264", "wb+");
+				//fwrite(m_pRecvBuff, 1, streamHeader.dataLen, fp);
 				TLock(m_vecLocker);
 				std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
 				for (; it != m_vecRingBuffer.end(); it++)

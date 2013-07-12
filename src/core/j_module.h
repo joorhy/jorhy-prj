@@ -397,7 +397,7 @@ struct J_MuxFilter : virtual public J_Obj
 	virtual j_result_t Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0) = 0;
 };
 
-struct J_AsioUser : public J_Obj
+struct J_AsioUser : virtual public J_Obj
 {
 	///连接事件完成(用于网络IO)
 	///@param[in]	asioData IO数据集
@@ -419,7 +419,7 @@ struct J_AsioUser : public J_Obj
 	virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet) = 0;
 };
 
-struct J_CommandParser : public J_Obj
+struct J_CommandParser : virtual public J_Obj
 {
 	///添加用户
 	///@param[in]	nSocket 用户ID
@@ -441,7 +441,7 @@ struct J_CommandParser : public J_Obj
 	virtual j_result_t DelUser(j_socket_t nSocket) = 0;
 };
 
-struct J_EventParser : public J_Obj
+struct J_EventParser : virtual public J_Obj
 {
 	///事件解析
 	///@param[in]	pEventData 事件数据
@@ -449,7 +449,7 @@ struct J_EventParser : public J_Obj
 	virtual j_result_t AnalyzePacket(const unsigned char *pEventData) = 0;
 };
 
-struct J_PlayerObj : public J_Obj
+struct J_PlayerObj : virtual public J_Obj
 {
 	///播放视频
 	///@param	 hWnd 播放窗口
@@ -463,7 +463,7 @@ struct J_PlayerObj : public J_Obj
 	virtual j_result_t ProcessMedia() = 0;
 };
 
-struct J_Player : public J_Obj
+struct J_Player : virtual public J_Obj
 {
 	///播放视频
 	///@param	 hWnd 播放窗口
@@ -479,7 +479,7 @@ struct J_Player : public J_Obj
 	virtual j_result_t InputData(j_char_t *pData, J_StreamHeader &streamHeader) = 0;
 };
 
-struct J_Decoder : public J_Obj
+struct J_Decoder : virtual public J_Obj
 {
 	///初始化解码器
 	///@return	 参见x_errtype.j
@@ -496,7 +496,7 @@ struct J_Decoder : public J_Obj
 	virtual j_result_t DeinitDecoder() = 0;
 };
 
-struct J_Render : public J_Obj
+struct J_Render : virtual public J_Obj
 {
 	///初始化Render
 	///@return	 参见x_errtype.j
@@ -564,7 +564,7 @@ template <template <typename CBase> class CBaseAdapter, typename CChannel = J_Ch
 class J_ResidTmpl : public CBaseAdapter<CChannel>
 {
 public:
-	std::string m_resid;
+	j_string_t m_resid;
 };
 
 #endif //~__J_VIDEOADAPTER_H_

@@ -64,12 +64,17 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 		if (strstr(modName, ".dll") != NULL)
 		{
 			j_module_t module;
-			module.handle = LoadLibrary(modName);
+			module.handle = GetModuleHandle(modName);
 			if (module.handle == j_invalid_module_val)
 			{
-				J_OS::LOGINFO("CXLoadso::LoadSo LoadLibrary, %s err = %d", modName, GetLastError());
-				continue;
+				module.handle = LoadLibrary(modName);
+				if (module.handle == j_invalid_module_val)
+				{
+					J_OS::LOGINFO("CXLoadso::LoadSo LoadLibrary, %s err = %d", modName, GetLastError());
+					continue;
+				}
 			}
+
 			Register_fun fun = (Register_fun)GetProcAddress(module.handle, "Register");
 			int n = GetLastError();
 			fun();

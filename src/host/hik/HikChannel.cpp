@@ -12,7 +12,7 @@ CHikChannel::CHikChannel(const char *pResid, void *pOwner, int nChannel,
 		int nStream, int nMode) :
 	m_pAdapter(NULL), m_nChannel(0), m_pDataBuff(NULL), m_bOpened(false)
 {
-	m_pAdapter = (CHikAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<CHikAdapter *> ((J_Obj *)pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -438,7 +438,7 @@ void CHikChannel::ExchangeData()
 		StopView();
 		J_OS::LOGINFO("CHikChannel::ExchangeData ExchangeData error");
 	}
-	//J_OS::LOGINFO("CHikChannel::ExchangeData ExchangeData error");
+	J_OS::LOGINFO("CHikChannel::ExchangeData ExchangeData error");
 }
 
 int CHikChannel::MakeIFrame(int nChannel)

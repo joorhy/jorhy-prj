@@ -10,11 +10,12 @@ CTCPSocket::CTCPSocket()
 #ifdef WIN32
 	WSADATA wsaData; 
 	WSAStartup(MAKEWORD(2,2), &wsaData);
+	m_handle.sock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 #else
+	m_handle.sock = socket(AF_INET, SOCK_STREAM, 0);
 	signal(SIGPIPE, SIG_IGN);
 #endif
 
-	m_handle.sock = socket(AF_INET, SOCK_STREAM, 0);
 	m_bNeedClose = true;
 	//J_OS::LOGINFO("CTCPSocket::CTCPSocket created, handle = %d", m_handle);
 }
@@ -30,11 +31,12 @@ CTCPSocket::CTCPSocket(int nPort, int nListenNum)
 #ifdef WIN32
 	WSADATA wsaData; 
 	WSAStartup(MAKEWORD(2,2), &wsaData);
+	m_handle.sock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 #else
 	signal(SIGPIPE, SIG_IGN);
+	m_handle.sock = socket(AF_INET, SOCK_STREAM, 0);
 #endif
 
-	m_handle.sock = socket(AF_INET, SOCK_STREAM, 0);
 	m_bNeedClose = true;
 	Listen(nPort, nListenNum, false);
 	//J_OS::LOGINFO("CTCPSocket::CTCPSocket created and listen, handle = %d", m_handle);
@@ -46,11 +48,12 @@ CTCPSocket::CTCPSocket(const char *pAddr, int nPort)
 #ifdef WIN32
 	WSADATA wsaData; 
 	WSAStartup(MAKEWORD(2,2), &wsaData);
+	m_handle.sock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 #else
 	signal(SIGPIPE, SIG_IGN);
+	m_handle.sock = socket(AF_INET, SOCK_STREAM, 0);
 #endif
 
-	m_handle.sock = socket(AF_INET, SOCK_STREAM, 0);
 	m_bNeedClose = true;
 	Connect(pAddr, nPort);
 	//J_OS::LOGINFO("CTCPSocket::CTCPSocket created and connect, handle = %d", m_handle);
@@ -116,7 +119,11 @@ int CTCPSocket::Connect(const char *pAddr, unsigned short nPort/*, struct timeva
 	sin_addr.sin_family = AF_INET;
 	sin_addr.sin_port = htons(nPort);
 	sin_addr.sin_addr.s_addr = inet_addr(pAddr);
+//#ifdef WIN32
+//	if (WSAConnect(m_handle.sock, (struct sockaddr *)&sin_addr, sizeof(sin_addr), NULL, NULL, NULL, NULL) == SOCKET_ERROR)
+//#else
     if (connect(m_handle.sock, (struct sockaddr *)&sin_addr, sizeof(sin_addr)) == -1)
+//#endif
     {
 		j_close_socket(m_handle.sock);
         m_handle.sock = j_invalid_socket_val;

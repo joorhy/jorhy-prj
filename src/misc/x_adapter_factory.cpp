@@ -20,7 +20,7 @@ CAdapterFactory::~CAdapterFactory()
 
 int CAdapterFactory::Init()
 {
-	m_timer.Create(1 * 1000, CAdapterFactory::TimerThread, this);
+	m_timer.Create(5 * 1000, CAdapterFactory::TimerThread, this);
 	return J_OK;
 }
 

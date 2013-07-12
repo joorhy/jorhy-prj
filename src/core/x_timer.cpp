@@ -93,7 +93,6 @@ void CTimer::OnTimer()
 			break;
 		}
 #endif
-
 		m_timerFunc(m_pUser);
 	}
 }

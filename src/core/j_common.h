@@ -1,6 +1,8 @@
 #ifndef __JO_COMMON_H_
 #define __JO_COMMON_H_
 
+#include "j_obj.h"
+
 #define JO_DECLARE_SINGLETON(_name) \
 	extern JO_API C##_name* Single_##_name; \
 	extern JO_API C##_name* X_JO_API Get##_name##Layer();  
@@ -52,71 +54,6 @@
 #define JoPlayManager \
 	JO_INSTANSE(PlayManager)
 
-#ifdef WIN32
-#include <process.h>
-#include <io.h>
-#include <Winsock2.h>
-#include <Mstcpip.h>
-#include <windows.h>
-#include <ws2tcpip.h>
-#include <iphlpapi.h>
-#else
-#include <stdint.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <getopt.h>		/* getopt_long() */
-#include <semaphore.h>
-#include <sys/ioctl.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <sys/mman.h>
-#include <sys/epoll.h>
-#include <sys/poll.h>
-#include <netinet/if_ether.h>
-#include <net/if.h>
-#include <arpa/inet.h>
-#include <dirent.h>
-#include <dlfcn.h>
-#include <sys/msg.h>
-#include <sys/ipc.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip_icmp.h>
-#include <netdb.h>
-#include <setjmp.h>
-#include <netinet/tcp.h>
-#include <X11/Xlib.h>
-#endif
-
-#include <math.h>
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-
-#include <signal.h>
-#include <fcntl.h>		/* low-level i/o */
-#include <errno.h>
-#include <cstring>
-#include <assert.h>
-
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <algorithm>
-
-#include <map>
-#include <list>
-#include <string>
-#include <vector>
-#include <queue>
-#include <stdexcept>
-
 #include "x_errtype.h"
 
 typedef bool 								j_boolean_t;
@@ -167,22 +104,6 @@ typedef unsigned char					j_uuid_t[16];
 #define j_atoll(x) _atoi64(x)
 #else
 #define j_atoll(x) atoll(x)
-#endif
-
-#ifdef WIN32
-#define X_JO_API __stdcall
-#else
-#define X_JO_API 
-#endif
-
-#ifdef WIN32
-#ifdef   JO_EXPORTS 
-#define   JO_API           __declspec(dllexport) 
-#else 
-#define   JO_API           __declspec(dllimport) 
-#endif 
-#else
-#define JO_API  
 #endif
 
 #ifdef WIN32
@@ -358,7 +279,7 @@ struct J_AsioDataBase
 	typedef void (*JoFIoCallback)(J_AsioDataBase& ioData, j_result_t ret);
 
 	j_asio_handle ioHandle;		///异步Io句柄
-	j_void_t *ioUser;				///< 异步Io使用者
+	J_Obj *ioUser;				///< 异步Io使用者
 	J_IoCall ioCall;			/// 执行的异步Io调用
 	j_int32_t ioTimeOut;		///< 超时设定, -1表示无穷大, 单位:毫秒
 	JoFIoCallback ioCallback;	///< Io完成 超时或失败调用
