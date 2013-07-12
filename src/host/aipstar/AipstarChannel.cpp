@@ -1,12 +1,12 @@
 #include "AipstarChannel.h"
 #include "AipstarStream.h"
 
-CAipstarChannel::CAipstarChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
+CAipstarChannel::CAipstarChannel(const j_char_t *pResid, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	m_bOpened = false;
 	m_nChannel = nChannel;
 
-	m_pAdapter = dynamic_cast<CAipstarAdapter *> ((J_Obj *)pOwner);
+	m_pAdapter = dynamic_cast<CAipstarAdapter *> (pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -25,7 +25,7 @@ CAipstarChannel::~CAipstarChannel()
 	TMCC_Done(m_hStream);
 }
 
-j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer)
+j_result_t CAipstarChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
@@ -39,7 +39,7 @@ j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 	if (m_bOpened && pObj != NULL)
 	{
 	    TMCC_MakeKeyFrame(m_hStream);
-		(static_cast<CAipstarStream *> (pObj))->AddRingBuffer(pRingBuffer);
+		(dynamic_cast<CAipstarStream *> (pObj))->AddRingBuffer(pRingBuffer);
 		return J_OK;
 	}
 
@@ -50,25 +50,25 @@ j_result_t CAipstarChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 	{
 		m_pAdapter->Broken();
 		//m_pAdapter->Relogin();
-		delete (CAipstarStream *)pObj;
+		delete pObj;
 		J_OS::LOGINFO("CAipstarChannel::OpenStream StartView error, ret = %d", nRet);
 		return J_STREAM_ERROR;
 	}
 
 	m_bOpened = true;
 	m_pStream = pObj;
-	(static_cast<CAipstarStream *> (pObj))->AddRingBuffer(pRingBuffer);
-	(static_cast<CAipstarStream *> (pObj))->Startup();
+	(dynamic_cast<CAipstarStream *> (pObj))->AddRingBuffer(pRingBuffer);
+	(dynamic_cast<CAipstarStream *> (pObj))->Startup();
 
 	return J_OK;
 }
 
-j_result_t CAipstarChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer)
+j_result_t CAipstarChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
 
-	CAipstarStream *pStream = static_cast<CAipstarStream *>(pObj);
+	CAipstarStream *pStream = dynamic_cast<CAipstarStream *>(pObj);
 	if (pStream == NULL)
 		return J_OK;
 
@@ -77,9 +77,9 @@ j_result_t CAipstarChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer
 		StopView();
 
 		m_bOpened = false;
-		(static_cast<CAipstarStream *> (pObj))->Shutdown();
+		(dynamic_cast<CAipstarStream *> (pObj))->Shutdown();
 		pStream->DelRingBuffer(pRingBuffer);
-		delete (CAipstarStream *) pObj;
+		delete pObj;
 		J_OS::LOGINFO("7");
 		m_pStream = NULL; 
 
@@ -226,7 +226,7 @@ int CAipstarChannel::Broken()
 {
 	if (m_pStream != NULL)
 	{
-		(static_cast<CAipstarStream *> (m_pStream))->Broken();
+		(dynamic_cast<CAipstarStream *> (m_pStream))->Broken();
 		return J_OK;
 	}
 		

@@ -35,7 +35,7 @@ int CJoAdapter::Broken()
 	return J_OK;
 }
 
-int CJoAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode)
+int CJoAdapter::MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 {
 	CJoChannel *pChannel = new CJoChannel(pResid, pOwner, nChannel, nStream,
 			nMode);

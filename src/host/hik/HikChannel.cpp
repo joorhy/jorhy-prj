@@ -8,7 +8,7 @@
 
 #define DATA_BUFF_SIZE	1024
 
-CHikChannel::CHikChannel(const char *pResid, void *pOwner, int nChannel,
+CHikChannel::CHikChannel(const char *pResid, J_Obj *pOwner, int nChannel,
 		int nStream, int nMode) :
 	m_pAdapter(NULL), m_nChannel(0), m_pDataBuff(NULL), m_bOpened(false)
 {
@@ -234,7 +234,7 @@ int CHikChannel::EmunFileByTime(time_t beginTime, time_t endTime,
 	return J_OK;
 }
 
-int CHikChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+int CHikChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
@@ -247,7 +247,7 @@ int CHikChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 	if (m_bOpened && pObj != NULL)
 	{
 		MakeIFrame(m_nChannel);
-		(static_cast<CHikStream *> (pObj))->AddRingBuffer(pRingBuffer);
+		(dynamic_cast<CHikStream *> (pObj))->AddRingBuffer(pRingBuffer);
 		return J_OK;
 	}
 
@@ -262,18 +262,18 @@ int CHikChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	m_bOpened = true;
 	pObj = new CHikStream(m_recvSocket, m_resid);
-	(static_cast<CHikStream *> (pObj))->AddRingBuffer(pRingBuffer);
-	(static_cast<CHikStream *> (pObj))->Startup();
+	(dynamic_cast<CHikStream *> (pObj))->AddRingBuffer(pRingBuffer);
+	(dynamic_cast<CHikStream *> (pObj))->Startup();
 
 	return J_OK;
 }
 
-int CHikChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+int CHikChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
 
-	CHikStream *pHikStream = static_cast<CHikStream *>(pObj);
+	CHikStream *pHikStream = dynamic_cast<CHikStream *>(pObj);
 	if (pHikStream == NULL)
 		return J_OK;
 
@@ -282,11 +282,11 @@ int CHikChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 		StopView();
 
 		m_bOpened = false;
-		(static_cast<CHikStream *> (pObj))->Shutdown();
+		(dynamic_cast<CHikStream *> (pObj))->Shutdown();
 		//J_OS::LOGINFO("StopView Begin");
 		pHikStream->DelRingBuffer(pRingBuffer);
 		//J_OS::LOGINFO("StopView End");
-		delete (CHikStream *) pObj;
+		delete pObj;
 
 		return J_NO_REF;
 	}
@@ -297,7 +297,7 @@ int CHikChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 	return J_OK;
 }
 
-int CHikChannel::OpenParser(void *&pObj)
+int CHikChannel::OpenParser(J_Obj *&pObj)
 {
 	CHikParser *pHikParser = new CHikParser();
 	if (pHikParser == NULL)
@@ -308,15 +308,15 @@ int CHikChannel::OpenParser(void *&pObj)
 	return J_OK;
 }
 
-int CHikChannel::CloseParser(void *pObj)
+int CHikChannel::CloseParser(J_Obj *pObj)
 {
 	if (pObj != NULL)
-		delete (CHikParser *) pObj;
+		delete pObj;
 
 	return J_OK;
 }
 
-int CHikChannel::OpenVodStream(void *&pObj)
+int CHikChannel::OpenVodStream(J_Obj *&pObj)
 {
 	CHikVodStream *pHikVodStream = new CHikVodStream(m_pAdapter, m_nChannel);
 	if (pHikVodStream == NULL)
@@ -327,10 +327,10 @@ int CHikChannel::OpenVodStream(void *&pObj)
 	return J_OK;
 }
 
-int CHikChannel::CloseVodStream(void *pObj)
+int CHikChannel::CloseVodStream(J_Obj *pObj)
 {
 	if (pObj != NULL)
-		delete (CHikVodStream *) pObj;
+		delete pObj;
 
 	return J_OK;
 }
@@ -438,7 +438,7 @@ void CHikChannel::ExchangeData()
 		StopView();
 		J_OS::LOGINFO("CHikChannel::ExchangeData ExchangeData error");
 	}
-	J_OS::LOGINFO("CHikChannel::ExchangeData ExchangeData error");
+	//J_OS::LOGINFO("CHikChannel::ExchangeData ExchangeData error");
 }
 
 int CHikChannel::MakeIFrame(int nChannel)

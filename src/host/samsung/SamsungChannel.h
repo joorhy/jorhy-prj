@@ -10,7 +10,7 @@ class CSamsungChannelBase : public J_ChannelStream
 class CSamsungChannel :  public J_ResidTmpl<J_BaseAdapter, CSamsungChannelBase>
 {
 public:
-    CSamsungChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode);
+    CSamsungChannel(const j_char_t *pResid, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode);
     ~CSamsungChannel();
 
 public:
@@ -18,8 +18,8 @@ public:
     ///J_PtzControl
     virtual j_result_t PtzControl(j_int32_t nCmd, j_int32_t nParam);
     ///J_StreamChannel
-    virtual j_result_t OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer);
-    virtual j_result_t CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer);
+    virtual j_result_t OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
+    virtual j_result_t CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
     virtual j_boolean_t HasMultiStream() { return false; }
 
 private:

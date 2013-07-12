@@ -6,7 +6,7 @@
 #define MAX_RECV_PACKET 8192
 #define TIME_DURATION 40
 
-CHikVodStream::CHikVodStream(void *pOwner, int nChannelNum)
+CHikVodStream::CHikVodStream(J_Obj *pOwner, int nChannelNum)
 : m_pRecvBuff(NULL)
 , m_pPackBuff(NULL)
 , m_pRead(NULL)
@@ -35,7 +35,7 @@ CHikVodStream::CHikVodStream(void *pOwner, int nChannelNum)
 	m_curFileName.clear();
 
 	m_pWrite = CreateFile();
-	m_pAdapter = (CHikAdapter *)pOwner;
+	m_pAdapter = dynamic_cast<CHikAdapter *>(pOwner);
 }
 
 CHikVodStream::~CHikVodStream()

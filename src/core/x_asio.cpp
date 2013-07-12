@@ -204,13 +204,17 @@ void CXAsio::OnWork()
 		if (pPerIoData->ioCall == J_AsioDataBase::j_read_e)
 		{
 			//read
+			//printf("%d = %d\n", pPerIoData->ioRead.bufLen, dwBytesTransferred);
+			j_sleep(1);
+			pPerIoData->ioRead.finishedLen = dwBytesTransferred;
 			J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pPerIoData->ioUser);
 			pAsioUser->OnRead(pPerIoData, J_OK);
 		}
 		else if (pPerIoData->ioCall == J_AsioDataBase::j_write_e)
 		{
 			//write
-			printf("%d = %d\n", pPerIoData->ioWrite.bufLen, dwBytesTransferred);
+			//printf("%d = %d\n", pPerIoData->ioWrite.bufLen, dwBytesTransferred);
+			pPerIoData->ioWrite.finishedLen = dwBytesTransferred;
 			J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pPerIoData->ioUser);
 			pAsioUser->OnWrite(pPerIoData, J_OK);
 		}
@@ -336,7 +340,7 @@ int CXAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	pAsioData->ioHandle = nSocket.sock;
 	if (WSARecv(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioRead.finishedLen, &Flags, pAsioData, NULL) == SOCKET_ERROR)
 	{
-		J_OS::LOGINFO("WSARecv error = %d", WSAGetLastError());
+		//J_OS::LOGINFO("WSARecv error = %d", WSAGetLastError());
 	}
 #else
 	TLock(m_read_locker);
@@ -373,9 +377,11 @@ int CXAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	buf.len = pAsioData->ioWrite.bufLen;
 	pAsioData->ioHandle = nSocket.sock;
 	pAsioData->ioCall = J_AsioDataBase::j_write_e;
-	printf("%s\n", buf.buf);
+	//printf("%s\n", buf.buf);
 	if (WSASend(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioWrite.finishedLen, 0, pAsioData, NULL) == SOCKET_ERROR)
-		J_OS::LOGINFO("WSASend error = %d", WSAGetLastError());
+	{
+		//J_OS::LOGINFO("WSASend error = %d", WSAGetLastError());
+	}
 #else
 	TLock(m_write_locker);
 	AsioDataMap::iterator itData = m_writeMap.find(nSocket);
@@ -502,7 +508,7 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 			AsioUserMap::iterator itUser = m_userMap.find(nSocket);
 			if (itUser != m_userMap.end())
 			{
-				pAsioUser = static_cast<J_AsioUser *>(itUser->second);
+				pAsioUser = dynamic_cast<J_AsioUser *>(itUser->second);
 				//m_userMap.erase(itUser);
 			}
 			TUnlock(m_user_locker);

@@ -52,7 +52,7 @@ int CHikAdapter::Broken()
 	return J_OK;
 }
 
-int CHikAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner,
+int CHikAdapter::MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner,
 		int nChannel, int nStream, int nMode)
 {
 	CHikChannel *pChannel = new CHikChannel(pResid, pOwner, nChannel, nStream, nMode);
@@ -122,7 +122,7 @@ int CHikAdapter::EventAlarm(int nDvrId, int nChannel, int nAlarmType)
 			nAlarmType);
 }
 
-int CHikAdapter::MakeVoice(const char *pResid, void *&pObj, void *pOwner, int nChannel)
+int CHikAdapter::MakeVoice(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel)
 {
 	CHikIntercom *pIntercom = new CHikIntercom(pResid, pOwner, nChannel);
 	if (NULL == pIntercom)

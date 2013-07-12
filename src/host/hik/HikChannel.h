@@ -14,24 +14,24 @@ class CHikChannelBase : public J_ChannelStream
 class CHikChannel : public J_ResidTmpl<J_BaseAdapter, CHikChannelBase>
 {
 public:
-	CHikChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode);
+	CHikChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode);
 	~CHikChannel();
 
 	J_OS::TLocker_t  m_sockLocker;
 public:
 	///J_StreamChannel
-	virtual int OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
-	virtual int CloseStream(void *pObj, CRingBuffer *pRingBuffer);
+	virtual int OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
+	virtual int CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
 	virtual bool HasMultiStream() { return true; }
 	///J_PtzControl
 	virtual int PtzControl(int nCmd, int nParam);
 	///J_StreamParser
-	virtual int OpenParser(void *&pObj);
-	virtual int CloseParser(void *pObj);
+	virtual int OpenParser(J_Obj *&pObj);
+	virtual int CloseParser(J_Obj *pObj);
 	///J_RemoteVod
 	virtual int EmunFileByTime(time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList);
-	virtual int OpenVodStream(void *&pObj);
-	virtual int CloseVodStream(void *pObj);
+	virtual int OpenVodStream(J_Obj *&pObj);
+	virtual int CloseVodStream(J_Obj *pObj);
 
 private:
 	int StartView();

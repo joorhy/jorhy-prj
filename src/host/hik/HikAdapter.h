@@ -30,13 +30,13 @@ public:
 	///J_VideoAdapter
 	virtual J_DevStatus GetStatus() const;
 	virtual int Broken();
-	virtual int MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode);
+	virtual int MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel, int nStream, int nMode);
 	///J_AlarmAdapter
 	virtual int EnableAlarm();
 	virtual int DisableAlarm();
 	virtual int EventAlarm(int nDvrId, int nChannel, int nAlarmType);
 	///J_VoiceAdapter
-	virtual int MakeVoice(const char *pResid, void *&pObj, void *pOwner, int nChannel);
+	virtual int MakeVoice(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel);
 
 protected:
 	int SendCommand(int nCmd, const char *pSendData = NULL, int nDataLen = 0);

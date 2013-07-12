@@ -55,7 +55,7 @@ j_result_t CAipstarAdapter::Broken()
 	return J_OK;
 }
 
-j_result_t CAipstarAdapter::MakeChannel(const j_char_t *pResid, j_void_t *&pObj, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
+j_result_t CAipstarAdapter::MakeChannel(const j_char_t *pResid, J_Obj *&pObj, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	CAipstarChannel *pChannel = new CAipstarChannel(pResid, pOwner, nChannel, nStream, nMode);
 	if (NULL == pChannel)
@@ -103,7 +103,7 @@ j_result_t CAipstarAdapter::Logout()
 {
 	if (m_pChannel != NULL)
 	{
-		(static_cast<CAipstarChannel *> (m_pChannel))->Broken();
+		(dynamic_cast<CAipstarChannel *> (m_pChannel))->Broken();
 	}
 	
 	int nRet = TMCC_DisConnect(m_devHandle);

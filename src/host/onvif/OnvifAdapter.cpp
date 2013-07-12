@@ -35,7 +35,7 @@ int COnvifAdapter::Broken()
 	return J_OK;
 }
 
-int COnvifAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode)
+int COnvifAdapter::MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 {
 	COnvifChannel *pChannel = new COnvifChannel(pResid, pOwner, nChannel, nStream,
 			nMode);

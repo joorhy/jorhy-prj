@@ -2,12 +2,12 @@
 #include "DahuaStream.h"
 #include <math.h>
 
-CDahuaChannel::CDahuaChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
+CDahuaChannel::CDahuaChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 {
 	m_bOpened = false;
 	m_nChannel = nChannel;
 
-	m_pAdapter = (CDahuaAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<CDahuaAdapter *>(pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -21,7 +21,7 @@ CDahuaChannel::~CDahuaChannel()
 
 }
 
-int CDahuaChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+int CDahuaChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
@@ -33,7 +33,7 @@ int CDahuaChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 	
 	if (m_bOpened && pObj != NULL)
 	{
-		(static_cast<CDahuaStream *> (pObj))->AddRingBuffer(pRingBuffer);
+		(dynamic_cast<CDahuaStream *> (pObj))->AddRingBuffer(pRingBuffer);
 		return J_OK;
 	}
 
@@ -49,18 +49,18 @@ int CDahuaChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 	CLIENT_SetRealDataCallBack(m_lRealHandle, CDahuaStream::OnStreamCallBack, (DWORD)pObj);
 
 	m_bOpened = true;
-	(static_cast<CDahuaStream *> (pObj))->AddRingBuffer(pRingBuffer);
-	(static_cast<CDahuaStream *> (pObj))->Startup();
+	(dynamic_cast<CDahuaStream *> (pObj))->AddRingBuffer(pRingBuffer);
+	(dynamic_cast<CDahuaStream *> (pObj))->Startup();
 
 	return J_OK;
 }
 
-int CDahuaChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+int CDahuaChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
 
-	CDahuaStream *pStream = static_cast<CDahuaStream *>(pObj);
+	CDahuaStream *pStream = dynamic_cast<CDahuaStream *>(pObj);
 	if (pStream == NULL)
 		return J_OK;
 
@@ -69,9 +69,9 @@ int CDahuaChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 		StopView();
 
 		m_bOpened = false;
-		(static_cast<CDahuaStream *> (pObj))->Shutdown();
+		(dynamic_cast<CDahuaStream *> (pObj))->Shutdown();
 		pStream->DelRingBuffer(pRingBuffer);
-		delete (CDahuaStream *) pObj;
+		delete pObj;
 
 		return J_NO_REF;
 	}

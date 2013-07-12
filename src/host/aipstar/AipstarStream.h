@@ -32,7 +32,7 @@ protected:
 	static int OnStreamCallBack(HANDLE hHandle, tmRealStreamInfo_t *streamInfo, void *context)
 #endif
 	{
-		CAipstarStream *pThis = static_cast<CAipstarStream *>(context);
+		CAipstarStream *pThis = dynamic_cast<CAipstarStream *>((J_Obj *)context);
 		if (pThis != NULL)
 			pThis->OnRecv(hHandle, streamInfo);
 

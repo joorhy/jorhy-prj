@@ -16,7 +16,7 @@ int CMuxFactory::RegisterMux(const char *muxType, J_MakeMuxFun pFun)
 	return J_EXIST;
 }
 
-J_MuxFilter *CMuxFactory::GetMux(void *pOwner, const char *pMuxType)
+J_MuxFilter *CMuxFactory::GetMux(J_Obj *pOwner, const char *pMuxType)
 {
 	TLock(m_lock);
 	J_Obj *pMux = NULL;
@@ -45,7 +45,7 @@ J_MuxFilter *CMuxFactory::GetMux(void *pOwner, const char *pMuxType)
 	return dynamic_cast<J_MuxFilter *>(pMux);
 }
 
-void CMuxFactory::DelMux(void *pOwner)
+void CMuxFactory::DelMux(J_Obj *pOwner)
 {
 	TLock(m_lock);
 	MuxMap::iterator it = m_muxMap.find(pOwner);

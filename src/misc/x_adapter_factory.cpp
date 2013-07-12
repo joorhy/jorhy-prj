@@ -43,7 +43,7 @@ int CAdapterFactory::RegisterAdapter(const char *adapterType, J_MakeAdapterFun p
 	return J_EXIST;
 }
 
-void *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_TYPE nType)
+J_Obj *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_TYPE nType)
 {
 	J_ChannelKey key;
 	key.resid = pResId;
@@ -88,7 +88,7 @@ void *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_T
         if (it == m_adapterMap.end())
             return NULL;
 
-        void *pObjChannel = NULL;
+        J_Obj *pObjChannel = NULL;
         J_DevAdapter *pDevAdapter = dynamic_cast<J_DevAdapter *>(it->second);
         if (pDevAdapter != NULL)
         {
@@ -104,7 +104,7 @@ void *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_T
         if (pObjChannel != NULL)
         {
             m_channelMap[key] = pObjChannel;
-            J_ChannelStream *pChannel = static_cast<J_ChannelStream *>(pObjChannel);
+            J_ChannelStream *pChannel = dynamic_cast<J_ChannelStream *>(pObjChannel);
             if (pChannel && !pChannel->HasMultiStream())
             {
                 key.stream_type = (nStreamType == 0 ? 1 : 0);
@@ -117,7 +117,7 @@ void *CAdapterFactory::CreateInstance(const char *pResId, int nStreamType, OBJ_T
 	return NULL;
 }
 
-void* CAdapterFactory::GetInstance(const char *pResId, OBJ_TYPE nType, int nStreamType)
+J_Obj* CAdapterFactory::GetInstance(const char *pResId, OBJ_TYPE nType, int nStreamType)
 {
 	if (OBJ_ADAPTER == nType)
 	{

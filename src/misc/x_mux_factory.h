@@ -9,7 +9,7 @@ typedef int (*J_MakeMuxFun)(J_Obj *&);
 class JO_API CMuxFactory
 {
 	typedef std::map<std::string, J_MakeMuxFun> MuxRegistMap;
-	typedef std::map<void *, J_MuxFilter *> MuxMap;
+	typedef std::map<J_Obj *, J_MuxFilter *> MuxMap;
 public:
 	CMuxFactory() {}
 	~CMuxFactory() {}
@@ -21,8 +21,8 @@ public:
 	///@return 		参考x_error_type.h
 	int RegisterMux(const char *muxType, J_MakeMuxFun pFun);
 
-	J_MuxFilter *GetMux(void *pOwner, const char *pMuxType);
-	void DelMux(void *pOwner);
+	J_MuxFilter *GetMux(J_Obj *pOwner, const char *pMuxType);
+	void DelMux(J_Obj *pOwner);
 
 private:
 	MuxRegistMap m_muxRegistMap;

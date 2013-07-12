@@ -11,7 +11,7 @@
 class CHikVodStream : public J_RemoteVodStream
 {
 public:
-	CHikVodStream(void *pOwner, int nChannelNum);
+	CHikVodStream(J_Obj *pOwner, int nChannelNum);
 	~CHikVodStream();
 
 public:

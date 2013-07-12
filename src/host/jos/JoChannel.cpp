@@ -3,12 +3,12 @@
 #include "x_base64.h"
 #include "x_config.h"
 
-CJoChannel::CJoChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
+CJoChannel::CJoChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 : m_pAdapter(NULL)
 , m_nChannel(0)
 , m_bOpened(false)
 {
-	m_pAdapter = (CJoAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<CJoAdapter *>(pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -22,7 +22,7 @@ CJoChannel::~CJoChannel()
 
 }
 
-int CJoChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+int CJoChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
@@ -32,7 +32,7 @@ int CJoChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	if (m_bOpened && pObj != NULL)
 	{
-		(static_cast<CJoStream *> (pObj))->AddRingBuffer(pRingBuffer);
+		(dynamic_cast<CJoStream *> (pObj))->AddRingBuffer(pRingBuffer);
 
 		return J_OK;
 	}
@@ -46,18 +46,18 @@ int CJoChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	m_bOpened = true;
 	pObj = new CJoStream(m_recvSocket, m_resid);
-	(static_cast<CJoStream *> (pObj))->AddRingBuffer(pRingBuffer);
-	(static_cast<CJoStream *> (pObj))->Startup();
+	(dynamic_cast<CJoStream *> (pObj))->AddRingBuffer(pRingBuffer);
+	(dynamic_cast<CJoStream *> (pObj))->Startup();
 
 	return J_OK;
 }
 
-int CJoChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+int CJoChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
 
-	CJoStream *pSonyStream = static_cast<CJoStream *>(pObj);
+	CJoStream *pSonyStream = dynamic_cast<CJoStream *>(pObj);
 	if (pSonyStream == NULL)
 		return J_OK;
 
@@ -65,9 +65,9 @@ int CJoChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 	{
 		StopView();
 		m_bOpened = false;
-		(static_cast<CJoStream *> (pObj))->Shutdown();
+		(dynamic_cast<CJoStream *> (pObj))->Shutdown();
 		pSonyStream->DelRingBuffer(pRingBuffer);
-		delete (CJoStream *) pObj;
+		delete pObj;
 
 		return J_NO_REF;
 	}

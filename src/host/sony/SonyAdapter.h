@@ -24,7 +24,7 @@ class CSonyAdapter : J_BaseAdapter<CSonyAdapterBase>
         ///J_VideoAdapter
         virtual J_DevStatus GetStatus() const;
         virtual int Broken();
-        virtual int MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode);
+        virtual int MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel, int nStream, int nMode);
 
     protected:
         char *GetRemoteIp() const { return (char *)m_remoteIP; }

@@ -3,12 +3,12 @@
 #include "DVR_NET_SDK.h"
 #include "PTZ.h"
 
-CAironixChannel::CAironixChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
+CAironixChannel::CAironixChannel(const j_char_t *pResid, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	m_bOpened = false;
 	m_nChannel = nChannel;
 
-	m_pAdapter = (CAironixAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<CAironixAdapter *>(pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -26,7 +26,7 @@ CAironixChannel::~CAironixChannel()
 	//TMCC_Done(m_hStream);
 }
 
-j_result_t CAironixChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer)
+j_result_t CAironixChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_bOpened && pObj != NULL)
 	{
@@ -39,7 +39,7 @@ j_result_t CAironixChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
             NET_SDK_MakeKeyFrameSub(m_pAdapter->GetSubUserId(), m_nChannel - 1);
         }
 
-		(static_cast<CAironixStream *> (pObj))->AddRingBuffer(pRingBuffer);
+		(dynamic_cast<CAironixStream *> (pObj))->AddRingBuffer(pRingBuffer);
 		return J_OK;
 	}
 
@@ -55,18 +55,18 @@ j_result_t CAironixChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 	}
 
 	m_bOpened = true;
-	(static_cast<CAironixStream *> (pObj))->AddRingBuffer(pRingBuffer);
-	(static_cast<CAironixStream *> (pObj))->Startup();
+	(dynamic_cast<CAironixStream *> (pObj))->AddRingBuffer(pRingBuffer);
+	(dynamic_cast<CAironixStream *> (pObj))->Startup();
 
 	return J_OK;
 }
 
-j_result_t CAironixChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer)
+j_result_t CAironixChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
 
-	CAironixStream *pStream = static_cast<CAironixStream *>(pObj);
+	CAironixStream *pStream = dynamic_cast<CAironixStream *>(pObj);
 	if (pStream == NULL)
 		return J_OK;
 
@@ -75,9 +75,9 @@ j_result_t CAironixChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer
 		StopView();
 
 		m_bOpened = false;
-		(static_cast<CAironixStream *> (pObj))->Shutdown();
+		(dynamic_cast<CAironixStream *> (pObj))->Shutdown();
 		pStream->DelRingBuffer(pRingBuffer);
-		delete (CAironixStream *) pObj;
+		delete pObj;
 
 		return J_NO_REF;
 	}
@@ -167,7 +167,7 @@ j_result_t CAironixChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
 	return (bRet ? J_OK : J_UNKNOW);
 }
 
-j_result_t CAironixChannel::StartView(j_void_t *pObj)
+j_result_t CAironixChannel::StartView(J_Obj *pObj)
 {
     NET_SDK_CLIENTINFO clientInfo;
 	clientInfo.lChannel = m_nChannel - 1;

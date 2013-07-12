@@ -39,7 +39,7 @@ int CSonyAdapter::Broken()
 	return J_OK;
 }
 
-int CSonyAdapter::MakeChannel(const char *pResid, void *&pObj, void *pOwner, int nChannel, int nStream, int nMode)
+int CSonyAdapter::MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 {
 	CSonyChannel *pChannel = new CSonyChannel(pResid, pOwner, nChannel, nStream,
 			nMode);

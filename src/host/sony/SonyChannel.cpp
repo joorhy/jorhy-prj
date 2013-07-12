@@ -32,12 +32,12 @@ const char *presetCommand =
 const char *presetSet = "PresetSet=%d,%d,on&PresetThumbnailClear=1";
 const char *presetCall = "PresetCall=%d,24";
 
-CSonyChannel::CSonyChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
+CSonyChannel::CSonyChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 : m_pAdapter(NULL)
 , m_nChannel(0)
 , m_bOpened(false)
 {
-	m_pAdapter = (CSonyAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<CSonyAdapter *>(pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -151,7 +151,7 @@ int CSonyChannel::PtzControl(int nCmd, int nParam)
 	return SendCommand(ptzCommand);
 }
 
-int CSonyChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+int CSonyChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
@@ -161,7 +161,7 @@ int CSonyChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	if (m_bOpened && pObj != NULL)
 	{
-		(static_cast<CSonyStream *> (pObj))->AddRingBuffer(pRingBuffer);
+		(dynamic_cast<CSonyStream *> (pObj))->AddRingBuffer(pRingBuffer);
 
 		return J_OK;
 	}
@@ -175,18 +175,18 @@ int CSonyChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	m_bOpened = true;
 	pObj = new CSonyStream(m_recvSocket, m_resid);
-	(static_cast<CSonyStream *> (pObj))->AddRingBuffer(pRingBuffer);
-	(static_cast<CSonyStream *> (pObj))->Startup();
+	(dynamic_cast<CSonyStream *> (pObj))->AddRingBuffer(pRingBuffer);
+	(dynamic_cast<CSonyStream *> (pObj))->Startup();
 
 	return J_OK;
 }
 
-int CSonyChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+int CSonyChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
 
-	CSonyStream *pSonyStream = static_cast<CSonyStream *>(pObj);
+	CSonyStream *pSonyStream = dynamic_cast<CSonyStream *>(pObj);
 	if (pSonyStream == NULL)
 		return J_OK;
 
@@ -194,9 +194,9 @@ int CSonyChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 	{
 		StopView();
 		m_bOpened = false;
-		(static_cast<CSonyStream *> (pObj))->Shutdown();
+		(dynamic_cast<CSonyStream *> (pObj))->Shutdown();
 		pSonyStream->DelRingBuffer(pRingBuffer);
-		delete (CSonyStream *) pObj;
+		delete pObj;
 
 		return J_NO_REF;
 	}

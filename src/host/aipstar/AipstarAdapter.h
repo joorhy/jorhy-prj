@@ -27,7 +27,7 @@ public:
 	///J_VideoAdapter
 	virtual J_DevStatus GetStatus() const;
 	virtual j_result_t Broken();
-	virtual j_result_t MakeChannel(const j_char_t *pResid, j_void_t *&pObj, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode);
+	virtual j_result_t MakeChannel(const j_char_t *pResid, J_Obj *&pObj, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode);
 
 protected:
     int Relogin();
@@ -73,6 +73,6 @@ private:
 	J_OS::CTimer m_timer;
 	HANDLE m_devHandle;
 	CXPing m_ping;
-	void *m_pChannel;
+	J_Obj *m_pChannel;
 };
 #endif //~__AIPSTARADAPTER_H_

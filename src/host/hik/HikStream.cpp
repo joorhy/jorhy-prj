@@ -8,7 +8,7 @@ const char PACK_HEAD[5] = { 0x00, 0x00, 0x01, 0xBA };
 const char PSM_HEAD[5] = { 0x00, 0x00, 0x01, 0xBC };
 const char VIDEO_HEAD[5] = { 0x00, 0x00, 0x01, 0xE0 };
 const char AUDIO_HEAD[5] = { 0x00, 0x00, 0x01, 0xC0 };
-
+static FILE *fp = NULL;
 #define RECV_SIZE (1024 * 1024)
 CHikStream::CHikStream(void *pTCPSocket, std::string resid)
 : m_bStartup(false)
@@ -119,10 +119,11 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
 			if (nResult == J_OK)
 			{
-				//static FILE *fp = NULL;
 				//if (fp == NULL)
 				//	fp = fopen("test.h264", "wb+");
 				//fwrite(m_pRecvBuff, 1, streamHeader.dataLen, fp);
+				//fflush(fp);
+				//printf ("dataLen = %d\n", streamHeader.dataLen);
 				TLock(m_vecLocker);
 				std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
 				for (; it != m_vecRingBuffer.end(); it++)

@@ -7,13 +7,13 @@
 class CJoChannel : public J_ResidTmpl<J_BaseAdapter>
 {
 public:
-	CJoChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode);
+	CJoChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode);
 	~CJoChannel();
 
 public:
 	///J_StreamChannel
-	virtual int OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
-	virtual int CloseStream(void *pObj, CRingBuffer *pRingBuffer);
+	virtual int OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
+	virtual int CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
 	virtual bool HasMultiStream() { return true; }
 
 private:
@@ -27,7 +27,7 @@ private:
 	int m_nProtocol;
 
 	J_OS::CTCPSocket *m_recvSocket;
-	bool m_bOpened;
+	j_boolean_t m_bOpened;
 	CJospHelper m_jospHelper;
 };
 

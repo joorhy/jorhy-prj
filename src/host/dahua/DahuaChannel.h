@@ -10,14 +10,14 @@ class CDahuaChannelBase : public J_ChannelStream
 class CDahuaChannel : public J_ResidTmpl<J_BaseAdapter, CDahuaChannelBase>
 {
 public:
-	CDahuaChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode);
+	CDahuaChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode);
 	~CDahuaChannel();
 
 	J_OS::TLocker_t  m_sockLocker;
 public:
 	///J_StreamChannel
-	virtual int OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
-	virtual int CloseStream(void *pObj, CRingBuffer *pRingBuffer);
+	virtual int OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
+	virtual int CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
 	virtual bool HasMultiStream() { return true; }
 	///J_PtzControl
 	virtual int PtzControl(int nCmd, int nParam);

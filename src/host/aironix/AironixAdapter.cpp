@@ -44,7 +44,7 @@ j_result_t CAironixAdapter::Broken()
 	return J_OK;
 }
 
-j_result_t CAironixAdapter::MakeChannel(const j_char_t *pResid, j_void_t *&pObj, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
+j_result_t CAironixAdapter::MakeChannel(const j_char_t *pResid, J_Obj *&pObj, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	CAironixChannel *pChannel = new CAironixChannel(pResid, pOwner, nChannel, nStream, nMode);
 	if (NULL == pChannel)

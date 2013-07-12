@@ -1,10 +1,10 @@
 #include "HikAdapter.h"
 #include "HikIntercom.h"
 
-CHikIntercom::CHikIntercom(const char *pResid, void *pOwner, int nChannel)
+CHikIntercom::CHikIntercom(const char *pResid, J_Obj *pOwner, int nChannel)
 : m_pAdapter(NULL)
 {
-	m_pAdapter = (CHikAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<CHikAdapter *>(pOwner);
 	m_recvSocket = NULL;
 }
 
@@ -14,13 +14,13 @@ CHikIntercom::~CHikIntercom()
 }
 
 
-int CHikIntercom::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+int CHikIntercom::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	StartVoice();
 	return J_OK;
 }
 
-int CHikIntercom::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+int CHikIntercom::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	return J_OK;
 }

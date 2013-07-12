@@ -34,14 +34,14 @@ private:
 	typedef std::map<j_socket_t, CRingBuffer *> RingBufferMap;
 	struct StreamInfo
 	{
-		void *videoStream;								//void *代表J_VideoStream对象
+		J_Obj *videoStream;								//void *代表J_VideoStream对象
 		RingBufferMap ringBufferMap;
 	};
 	typedef std::map<J_ChannelKey, StreamInfo> StreamMap;
 	StreamMap m_streamMap;
 
-	std::map<j_string_t, void *> m_parserMap;			//void *代表J_VideoParser对象
-	std::map<j_socket_t, void *> m_vodMap;						//void *代表J_VideoVodStream对象
+	std::map<j_string_t, J_Obj *> m_parserMap;			//void *代表J_VideoParser对象
+	std::map<j_socket_t, J_Obj *> m_vodMap;						//void *代表J_VideoVodStream对象
 };
 
 JO_DECLARE_SINGLETON(AdapterManager)

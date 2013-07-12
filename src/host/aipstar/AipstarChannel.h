@@ -10,14 +10,14 @@ class CAipstarChannelBase : public J_ChannelStream
 class CAipstarChannel : public J_ResidTmpl<J_BaseAdapter, CAipstarChannelBase>
 {
 public:
-	CAipstarChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode);
+	CAipstarChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode);
 	~CAipstarChannel();
 
 	J_OS::TLocker_t  m_sockLocker;
 public:
 	///J_StreamChannel
-	virtual j_result_t OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
-	virtual j_result_t CloseStream(void *pObj, CRingBuffer *pRingBuffer);
+	virtual j_result_t OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
+	virtual j_result_t CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
 	virtual j_boolean_t HasMultiStream() { return true; }
 	///J_PtzControl
 	virtual j_result_t PtzControl(int nCmd, int nParam);
@@ -44,7 +44,7 @@ private:
 	j_char_t *m_pDataBuff;
 	j_boolean_t m_bOpened;
 	HANDLE m_hStream;
-	void *m_pStream;
+	J_Obj *m_pStream;
 };
 
 #endif //~__AIPSTARCHANNEL_H_

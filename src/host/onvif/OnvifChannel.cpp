@@ -2,12 +2,12 @@
 #include "OnvifStream.h"
 #include "x_base64.h"
 
-COnvifChannel::COnvifChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode)
+COnvifChannel::COnvifChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 : m_pAdapter(NULL)
 , m_nChannel(0)
 , m_bOpened(false)
 {
-	m_pAdapter = (COnvifAdapter *) pOwner;
+	m_pAdapter = dynamic_cast<COnvifAdapter *>(pOwner);
 	m_nChannel = nChannel;
 	m_nStreamType = nStream;
 	m_nProtocol = nMode;
@@ -101,7 +101,7 @@ int COnvifChannel::PtzControl(int nCmd, int nParam)
 	return SendCommand(ptzCommand);
 }
 
-int COnvifChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
+int COnvifChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
 	if (m_pAdapter->GetStatus() != jo_dev_ready)
 	{
@@ -111,7 +111,7 @@ int COnvifChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	if (m_bOpened && pObj != NULL)
 	{
-		(static_cast<COnvifStream *> (pObj))->AddRingBuffer(pRingBuffer);
+		(dynamic_cast<COnvifStream *> (pObj))->AddRingBuffer(pRingBuffer);
 
 		return J_OK;
 	}
@@ -125,18 +125,18 @@ int COnvifChannel::OpenStream(void *&pObj, CRingBuffer *pRingBuffer)
 
 	m_bOpened = true;
 	pObj = new COnvifStream(m_recvSocket, m_resid);
-	(static_cast<COnvifStream *> (pObj))->AddRingBuffer(pRingBuffer);
-	(static_cast<COnvifStream *> (pObj))->Startup();
+	(dynamic_cast<COnvifStream *> (pObj))->AddRingBuffer(pRingBuffer);
+	(dynamic_cast<COnvifStream *> (pObj))->Startup();
 
 	return J_OK;
 }
 
-int COnvifChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
+int COnvifChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
 	if (!m_bOpened)
 		return J_OK;
 
-	COnvifStream *pSonyStream = static_cast<COnvifStream *>(pObj);
+	COnvifStream *pSonyStream = dynamic_cast<COnvifStream *>(pObj);
 	if (pSonyStream == NULL)
 		return J_OK;
 
@@ -144,9 +144,9 @@ int COnvifChannel::CloseStream(void *pObj, CRingBuffer *pRingBuffer)
 	{
 		StopView();
 		m_bOpened = false;
-		(static_cast<COnvifStream *> (pObj))->Shutdown();
+		(dynamic_cast<COnvifStream *> (pObj))->Shutdown();
 		pSonyStream->DelRingBuffer(pRingBuffer);
-		delete (COnvifStream *) pObj;
+		delete pObj;
 
 		return J_NO_REF;
 	}

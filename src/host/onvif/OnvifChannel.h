@@ -8,7 +8,7 @@ class COnvifChannel : public J_ResidTmpl<J_BaseAdapter>
 					, public J_PtzControl
 {
 public:
-	COnvifChannel(const char *pResid, void *pOwner, int nChannel, int nStream, int nMode);
+	COnvifChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode);
 	~COnvifChannel();
 
 public:
@@ -16,8 +16,8 @@ public:
 	///J_PtzControl
 	virtual int PtzControl(int nCmd, int nParam);
 	///J_StreamChannel
-	virtual int OpenStream(void *&pObj, CRingBuffer *pRingBuffer);
-	virtual int CloseStream(void *pObj, CRingBuffer *pRingBuffer);
+	virtual int OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
+	virtual int CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
 	virtual bool HasMultiStream() { return true; }
 
 private:

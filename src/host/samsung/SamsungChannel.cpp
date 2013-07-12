@@ -4,12 +4,12 @@
 const j_char_t PT_SPEED[6] = {0x08, 0x10, 0x1B, 0x28, 0x34, 0x40};
 const j_char_t ZF_SPEED[6] = {0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C};
 
-CSamsungChannel::CSamsungChannel(const j_char_t *pResid, j_void_t *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
+CSamsungChannel::CSamsungChannel(const j_char_t *pResid, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
     : m_pAdapter(NULL)
     , m_nChannel(0)
     , m_bOpened(false)
 {
-    m_pAdapter = (CSamsungAdapter *) pOwner;
+    m_pAdapter = dynamic_cast<CSamsungAdapter *>(pOwner);
     m_nChannel = nChannel;
     m_nStreamType = nStream;
     m_nProtocol = nMode;
@@ -172,7 +172,7 @@ j_result_t CSamsungChannel::PtzControl(j_int32_t nCmd, j_int32_t nParam)
     return m_pAdapter->SendCommand((const char *)&ptz_req, sizeof(SNP_ptz_req), sizeof(SNP_ptz_rep));
 }
 
-j_result_t CSamsungChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer)
+j_result_t CSamsungChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 {
     if (m_pAdapter->GetStatus() != jo_dev_ready)
     {
@@ -182,7 +182,7 @@ j_result_t CSamsungChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 
     if (m_bOpened && pObj != NULL)
     {
-        (static_cast<CSamsungStream *> (pObj))->AddRingBuffer(pRingBuffer);
+        (dynamic_cast<CSamsungStream *> (pObj))->AddRingBuffer(pRingBuffer);
         return J_OK;
     }
 
@@ -194,18 +194,18 @@ j_result_t CSamsungChannel::OpenStream(j_void_t *&pObj, CRingBuffer *pRingBuffer
 
     m_bOpened = true;
     pObj = new CSamsungStream(m_recvSocket, m_resid);
-    (static_cast<CSamsungStream *> (pObj))->AddRingBuffer(pRingBuffer);
-    (static_cast<CSamsungStream *> (pObj))->Startup();
+    (dynamic_cast<CSamsungStream *> (pObj))->AddRingBuffer(pRingBuffer);
+    (dynamic_cast<CSamsungStream *> (pObj))->Startup();
 
     return J_OK;
 }
 
-j_result_t CSamsungChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer)
+j_result_t CSamsungChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 {
     if (!m_bOpened)
         return J_OK;
 
-    CSamsungStream *pSamsungStream = static_cast<CSamsungStream *>(pObj);
+    CSamsungStream *pSamsungStream = dynamic_cast<CSamsungStream *>(pObj);
     if (pSamsungStream == NULL)
         return J_OK;
 
@@ -213,9 +213,9 @@ j_result_t CSamsungChannel::CloseStream(j_void_t *pObj, CRingBuffer *pRingBuffer
     {
         StopView();
         m_bOpened = false;
-        (static_cast<CSamsungStream *> (pObj))->Shutdown();
+        (dynamic_cast<CSamsungStream *> (pObj))->Shutdown();
         pSamsungStream->DelRingBuffer(pRingBuffer);
-        delete (CSamsungStream *) pObj;
+        delete pObj;
 
         return J_NO_REF;
     }
