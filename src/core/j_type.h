@@ -145,6 +145,25 @@ enum J_GetDataMode
 	jo_push_mode,
 };
 
+enum J_DecodeForcc
+{
+	jo_codec_yv12  = JO_MAKE_FORCC('Y','V','1','2'),
+	jo_codec_rgb32	= JO_MAKE_FORCC('R','V','3','2'),
+};
+
+enum J_OutputDev
+{
+	jo_dev_ddraw = 0,
+	jo_dev_dsound,
+	jo_dev_window_gdi,
+};
+
+enum J_PictureType
+{
+	jo_png		= 0,
+	jo_jpeg,
+};
+
 ///帧头结构
 struct J_StreamHeader
 {
@@ -403,6 +422,21 @@ struct J_DataHead
 	j_int32_t b_last_frame;		//数据结束标准
 	j_int32_t reserve;				//预留
 	j_int64_t time_stamp;		//时间戳
+};
+
+struct J_VideoDecodeParam		//for init video output
+{
+	j_int32_t vout_dev;			//显示模块 ddraw？
+	j_int32_t fourcc_type;				//fourcc code
+	j_int32_t width;
+	j_int32_t height;
+};
+
+struct J_VideoFormat
+{
+	j_int64_t timestamp;
+	j_int32_t size;
+	j_int32_t fps;
 };
 
 #endif //~__J_TYPE_H_

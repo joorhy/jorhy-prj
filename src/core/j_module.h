@@ -484,6 +484,13 @@ struct J_Decoder : virtual public J_Obj
 	///初始化解码器
 	///@return	 参见x_errtype.j
 	virtual j_result_t InidDecoder() = 0;
+	///刷新解码缓冲
+	///@return	 参见x_errtype.j
+	virtual j_result_t FlushBuffer() = 0;
+	///获取解码参数
+	///@param	 decParam 解码参数
+	///@return	 参见x_errtype.j
+	virtual j_result_t GetDecodeParam(J_VideoDecodeParam &decParam) = 0;
 	///解码一帧数据
 	///@param	 pInputData 解码前数据
 	///@param	 nInputLen 解码前数据长度
@@ -494,13 +501,18 @@ struct J_Decoder : virtual public J_Obj
 	///释放解码器
 	///@return	 参见x_errtype.j
 	virtual j_result_t DeinitDecoder() = 0;
+
+protected:
+	j_int32_t m_codeId;			//标志这个类的解码类型
+	J_VideoDecodeParam m_decParam;
 };
 
 struct J_Render : virtual public J_Obj
 {
 	///初始化Render
+	///@param	 hwnd 窗口句柄
 	///@return	 参见x_errtype.j
-	virtual j_result_t InitRender() = 0;
+	virtual j_result_t InitRender(j_wnd_t hwnd) = 0;
 	///显示图像
 	///@param	 pData YUV数据
 	///@param	 nLen 数据长度

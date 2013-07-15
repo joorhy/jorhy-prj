@@ -41,6 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="../../src/core;../../include/ffmpeg;../../src/utils"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JORENDER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -60,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ddraw.lib dxguid.lib libpng.lib avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib"
 				OutputFile="$(OutDir)\plugins\$(ProjectName).dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="..\..\libs\windows\DirectX;..\..\libs\windows\libpng;..\..\libs\windows\ffmpeg"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -171,12 +174,36 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\src\render\jo_render\JoParser.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\render\jo_render\JoPictrue.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\render\jo_render\JoRender.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="src"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\..\src\render\jo_render\JoParser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\render\jo_render\JoPictrue.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\render\jo_render\JoRender.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
