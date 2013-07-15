@@ -174,7 +174,7 @@ void CXAsio::DelUser(j_socket_t nSocket)
 				delete pDataBase->ioWrite.buf;
 			delete pDataBase;
 		}
-		m_readMap.erase(itData2);
+		m_writeMap.erase(itData2);
 	}
 	TUnlock(m_write_locker);
 }
