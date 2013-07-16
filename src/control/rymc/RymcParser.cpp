@@ -27,7 +27,7 @@ int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pA
 {
 	memcpy(m_read_buff + m_read_len, pAsioData_in->ioRead.buf, pAsioData_in->ioRead.finishedLen);
 	m_read_len += pAsioData_in->ioRead.finishedLen;
-	printf("%s\n", pAsioData_in->ioRead.buf);
+	//printf("%s\n", pAsioData_in->ioRead.buf);
 	memset(pAsioData_in->ioRead.buf, 0, 2048);
 	if (m_state == RYMC_HEAD)
 	{
