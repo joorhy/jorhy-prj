@@ -6,7 +6,7 @@
 class CJoAdapterBase : public J_DevAdapter
 {};
 
-class CJoAdapter : J_BaseAdapter<CJoAdapterBase>
+class CJoAdapter : public J_BaseAdapter<CJoAdapterBase>
 {
 	friend class CJoChannel;
     public:

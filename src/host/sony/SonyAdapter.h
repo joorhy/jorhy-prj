@@ -7,7 +7,7 @@
 class CSonyAdapterBase : public J_DevAdapter
 {};
 
-class CSonyAdapter : J_BaseAdapter<CSonyAdapterBase>
+class CSonyAdapter : public J_BaseAdapter<CSonyAdapterBase>
 {
 	friend class CSonyChannel;
     public:

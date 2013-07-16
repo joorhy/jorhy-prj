@@ -6,7 +6,7 @@
 class COnvifAdapterBase : public J_DevAdapter
 {};
 
-class COnvifAdapter : J_BaseAdapter<COnvifAdapterBase>
+class COnvifAdapter : public J_BaseAdapter<COnvifAdapterBase>
 {
 	friend class COnvifChannel;
     public:

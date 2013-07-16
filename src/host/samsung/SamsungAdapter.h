@@ -10,7 +10,7 @@ class CSamsungAdapterBase : public J_DevAdapter
     , public J_DevInput
 {};
 
-class CSamsungAdapter : J_BaseAdapter<CSamsungAdapterBase>
+class CSamsungAdapter : public J_BaseAdapter<CSamsungAdapterBase>
 {
     friend class CSamsungChannel;
 public:
