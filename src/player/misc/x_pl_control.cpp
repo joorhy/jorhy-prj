@@ -36,12 +36,16 @@ J_PlControl::J_PlControl(void)
 	m_pEndCBK		= NULL;
 	m_pEndData		= NULL;
 
+	m_bBroken = true;
+
 	ResetCBK();
 }
 
 J_PlControl::~J_PlControl(void)
 {
-	m_SafeClose.Wait();
+	if (m_bBroken)
+		m_SafeClose.Wait();
+
 	int state = J_PL_NORMAL;
 	m_state->GetVariable(&state);
 	if(state == J_PL_PALYING || state == J_PL_PAUSE)
@@ -75,11 +79,13 @@ J_PL_RESULT J_PlControl::InitPlayByNetwork(const char *psz_mrl,j_pl_work_type mo
 	br = m_input->Init(cfg,this);
 	if(br != J_PL_NO_ERROR)
 	{
+		m_bBroken = false;
 		delete m_input;
 		m_input = NULL;
 		j_pl_error("Can not Open input : %s\n",psz_mrl);
 		return br;
 	}
+	m_bBroken = true;
 	j_pl_info("Open input:%s success\n",psz_mrl);
 	return J_PL_NO_ERROR;
 }

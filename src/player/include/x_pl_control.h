@@ -77,4 +77,7 @@ protected:
 	//end callback
 	j_pl_entry_end_t		m_pEndCBK;
 	void				*m_pEndData;
+
+private:
+	bool m_bBroken;
 };

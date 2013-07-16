@@ -103,7 +103,7 @@ int CRemoteManager::GetChannelInfo(const char *channelId, J_ChannelInfo &channel
 	r_devconfig *devConfig = JoXSdk->GetDevConfigByResid((char *)channelId, CXConfig::GetUrl());
 	if (devConfig == NULL)
 	{
-		J_OS::LOGINFO("CCmsConf::GetChannelInfo error, resid = %s", channelId);
+		J_OS::LOGINFO("CRemoteManager::GetChannelInfo error, resid = %s", channelId);
 		return J_DB_ERROR;
 	}
 

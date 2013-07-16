@@ -62,9 +62,10 @@ J_PL_RESULT J_PlSocket::NRead(char *OUT_pBuff, int nLen)
 			{
 			case WSAEWOULDBLOCK:
 			case WSAEINTR:
-			case WSAETIMEDOUT:
 				Sleep(1);
 				continue;
+			case WSAETIMEDOUT:
+				break;
 
 			case WSAEMSGSIZE:			//udp only
 			case WSAECONNRESET:
@@ -189,21 +190,46 @@ J_PL_RESULT J_PlSocket::NonblockConnect(const char *pAddr, int nPort,unsigned in
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(nPort);
 	sin.sin_addr.S_un.S_addr = inet_addr(pAddr);
-	connect( m_hSocket, (sockaddr *)&sin, sizeof(sin));
+
+	int nRet = 0;
+	if (connect( m_hSocket, (sockaddr *)&sin, sizeof(sin)) < 0)
+	{
+		nRet = WSAGetLastError();
+		if (nRet != WSAEWOULDBLOCK)
+			return J_PL_ERROR_SOCKET;
+	}
 
 	timeval	timeout = {0};
-	fd_set	fd;
-	FD_ZERO(&fd);
-	FD_SET(m_hSocket,&fd);
+	fd_set   rset, wset;
+	FD_ZERO(&rset);
+	FD_ZERO(&wset);
+	FD_SET(m_hSocket,&rset);
+	wset = rset;
 	timeout.tv_sec = unTimeout;
-	int nRet = 0;
-	if((nRet = select(1,0,&fd,0,&timeout)) <= 0)
+	if((nRet = select(1,0,&rset,0,&timeout)) == 0)
 	{
 		closesocket(m_hSocket);
 		m_hSocket = INVALID_SOCKET;
 		return J_PL_ERROR_SOCKET;
 	}
-	nRet = GetLastError();
+	int len = 0;
+	if (FD_ISSET(m_hSocket, &rset) || FD_ISSET(m_hSocket, &wset)) 
+	{
+		len = sizeof(nRet);
+		if (getsockopt(m_hSocket, SOL_SOCKET, SO_ERROR, (char *)&nRet, &len) < 0)
+			return J_PL_ERROR_SOCKET;   /* Solaris pending error */
+	}
+	else
+	{
+		j_pl_error("select error: sockfd not set \n");
+		return J_PL_ERROR_SOCKET;
+	}
+
+	if (nRet) 
+	{
+		closesocket(m_hSocket);  /* just in case */
+		return J_PL_ERROR_SOCKET;
+	}
 
 	ul = 0;
 	if(ioctlsocket(m_hSocket,FIONBIO,(unsigned long*)&ul) == SOCKET_ERROR)

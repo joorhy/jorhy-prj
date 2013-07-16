@@ -70,7 +70,7 @@ void CJoThread::Release()
 	if(m_hThread != j_invalid_thread_val)
 	{
 #ifdef WIN32
-		_endthreadex((uintptr_t)m_hThread);
+		//_endthreadex((uintptr_t)m_hThread);
 		CloseHandle(m_hThread);
 #else
 		pthread_cancel(m_hThread);

@@ -31,7 +31,7 @@ j_result_t CJoPlayer::Play(j_wnd_t hWnd)
 	if (m_render == NULL)
 	{
 		m_render = JoRenderFactory->GetRender(hWnd, "live");
-		m_render->InitRender();
+		m_render->InitRender(hWnd);
 	}
 
 	Init();

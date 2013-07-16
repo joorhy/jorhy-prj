@@ -68,7 +68,11 @@ void CTimer::OnTimer()
 	while (m_bStart)
 	{
 #ifdef WIN32
-		WaitForSingleObject(m_event, m_nExpires);
+		if (WaitForSingleObject(m_event, m_nExpires) == WAIT_OBJECT_0)
+		{
+			J_OS::LOGERROR("CTimer::OnTimer() Timer WaitForSingleObject error");
+			break;
+		}
 #else
 		tv.tv_sec = m_nExpires / 1000;
 		tv.tv_usec = (m_nExpires % 1000) * 1000;

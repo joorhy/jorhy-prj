@@ -97,7 +97,7 @@ int CXAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 #ifdef WIN32
 	if (CreateIoCompletionPort((HANDLE)nSocket.sock, m_hCompletionPort, (DWORD)&nSocket, 0) == NULL)
 	{
-		J_OS::LOGINFO("CRdAsio::AddUser CreateIoCompletionPort failed with error %d\n", WSAGetLastError());
+		J_OS::LOGINFO("CXAsio::AddUser CreateIoCompletionPort failed with error %d\n", WSAGetLastError());
 		return J_SOCKET_ERROR;
 	} 
 #else
@@ -113,7 +113,7 @@ int CXAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 	EnableKeepalive(nSocket);
 	m_userMap[nSocket] = pUser;
 
-	J_OS::LOGINFO("CRdAsio::AddUser epoll set insertion sucess fd = %d", nSocket.sock);
+	J_OS::LOGINFO("CXAsio::AddUser epoll set insertion sucess fd = %d", nSocket.sock);
 	TUnlock(m_user_locker);
 
 	return J_OK;
@@ -123,11 +123,11 @@ void CXAsio::DelUser(j_socket_t nSocket)
 {
 	TLock(m_user_locker);
 #ifdef WIN32
-	if (CreateIoCompletionPort((HANDLE)nSocket.sock, NULL, NULL, 0) == NULL)
-	{
-		J_OS::LOGINFO("CRdAsio::DelUser CreateIoCompletionPort failed with error %d\n", GetLastError());
-		return;
-	} 
+	//if (CreateIoCompletionPort((HANDLE)nSocket.sock, NULL, (DWORD)&nSocket, 0) == NULL)
+	//{
+	//	J_OS::LOGINFO("CXAsio::DelUser CreateIoCompletionPort failed with error %d", GetLastError());
+	//	return;
+	//} 
 #else
 	m_evAsio.events = EPOLLIN | EPOLLRDHUP;
 	m_evAsio.data.fd = nSocket.sock;
@@ -138,7 +138,7 @@ void CXAsio::DelUser(j_socket_t nSocket)
 	if (it != m_userMap.end())
 		m_userMap.erase(it);
 		
-	J_OS::LOGINFO("CRdAsio::DelUser epoll set insertion sucess fd = %d", nSocket.sock);
+	J_OS::LOGINFO("CXAsio::DelUser epoll set insertion sucess fd = %d", nSocket.sock);
 	TUnlock(m_user_locker);
 	
 	TLock(m_read_locker);
@@ -192,12 +192,13 @@ void CXAsio::OnWork()
 	{
 		if (GetQueuedCompletionStatus(m_hCompletionPort, &dwBytesTransferred, (LPDWORD)&pPerHandleData, (LPOVERLAPPED *)&pPerIoData, INFINITE) == 0)
 		{
-			J_OS::LOGINFO("CRdAsio::OnWork GetQueuedCompletionStatus failed with error %d\n", GetLastError());
+			J_OS::LOGINFO("CXAsio::OnWork GetQueuedCompletionStatus failed with error %d", GetLastError());
 			ProcessIoEvent(*pPerHandleData, J_AsioDataBase::j_disconnect_e);
 		}
 		// 检查数据传送完了吗
 		if (dwBytesTransferred == 0)
 		{
+			J_OS::LOGINFO("CXAsio::OnWork Broken");
 			ProcessIoEvent(*pPerHandleData, J_AsioDataBase::j_disconnect_e);
 			continue;
 		}  
@@ -288,7 +289,7 @@ void CXAsio::OnListen()
 	{
 		if ((connSocket = accept(m_listenSocket.sock, (struct sockaddr*)&sonnAddr, &connLen)) == j_invalid_socket_val)
 		{
-			J_OS::LOGERROR("CRdAsio::OnListen WSAAccept() failed with error");
+			J_OS::LOGERROR("CXAsio::OnListen WSAAccept() failed with error");
 			return;
 		} 
 		m_listenAsioData->ioAccept.subHandle = connSocket;
@@ -340,7 +341,9 @@ int CXAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	pAsioData->ioHandle = nSocket.sock;
 	if (WSARecv(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioRead.finishedLen, &Flags, pAsioData, NULL) == SOCKET_ERROR)
 	{
-		//J_OS::LOGINFO("WSARecv error = %d", WSAGetLastError());
+		DWORD dwError = WSAGetLastError();
+		if (dwError != ERROR_IO_PENDING)
+			J_OS::LOGINFO("WSARecv error = %d", dwError);
 	}
 #else
 	TLock(m_read_locker);
@@ -380,7 +383,12 @@ int CXAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	//printf("%s\n", buf.buf);
 	if (WSASend(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioWrite.finishedLen, 0, pAsioData, NULL) == SOCKET_ERROR)
 	{
-		//J_OS::LOGINFO("WSASend error = %d", WSAGetLastError());
+		DWORD dwError = WSAGetLastError();
+		if (dwError == WSAECONNABORTED || dwError == WSAECONNRESET)
+		{
+			ProcessIoEvent(nSocket, J_AsioDataBase::j_disconnect_e);
+		}
+		J_OS::LOGINFO("WSASend error = %d", dwError);
 	}
 #else
 	TLock(m_write_locker);
