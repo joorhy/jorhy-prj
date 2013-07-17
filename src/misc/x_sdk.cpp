@@ -98,7 +98,7 @@ r_register *CXSdk::StreamServerResgister(int ssid,char *uri)
 
 	//printf("%s\n", json_object_to_json_string(jsojt));
 	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-	//json_object_put(jsojt);
+	json_object_put(jsojt);
 	if(json_buf == NULL)
 	{
 	    //assert(false);
