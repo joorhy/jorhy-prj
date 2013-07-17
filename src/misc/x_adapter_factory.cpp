@@ -179,8 +179,7 @@ int CAdapterFactory::MakeAdapterDev(const char *pDevType, int nDevId, const char
 	}
 
 	J_Obj *pObj = NULL;
-	//itRegister->second(pObj, nDevId, pDevIp, nDevPort, pUsername, pPasswd);
-	itRegister->second(pObj, 1, "192.168.1.11", 8000, "admin", "12345");
+	itRegister->second(pObj, nDevId, pDevIp, nDevPort, pUsername, pPasswd);
 	if (pObj != NULL)
 	{
 		char dev_id[TYPE_OR_ID_SIZE];
