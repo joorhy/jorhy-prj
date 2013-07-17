@@ -54,7 +54,10 @@ CXPing::~CXPing()
 int CXPing::SetAddr(const char *pAddr)
 {
     m_addr = pAddr;
-    Init();
+#ifdef WIN32
+#else
+	 Init();
+#endif
 
     return J_OK;
 }

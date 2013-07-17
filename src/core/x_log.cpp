@@ -75,8 +75,12 @@ int CLog::WriteLogInfo(const char *format, ...)
 int CLog::WriteLogError(const char *format, ...)
 {
 	m_locker._Lock();
-	char errBuff[256] = {0};
+	char errBuff[512] = {0};
+#ifdef WIN32
+	sprintf(errBuff, "( errno = %d)", GetLastError());
+#else
 	sprintf(errBuff, "(%s, errno = %d)", strerror(errno), errno);
+#endif
 
 	char dataBuff[1024] = {0};
 	int nArgLen = 0;

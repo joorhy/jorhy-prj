@@ -206,10 +206,6 @@
 			RelativePath="..\..\libs\windows\mysql\libmysql.lib"
 			>
 		</File>
-		<File
-			RelativePath="..\..\libs\windows\mysql\mysqlclient.lib"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

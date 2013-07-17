@@ -179,11 +179,12 @@ int CAdapterFactory::MakeAdapterDev(const char *pDevType, int nDevId, const char
 	}
 
 	J_Obj *pObj = NULL;
-	itRegister->second(pObj, nDevId, pDevIp, nDevPort, pUsername, pPasswd);
+	//itRegister->second(pObj, nDevId, pDevIp, nDevPort, pUsername, pPasswd);
+	itRegister->second(pObj, 1, "192.168.1.11", 8000, "admin", "12345");
 	if (pObj != NULL)
 	{
 		char dev_id[TYPE_OR_ID_SIZE];
-		memset(dev_id, 0, sizeof(dev_id));
+		memset(dev_id, 0, TYPE_OR_ID_SIZE);
 		sprintf(dev_id, "%d", nDevId);
 		m_adapterMap[dev_id] = pObj;
 	}
