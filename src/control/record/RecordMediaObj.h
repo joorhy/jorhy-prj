@@ -34,10 +34,10 @@ private:
 private:
 	j_socket_t m_nSocket;			//录像时,m_nSocket恒为0
 	CRingBuffer *m_pRingBuffer;
-	bool m_bStart;
+	j_boolean_t m_bStart;
 	char *m_pDataBuff;
 	//char *m_pPacketBuff;
-	std::string m_resid;
+	j_string_t m_resid;
 
 	FILE *m_fdBody;
 	FILE *m_fdHead;
@@ -49,16 +49,16 @@ private:
 	J_FileHeader m_fileBody;
 
 	J_FrameHeader m_frameHead;
-	unsigned long m_nFileOffset;
-	unsigned long m_nHeaderOffset;
+	j_uint32_t m_nFileOffset;
+	j_uint32_t m_nHeaderOffset;
 	//unsigned long m_nTimeStamp;	//单位毫秒
 
-	int m_nPacketLen;
-	bool m_bStartRecord;
-	bool m_bStartPre;
+	j_int32_t m_nPacketLen;
+	j_boolean_t m_bStartRecord;
+	j_boolean_t m_bStartPre;
 
-	s_record m_record;
-	s_fileinfo m_fileInfo;
+	//s_record m_record;
+	J_FileInfo m_fileInfo;
 	CXFile m_file;
 };
 

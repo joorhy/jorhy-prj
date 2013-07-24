@@ -55,8 +55,7 @@ private:
 	void OnWork();
 
 private:
-	typedef std::list<j_string_t> RecordMap;
-	RecordMap m_fileVec;
+	j_vec_file_info_t vecFileInfo;
 	typedef std::map<j_uint64_t, J_FrameHeader> FrameMap;
 	FrameMap m_frameMap;
 	FrameMap m_iFrameMap;

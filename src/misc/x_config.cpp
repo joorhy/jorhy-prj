@@ -4,17 +4,16 @@
 using namespace std;
 
 int CXConfig::m_mcPort = 6004;
-char CXConfig::m_mcAddr[16];
+std::string CXConfig::m_mcAddr;
 int CXConfig::m_ssId = 0;
-char CXConfig::m_httpUrl[64];
-char CXConfig::m_configType[32];
+std::string CXConfig::m_httpUrl;
+std::string CXConfig::m_configType;
+std::string CXConfig::m_vodPath;
 std::vector<J_ServerInfo> CXConfig::m_serverVec;
 
 CXConfig::CXConfig()
 {
-	memset(CXConfig::m_mcAddr, 0, sizeof(CXConfig::m_mcAddr));
-	memset(CXConfig::m_httpUrl, 0, sizeof(CXConfig::m_httpUrl));
-	memset(CXConfig::m_configType, 0, sizeof(CXConfig::m_configType));
+
 }
 
 CXConfig::~CXConfig()
@@ -43,16 +42,19 @@ int CXConfig::Init()
 	}
 	m_ssId = json_object_get_int(json_object_object_get(json_object_object_get(helper,(char *)"CMSConf"), (char *)"id"));
 	
-	std::string cms_addr = json_object_get_string(json_object_object_get(
+	CXConfig::m_mcAddr = json_object_get_string(json_object_object_get(
 							json_object_object_get(helper,(char *)"CMSConf"), (char *)"ip"));
-	memcpy(CXConfig::m_mcAddr, cms_addr.c_str(), cms_addr.length());
 	
 	m_mcPort = json_object_get_int(json_object_object_get(json_object_object_get(helper,(char *)"CMSConf"), (char *)"port"));
-	sprintf(CXConfig::m_httpUrl, "http://%s:%d/controller/request", CXConfig::m_mcAddr, m_mcPort);
+	char http_url[128] = {0};
+	sprintf(http_url, "http://%s:%d/controller/request", CXConfig::m_mcAddr.c_str(), m_mcPort);
+	CXConfig::m_httpUrl = http_url;
 	
-	std::string cms_type = json_object_get_string(json_object_object_get(
+	CXConfig::m_configType = json_object_get_string(json_object_object_get(
 							json_object_object_get(helper,(char *)"CMSConf"), (char *)"type"));
-	memcpy(CXConfig::m_configType, cms_type.c_str(), cms_type.length());
+
+	CXConfig::m_vodPath = json_object_get_string(json_object_object_get(
+		json_object_object_get(helper,(char *)"CMSConf"), (char *)"vod_path"));
 	
 	json_object *server = json_object_object_get(helper,(char *)"Server");
 	int server_num = json_object_array_length(server);

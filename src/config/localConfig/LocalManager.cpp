@@ -17,7 +17,7 @@ CLocalManager::~CLocalManager()
 	}
 }
 
-int CLocalManager::ListDevices(std::vector<J_DeviceInfo> &devList)
+j_result_t CLocalManager::GetResourceInfo(ResourceMap &resInfo)
 {
 	int nRet = J_OK;
 	if ((nRet = OpenDB()) != J_OK)
@@ -27,7 +27,8 @@ int CLocalManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 	char **dbResult = NULL;
 	int nRow = 0;
 	int nColumn = 0;
-	if (sqlite3_get_table(m_sqlite, sql, &dbResult, &nRow, &nColumn, NULL) == SQLITE_OK)
+	char **errMessage = NULL;
+	if (sqlite3_get_table(m_sqlite, sql, &dbResult, &nRow, &nColumn, errMessage) == SQLITE_OK)
 	{
 		for (int i=1; i<=nRow; i++)
 		{
@@ -48,7 +49,7 @@ int CLocalManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 					memcpy(devInfo.passWd, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
 			}
 			devInfo.devStatus = jo_dev_broken;
-			devList.push_back(devInfo);
+			//devList.push_back(devInfo);
 		}
 
 		return J_OK;
@@ -57,17 +58,17 @@ int CLocalManager::ListDevices(std::vector<J_DeviceInfo> &devList)
 	return J_DB_ERROR;
 }
 
-int CLocalManager::GetChannelInfo(const char *channelId, J_ChannelInfo &channelInfo)
+int CLocalManager::GetChannelInfo(const char *pResid, J_ResourceInfo &resInfo)
 {
 	int nRet = J_OK;
 	if ((nRet = OpenDB()) != J_OK)
 		return nRet;
 
 
-	memset(&channelInfo, 0, sizeof(channelInfo));
+	memset(&resInfo, 0, sizeof(resInfo));
 	const char *sql = "select dev_id,cha_num from t_channel where res_id=%s";
 	char sql_buff[128] = {0};
-	sprintf(sql_buff, sql, channelId);
+	sprintf(sql_buff, sql, pResid);
 	char **dbResult = NULL;
 	int nRow = 0;
 	int nColumn = 0;
@@ -78,24 +79,15 @@ int CLocalManager::GetChannelInfo(const char *channelId, J_ChannelInfo &channelI
 			for (int j=0; j<nColumn; j++)
 			{
 				if (memcmp(dbResult[j], "dev_id", strlen("dev_id")) == 0)
-					channelInfo.devId = atoi(dbResult[j+i*nColumn]);
+					resInfo.devInfo.devId = atoi(dbResult[j+i*nColumn]);
 				else if (memcmp(dbResult[j], "cha_num", strlen("cha_num")) == 0)
-					channelInfo.channelNum = atoi(dbResult[j+i*nColumn]);
+					resInfo.chNum = atoi(dbResult[j+i*nColumn]);
 			}
 		}
 		return J_OK;
 	}
 
 	return J_DB_ERROR;
-}
-
-int CLocalManager::GetRecordInfo(J_RecordInfo &recordInfo)
-{
-    memset (&recordInfo, 0, sizeof(recordInfo));
-    memcpy(recordInfo.vodPath, "file://$HOME/vod", strlen("file://$HOME/vod"));
-    recordInfo.timeInterval = 120;
-
-	return J_OK;
 }
 
 int CLocalManager::StartRecord()

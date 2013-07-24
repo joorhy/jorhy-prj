@@ -1,15 +1,18 @@
 #include "x_sdk.h"
 
-#define clean_all() \
-    if (!is_error(json_helper) && json_helper != NULL)\
+static const char *dev_type[] = 
+{ "", "hik", "sony", "aipstar", "aironix", "samsung", "dahua", "onvif"};
+
+#define JSON_CLEAN_ALL() \
+    if (!is_error(json_respose_obj) && json_respose_obj != NULL)\
     {\
-        json_object_put(json_helper);\
-        json_helper = NULL;\
+        json_object_put(json_respose_obj);\
+        json_respose_obj = NULL;\
     }
 
 JO_IMPLEMENT_SINGLETON(XSdk)
 
-char *CXSdk::HttpCommunicate(char *body,char *uri)
+char *CXSdk::HttpCommunicate(char *body, char *uri)
 {
 	j_char_t *resrvdata = NULL;
 	j_char_t *ret_data = NULL;
@@ -42,7 +45,7 @@ char *CXSdk::HttpCommunicate(char *body,char *uri)
 	return ret_data;
 }
 
-int CXSdk::get_int(json_object *p_object, const char *p_key)
+int CXSdk::JsonGetInt(json_object *p_object, const char *p_key)
 {
     if (p_object == NULL)
         return 0;
@@ -56,7 +59,7 @@ int CXSdk::get_int(json_object *p_object, const char *p_key)
 	return -1;
 }
 
-char *CXSdk::get_string(json_object *p_object, const char *p_key)
+char *CXSdk::JsonGetString(json_object *p_object, const char *p_key)
 {
     if (p_object == NULL)
         return (char *)"";
@@ -70,7 +73,7 @@ char *CXSdk::get_string(json_object *p_object, const char *p_key)
 	return (char *)"";
 }
 
-json_object *CXSdk::get_object(json_object *p_object, const char *p_key)
+json_object *CXSdk::JsonGetObj(json_object *p_object, const char *p_key)
 {
     if (p_object == NULL)
         return NULL;
@@ -84,444 +87,252 @@ json_object *CXSdk::get_object(json_object *p_object, const char *p_key)
 	return NULL;
 }
 
-r_register *CXSdk::StreamServerResgister(int ssid,char *uri)
+j_result_t CXSdk::Login(j_int32_t nId, j_char_t *pUrl, ResourceMap &resInfo)
 {
-	char *json_buf = NULL;
-	r_register *r_data = NULL;
-	json_object *json_helper = NULL;
+	json_object *json_request_obj = json_object_new_object();
+	json_object_object_add(json_request_obj, (char *)"cmd", json_object_new_int(jo_json_login));
+	json_object *json_param_obj = json_object_new_object();
+	json_object_object_add(json_param_obj, (char *)"id", json_object_new_int(nId));
+	json_object_object_add(json_request_obj, (char *)"parm", json_param_obj);
 
-	json_object *jsojt = json_object_new_object();
-	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(1));
-	json_object *helpjs = json_object_new_object();
-	json_object_object_add(helpjs,(char *)"id",json_object_new_int(ssid));
-	json_object_object_add(jsojt,(char *)"parm",helpjs);
-
-	//printf("%s\n", json_object_to_json_string(jsojt));
-	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-	json_object_put(jsojt);
-	if(json_buf == NULL)
+	char *json_return_buf = HttpCommunicate(json_object_to_json_string(json_request_obj), pUrl);
+	json_object_put(json_request_obj);
+	if(json_return_buf == NULL)
 	{
-	    //assert(false);
-		return NULL;
+		J_OS::LOGINFO("CXSdk::Login error");
+		return J_UNKNOW;
 	}
 
-	json_helper = json_object_new_object();
-	json_helper = json_tokener_parse(json_buf);
-	//J_OS::LOGINFO(json_buf);
-	if(is_error(json_helper))
+	json_object *json_respose_obj = json_object_new_object();
+	json_respose_obj = json_tokener_parse(json_return_buf);
+	if(is_error(json_respose_obj))
 	{
 		J_OS::LOGINFO("StreamServerResgister json_tokener_parse error");
-		J_OS::LOGINFO("json_data = %s", json_buf);
-		clean_all();
-		return NULL;
+		J_OS::LOGINFO("json_data = %s", json_return_buf);
+		JSON_CLEAN_ALL();
+		return J_UNKNOW;
 	}
-	r_data = new r_register;
-	//r_data->cmd = get_int(json_helper, "cmd");
-	r_data->rst = get_int(json_helper, "rst");
-	if (r_data->rst != 0)
+	j_result_t nResult = JsonGetInt(json_respose_obj, "rst");
+	if (nResult != J_OK)
 	{
-        J_OS::LOGINFO("json_data = %s", json_buf);
-		clean_all();
-		return NULL;
+        J_OS::LOGINFO("json_data = %s", json_return_buf);
+		JSON_CLEAN_ALL();
+		return J_UNKNOW;
 	}
 
-	json_helper = get_object(json_helper, (char *)"parm");
-	if(!json_helper)
+	json_object *json_resp_param_obj = JsonGetObj(json_respose_obj, (char *)"parm");
+	if(!json_resp_param_obj)
 	{
-	    clean_all();
+	    JSON_CLEAN_ALL();
 		J_OS::LOGINFO("StreamServerResgister json_object_object_get error");
-		return NULL;
+		return J_UNKNOW;
 	}
-	r_data->parm.store		= get_string(json_helper, "strore");
-	r_data->parm.segment_h 	= get_int(json_helper, "segment_h");
-	r_data->parm.segment_a 	= get_int(json_helper, "segment_a");
 
-	json_helper = get_object(json_helper, (char *)"res");
-	if(!json_helper)
+	json_object *json_resource_obj = JsonGetObj(json_resp_param_obj, (char *)"res");
+	if(!json_resource_obj)
 	{
-	    clean_all();
+	    JSON_CLEAN_ALL();
 		J_OS::LOGINFO("StreamServerResgister json_object_object_get error");
-		return NULL;
+		return J_UNKNOW;
 	}
 
-	json_object *otemp = json_object_new_object();
-	json_object *otemp2 = json_object_new_object();
-	json_object *cha   = json_object_new_object();
-	for(int i=0;i<json_object_array_length(json_helper);i++)
+	json_object *json_dev_obj = json_object_new_object();
+	json_object *json_res_obj = json_object_new_object();
+	json_object *json_channel_obj   = json_object_new_object();
+	for(int i=0; i<json_object_array_length(json_resource_obj); i++)
 	{
-		otemp = json_object_array_get_idx(json_helper,i);
-        if (otemp == NULL)
+		json_dev_obj = json_object_array_get_idx(json_resource_obj, i);
+        if (json_dev_obj == NULL)
             continue;
 
-		_res rtemp;
-		rtemp.id	= get_int(otemp, "id");
-		rtemp.type 	= get_int(otemp, "type");
-		rtemp.ip	= get_string(otemp, "ip");
-		rtemp.port 	= get_int(otemp, "port");
-		rtemp.user 	= get_string(otemp, "user");
-		rtemp.pass 	= get_string(otemp, "pass");
-		otemp2 = json_object_object_get(otemp,(char *)"cha");
-        if (otemp2 == NULL)
+		J_DeviceInfo devInfo = {0};
+		devInfo.devStatus = jo_dev_broken;
+		devInfo.devId = JsonGetInt(json_dev_obj, "id");
+		int devType = JsonGetInt(json_dev_obj, "type");
+		sprintf(devInfo.devType, "%s", dev_type[devType]);
+		sprintf(devInfo.devIp, "%s", JsonGetString(json_dev_obj, "ip"));
+		devInfo.devPort = JsonGetInt(json_dev_obj, "port");
+		sprintf(devInfo.userName, "%s", JsonGetString(json_dev_obj, "user"));
+		sprintf(devInfo.passWd, "%s", JsonGetString(json_dev_obj, "pass"));
+		json_res_obj = json_object_object_get(json_dev_obj, (char *)"cha");
+        if (json_res_obj == NULL)
 		    continue;
 
-		for(int j=0;j<json_object_array_length(otemp2);j++)
+		for(int j=0; j<json_object_array_length(json_res_obj); j++)
 		{
-			cha = json_object_array_get_idx(otemp2,j);
-            if (cha == NULL)
+			json_channel_obj = json_object_array_get_idx(json_res_obj, j);
+            if (json_channel_obj == NULL)
                 continue;
-			_cha ctemp;
-			ctemp.cha	= get_int(cha, "cha");
-			ctemp.resid	= get_string(cha, "resid");
-			ctemp.ms	= get_int(cha, "ms");
-			rtemp.chanum.push_back(ctemp);
-		}
-		r_data->parm.resnum.push_back(rtemp);
-	}
-	//json_object_put(otemp);
-	//json_object_put(otemp2);
-	//json_object_put(cha);
-	clean_all();
 
-	return r_data;
+			J_ResourceInfo resourceInfo;
+			resourceInfo.devInfo = devInfo;
+			resourceInfo.chNum = JsonGetInt(json_channel_obj, "cha");
+			resourceInfo.resid	= JsonGetString(json_channel_obj, "resid");
+			resourceInfo.streamType	= JsonGetInt(json_channel_obj, "ms");
+			resInfo[resourceInfo.resid] = resourceInfo;
+		}
+	}
+	JSON_CLEAN_ALL();
+
+	return J_OK;
 }
 
-r_devconfig *CXSdk::GetDevConfigByResid(char *resid,char *uri)
+j_result_t CXSdk::GetResourceInfo(j_char_t *pResid, j_char_t *pUrl, J_ResourceInfo &resInfo)
 {
-	r_devconfig *r_data = NULL;
-	if (strstr(resid, ".") != NULL)
+	memset(&resInfo.devInfo, 0, sizeof(J_DeviceInfo));
+	if (strstr(pResid, ".") != NULL)
 	{
 		//平台相关处理
-		r_data = new r_devconfig;
-		r_data->parm.id 	= 0;
-		r_data->parm.cha	= 0;
-		r_data->rst 		= 0;
+		resInfo.resid = pResid;
+		resInfo.chNum = 0;
+		resInfo.streamType = 0;
 	}
 	else
 	{
-		//站端相关处理
-		char *json_buf = NULL;
-		json_object *json_helper = NULL;
-
 		//生成发送数据
-		json_object *jsojt = json_object_new_object();
-		json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(2));
-		json_object *helpjs = json_object_new_object();
-		json_object_object_add(helpjs,(char *)"id",json_object_new_string(resid));
-		json_object_object_add(jsojt,(char *)"parm",helpjs);
+		json_object *json_request_obj = json_object_new_object();
+		json_object_object_add(json_request_obj, (char *)"cmd", json_object_new_int(jo_json_get_resinfo));
+		json_object *json_param_obj = json_object_new_object();
+		json_object_object_add(json_param_obj, (char *)"id", json_object_new_string(pResid));
+		json_object_object_add(json_request_obj, (char *)"parm", json_param_obj);
 
 		//发送并接受数据
-		json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-		json_object_put(jsojt);
-		if(json_buf == NULL)
+		char *json_return_buf  = HttpCommunicate(json_object_to_json_string(json_request_obj), pUrl);
+		json_object_put(json_request_obj);
+		if(json_return_buf == NULL)
 		{
-			//assert(false);
-			J_OS::LOGINFO("HttpCommunicate Faild");
-			return NULL;
+			J_OS::LOGINFO(" CXSdk::GetResourceInfo HttpCommunicate Faild");
+			return J_UNKNOW;
 		}
 
 		//解析数据
-		//json_helper = json_object_new_object();
-		json_helper = json_tokener_parse(json_buf);
-		if(is_error(json_helper))
+		json_object *json_respose_obj = json_object_new_object();
+		json_respose_obj = json_tokener_parse(json_return_buf);
+		if(is_error(json_respose_obj))
 		{
-			J_OS::LOGINFO("GetDevConfigByResid json_tokener_parse error");
-			J_OS::LOGINFO("json_data = %s", json_buf);
-			clean_all();
-			return NULL;
+			J_OS::LOGINFO("CXSdk::GetResourceInfo json_tokener_parse error");
+			J_OS::LOGINFO("json_data = %s", json_return_buf);
+			JSON_CLEAN_ALL();
+			return J_UNKNOW;
 		}
-		r_data = new r_devconfig;
-		r_data->rst = get_int(json_helper, "rst");
-		if (r_data->rst != 0)
+		j_result_t nResult = JsonGetInt(json_respose_obj, "rst");
+		if (nResult != 0)
 		{
-			J_OS::LOGINFO("json_data = %s", json_buf);
-			clean_all();
-			return NULL;
+			J_OS::LOGINFO("json_data = %s", json_return_buf);
+			JSON_CLEAN_ALL();
+			return J_UNKNOW;
 		}
 
-		json_helper = get_object(json_helper,(char *)"parm");
-		if(!json_helper)
+		json_object *json_resp_param_obj = JsonGetObj(json_respose_obj, (char *)"parm");
+		if(!json_resp_param_obj)
 		{
-			clean_all();
-			delete r_data;
-			J_OS::LOGINFO("GetDevConfigByResid json_object_object_get error");
-			return NULL;
+			JSON_CLEAN_ALL();
+			J_OS::LOGINFO("CXSdk::GetResourceInfo json_object_object_get error");
+			return J_UNKNOW;
 		}
-		r_data->parm.id		= get_int(json_helper, "id");
-		r_data->parm.type	= get_string(json_helper, "type");
-		r_data->parm.ip		= get_string(json_helper, "ip");
-		r_data->parm.port	= get_int(json_helper, "port");
-		r_data->parm.user	= get_string(json_helper, "user");
-		r_data->parm.pass	= get_string(json_helper, "pass");
-		r_data->parm.cha	= get_int(json_helper, "cha");
-		r_data->parm.resid	= get_string(json_helper, "resid");
-		r_data->parm.ms		= get_int(json_helper, "ms");
-		r_data->parm.store	= get_int(json_helper, "store");
-		clean_all();
+		resInfo.resid = pResid;
+		resInfo.streamType = 0;
+		resInfo.devInfo.devId = JsonGetInt(json_resp_param_obj, "id");
+		sprintf(resInfo.devInfo.devType, "%s",  JsonGetString(json_resp_param_obj, "type"));
+		sprintf(resInfo.devInfo.devIp, "%s", JsonGetString(json_resp_param_obj, "ip"));
+		resInfo.devInfo.devPort = JsonGetInt(json_resp_param_obj, "port");
+		sprintf(resInfo.devInfo.userName, "%s", JsonGetString(json_resp_param_obj, "user"));
+		sprintf(resInfo.devInfo.passWd, "%s", JsonGetString(json_resp_param_obj, "pass"));
+		resInfo.chNum = JsonGetInt(json_resp_param_obj, "cha");
+		resInfo.resid	= JsonGetString(json_resp_param_obj, "resid");
+		resInfo.streamType = JsonGetInt(json_resp_param_obj, "ms");
+		JSON_CLEAN_ALL();
 	}
 
-	return r_data;
+	return J_OK;
 }
 
-r_ssconfig *CXSdk::GetSSConfigByResid(char *resid,char *uri)
+j_result_t CXSdk::GetStreamServerInfo(j_char_t *pResid, j_char_t *pUrl, J_StreamServerInfo &ssInfo)
 {
-	r_ssconfig *r_data = NULL;
-	char *json_buf = NULL;
-	json_object *json_helper = NULL;
-
 	//生成发送数据
-	json_object *jsojt = json_object_new_object();
-	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(7));
-	json_object *helpjs = json_object_new_object();
-	json_object_object_add(helpjs,(char *)"resid",json_object_new_string(resid));
-	json_object_object_add(jsojt,(char *)"parm",helpjs);
+	json_object *json_request_obj = json_object_new_object();
+	json_object_object_add(json_request_obj, (char *)"cmd", json_object_new_int(jo_json_get_ss_info));
+	json_object *json_param_obj = json_object_new_object();
+	json_object_object_add(json_param_obj ,(char *)"resid", json_object_new_string(pResid));
+	json_object_object_add(json_request_obj, (char *)"parm", json_param_obj);
 
 	//发送并接受数据
-	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-	json_object_put(jsojt);
-	if(json_buf == NULL)
+	char *json_return_buf = HttpCommunicate(json_object_to_json_string(json_request_obj), pUrl);
+	json_object_put(json_request_obj);
+	if(json_return_buf == NULL)
 	{
-		assert(false);
-		return NULL;
+		J_OS::LOGINFO(" CXSdk::GetStreamServerInfo HttpCommunicate Faild");
+		return J_UNKNOW;
 	}
 
 	//解析数据
-	json_helper = json_tokener_parse(json_buf);
-	if(is_error(json_helper))
+	json_object *json_respose_obj = json_object_new_object();
+	json_respose_obj = json_tokener_parse(json_return_buf);
+	if(is_error(json_respose_obj))
 	{
 		J_OS::LOGINFO("GetSSConfigByResid json_tokener_parse error");
-		J_OS::LOGINFO("json_data = %s", json_buf);
-		clean_all();
-		return NULL;
+		J_OS::LOGINFO("json_data = %s", json_return_buf);
+		JSON_CLEAN_ALL();
+		return J_UNKNOW;
 	}
-	r_data = new r_ssconfig;
-	r_data->rst = get_int(json_helper, "rst");
-	if (r_data->rst != 0)
+	j_result_t nResult = JsonGetInt(json_respose_obj, "rst");
+	if (nResult != 0)
 	{
-		J_OS::LOGINFO("json_data = %s", json_buf);
-		clean_all();
-		return NULL;
+		J_OS::LOGINFO("json_data = %s", json_return_buf);
+		JSON_CLEAN_ALL();
+		return J_UNKNOW;
 	}
 
-	json_helper = get_object(json_helper,(char *)"parm");
-	if(!json_helper)
+	json_object *json_resp_param_obj = JsonGetObj(json_respose_obj, (char *)"parm");
+	if(!json_resp_param_obj)
 	{
-		clean_all();
-		delete r_data;
-		J_OS::LOGINFO("GetDevConfigByResid json_object_object_get error");
-		return NULL;
+		JSON_CLEAN_ALL();
+		J_OS::LOGINFO("GetStreamServerInfo json_object_object_get error");
+		return J_UNKNOW;
 	}
-	r_data->parm.ip		= get_string(json_helper, "ss");
-	r_data->parm.port	= get_int(json_helper, "port");
-	clean_all();
+	memset(&ssInfo, 0, sizeof(J_StreamServerInfo));
+	sprintf(ssInfo.devIp, "%s", JsonGetString(json_resp_param_obj, "ss"));
+	ssInfo.devPort = JsonGetInt(json_resp_param_obj, "port");
+	JSON_CLEAN_ALL();
 
-	return r_data;
+	return J_OK;
 }
 
-int CXSdk::GetRealTimePermission(char *resid,char *uid,char *uri)
+j_result_t CXSdk::KeepAlive(j_int32_t nStreamServerId, j_char_t *pUrl)
 {
-	char *json_buf = NULL;
-	int r_data = -1;
-	json_object *json_helper = NULL;
-
 	//生成发送数据
-	json_object *jsojt = json_object_new_object();
-	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(3));
-	json_object *helpjs = json_object_new_object();
-	json_object_object_add(helpjs,(char *)"resid",json_object_new_string(resid));
-	json_object_object_add(helpjs,(char *)"uid",json_object_new_string(uid));
-	json_object_object_add(jsojt,(char *)"parm",helpjs);
+	json_object *json_request_obj = json_object_new_object();
+	json_object_object_add(json_request_obj, (char *)"cmd", json_object_new_int(jo_json_keepalive));
+	json_object *json_param_obj = json_object_new_object();
+	json_object_object_add(json_param_obj ,(char *)"id", json_object_new_int(nStreamServerId));
+	json_object_object_add(json_request_obj, (char *)"parm", json_param_obj);
 
 	//发送并接受数据
-	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-	json_object_put(jsojt);
-	if(json_buf == NULL)
+	char *json_return_buf = HttpCommunicate(json_object_to_json_string(json_request_obj), pUrl);
+	json_object_put(json_request_obj);
+	if(json_return_buf == NULL)
 	{
-	    assert(false);
-	    return r_data;
+		J_OS::LOGINFO(" CXSdk::KeepAlive HttpCommunicate Faild");
+	    return J_UNKNOW;
     }
 
 	//解析数据
-	//json_helper = json_object_new_object();
-	json_helper = json_tokener_parse(json_buf);
-	if(is_error(json_helper))
+	json_object *json_respose_obj = json_object_new_object();
+	json_respose_obj = json_tokener_parse(json_return_buf);
+	if(is_error(json_respose_obj))
 	{
-		J_OS::LOGINFO("GetRealTimePermission json_tokener_parse error");
-		J_OS::LOGINFO("json_data = %s", json_buf);
-		clean_all();
-		return 0;
+		J_OS::LOGINFO("CXSdk::KeepAlive json_tokener_parse error");
+		J_OS::LOGINFO("json_data = %s", json_return_buf);
+        JSON_CLEAN_ALL();
+		return J_UNKNOW;
 	}
-	r_data = get_int(json_helper, "rst");
-	clean_all();
-
-	return r_data;
-}
-
-r_historyfile *CXSdk::GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,char *uri)
-{
-	char *json_buf = NULL;
-	r_historyfile *r_data = NULL;
-	json_object *json_helper = NULL;
-
-	//生成发送数据
-	json_object *jsojt = json_object_new_object();
-	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(4));
-	json_object *helpjs = json_object_new_object();
-	json_object_object_add(helpjs,(char *)"resid",json_object_new_string(resid));
-	json_object_object_add(helpjs,(char *)"uid",json_object_new_string(uid));
-	json_object_object_add(helpjs,(char *)"stime",json_object_new_double(stime));
-	json_object_object_add(helpjs,(char *)"etime",json_object_new_double(etime));
-	json_object_object_add(jsojt,(char *)"parm",helpjs);
-	
-	//发送并接受数据
-	//J_OS::LOGINFO(json_object_to_json_string(jsojt));
-	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-	json_object_put(jsojt);
-	if(json_buf == NULL)
+	j_result_t nResult = JsonGetInt(json_respose_obj, "rst");
+	if (nResult != 0)
 	{
-		J_OS::LOGINFO("GetHistoryFile HttpCommunicate error");
-	    return NULL;
-    }
-
-	//解析数据
-	//json_helper = json_object_new_object();
-	//J_OS::LOGINFO("json_data = %s", json_buf);
-	json_helper = json_tokener_parse(json_buf);
-	if(is_error(json_helper))
-	{
-		J_OS::LOGINFO("GetHistoryFile json_tokener_parse error");
-		J_OS::LOGINFO("json_data = %s", json_buf);
-		clean_all();
-		return NULL;
+		JSON_CLEAN_ALL();
+		return J_UNKNOW;
 	}
+    JSON_CLEAN_ALL();
 
-    r_data = new r_historyfile;
-	r_data->rst = get_int(json_helper,  "rst");
-    if (r_data->rst != 0)
-	{
-        J_OS::LOGINFO("json_data = %s", json_buf);
-        delete r_data;
-		clean_all();
-		return NULL;
-	}
-	json_helper = get_object(json_helper, (char *)"parm");
-	if(!json_helper)
-	{
-	    delete r_data;
-        clean_all();
-		J_OS::LOGINFO("GetHistoryFile json_object_object_get parm error");
-		return NULL;
-	}
-	r_data->parm.dvr = get_int(json_helper,  "dvr");
-
-	json_helper	= get_object(json_helper, (char *)"files");
-	if(!json_helper)
-	{
-        clean_all();
-	    delete r_data;
-		J_OS::LOGINFO("GetHistoryFile json_object_object_get files error");
-		return NULL;
-	}
-
-	int arrlen = json_object_array_length(json_helper);
-	j_string_t tmp;
-	for(int i=0; i<arrlen; i++)
-	{
-		tmp = json_object_get_string(json_object_array_get_idx(json_helper, i));
-		r_data->parm.files.push_back(tmp);
-	}
-	clean_all();
-
-	return r_data;
-}
-
-int CXSdk::GetWarningMsg(char *resid,int type,char *uri)
-{
-	char *json_buf = NULL;
-	int r_data = -1;
-	json_object *json_helper = NULL;
-
-	//生成发送数据
-	json_object *jsojt = json_object_new_object();
-	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(5));
-	json_object *helpjs = json_object_new_object();
-	json_object_object_add(helpjs,(char *)"resid",json_object_new_string(resid));
-	json_object_object_add(helpjs,(char *)"type",json_object_new_int(type));
-	json_object_object_add(jsojt,(char *)"parm",helpjs);
-
-	//发送并接受数据
-	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-	json_object_put(jsojt);
-	if(json_buf == NULL)
-	{
-	    assert(false);
-	    return r_data;
-    }
-
-	//解析数据
-	//json_helper = json_object_new_object();
-	json_helper = json_tokener_parse(json_buf);
-	if(is_error(json_helper))
-	{
-		J_OS::LOGINFO("GetWarningMsg json_tokener_parse error");
-		J_OS::LOGINFO("json_data = %s", json_buf);
-        clean_all();
-		return 0;
-	}
-	r_data = get_int(json_helper, "rst");
-    clean_all();
-
-	return r_data;
-}
-
-int CXSdk::GetRecordNotice(s_record &record,char *uri)
-{
-	char *json_buf = NULL;
-	int r_data = -1;
-	json_object *json_helper = NULL;
-
-	//生成发送数据
-	json_object *jsojt = json_object_new_object();
-	json_object *helpjs = json_object_new_object();
-	json_object *jsonarr = json_object_new_array();
-	json_object_object_add(jsojt,(char *)"cmd",json_object_new_int(6));
-	json_object_object_add(helpjs,(char *)"resid",json_object_new_string((char *)record.resid.c_str()));
-	json_object_object_add(helpjs,(char *)"files",jsonarr);
-	//J_OS::LOGINFO("NUM = %d", record.filenum.size());
-	for(std::vector<s_fileinfo>::iterator iter = record.filenum.begin();
-			iter != record.filenum.end();
-			iter++)
-	{
-		json_object *jotemp = json_object_new_object();
-		json_object_object_add(jotemp,(char *)"file",json_object_new_string((char *)iter->file.c_str()));
-		json_object_object_add(jotemp,(char *)"stime",json_object_new_double(iter->stime));
-		json_object_object_add(jotemp,(char *)"etime",json_object_new_double(iter->etime));
-		json_object_array_add(jsonarr,jotemp);
-	}
-	json_object_object_add(jsojt,(char *)"parm", helpjs);
-
-
-	//发送并接受数据
-	json_buf = HttpCommunicate(json_object_to_json_string(jsojt), uri);
-    json_object_put(jsojt);
-	if(json_buf == NULL)
-	{
-	    //assert(false);
-	    return -1;
-    }
-
-	//解析数据
-	//json_helper = json_object_new_object();
-	json_helper = json_tokener_parse(json_buf);
-	if(is_error(json_helper))
-	{
-		J_OS::LOGINFO("GetRecordNotice json_tokener_parse error");
-		J_OS::LOGINFO("json_data = %s", json_buf);
-		clean_all();
-		return -1;
-	}
-	//J_OS::LOGINFO(json_buf);
-	r_data = get_int(json_helper, "rst");
-    clean_all();
-
-	return r_data;
+	return J_OK;
 }

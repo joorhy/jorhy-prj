@@ -6,12 +6,12 @@ JO_IMPLEMENT_SINGLETON(RecoderManager)
 CRecoderManager::CRecoderManager()
 {
     m_bStart = false;
-    //Init();
+    Init();
 }
 
 CRecoderManager::~CRecoderManager()
 {
-    //Deinit();
+    Deinit();
 }
 
 int CRecoderManager::Init()
@@ -185,8 +185,8 @@ void CRecoderManager::OnTimer()
 				break;
 			}
 		}
-		if (it == m_recordVec.end())
-            break;
+		//if (it == m_recordVec.end())
+        //    break;
 
 		//usleep(1000);
 	}

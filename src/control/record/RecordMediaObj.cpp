@@ -3,14 +3,17 @@
 #include "x_config.h"
 #include "x_manager_factory.h"
 
-#ifdef WIN32
+#define JO_FILE_INTERVAL	(20)		//秒
+
+/*#ifdef WIN32
 int CXConfig::m_mcPort = 6004;
-char CXConfig::m_mcAddr[16];
+std::string CXConfig::m_mcAddr;
 int CXConfig::m_ssId = 0;
-char CXConfig::m_httpUrl[64];
-char CXConfig::m_configType[32];
+std::string CXConfig::m_httpUrl;
+std::string CXConfig::m_configType;
+std::string CXConfig::m_vodPath;
 std::vector<J_ServerInfo> CXConfig::m_serverVec;
-#endif
+#endif*/
 
 extern CThreadPool g_thread_pool;
 
@@ -26,7 +29,7 @@ CStreamRecord::CStreamRecord()
 	m_nPacketLen = 0;
 	m_pDataBuff = new char[DATA_BUFF_SIZE];
 	m_headBuff = new char[HEAD_BUFF_SIZE];
-	m_fileInfo.stime = 0;
+	m_fileInfo.tStartTime = 0;
 	m_resid.clear();
 	m_nHeaderOffset = 0;
 
@@ -170,11 +173,11 @@ int CStreamRecord::OnRecord()
 	{
 		CloseFile();
 		//m_fileInfo.etime = streamHeader.timeStamp / 1000;
-		m_record.filenum.push_back(m_fileInfo);
+		//m_record.filenum.push_back(m_fileInfo);
 		//J_OS::LOGINFO(m_fileInfo.file.c_str());
-		JoXSdk->GetRecordNotice(m_record, CXConfig::GetUrl());
-		m_fileInfo.stime = streamHeader.timeStamp / 1000;
-		m_record.filenum.clear();
+		//JoXSdk->GetRecordNotice(m_record, CXConfig::GetUrl());
+		m_fileInfo.tStartTime = streamHeader.timeStamp / 1000;
+		//m_record.filenum.clear();
 		return J_DEV_BROKEN;
 	}
 	else 
@@ -187,19 +190,17 @@ int CStreamRecord::OnRecord()
 
 void CStreamRecord::ParserAndSave(const char *pData, J_StreamHeader &streamHeader)
 {
-	if (m_fileInfo.stime == 0)
-		m_fileInfo.stime = streamHeader.timeStamp / 1000;
+	if (m_fileInfo.tStartTime == 0)
+		m_fileInfo.tStartTime = streamHeader.timeStamp / 1000;
 
-	J_RecordInfo recordInfo;
-	JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
-	if (((time_t)(streamHeader.timeStamp / 1000) - m_fileInfo.stime) > (j_int32_t)recordInfo.timeInterval
+	if (((time_t)(streamHeader.timeStamp / 1000) - m_fileInfo.tStartTime) > JO_FILE_INTERVAL
         || m_nHeaderOffset + sizeof(m_frameHead) > HEAD_BUFF_SIZE)
 	{
 	    CloseFile();
-		m_record.filenum.push_back(m_fileInfo);;
-		JoXSdk->GetRecordNotice(m_record, CXConfig::GetUrl());
-		m_fileInfo.stime = streamHeader.timeStamp / 1000;
-		m_record.filenum.clear();
+		//m_record.filenum.push_back(m_fileInfo);;
+		//JoXSdk->GetRecordNotice(m_record, CXConfig::GetUrl());
+		m_fileInfo.tStartTime = streamHeader.timeStamp / 1000;
+		//m_record.filenum.clear();
 		CreateFile(NULL);
 	}
 	if (m_fdBody == NULL)
@@ -253,11 +254,11 @@ int CStreamRecord::CreateFile(char *pFileName)
 	memcpy(m_fileHead.type, "head", 4);
 	memcpy(m_fileBody.type, "body", 4);
 
-	sprintf(m_fileName, "%s_%s", m_resid.c_str(), JoTime->GetLocalTime().c_str());
+	sprintf(m_fileName, "%s_%d", m_resid.c_str(), time(0));
 	char fileName[256] = {0};
 	sprintf(fileName, "%s/.temp/%s", m_vodDir, m_fileName);
 
-	m_record.resid = m_resid;
+	//m_record.resid = m_resid;
 	//m_fileInfo.file = fileName;
 	//m_fileInfo.stime = time(0);
 
@@ -304,16 +305,17 @@ int CStreamRecord::CloseFile()
 
 	char oldFileName[256] = {0};
 	char newFileName[256] = {0};
+	char newDir[256] = {0};
 	char fileName[128] = {0};
 	sprintf(oldFileName, "%s/.temp/%s", m_vodDir, m_fileName);
-	std::string strETime;
-	m_fileInfo.etime = JoTime->GetLocalTime(strETime);
-	sprintf(fileName, "%s_%s.josf", m_fileName, strETime.c_str());
-	sprintf(newFileName, "%s/%s", m_vodDir, fileName);
+	m_fileInfo.tStoptime = time(0);
+	sprintf(fileName, "%s_%d.josf", m_fileName, m_fileInfo.tStoptime);
+	sprintf(newDir, "%s/%s/%s", m_vodDir, m_resid.c_str(), JoTime->GetDate().c_str());
+	sprintf(newFileName, "%s/%s", newDir, fileName);
 
 	//修改文件名
-    m_file.RenameFile(oldFileName, newFileName);
-    m_fileInfo.file = fileName;
+    m_file.RenameFile(oldFileName, newDir, newFileName);
+    //m_fileInfo.file = fileName;
 	//J_OS::LOGINFO(m_fileInfo.file.c_str());
 
 	return J_OK;
@@ -322,9 +324,7 @@ int CStreamRecord::CloseFile()
 int CStreamRecord::Init()
 {
     memset(m_vodDir, 0, sizeof(m_vodDir));
-    J_RecordInfo recordInfo;
-	JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
-	m_file.GetVodDir(recordInfo.vodPath, m_vodDir);
+	m_file.GetVodDir(CXConfig::GetVodPath(), m_vodDir);
 	char vodDirTemp[256] = {0};
 	sprintf(vodDirTemp, "%s/.temp", m_vodDir);
 	m_file.CreateDir(vodDirTemp);
@@ -332,5 +332,3 @@ int CStreamRecord::Init()
 
     return J_OK;
 }
-
-

@@ -281,23 +281,18 @@ struct J_JoManager : virtual public J_Obj
 	///@param[in]	pResid 资源标示
 	///@param[out]	devInfo 设备信息
 	///@return 		参见x_error_type.h
-	virtual j_result_t GetDeviceInfo(const j_char_t *pResid, J_DeviceInfo &devInfo) = 0;
+	virtual j_result_t GetStreamServerInfo(const j_char_t *pResid, J_StreamServerInfo &ssInfo) = 0;
 	
-	///列举所有设备
-	///@param[out]	devList 全部设备信息
+	///获取资源信息
+	///@param[out]	resInfo 全部资源信息
 	///@return 		参见x_error_type.h
-	virtual j_result_t ListDevices(std::vector<J_DeviceInfo> &devList) = 0;
+	virtual j_result_t GetResourceInfo(ResourceMap &resInfo) = 0;
 
 	///通过通道查询通道信息
-	///@param[in]	channelId 通道标示
-	///@param[out]	channelInfo 通道信息
+	///@param[in]		pResid 资源ID
+	///@param[out]	resInfo 通道信息
 	///@return 		参见x_error_type.h
-	virtual j_result_t GetChannelInfo(const j_char_t *channelId, J_ChannelInfo &channelInfo) = 0;
-
-	///得到录像相关信息
-	///@param[out]	recordInfo 录像相关信息
-	///@return 		参见x_error_type.h
-	virtual j_result_t GetRecordInfo(J_RecordInfo &recordInfo) = 0;
+	virtual j_result_t GetChannelInfo(const char *pResid, J_ResourceInfo &resInfo) = 0;
 	
 	///启动录像
 	///@return 		参见x_error_type.h

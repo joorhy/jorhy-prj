@@ -1,6 +1,7 @@
 #include "RymcParser.h"
 #include "x_socket.h"
 #include "x_string.h"
+#include "x_vod_manager.h"
 
 static const char *http_end = "\r\n\r\n";
 
@@ -10,6 +11,7 @@ CRymcParser::CRymcParser()
 {
 	memset(m_read_buff, 0, sizeof(m_read_buff));
 	m_state = RYMC_HEAD;
+	m_read_len = 0;
 }
 
 CRymcParser::~CRymcParser()
@@ -58,80 +60,85 @@ int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pA
 	}
 	
 	CHttpHelper httpHelper(m_read_buff);
-	std::string strBody = httpHelper.GetBody();
+	j_string_t strBody = httpHelper.GetBody();
 	if(strBody.empty())
 	{
 		J_OS::LOGINFO("CRymcParser::ProcessRequest Empty");
 		return J_JSON_UNKOWN;
 	}
 
-	json_object *js = json_tokener_parse((char *)strBody.c_str());
-	if(is_error(js))
+	json_object *json_request_obj = json_tokener_parse((char *)strBody.c_str());
+	if(is_error(json_request_obj))
 	{
 		return J_JSON_UNKOWN;
 	}
 
-	int nRet = J_OK;
-	int cmd = json_object_get_int(json_object_object_get(js, (char *)"cmd"));
-	json_object *ret_obj = json_object_new_object();
+	j_result_t nResult = J_OK;
+	int cmd = json_object_get_int(json_object_object_get(json_request_obj, (char *)"cmd"));
+	json_object *json_param_obj = json_object_new_object();
+	json_object *json_resp_param_obj = NULL;
 	switch(cmd)
 	{
-	case RCD_CONTROL://录像控制
+	case jo_json_ctrl_record://录像控制
 	{
-		r_recordcol recordcol;
-		js = json_object_object_get(js, (char *)"parm");
-		recordcol.act		= json_object_get_int(json_object_object_get(js, (char *)"act"));
-		recordcol.resid 	= json_object_get_string(json_object_object_get(js, (char *)"resid"));
-		recordcol.ms	= json_object_get_int(json_object_object_get(js, (char *)"ms"));
+		J_RecordCtrl recordCtrl;
+		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
+		recordCtrl.action	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"act"));
+		recordCtrl.resid 	= json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
+		recordCtrl.stream_type	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"ms"));
 
-		J_OS::LOGINFO("CRymcParser::ProcessRequest RecordControl resid = %s", recordcol.resid.c_str());
-		nRet = RecordControl(recordcol.resid.c_str(), recordcol.act, recordcol.ms);
-
+		J_OS::LOGINFO("CRymcParser::ProcessRequest RecordControl resid = %s", recordCtrl.resid.c_str());
+		nResult = RecordControl(recordCtrl.resid.c_str(), recordCtrl.action, recordCtrl.stream_type);
 		break;
 	}
-	case RCD_SEARCH_DVR://DVR历史查询
+	case jo_json_ptz_ctrl://云台控制
 	{
-		json_object_object_add(ret_obj, (char *)"cmd",json_object_new_int(102));
-
-		break;
-	}
-	case PTZ_CONTROL://云台控制
-	{
-		r_cameracol ptc_cntl;
-		js = json_object_object_get(js, (char *)"parm");
-		ptc_cntl.resid 	= json_object_get_string(json_object_object_get(js, (char *)"resid"));
-		ptc_cntl.action		= json_object_get_int(json_object_object_get(js, (char *)"action"));
-		ptc_cntl.value	= json_object_get_int(json_object_object_get(js, (char *)"value"));
+		J_PtzCtrl ptzCtrl;
+		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
+		ptzCtrl.resid 	= json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
+		ptzCtrl.action	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"action"));
+		ptzCtrl.parm	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"value"));
 		
-		nRet = PtzControl(ptc_cntl.resid.c_str(), ptc_cntl.action, ptc_cntl.value);
+		nResult = PtzControl(ptzCtrl.resid.c_str(), ptzCtrl.action, ptzCtrl.parm);
 		break;
 	}
-	case RCD_MOVE://录像迁移
+	case jo_json_search_nvr_files:
 	{
-		json_object_object_add(ret_obj, (char *)"cmd", json_object_new_int(104));
-		break;
-	}
-	case RCD_SEARCH_NVR:
-	{
-		r_rcd_search rcd_search;
-		js = json_object_object_get(js, (char *)"parm");
-		rcd_search.resid = json_object_get_string(json_object_object_get(js, (char *)"resid"));
-		rcd_search.begin_time = json_object_get_int(json_object_object_get(js, (char *)"start"));
-		rcd_search.end_time	= json_object_get_int(json_object_object_get(js, (char *)"end"));
+		J_FileSearchCtrl fileSearchCtrl;
+		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
+		fileSearchCtrl.resid = json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
+		fileSearchCtrl.begin_time = json_object_get_int(json_object_object_get(json_param_obj, (char *)"stime"));
+		fileSearchCtrl.end_time	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"etime"));
 		
-		nRet = RecordSearch(rcd_search.resid.c_str(), rcd_search.begin_time, rcd_search.end_time);
+		nResult = RecordSearch(fileSearchCtrl.resid.c_str(), fileSearchCtrl.begin_time, fileSearchCtrl.end_time, &json_resp_param_obj);
+		break;
+	}
+	case jo_json_get_record_info:
+	{
+		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
+		j_string_t resid = json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
+		nResult = GetRecordInfo(resid.c_str(), &json_resp_param_obj);
+		break;
+	}
+	case jo_json_get_record_resid:
+	{
+		nResult = GetRecordResid(&json_resp_param_obj);
 		break;
 	}
 	default:
+		nResult = -1;
 		break;
 	}
 
-	if (nRet < 0)
-		nRet = 1;
+	if (nResult < 0)
+		nResult = 100;
 
-	json_object_object_add(ret_obj, (char *)"rst", json_object_new_int(nRet));
+	json_object *json_response_obj = json_object_new_object();
+	json_object_object_add(json_response_obj, (char *)"rst", json_object_new_int(nResult));
+	if (json_resp_param_obj != NULL)
+		json_object_object_add(json_response_obj, (char *)"parm", json_resp_param_obj);
 	httpHelper.SetStatue(200);
-	httpHelper.SetBody(json_object_to_json_string(ret_obj));
+	httpHelper.SetBody(json_object_to_json_string(json_response_obj));
 	
 	j_int32_t nRespLen = strlen(httpHelper.GetString());
 	j_char_t *pResponse = new char[nRespLen + 1];
@@ -164,10 +171,10 @@ int CRymcParser::RecordControl(const char *pResid, int nCmd, int nStreamType)
 	int nRet = J_OK;
 	switch(nCmd)
 	{
-	case 1:
+	case jo_act_start_record:
         nRet = m_deviceControl.StartRecord(pResid);
 		break;
-	case 2:
+	case jo_act_stop_record:
 		nRet = m_deviceControl.StopRecord(pResid);
 		break;
 	}
@@ -175,8 +182,73 @@ int CRymcParser::RecordControl(const char *pResid, int nCmd, int nStreamType)
 	return nRet;
 }
 
-int CRymcParser::RecordSearch(const char *pResid, time_t beginTime, time_t endTime)
+int CRymcParser::RecordSearch(const char *pResid, j_time_t beginTime, j_time_t endTime, json_object **json_param_obj)
 {
+	j_vec_file_info_t vecFileInfo;
+	JoVodManager->SearchVodFiles(pResid, beginTime, endTime, vecFileInfo);
+	*json_param_obj = json_object_new_object();
+	json_object *json_file_array_obj = json_object_new_array();
+	json_object *json_file_obj = json_object_new_object();
+	j_int32_t nStartTime = -1;
+	j_int32_t nEndTime = -1;
+	j_vec_file_info_t::iterator it = vecFileInfo.begin();
+	for (; it!=vecFileInfo.end(); ++it)
+	{
+		if (nStartTime < 0)
+		{
+			nStartTime = it->tStartTime;
+			nEndTime = it->tStoptime;
+			json_object_object_add(json_file_obj, (char *)"stime", json_object_new_int(nStartTime));
+		}
+		else if (it->tStartTime - nEndTime > 20)
+		{
+			json_object_object_add(json_file_obj, (char *)"etime", json_object_new_int(nEndTime));
+			json_object_array_add(json_file_array_obj, json_file_obj);
+			nStartTime = it->tStartTime;
+			nEndTime = it->tStoptime;
+			json_object_object_add(json_file_obj, (char *)"stime", json_object_new_int(nStartTime));
+		}
+		else
+		{
+			nEndTime = it->tStoptime;
+		}
+	}
+	json_object_object_add(json_file_obj, (char *)"etime", json_object_new_int(nEndTime));
+	json_object_array_add(json_file_array_obj, json_file_obj);
+	json_object_object_add(*json_param_obj, (char *)"files", json_file_array_obj);
+
 	return J_OK;
 }
 
+int CRymcParser::GetRecordInfo(const char *pResid, json_object **json_param_obj)
+{
+	j_time_t begin_time;
+	j_time_t end_time;
+	j_int64_t nSize;
+	JoVodManager->GetRecordInfo(pResid, begin_time, end_time, nSize);
+
+	nSize /= 1024;//以KB为单位
+	*json_param_obj = json_object_new_object();
+	json_object_object_add(*json_param_obj, (char *)"stime", json_object_new_int(begin_time));
+	json_object_object_add(*json_param_obj, (char *)"etime", json_object_new_int(end_time));
+	json_object_object_add(*json_param_obj, (char *)"size", json_object_new_int(nSize));
+
+	return J_OK;
+}
+
+int CRymcParser::GetRecordResid(json_object **json_param_obj)
+{
+	j_vec_resid_t vecResid;
+	JoVodManager->GetRecordResid(vecResid);
+
+	*json_param_obj = json_object_new_object();
+	json_object *json_resid_array_obj = json_object_new_array();
+	j_vec_resid_t::iterator it = vecResid.begin();
+	for (; it!=vecResid.end(); ++it)
+	{
+		json_object_array_add(json_resid_array_obj, json_object_new_string((char *)it->c_str()));
+	}
+	json_object_object_add(*json_param_obj, (char *)"res", json_resid_array_obj);
+
+	return J_OK;
+}

@@ -42,6 +42,7 @@ void CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 	J_AsioDataBase *pDataBase = new J_AsioDataBase;
 	memset(pDataBase, 0, sizeof(J_AsioDataBase));
 	pDataBase->ioRead.buf = new j_char_t[1024];
+	pDataBase->ioRead.finishedLen = 0;
 	if (m_serviceType == "http")
 	{
 		pDataBase->ioRead.bufLen = 1024;
@@ -157,6 +158,7 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 		{
 			nRet = ProcessCommand(asioData, protocolFilter, pClient);
 		}*/
+		((J_AsioDataBase *)pAsioData)->ioRead.finishedLen = 0;
 		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
 	}
 

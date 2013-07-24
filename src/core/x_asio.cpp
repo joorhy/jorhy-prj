@@ -207,9 +207,19 @@ void CXAsio::OnWork()
 			//read
 			//printf("%d = %d\n", pPerIoData->ioRead.bufLen, dwBytesTransferred);
 			j_sleep(1);
-			pPerIoData->ioRead.finishedLen = dwBytesTransferred;
 			J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pPerIoData->ioUser);
-			pAsioUser->OnRead(pPerIoData, J_OK);
+			if (pPerIoData->ioRead.bufLen < 0)
+			{
+				pPerIoData->ioRead.finishedLen += dwBytesTransferred;
+				if (strstr(pPerIoData->ioRead.buf, pPerIoData->ioRead.until_buf) == NULL)
+					Read(pPerIoData->ioHandle, pPerIoData);
+				else
+					pAsioUser->OnRead(pPerIoData, J_OK);
+			}
+			else
+			{
+				pAsioUser->OnRead(pPerIoData, J_OK);
+			}
 		}
 		else if (pPerIoData->ioCall == J_AsioDataBase::j_write_e)
 		{
@@ -336,12 +346,24 @@ int CXAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 #ifdef WIN32
 	DWORD Flags = 0;
 	WSABUF buf;
-	buf.buf = pAsioData->ioRead.buf;
+	DWORD dwFinishedLen = 0;
+	DWORD dwError = SOCKET_ERROR;
 	buf.len = pAsioData->ioRead.bufLen;
 	pAsioData->ioHandle = nSocket.sock;
-	if (WSARecv(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioRead.finishedLen, &Flags, pAsioData, NULL) == SOCKET_ERROR)
+	if (pAsioData->ioRead.bufLen < 0)
 	{
-		DWORD dwError = WSAGetLastError();
+		buf.len = 1;
+		buf.buf = pAsioData->ioRead.buf + pAsioData->ioRead.finishedLen;
+		dwError = WSARecv(nSocket.sock, &buf, 1, (LPDWORD)&dwFinishedLen, &Flags, pAsioData, NULL);
+	}
+	else
+	{
+		buf.buf = pAsioData->ioRead.buf;
+		dwError = WSARecv(nSocket.sock, &buf, 1, (LPDWORD)&pAsioData->ioRead.finishedLen, &Flags, pAsioData, NULL);
+	}
+	if (dwError == SOCKET_ERROR)
+	{
+		dwError = WSAGetLastError();
 		if (dwError != ERROR_IO_PENDING)
 			J_OS::LOGINFO("WSARecv error = %d", dwError);
 	}

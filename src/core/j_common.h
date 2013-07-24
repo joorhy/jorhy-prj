@@ -19,6 +19,8 @@
 #define JO_INSTANSE(_name) \
 	Get##_name##Layer()
 
+#define JoResourceManager \
+	JO_INSTANSE(ResourceManager)
 #define JoAdapterFactory \
 	JO_INSTANSE(AdapterFactory)
 #define JoAdapterManager \
@@ -53,6 +55,8 @@
 	JO_INSTANSE(RecoderManager)
 #define JoPlayManager \
 	JO_INSTANSE(PlayManager)
+#define JoVodManager \
+	JO_INSTANSE(XVodManager)
 
 #include "x_errtype.h"
 

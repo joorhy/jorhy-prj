@@ -1,6 +1,7 @@
 ///流媒体服务相关头文件
 #include "StreamManager.h"
 #include "ControlManager.h"
+#include "x_resource_manager.h"
 #include "x_loadso.h"
 #include "x_include.h"
 #include "x_thread_pool.h"
@@ -35,7 +36,7 @@ int main(int argc,char **argv)
         J_OS::LOGINFO("main loadSo JoLoadSo error");
         return 0;
     }
-	JoAdapterFactory->Init();
+	JoResourceManager->InitResource();
 	
 	//CThreadPool::Instance()->Create(2);
 
@@ -84,7 +85,7 @@ end:
 		(*itControlManager)->StopService();
 		delete (*itControlManager);
 	}
-	JoAdapterFactory->Deinit();
+	JoResourceManager->ReleaseResource();
 	loadSo.JoUnloadSo();
 	JoThreadPool->Destroy();
 

@@ -3,6 +3,7 @@
 #include "x_config.h"
 #include "x_adapter_manager.h"
 #include "x_manager_factory.h"
+#include "x_vod_manager.h"
 
 #define RECORD_INTERVAL	(24 * 60 * 60)
 #define TIMER_INTERVAL	128
@@ -37,6 +38,7 @@ CNvrFileReader::~CNvrFileReader()
 {
 	m_bRun = false;
 	m_thread.Release();
+	j_sleep(1000);
 	
 	J_OS::LOGINFO("CNvrFileReader::~CloseFile");
 	TLock(m_locker);
@@ -184,29 +186,20 @@ int CNvrFileReader::GetMediaData(j_uint64_t beginTime, j_int32_t nIval)
 
 int CNvrFileReader::ListRecord(j_uint64_t beginTime, j_uint64_t endTime)
 {
-	r_historyfile *p_historyfile = JoXSdk->GetHistoryFile((char *)m_resid.c_str(), (char *)"", beginTime, endTime, CXConfig::GetUrl());
-	if (p_historyfile == NULL)
+	vecFileInfo.clear();
+	j_result_t nResult = JoVodManager->SearchVodFiles(m_resid.c_str(), beginTime, endTime, vecFileInfo);
+	if (nResult != J_OK)
 	{
 	    J_OS::LOGINFO("CNvrFileReader::ListRecord GetHistoryFile Error");
 	    return J_DB_ERROR;
 	}
-	m_fileVec.clear();
 	//J_OS::LOGINFO("CNvrFileReader::ListRecord No Files start=%d end=%d", beginTime, endTime);
 
-	if (p_historyfile->parm.files.empty())
+	if (vecFileInfo.empty())
 	{
-		delete p_historyfile;
 		J_OS::LOGINFO("CNvrFileReader::ListRecord No Files start=%d end=%d", beginTime, endTime);
 		return J_OK;
 	}
-
-	std::vector<j_string_t>::iterator it = p_historyfile->parm.files.begin();
-	for(;it != p_historyfile->parm.files.end(); it++)
-	{
-		//J_OS::LOGINFO(it->c_str());
-		m_fileVec.push_back(*it);
-	}
-	delete p_historyfile;
 	//测试用
 	//m_fileVec.push_back("3_20130527113757533_20130527114000051.josf");
 	//m_fileVec.push_back("3_20130527125825086_20130527130026235.josf");
@@ -216,19 +209,18 @@ int CNvrFileReader::ListRecord(j_uint64_t beginTime, j_uint64_t endTime)
 
 int CNvrFileReader::OpenFile()
 {
-	if (m_fileVec.size() < 1)
+	if (vecFileInfo.size() < 1)
 		return J_FILE_ERROR;
 
 	CloseFile();
 	m_frameMap.clear();
 	m_iFrameMap.clear();
-	std::list<j_string_t>::iterator it = m_fileVec.begin();
+	j_vec_file_info_t::iterator it = vecFileInfo.begin();
 	char fileName[512] = {0};
 	char filePath[512] = {0};
-	J_RecordInfo recordInfo;
-	JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetRecordInfo(recordInfo);
-	sprintf(fileName, "%s/%s", m_file.GetVodDir(recordInfo.vodPath, filePath), (*it).c_str());
-	m_fileVec.pop_front();
+	sprintf(fileName, "%s/%s/%s/%s", m_file.GetVodDir(CXConfig::GetVodPath(), filePath), m_resid.c_str()
+		, JoTime->GetDate(it->tStartTime).c_str(), it->fileName.c_str());
+	vecFileInfo.pop_front();
 
 #ifdef WIN32
 	if(_access(fileName, 0) != 0)
@@ -356,7 +348,7 @@ void CNvrFileReader::OnWork()
 		}
 		if (m_buffer->GetIdleLength() != RECORD_BUFF_SIZE)
 		{
-			j_sleep(1000);
+			j_sleep(1);
 			continue;
 		}
 		//J_OS::LOGINFO("1");

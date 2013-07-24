@@ -1,8 +1,7 @@
-#ifndef _X_SDK_DEF_H_
-#define _X_SDK_DEF_H_
+#ifndef __X_SDK_DEF_H_
+#define __X_SDK_DEF_H_
 #include "j_includes.h"
 
-//using namespace std;
 struct _cha
 {
 	j_int32_t cha;	
@@ -128,4 +127,4 @@ struct r_rcd_search
 	time_t end_time;				
 };
 
-#endif //~_X_SDK_DEF_H_
+#endif //~__X_SDK_DEF_H_

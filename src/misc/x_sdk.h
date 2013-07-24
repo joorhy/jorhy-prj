@@ -11,19 +11,36 @@ public:
 	CXSdk() {}
 	~CXSdk() {}
 
-	char *HttpCommunicate(char *body,char *uri);
-	r_register *StreamServerResgister(int id,char *uri);
-	r_devconfig *GetDevConfigByResid(char *resid,char *uri);
-	r_ssconfig *GetSSConfigByResid(char *resid,char *uri);
-	int GetRealTimePermission(char *resid,char *uid,char *uri);
-	r_historyfile *GetHistoryFile(char *resid,char *uid,time_t stime,time_t etime,char *uri);
-	int GetWarningMsg(char *resid,int type,char *uri);
-	int GetRecordNotice(s_record &record,char *uri);
+public:
+	///登录管理服务器
+	///@param[in]		nId 媒体设备ID
+	///@param[in]		pUrl 管理服务器URL
+	///@param[out]	resInfo 资源信息
+	///@return			参见j_errtype.h
+	j_result_t Login(j_int32_t nId, j_char_t *pUrl, ResourceMap &resInfo);
+	///获取资源信息
+	///@param[in]		pResid 资源ID
+	///@param[in]		pUrl 管理服务器URL
+	///@param[out]	resInfo 资源信息
+	///@return			参见j_errtype.h
+	j_result_t GetResourceInfo(j_char_t *pResid, j_char_t *pUrl, J_ResourceInfo &resInfo);
+	///获取流媒体服务器信息
+	///@param[in]		pResid 资源ID
+	///@param[in]		pUrl 管理服务器URL
+	///@param[out]	ssInfo 流媒体服务器信息
+	///@return			参见j_errtype.h
+	j_result_t GetStreamServerInfo(j_char_t *pResid, j_char_t *pUrl, J_StreamServerInfo &ssInfo);
+	///发送保活命令
+	///@param[in]		nStreamServerId 流媒体服务器ID
+	///@param[in]		pUrl 管理服务器URL
+	///@return			参见j_errtype.h
+	j_result_t KeepAlive(j_int32_t nStreamServerId, j_char_t *pUrl);
 
 private:
-	int get_int(json_object *p_object, const char *p_key);
-	char *get_string(json_object *p_object, const char *p_key);
-	json_object *get_object(json_object *p_object, const char *p_key);
+	char *HttpCommunicate(char *body,char *uri);
+	int JsonGetInt(json_object *p_object, const char *p_key);
+	char *JsonGetString(json_object *p_object, const char *p_key);
+	json_object *JsonGetObj(json_object *p_object, const char *p_key);
 
 private:
 	CXHttp m_httpHelper;

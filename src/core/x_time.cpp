@@ -73,11 +73,11 @@ j_uint64_t CTime::GetLocalTime(int) const
 #ifdef WIN32
 	SYSTEMTIME st;  
 	::GetLocalTime(&st);
-	nMilliSecondsOfDay = (st.wHour*3600 + st.wMinute*60 + st.wSecond) * 1000 + st.wMilliseconds;
+	nMilliSecondsOfDay = time(0) * 1000 + st.wMilliseconds;
 #else
 	struct timeval nowtimeval;
 	gettimeofday(&nowtimeval,0);
-	nMilliSecondsOfDay = ((uint64_t)nowtimeval.tv_sec * 1000 + (uint64_t)nowtimeval.tv_usec / 1000);
+	nMilliSecondsOfDay = ((uint64_t)(time(0) * 1000) + (uint64_t)nowtimeval.tv_usec / 1000);
 #endif
 
 	return nMilliSecondsOfDay;
@@ -105,4 +105,32 @@ j_time_t CTime::ConvertToTime_t(const j_char_t *pLogTime)
 	logTime.tm_sec = atoi(str.substr(12, 2).c_str());
 	
 	return mktime(&logTime);
+}
+
+j_string_t CTime::GetDate()
+{
+	time_t curTime;
+	curTime = time(0);
+	tm *pCurTime = localtime(&curTime);
+	char pBuff[128] = {0};
+	sprintf(pBuff, "%04d_%02d_%02d",
+			1900+pCurTime->tm_year,
+			pCurTime->tm_mon+1,
+			pCurTime->tm_mday);
+
+	return pBuff;
+}
+
+j_string_t CTime::GetDate(j_time_t nTime)
+{
+	time_t curTime;
+	curTime = nTime;
+	tm *pCurTime = localtime(&curTime);
+	char pBuff[128] = {0};
+	sprintf(pBuff, "%04d_%02d_%02d",
+		1900+pCurTime->tm_year,
+		pCurTime->tm_mon+1,
+		pCurTime->tm_mday);
+
+	return pBuff;
 }

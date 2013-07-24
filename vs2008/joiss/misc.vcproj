@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\src\core;..\..\src\utils"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_EXPORTS;JO_SINGLETON_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_EXPORTS;JO_SINGLETON_EXPORTS;JO_CONF_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -233,11 +233,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\misc\x_resource_manager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\misc\x_sdk.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\misc\x_sdk_def.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\misc\x_vod_manager.h"
 				>
 			</File>
 		</Filter>
@@ -303,7 +311,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\misc\x_resource_manager.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\misc\x_sdk.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\misc\x_vod_manager.cpp"
 				>
 			</File>
 		</Filter>

@@ -18,12 +18,12 @@ public:
 	}
 
 public:
-	virtual int GetDeviceInfo(const char *pResid, J_DeviceInfo &devInfo);
-	virtual int ListDevices(std::vector<J_DeviceInfo> &devList);
-	virtual int GetChannelInfo(const char *channelId, J_ChannelInfo &channelInfo);
-	virtual int GetRecordInfo(J_RecordInfo &recordInfo);
-	virtual int StartRecord();
-	virtual int StopRecord() { return J_OK; }
+	///J_JoManager
+	virtual j_result_t GetStreamServerInfo(const j_char_t *pResid, J_StreamServerInfo &ssInfo);
+	virtual j_result_t GetResourceInfo(ResourceMap &resInfo);
+	virtual j_result_t GetChannelInfo(const char *pResid, J_ResourceInfo &resInfo);
+	virtual j_result_t StartRecord();
+	virtual j_result_t StopRecord() { return J_OK; }
 
 private:
 

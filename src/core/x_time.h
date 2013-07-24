@@ -14,6 +14,8 @@ public:
 	j_string_t GetLocalTimeASC();
 	j_uint64_t GetLocalTime(j_int32_t) const;
 	j_time_t ConvertToTime_t(const j_char_t *pLogTime);
+	j_string_t GetDate();
+	j_string_t GetDate(j_time_t nTime);
 };
 JO_DECLARE_SINGLETON(Time)
 

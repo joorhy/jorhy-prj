@@ -164,6 +164,29 @@ enum J_PictureType
 	jo_jpeg,
 };
 
+///MC JSON指令
+enum J_JsonCommand
+{
+	jo_json_login = 1,
+	jo_json_get_resinfo,
+	jo_json_keepalive = 5,
+	jo_json_get_ss_info = 7,
+	jo_json_ctrl_record = 101,
+	jo_json_search_dvr_files,
+	jo_json_ptz_ctrl,
+	jo_json_search_nvr_files = 105,
+	jo_json_get_record_info,
+	jo_json_del_record,
+	jo_json_get_record_resid,
+};
+
+///MS Json 动作
+enum J_JsonAction
+{
+	jo_act_start_record = 1,
+	jo_act_stop_record,
+};
+
 ///帧头结构
 struct J_StreamHeader
 {
@@ -212,11 +235,17 @@ struct J_FileHeader
 ///文件信息
 struct J_FileInfo
 {
+	j_boolean_t operator<(const J_FileInfo &other) const
+	{
+		return (tStartTime < other.tStartTime);
+	}
 	j_time_t tStartTime;					//文件的开始时间
-	j_time_t tStoptime;						//文件的结束时间
+	j_time_t tStoptime;					//文件的结束时间
+	j_uint64_t nFileSize;
 	j_string_t fileName;
 };
-typedef std::vector<J_FileInfo> j_vec_file_info_t;
+typedef std::list<J_FileInfo> j_vec_file_info_t;
+typedef std::vector<j_string_t> j_vec_resid_t;
 
 ///录像信息
 struct J_RcdTimeInfo
@@ -258,13 +287,21 @@ struct J_DeviceInfo
 	j_int32_t devStatus;		//设备状态
 };
 
-///通道信息结构
-struct J_ChannelInfo
+///资源信息
+struct J_ResourceInfo
 {
-	j_int8_t  devId;				//所属设备ID
-	j_int32_t channelNum;			//通道编号
-	j_char_t resid[16];				//资源ID
-	j_int32_t record_type;			//录像类型
+	j_string_t resid;				//资源ID
+	j_int32_t chNum;			//通道编号
+	j_int32_t streamType;	//码流类型0-主码流，1-子码流
+	J_DeviceInfo devInfo;	//设备信息
+};
+typedef std::map<j_string_t, J_ResourceInfo> ResourceMap;
+
+///流媒体服务器信息
+struct J_StreamServerInfo
+{
+	j_char_t devIp[16];		//设备IP地址
+	j_uint16_t devPort;	//设备端口
 };
 
 ///录像信息结构
@@ -437,6 +474,30 @@ struct J_VideoFormat
 	j_int64_t timestamp;
 	j_int32_t size;
 	j_int32_t fps;
+};
+
+/// Json录像控制结构
+struct J_RecordCtrl
+{
+	j_int32_t action;			
+	j_int32_t stream_type;	
+	j_string_t resid;
+};
+
+///Json 云台控制结构
+struct J_PtzCtrl
+{
+	j_int32_t action;
+	j_int32_t parm;	
+	j_string_t resid;
+};
+
+///录像查询结构
+struct J_FileSearchCtrl
+{
+	j_string_t resid;
+	j_time_t begin_time;
+	j_time_t end_time;				
 };
 
 #endif //~__J_TYPE_H_

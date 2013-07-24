@@ -17,7 +17,9 @@ CXFile::~CXFile()
 char *CXFile::GetVodDir(const char *pFrl, char *pDir)
 {
 #ifdef WIN32
-	return "C:\\vod";
+	CreateDir((char *)pFrl);
+	strncpy(pDir, pFrl, 128);
+	return pDir;
 #else
 	char *p = NULL;
 	char *p2 = NULL;
@@ -75,10 +77,6 @@ char *CXFile::GetVodDir(const char *pFrl, char *pDir)
 
 int CXFile::CreateDir(char *pDir)
 {
-#ifdef WIN32
-	if (_access(pDir, 0) != 0)
-		CreateDirectory(pDir, NULL);
-#else
 	char *p = strstr(pDir, "/");
 	char *p2 = p;
 
@@ -92,6 +90,10 @@ int CXFile::CreateDir(char *pDir)
 		{
 			char vodDir[128] = {0};
 			strncpy(vodDir, p, p2 - p);
+#ifdef WIN32
+			if (_access(vodDir, 0) != 0)
+				CreateDirectory(vodDir, NULL);
+#else
 			if (access(vodDir, F_OK) != 0)
 			{
 				if (mkdir(vodDir, S_IRWXU | S_IRWXG | S_IRWXO) < 0)
@@ -100,9 +102,14 @@ int CXFile::CreateDir(char *pDir)
 					return J_FILE_ERROR;
 				}
 			}
+#endif
 		}
 		else
 		{
+#ifdef WIN32
+			if (_access(pDir, 0) != 0)
+				CreateDirectory(pDir, NULL);
+#else
 			if (access(pDir, F_OK) != 0)
 			{
 				if (mkdir(pDir, S_IRWXU | S_IRWXG | S_IRWXO) < 0)
@@ -111,10 +118,10 @@ int CXFile::CreateDir(char *pDir)
 					return J_FILE_ERROR;
 				}
 			}
+#endif
 			break;
 		}
 	}
-#endif
 
 	return J_OK;
 }
@@ -146,7 +153,7 @@ int CXFile::ListFiles(j_char_t *pDir, j_vec_str_t &fileVec, const j_char_t *pRes
 				fileVec.push_back(FindFileData.cFileName);
 		}
 	} while (FindNextFile(hFind, &FindFileData));  
-	CloseHandle(hFind);
+	FindClose(hFind);
 #else
 	DIR *dirPointer = NULL;
 	struct dirent *entry;
@@ -176,11 +183,12 @@ int CXFile::ListFiles(j_char_t *pDir, j_vec_str_t &fileVec, const j_char_t *pRes
 	return J_OK;
 }
 
-int CXFile::RenameFile(const char *oldName, const char *newName)
+int CXFile::RenameFile(const char *oldName, const char *newDir, const char *newName)
 {
 #ifdef WIN32
-	if(_access(oldName, 0) != 0)
+	if(_access(oldName, 0) == 0)
 	{ 
+		CreateDir((char *)newDir);
 		if(rename(oldName, newName) != 0)
 		{ 
 			J_OS::LOGINFO("CXFile::RenameFile Error");

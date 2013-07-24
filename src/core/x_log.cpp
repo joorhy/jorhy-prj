@@ -77,7 +77,7 @@ int CLog::WriteLogError(const char *format, ...)
 	m_locker._Lock();
 	char errBuff[512] = {0};
 #ifdef WIN32
-	sprintf(errBuff, "( errno = %d)", GetLastError());
+	sprintf(errBuff, "(errno = %d)", GetLastError());
 #else
 	sprintf(errBuff, "(%s, errno = %d)", strerror(errno), errno);
 #endif

@@ -12,7 +12,7 @@ public:
 	char *GetVodDir(const char *pFrl, char *pDir);
 	int CreateDir(char *pDir);
 
-	int RenameFile(const char *oldName, const char *newName);
+	int RenameFile(const char *oldName, const char *newDir, const char *newName);
 	int DeltmpByResid(const char *pDir, const char *pResid);
 	
 	int GetFilesByTime(const char *pDir, const char *pResid, time_t begin_time, time_t end_time, j_vec_file_info_t &vecFileInfo);

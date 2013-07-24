@@ -6,7 +6,7 @@ int CManagerFactory::RegisterManager(const char *managerType, J_MakeManagerFun p
 {
 	ManagerRegistMap::iterator it = m_managerRegistMap.find(managerType);
 	if (it == m_managerRegistMap.end())
-	{
+	{ 
 		m_managerRegistMap[managerType] = pFun;
 		J_OS::LOGINFO("CManagerFactory::RegisterManager %s Regist Sucess!!!", managerType);
 

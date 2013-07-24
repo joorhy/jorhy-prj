@@ -28,7 +28,7 @@ int CDeviceControl::PtzControl(const char *pResid, int nCmd, int nParam)
 		return J_NOT_EXIST;
 
     int nStreamType = 1;
-	J_Obj *pObj = GetAdapterFactoryLayer()->GetInstance(pResid, OBJ_CHANNEL, nStreamType);
+	J_Obj *pObj = GetAdapterFactoryLayer()->FatchChannel(pResid, nStreamType);
 	if (pObj == NULL)
 		return J_NOT_EXIST;
 
