@@ -105,6 +105,12 @@ int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pA
 	case jo_json_get_record_resid:
 	{
 		nResult = GetRecordResid(&json_resp_param_obj);
+		if (nResult < 0)
+		{
+			json_resp_param_obj = json_object_new_object();
+			json_object *json_resid_array_obj = json_object_new_array();
+			json_object_object_add(json_resp_param_obj, (char *)"res", json_resid_array_obj);
+		}
 		break;
 	}
 	case jo_json_add_resid:
@@ -193,6 +199,7 @@ int CRymcParser::RecordSearch(const char *pResid, j_time_t beginTime, j_time_t e
 			json_object_array_add(json_file_array_obj, json_file_obj);
 			nStartTime = it->tStartTime;
 			nEndTime = it->tStoptime;
+			json_file_obj = json_object_new_object();
 			json_object_object_add(json_file_obj, (char *)"stime", json_object_new_int(nStartTime));
 		}
 		else

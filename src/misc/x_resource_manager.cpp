@@ -2,6 +2,7 @@
 #include "x_manager_factory.h"
 #include "x_adapter_factory.h"
 #include "x_config.h"
+#include "x_sdk.h"
 
 JO_IMPLEMENT_SINGLETON(ResourceManager)
 
@@ -17,7 +18,7 @@ CResourceManager::~CResourceManager()
 
 int CResourceManager::InitResource()
 {
-	m_timer.Create(1 * 1000, CResourceManager::TimerThread, this);
+	m_timer.Create(10 * 1000, CResourceManager::TimerThread, this);
 	return J_OK;
 }
 
@@ -50,6 +51,11 @@ void CResourceManager::OnTimer()
 		{
 			m_bRegiste = true;
 		}
+	}
+	else
+	{
+		if (JoXSdk->KeepAlive(CXConfig::GetStreamServerId(), (j_char_t *)CXConfig::GetUrl()) != J_OK)
+			m_bRegiste = false;
 	}
 
 	TLock(m_locker);
