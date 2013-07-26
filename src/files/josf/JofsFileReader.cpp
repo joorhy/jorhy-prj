@@ -333,8 +333,8 @@ void CNvrFileReader::OnWork()
 	{
 		if (m_lastTime == 0)
 		{
-			TLock(m_mux);
-			if (m_cond.TimeWait(m_mux, 3, 0) < 0)
+			/*TLock(m_mux);
+			if (m_cond.TimeWait(m_mux, 1, 0) < 0)
 			{
 				streamHeader.dataLen = 0;
 				streamHeader.frameType = jo_file_end;
@@ -344,7 +344,9 @@ void CNvrFileReader::OnWork()
 				TUnlock(m_mux);
 				return;
 			}
-			TUnlock(m_mux);
+			TUnlock(m_mux);*/
+			j_sleep(1);
+			continue;
 		}
 		if (m_buffer->GetIdleLength() != RECORD_BUFF_SIZE)
 		{
