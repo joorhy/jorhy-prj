@@ -28,6 +28,7 @@ class CRymcParser : public J_CommandParser
 		int RecordSearch(const char *pResid, j_time_t beginTime, j_time_t endTime, json_object **json_param_obj);
 		int GetRecordInfo(const char *pResid, json_object **json_param_obj);
 		int GetRecordResid(json_object **json_param_obj);
+		int DelRecord(J_DelRecordCtrl &delRecordCtrl);
 
 	private:
 		enum

@@ -19,42 +19,61 @@
 #define JO_INSTANSE(_name) \
 	Get##_name##Layer()
 
+///资源管理Singleton对象
 #define JoResourceManager \
 	JO_INSTANSE(ResourceManager)
+///设备工厂Singleton对象
 #define JoAdapterFactory \
 	JO_INSTANSE(AdapterFactory)
+///设备管理Singleton对象
 #define JoAdapterManager \
 	JO_INSTANSE(AdapterManager)
+///解码器工厂Singleton对象
 #define JoDecoderFactory \
 	JO_INSTANSE(DecoderFactory)
+///视频显示器工厂Singleton对象
 #define JoRenderFactory \
 	JO_INSTANSE(RenderFactory)
+///文件分析器工厂Singleton对象
 #define JoFileReaderFactory \
 	JO_INSTANSE(FileReaderFactory)
+///协议过滤器工厂Singleton对象
 #define JoFilterFactory \
 	JO_INSTANSE(FilterFactory)
+///私有协议SDK Singleton对象
 #define JoXJoSdk \
 	JO_INSTANSE(XJoSdk)
+///管理设备工厂Singleton对象
 #define JoManagerFactory \
 	JO_INSTANSE(ManagerFactory)
+///流合成器工厂Singleton对象
 #define JoMuxFactory \
 	JO_INSTANSE(MuxFactory)
+///协议分析器工厂Singleton对象
 #define JoParserFactory \
 	JO_INSTANSE(ParserFactory)
+///播放器工厂Singleton对象
 #define JoPlayerFactory \
 	JO_INSTANSE(PlayerFactory)
+///MC协议SDK Singleton对象
 #define JoXSdk \
 	JO_INSTANSE(XSdk)
+///异步IO  Singleton对象
 #define JoXAsio \
 	JO_INSTANSE(XAsio)
+///线程池 Singleton对象
 #define JoThreadPool \
 	JO_INSTANSE(ThreadPool)
+///时间 Singleton对象
 #define JoTime \
 	JO_INSTANSE(Time)
+///录像管理器 Singleton对象
 #define JoRecoderManager \
 	JO_INSTANSE(RecoderManager)
+///播放管理器Singleton对象
 #define JoPlayManager \
 	JO_INSTANSE(PlayManager)
+///录像文件管理器Singleton对象
 #define JoVodManager \
 	JO_INSTANSE(XVodManager)
 

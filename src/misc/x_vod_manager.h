@@ -30,9 +30,16 @@ public:
 	///@return			参见j_errtype.h
 	j_result_t GetRecordResid(j_vec_resid_t &vecResid);
 
+	///删除录像文件
+	///@param[in]		delRecordCtrl 录像资源信息
+	///@return			参见j_errtype.h
+	j_result_t DelFiles(J_DelRecordCtrl &delRecordCtrl);
+
 private:
 	void FillFileInfo(const char *pFileName, J_FileInfo &fileInfo);
 	int SearchOneDayFiles(const j_char_t *pResid, const char *pDate, j_time_t begin_time, j_time_t end_time, j_vec_file_info_t &vecFileInfo);
+	int DeleteFilesByResid(const j_char_t *pResid, j_time_t begin_time, j_time_t end_time);
+	int DeleteDirectory(char *DirName);
 };
 JO_DECLARE_SINGLETON(XVodManager)
 #endif //~__X_VOD_MANAGER_H_

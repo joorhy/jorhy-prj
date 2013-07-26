@@ -167,7 +167,7 @@ j_result_t CXSdk::Login(j_int32_t nId, j_char_t *pUrl, ResourceMap &resInfo)
 			J_ResourceInfo resourceInfo;
 			resourceInfo.devInfo = devInfo;
 			resourceInfo.chNum = JsonGetInt(json_channel_obj, "cha");
-			resourceInfo.resid	= JsonGetString(json_channel_obj, "resid");
+			sprintf(resourceInfo.resid, "%s", JsonGetString(json_channel_obj, "resid"));
 			resourceInfo.streamType	= JsonGetInt(json_channel_obj, "ms");
 			resInfo[resourceInfo.resid] = resourceInfo;
 		}
@@ -183,7 +183,7 @@ j_result_t CXSdk::GetResourceInfo(j_char_t *pResid, j_char_t *pUrl, J_ResourceIn
 	if (strstr(pResid, ".") != NULL)
 	{
 		//平台相关处理
-		resInfo.resid = pResid;
+		memset(resInfo.resid, 0, sizeof(resInfo.resid));
 		resInfo.chNum = 0;
 		resInfo.streamType = 0;
 	}
@@ -230,7 +230,7 @@ j_result_t CXSdk::GetResourceInfo(j_char_t *pResid, j_char_t *pUrl, J_ResourceIn
 			J_OS::LOGINFO("CXSdk::GetResourceInfo json_object_object_get error");
 			return J_UNKNOW;
 		}
-		resInfo.resid = pResid;
+		sprintf(resInfo.resid, "%s", pResid);
 		resInfo.streamType = 0;
 		resInfo.devInfo.devId = JsonGetInt(json_resp_param_obj, "id");
 		sprintf(resInfo.devInfo.devType, "%s",  JsonGetString(json_resp_param_obj, "type"));
@@ -239,7 +239,7 @@ j_result_t CXSdk::GetResourceInfo(j_char_t *pResid, j_char_t *pUrl, J_ResourceIn
 		sprintf(resInfo.devInfo.userName, "%s", JsonGetString(json_resp_param_obj, "user"));
 		sprintf(resInfo.devInfo.passWd, "%s", JsonGetString(json_resp_param_obj, "pass"));
 		resInfo.chNum = JsonGetInt(json_resp_param_obj, "cha");
-		resInfo.resid	= JsonGetString(json_resp_param_obj, "resid");
+		sprintf(resInfo.resid, "%s", JsonGetString(json_resp_param_obj, "resid"));
 		resInfo.streamType = JsonGetInt(json_resp_param_obj, "ms");
 		JSON_CLEAN_ALL();
 	}
@@ -333,6 +333,66 @@ j_result_t CXSdk::KeepAlive(j_int32_t nStreamServerId, j_char_t *pUrl)
 		return J_UNKNOW;
 	}
     JSON_CLEAN_ALL();
+
+	return J_OK;
+}
+
+j_result_t CXSdk::ParserRecordCtrl(const char *pJsonStr, J_ControlObj &ctrlObj)
+{
+	json_object *json_request_obj = json_tokener_parse((char *)pJsonStr);
+	if(is_error(json_request_obj))
+	{
+		return J_JSON_UNKOWN;
+	}
+	ctrlObj.nCommand = JsonGetInt(json_request_obj, (char *)"cmd");
+	json_object *json_param_obj = json_object_new_object();
+	switch (ctrlObj.nCommand)
+	{
+		case jo_json_ctrl_record://录像控制
+			json_param_obj = JsonGetObj(json_request_obj, (char *)"parm");
+			ctrlObj.recordCtrl.action	= JsonGetInt(json_param_obj, (char *)"act");
+			sprintf(ctrlObj.recordCtrl.resid, "%s", JsonGetString(json_param_obj, (char *)"resid"));
+			ctrlObj.recordCtrl.stream_type	= JsonGetInt(json_param_obj, (char *)"ms");
+			break;
+		case jo_json_ptz_ctrl://云台控制
+			json_param_obj = JsonGetObj(json_request_obj, (char *)"parm");
+			sprintf(ctrlObj.ptzCtrl.resid, "%s", JsonGetString(json_param_obj, (char *)"resid"));
+			ctrlObj.ptzCtrl.action	= JsonGetInt(json_param_obj, (char *)"action");
+			ctrlObj.ptzCtrl.parm	= JsonGetInt(json_param_obj, (char *)"value");
+			break;
+		case jo_json_search_nvr_files://录像查询
+			json_param_obj = JsonGetObj(json_request_obj, (char *)"parm");
+			sprintf(ctrlObj.fileSearchCtrl.resid, "%s", JsonGetString(json_param_obj, (char *)"resid"));
+			ctrlObj.fileSearchCtrl.begin_time = JsonGetInt(json_param_obj, (char *)"stime");
+			ctrlObj.fileSearchCtrl.end_time	= JsonGetInt(json_param_obj, (char *)"etime");
+			break;
+		case jo_json_get_record_info://获得录像资源
+			json_param_obj = JsonGetObj(json_request_obj, (char *)"parm");
+			sprintf(ctrlObj.resid, "%s", JsonGetString(json_param_obj, (char *)"resid"));
+			break;
+		case jo_json_del_record:
+			json_param_obj = JsonGetObj(json_request_obj, (char *)"parm");
+			sprintf(ctrlObj.delRecordCtrl.resid, "%s", JsonGetString(json_param_obj, (char *)"resid"));
+			ctrlObj.delRecordCtrl.nType = JsonGetInt(json_param_obj, (char *)"all");
+			ctrlObj.delRecordCtrl.begin_time = JsonGetInt(json_param_obj, (char *)"stime");
+			ctrlObj.delRecordCtrl.end_time = JsonGetInt(json_param_obj, (char *)"etime");
+			break;
+		case jo_json_add_resid://添加资源
+			memset(&ctrlObj.resInfo.devInfo, 0, sizeof(J_DeviceInfo));
+			json_param_obj = JsonGetObj(json_request_obj, (char *)"parm");
+			sprintf(ctrlObj.resInfo.resid, "%s", JsonGetString(json_param_obj, (char *)"resid"));
+			ctrlObj.resInfo.chNum = JsonGetInt(json_param_obj, (char *)"cha");
+			ctrlObj.resInfo.streamType = JsonGetInt(json_param_obj, (char *)"ms");
+			ctrlObj.resInfo.devInfo.devId = JsonGetInt(json_param_obj, (char *)"id");
+			sprintf(ctrlObj.resInfo.devInfo.devIp, "%s",  JsonGetString(json_param_obj, (char *)"ip"));
+			ctrlObj.resInfo.devInfo.devPort = JsonGetInt(json_param_obj, (char *)"port");
+			int devType = JsonGetInt(json_param_obj, (char *)"type");
+			sprintf(ctrlObj.resInfo.devInfo.devType, "%s", dev_type[devType]);
+			sprintf(ctrlObj.resInfo.devInfo.userName, "%s", JsonGetString(json_param_obj, (char *)"user"));
+			sprintf(ctrlObj.resInfo.devInfo.passWd, "%s", JsonGetString(json_param_obj, (char *)"pass"));
+			break;
+	}
+	json_object_put(json_request_obj);
 
 	return J_OK;
 }

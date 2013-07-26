@@ -36,6 +36,12 @@ public:
 	///@return			参见j_errtype.h
 	j_result_t KeepAlive(j_int32_t nStreamServerId, j_char_t *pUrl);
 
+	///解析录像控制消息
+	///@param[in]		pJsonStr Json命令参数字符串
+	///@param[out]	ctrlObj 解析结果
+	///@return			参见j_errtype.h
+	j_result_t ParserRecordCtrl(const char *pJsonStr, J_ControlObj &ctrlObj);
+
 private:
 	char *HttpCommunicate(char *body,char *uri);
 	int JsonGetInt(json_object *p_object, const char *p_key);

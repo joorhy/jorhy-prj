@@ -16,6 +16,10 @@ public:
 	int InitResource();
 	///停止定时器
 	void ReleaseResource();
+	///添加资源
+	///@param		resInfo 资源信息
+	///@return 		参考x_error_type.h
+	j_result_t AddResource(J_ResourceInfo &resInfo);
 
 private:
 	static void TimerThread(void *pUser)

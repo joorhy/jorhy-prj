@@ -2,6 +2,8 @@
 #include "x_socket.h"
 #include "x_string.h"
 #include "x_vod_manager.h"
+#include "x_sdk.h"
+#include "x_resource_manager.h"
 
 static const char *http_end = "\r\n\r\n";
 
@@ -27,6 +29,7 @@ int CRymcParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
 
 int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out)
 {
+	//printf(pAsioData_in->ioRead.buf);
 	memcpy(m_read_buff + m_read_len, pAsioData_in->ioRead.buf, pAsioData_in->ioRead.finishedLen);
 	m_read_len += pAsioData_in->ioRead.finishedLen;
 	//printf("%s\n", pAsioData_in->ioRead.buf);
@@ -67,62 +70,46 @@ int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pA
 		return J_JSON_UNKOWN;
 	}
 
-	json_object *json_request_obj = json_tokener_parse((char *)strBody.c_str());
-	if(is_error(json_request_obj))
-	{
-		return J_JSON_UNKOWN;
-	}
-
 	j_result_t nResult = J_OK;
-	int cmd = json_object_get_int(json_object_object_get(json_request_obj, (char *)"cmd"));
-	json_object *json_param_obj = json_object_new_object();
 	json_object *json_resp_param_obj = NULL;
-	switch(cmd)
+	J_ControlObj controlObj = {0};
+	JoXSdk->ParserRecordCtrl(strBody.c_str(), controlObj);
+	switch(controlObj.nCommand)
 	{
 	case jo_json_ctrl_record://录像控制
 	{
-		J_RecordCtrl recordCtrl;
-		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
-		recordCtrl.action	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"act"));
-		recordCtrl.resid 	= json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
-		recordCtrl.stream_type	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"ms"));
-
-		J_OS::LOGINFO("CRymcParser::ProcessRequest RecordControl resid = %s", recordCtrl.resid.c_str());
-		nResult = RecordControl(recordCtrl.resid.c_str(), recordCtrl.action, recordCtrl.stream_type);
+		J_OS::LOGINFO("CRymcParser::ProcessRequest RecordControl resid = %s", controlObj.recordCtrl.resid);
+		nResult = RecordControl(controlObj.recordCtrl.resid, controlObj.recordCtrl.action, controlObj.recordCtrl.stream_type);
 		break;
 	}
 	case jo_json_ptz_ctrl://云台控制
 	{
-		J_PtzCtrl ptzCtrl;
-		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
-		ptzCtrl.resid 	= json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
-		ptzCtrl.action	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"action"));
-		ptzCtrl.parm	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"value"));
-		
-		nResult = PtzControl(ptzCtrl.resid.c_str(), ptzCtrl.action, ptzCtrl.parm);
+		nResult = PtzControl(controlObj.ptzCtrl.resid, controlObj.ptzCtrl.action, controlObj.ptzCtrl.parm);
 		break;
 	}
 	case jo_json_search_nvr_files:
 	{
-		J_FileSearchCtrl fileSearchCtrl;
-		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
-		fileSearchCtrl.resid = json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
-		fileSearchCtrl.begin_time = json_object_get_int(json_object_object_get(json_param_obj, (char *)"stime"));
-		fileSearchCtrl.end_time	= json_object_get_int(json_object_object_get(json_param_obj, (char *)"etime"));
-		
-		nResult = RecordSearch(fileSearchCtrl.resid.c_str(), fileSearchCtrl.begin_time, fileSearchCtrl.end_time, &json_resp_param_obj);
+		nResult = RecordSearch(controlObj.fileSearchCtrl.resid, controlObj.fileSearchCtrl.begin_time, controlObj.fileSearchCtrl.end_time, &json_resp_param_obj);
 		break;
 	}
 	case jo_json_get_record_info:
 	{
-		json_param_obj = json_object_object_get(json_request_obj, (char *)"parm");
-		j_string_t resid = json_object_get_string(json_object_object_get(json_param_obj, (char *)"resid"));
-		nResult = GetRecordInfo(resid.c_str(), &json_resp_param_obj);
+		nResult = GetRecordInfo(controlObj.resid, &json_resp_param_obj);
+		break;
+	}
+	case jo_json_del_record:
+	{
+		nResult = DelRecord(controlObj.delRecordCtrl);
 		break;
 	}
 	case jo_json_get_record_resid:
 	{
 		nResult = GetRecordResid(&json_resp_param_obj);
+		break;
+	}
+	case jo_json_add_resid:
+	{
+		nResult = JoResourceManager->AddResource(controlObj.resInfo);
 		break;
 	}
 	default:
@@ -250,5 +237,11 @@ int CRymcParser::GetRecordResid(json_object **json_param_obj)
 	}
 	json_object_object_add(*json_param_obj, (char *)"res", json_resid_array_obj);
 
+	return J_OK;
+}
+
+int CRymcParser::DelRecord(J_DelRecordCtrl &delRecordCtrl)
+{
+	JoVodManager->DelFiles(delRecordCtrl);
 	return J_OK;
 }

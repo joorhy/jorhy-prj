@@ -178,6 +178,7 @@ enum J_JsonCommand
 	jo_json_get_record_info,
 	jo_json_del_record,
 	jo_json_get_record_resid,
+	jo_json_add_resid,
 };
 
 ///MS Json 动作
@@ -290,7 +291,7 @@ struct J_DeviceInfo
 ///资源信息
 struct J_ResourceInfo
 {
-	j_string_t resid;				//资源ID
+	j_char_t resid[32];			//资源ID
 	j_int32_t chNum;			//通道编号
 	j_int32_t streamType;	//码流类型0-主码流，1-子码流
 	J_DeviceInfo devInfo;	//设备信息
@@ -481,7 +482,7 @@ struct J_RecordCtrl
 {
 	j_int32_t action;			
 	j_int32_t stream_type;	
-	j_string_t resid;
+	j_char_t resid[32];
 };
 
 ///Json 云台控制结构
@@ -489,15 +490,39 @@ struct J_PtzCtrl
 {
 	j_int32_t action;
 	j_int32_t parm;	
-	j_string_t resid;
+	j_char_t resid[32];
+};
+
+///Json 删除录像结构
+struct J_DelRecordCtrl
+{
+	j_char_t resid[32];
+	j_int32_t nType;
+	j_time_t begin_time;
+	j_time_t end_time;
 };
 
 ///录像查询结构
 struct J_FileSearchCtrl
 {
-	j_string_t resid;
+	j_char_t resid[32];
 	j_time_t begin_time;
 	j_time_t end_time;				
+};
+
+///MC控制命令结构
+struct J_ControlObj
+{
+	j_int32_t nCommand;
+	union
+	{
+		J_RecordCtrl recordCtrl;
+		J_PtzCtrl ptzCtrl;
+		J_FileSearchCtrl fileSearchCtrl;
+		J_DelRecordCtrl delRecordCtrl;
+		J_ResourceInfo resInfo;
+		j_char_t resid[32];
+	};
 };
 
 #endif //~__J_TYPE_H_

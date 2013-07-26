@@ -26,6 +26,19 @@ void CResourceManager::ReleaseResource()
 	m_timer.Destroy();
 }
 
+j_result_t CResourceManager::AddResource(J_ResourceInfo &resInfo)
+{
+	TLock(m_locker);
+	ResourceMap::iterator itDev = m_devMap.find(resInfo.resid);
+	if (itDev == m_devMap.end())
+	{
+		resInfo.devInfo.devStatus = jo_dev_broken;
+		m_devMap[resInfo.resid] = resInfo;
+	}
+	TUnlock(m_locker);
+	return J_OK;
+}
+
 void CResourceManager::OnTimer()
 {
 	int nRet = J_OK;

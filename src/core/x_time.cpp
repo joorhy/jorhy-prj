@@ -112,11 +112,11 @@ j_string_t CTime::GetDate()
 	time_t curTime;
 	curTime = time(0);
 	tm *pCurTime = localtime(&curTime);
+	pCurTime->tm_hour = 0;
+	pCurTime->tm_min = 0;
+	pCurTime->tm_sec = 0;
 	char pBuff[128] = {0};
-	sprintf(pBuff, "%04d_%02d_%02d",
-			1900+pCurTime->tm_year,
-			pCurTime->tm_mon+1,
-			pCurTime->tm_mday);
+	sprintf(pBuff, "%d", mktime(pCurTime));
 
 	return pBuff;
 }
@@ -126,11 +126,11 @@ j_string_t CTime::GetDate(j_time_t nTime)
 	time_t curTime;
 	curTime = nTime;
 	tm *pCurTime = localtime(&curTime);
+	pCurTime->tm_hour = 0;
+	pCurTime->tm_min = 0;
+	pCurTime->tm_sec = 0;
 	char pBuff[128] = {0};
-	sprintf(pBuff, "%04d_%02d_%02d",
-		1900+pCurTime->tm_year,
-		pCurTime->tm_mon+1,
-		pCurTime->tm_mday);
+	sprintf(pBuff, "%d", mktime(pCurTime));
 
 	return pBuff;
 }

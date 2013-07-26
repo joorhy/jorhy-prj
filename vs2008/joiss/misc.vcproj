@@ -241,10 +241,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\misc\x_sdk_def.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\misc\x_vod_manager.h"
 				>
 			</File>
