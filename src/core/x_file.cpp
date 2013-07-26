@@ -25,7 +25,8 @@ char *CXFile::GetVodDir(const char *pFrl, char *pDir)
 	char *p2 = NULL;
 	FILE *fCheck = NULL;
 	FILE *fCreate = NULL;
-	if ((p = strstr(const_cast<char *>(pFrl), "nfs://")) != NULL)
+	p = strstr((char *)pFrl, "nfs://");
+	if ((p = strstr((char *)pFrl, "nfs://")) != NULL)
 	{
 		p2 = p + strlen("nfs://");
 
@@ -46,7 +47,7 @@ char *CXFile::GetVodDir(const char *pFrl, char *pDir)
 		}
 		sprintf(pDir, "%s", "/mnt");
 	}
-	else if ((p = strstr(const_cast<char *>(pFrl), "file://")) != NULL)
+	else if ((p = strstr((char *)pFrl, "file://")) != NULL)
 	{
 		p2 = p + strlen("file://");
 		if (strstr(p2, "$HOME"))
@@ -197,9 +198,10 @@ int CXFile::RenameFile(const char *oldName, const char *newDir, const char *newN
 	}  
 #else
     FILE *fRename = NULL;
+	CreateDir((char *)newDir);
     char cmdBuff[1024] = {0};
     sprintf(cmdBuff, "mv %s %s", oldName, newName);
-    fRename = popen(cmdBuff, "r");
+    fRename = popen(cmdBuff, "w");
     if (fRename)
         pclose(fRename);
 #endif

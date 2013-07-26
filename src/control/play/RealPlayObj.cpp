@@ -101,7 +101,7 @@ j_result_t CRealPlayObj::StartVideo()
 		return nRet;
 	}
 	//m_bStart = true;
-	J_OS::LOGINFO("CRealPlayObj::StartVideo socket =  %d start", m_nSocket);
+	J_OS::LOGINFO("CRealPlayObj::StartVideo socket =  %d start", m_nSocket.sock);
 	return J_OK;
 }
 
@@ -117,7 +117,7 @@ j_result_t CRealPlayObj::StopVideo()
 			return nRet;
 		}
 
-		J_OS::LOGINFO("CRealPlayObj::StopVideo socket =  %d stop", m_nSocket);
+		J_OS::LOGINFO("CRealPlayObj::StopVideo socket =  %d stop", m_nSocket.sock);
 	}
 	return J_OK;
 }

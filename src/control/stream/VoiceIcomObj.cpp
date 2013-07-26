@@ -24,12 +24,12 @@ int CVoiceIcomObj::Process(J_AsioDataBase &asioData)
 			{
 			case jo_start_voice:
 				nRet = StartVoice();
-				J_OS::LOGINFO("CNVRRealClient::Process StartVoice socket =  %d ret = %d", m_nSocket, nRet);
+				J_OS::LOGINFO("CNVRRealClient::Process StartVoice socket =  %d ret = %d", m_nSocket.sock, nRet);
 				break;
 			case jo_stop_voice:
 			{
 				nRet = StopVoice();
-				J_OS::LOGINFO("CVoiceIcomObj::Process StopVoice socket =  %d ret = %d", m_nSocket, nRet);
+				J_OS::LOGINFO("CVoiceIcomObj::Process StopVoice socket =  %d ret = %d", m_nSocket.sock, nRet);
 				break;
 			}
 			default:
@@ -67,7 +67,7 @@ int CVoiceIcomObj::Process(J_AsioDataBase &asioData)
 int CVoiceIcomObj::Clearn()
 {
 	StopVoice();
-	J_OS::LOGINFO("CVoiceIcomObj::OnBroken socket =  %d broken", m_nSocket);
+	J_OS::LOGINFO("CVoiceIcomObj::OnBroken socket =  %d broken", m_nSocket.sock);
 
 	return J_OK;
 }
@@ -96,7 +96,7 @@ int CVoiceIcomObj::StartVoice()
 	}
 	//m_bStart = true;
 
-	J_OS::LOGINFO("CVoiceIcomObj::StartVoice socket =  %d start", m_nSocket);
+	J_OS::LOGINFO("CVoiceIcomObj::StartVoice socket =  %d start", m_nSocket.sock);
 
 	return J_OK;
 }
@@ -106,7 +106,7 @@ int CVoiceIcomObj::StopVoice()
 	if (m_bStart)
 	{
 		m_bStart = false;
-		int nRet = JoAdapterManager->StopVoice(m_resid.c_str(), m_nSocket);
+		int nRet = JoAdapterManager->StopVoice(m_resid.c_str(), m_nSocket.sock);
 		if (nRet < 0)
 		{
 			J_OS::LOGINFO("CVoiceIcomObj::StopVoice StopVoice error ret = %d", nRet);

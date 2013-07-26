@@ -22,7 +22,7 @@ CVodMediaObj::CVodMediaObj(j_socket_t nSocket, J_Obj *pObj)
 	m_lastFrameTime = 0;
 	m_lastFrameNum = 0;
 
-	J_OS::LOGINFO("CVodMediaObj::CVodMediaObj created socket =  %d", m_nSocket);
+	J_OS::LOGINFO("CVodMediaObj::CVodMediaObj created socket =  %d", m_nSocket.sock);
 }
 
 CVodMediaObj::~CVodMediaObj()
@@ -33,7 +33,7 @@ CVodMediaObj::~CVodMediaObj()
 	if (m_pConvetBuff != NULL)
 		delete m_pConvetBuff;
 
-	J_OS::LOGINFO("CVodMediaObj::~CVodMediaObj destroyed socket =  %d", m_nSocket);
+	J_OS::LOGINFO("CVodMediaObj::~CVodMediaObj destroyed socket =  %d", m_nSocket.sock);
 }
 
 int CVodMediaObj::Process(J_AsioDataBase &asioData)
@@ -49,14 +49,14 @@ int CVodMediaObj::Process(J_AsioDataBase &asioData)
 			{
 			case jo_start_vod:
 				nRet = OpenFile();
-				J_OS::LOGINFO("CVodMediaObj::Process OpenFile socket =  %d ret = %d", m_nSocket, nRet);
+				J_OS::LOGINFO("CVodMediaObj::Process OpenFile socket =  %d ret = %d", m_nSocket.sock, nRet);
 				break;
 			case jo_pause_vod:
 				nRet = PauseFile();
 				break;
 			case jo_settime_vod:
 				nRet = SetTime();
-				J_OS::LOGINFO("CVodMediaObj::Process OpenFile socket =  %d ret = %d", m_nSocket, nRet);
+				J_OS::LOGINFO("CVodMediaObj::Process OpenFile socket =  %d ret = %d", m_nSocket.sock, nRet);
 				break;
 			case jo_setpos_vod:
 				nRet = SetScale();
@@ -97,7 +97,7 @@ int CVodMediaObj::Clearn()
 		m_pReader = NULL;
 	}
 
-	J_OS::LOGINFO("CVodMediaObj::Clearn socket =  %d broken", m_nSocket);
+	J_OS::LOGINFO("CVodMediaObj::Clearn socket =  %d broken", m_nSocket.sock);
 	//delete this;
 
 	return J_OK;
@@ -135,7 +135,7 @@ int CVodMediaObj::OpenFile()
 
 	m_fileid = m_resid;
 
-	J_OS::LOGINFO("CVodMediaObj::OpenFile socket =  %d OpenFile", m_nSocket);
+	J_OS::LOGINFO("CVodMediaObj::OpenFile socket =  %d OpenFile", m_nSocket.sock);
 
 	return J_OK;
 }
@@ -151,7 +151,7 @@ int CVodMediaObj::CloseFile()
 
 	m_fileid.clear();
 	m_bSendHeader = true;
-	J_OS::LOGINFO("CVodMediaObj::CloseFile socket =  %d CloseFile", m_nSocket);
+	J_OS::LOGINFO("CVodMediaObj::CloseFile socket =  %d CloseFile", m_nSocket.sock);
 
 	return J_OK;
 }

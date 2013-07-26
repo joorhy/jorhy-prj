@@ -240,7 +240,7 @@ int CAdapterManager::DelVodStream(j_socket_t nSocket, const char *pResId)
 	std::map<j_socket_t, J_Obj *>::iterator it = m_vodMap.find(nSocket);
 	if (it == m_vodMap.end())
 	{
-		J_OS::LOGINFO("CAdapterManager::DelVodStream vodStream not exist, id = %d", nSocket);
+		J_OS::LOGINFO("CAdapterManager::DelVodStream vodStream not exist, id = %d", nSocket.sock);
 		return J_NOT_EXIST;
 	}
 	pRemoteVod->CloseVodStream(it->second);

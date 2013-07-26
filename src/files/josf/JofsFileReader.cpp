@@ -152,7 +152,7 @@ int CNvrFileReader::SetScale(float nScale)
 int CNvrFileReader::SetTime(j_uint64_t s_time, j_uint64_t e_time)
 {
 	int nRet = J_OK;
-	nRet = ListRecord(s_time, s_time + RECORD_INTERVAL);
+	nRet = ListRecord(s_time, s_time + 3600);
 	if (nRet != J_OK)
 	{
 		return nRet;

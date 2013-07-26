@@ -73,7 +73,7 @@ int CStreamRecord::StartRecord(const char *pResid)
 	if (CreateFile(NULL) != J_OK)
 		return J_FILE_ERROR;
 
-	J_OS::LOGINFO("CStreamRecord::StartRecord socket =  %d start", m_nSocket);
+	J_OS::LOGINFO("CStreamRecord::StartRecord socket =  %d start", m_nSocket.sock);
 
 	return J_OK;
 }
@@ -101,7 +101,7 @@ int CStreamRecord::StopRecord(const char *pResid)
 
 		//J_Release(this);
 
-		J_OS::LOGINFO("CStreamRecord::StopRecord socket =  %d stop", m_nSocket);
+		J_OS::LOGINFO("CStreamRecord::StopRecord socket =  %d stop", m_nSocket.sock);
 	}
 
 	return J_OK;

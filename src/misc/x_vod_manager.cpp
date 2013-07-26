@@ -17,7 +17,6 @@ CXVodManager::~CXVodManager()
 j_result_t CXVodManager::GetRecordInfo(const j_char_t *pResid, j_time_t &begin_time, j_time_t &end_time, j_int64_t &nSize)
 {
 	j_vec_file_info_t vecFileInfo;
-	const char *pDir = CXConfig::GetVodPath();
 	j_char_t file_name[256] = {0};
 
 	begin_time = 0xFFFFFFFFFFFFFFFF;
@@ -25,6 +24,7 @@ j_result_t CXVodManager::GetRecordInfo(const j_char_t *pResid, j_time_t &begin_t
 	nSize = 0;
 
 #ifdef WIN32
+	const char *pDir = CXConfig::GetVodPath();
 	WIN32_FIND_DATA FindFileData;  
 	HANDLE hFind;  
 
@@ -32,7 +32,7 @@ j_result_t CXVodManager::GetRecordInfo(const j_char_t *pResid, j_time_t &begin_t
 	hFind = FindFirstFile(file_name, &FindFileData);  
 	if (hFind == INVALID_HANDLE_VALUE)   
 	{  
-		J_OS::LOGERROR("CXFile::GetRecordInfo FindFirstFile failed\n");  
+		J_OS::LOGERROR("CXVodManager::GetRecordInfo FindFirstFile failed\n");  
 		return J_UNKNOW;  
 	}  
 	
@@ -57,21 +57,23 @@ j_result_t CXVodManager::GetRecordInfo(const j_char_t *pResid, j_time_t &begin_t
 	FindClose(hFind);
 #else
 	DIR *dirPointer = NULL;
+	char pDir [256] = {0};
+	m_fileHelper.GetVodDir(CXConfig::GetVodPath(), (char *)pDir);
 	struct dirent *entry;
 	sprintf(file_name, "%s/%s", pDir, pResid);
 	if ((dirPointer = opendir(file_name)) == NULL)
 	{
-		J_OS::LOGERROR("CXFile::ListFiles opendir error");
+		J_OS::LOGERROR("CXVodManager::GetRecordInfo opendir error");
 		return J_UNKNOW;
 	}
 
 	while ((entry = readdir(dirPointer)) != NULL)
 	{
-		if (memcmp(FindFileData.cFileName, ".", 1) != 0 
-			&& memcmp(FindFileData.cFileName, "..", 2) != 0)
+		if (memcmp(entry->d_name, ".", 1) != 0 
+			&& memcmp(entry->d_name, "..", 2) != 0)
 		{
 			vecFileInfo.clear();
-			SearchOneDayFiles(pResid, FindFileData.cFileName, 0, 0xFFFFFFFFFFFFFFFF, vecFileInfo);
+			SearchOneDayFiles(pResid, entry->d_name, 0, 0xFFFFFFFFFFFFFFFF, vecFileInfo);
 			j_vec_file_info_t::iterator it = vecFileInfo.begin();
 			for (; it!=vecFileInfo.end(); ++it)
 			{
@@ -105,7 +107,7 @@ j_result_t CXVodManager::DelFiles(J_DelRecordCtrl &delRecordCtrl)
 	if (delRecordCtrl.end_time == 0)
 		delRecordCtrl.end_time = 0xFFFFFFFFFFFFFFFF;
 
-	if (j_string_t(delRecordCtrl.resid) == "")//É¾³ýÊ±¼ä¶ÎÄÚËùÓÐÂ¼Ïñ
+	if (j_string_t(delRecordCtrl.resid) == "")//Ã‰Â¾Â³Ã½ÃŠÂ±Â¼Ã¤Â¶ÃŽÃ„ÃšÃ‹Ã¹Ã“ÃÃ‚Â¼ÃÃ±
 	{
 		j_vec_resid_t vecResid;
 		GetRecordResid(vecResid);
@@ -117,14 +119,20 @@ j_result_t CXVodManager::DelFiles(J_DelRecordCtrl &delRecordCtrl)
 	}
 	else
 	{
-		if (delRecordCtrl.nType == 0)//°´Ê±¼äÉ¾³ý
+		if (delRecordCtrl.nType == 0)//Â°Â´ÃŠÂ±Â¼Ã¤Ã‰Â¾Â³Ã½
 		{
 			DeleteFilesByResid(delRecordCtrl.resid, delRecordCtrl.begin_time, delRecordCtrl.end_time);
 		}
-		else//É¾³ýËùÓÐ
+		else//Ã‰Â¾Â³Ã½Ã‹Ã¹Ã“Ã
 		{
 			char file_name[256] = {0};
+#ifdef WIN32
 			sprintf(file_name, "%s/%s", CXConfig::GetVodPath(), delRecordCtrl.resid);
+#else
+			char pDir[256] = {0};
+			m_fileHelper.GetVodDir(CXConfig::GetVodPath(), pDir);
+			sprintf(file_name, "%s/%s", pDir, delRecordCtrl.resid);
+#endif
 			DeleteDirectory(file_name);
 		}
 	}
@@ -133,9 +141,9 @@ j_result_t CXVodManager::DelFiles(J_DelRecordCtrl &delRecordCtrl)
 
 j_result_t CXVodManager::GetRecordResid(j_vec_resid_t &vecResid)
 {
-	const char *pDir = CXConfig::GetVodPath();
 	j_char_t file_name[256] = {0};
 #ifdef WIN32
+	const char *pDir = CXConfig::GetVodPath();
 	WIN32_FIND_DATA FindFileData;  
 	HANDLE hFind;  
 
@@ -143,7 +151,7 @@ j_result_t CXVodManager::GetRecordResid(j_vec_resid_t &vecResid)
 	hFind = FindFirstFile(file_name, &FindFileData);  
 	if (hFind == INVALID_HANDLE_VALUE)   
 	{  
-		J_OS::LOGERROR("CXFile::GetRecordInfo FindFirstFile failed\n");  
+		J_OS::LOGERROR("CXVodManager::GetRecordInfo FindFirstFile failed\n");  
 		return J_UNKNOW;  
 	}  
 
@@ -158,20 +166,22 @@ j_result_t CXVodManager::GetRecordResid(j_vec_resid_t &vecResid)
 	FindClose(hFind);
 #else
 	DIR *dirPointer = NULL;
+	char pDir [256] = {0};
+	m_fileHelper.GetVodDir(CXConfig::GetVodPath(), (char *)pDir);
 	struct dirent *entry;
 	sprintf(file_name, "%s", pDir);
 	if ((dirPointer = opendir(file_name)) == NULL)
 	{
-		J_OS::LOGERROR("CXFile::ListFiles opendir error");
+		J_OS::LOGERROR("CXVodManager::GetRecordResid opendir error");
 		return J_UNKNOW;
 	}
 
 	while ((entry = readdir(dirPointer)) != NULL)
 	{
-		if (memcmp(FindFileData.cFileName, ".", 1) != 0 
-			&& memcmp(FindFileData.cFileName, "..", 2) != 0)
+		if (memcmp(entry->d_name, ".", 1) != 0 
+			&& memcmp(entry->d_name, "..", 2) != 0)
 		{
-			vecResid.push_back(FindFileData.cFileName);
+			vecResid.push_back(entry->d_name);
 		}
 	}
 	closedir(dirPointer);
@@ -197,9 +207,9 @@ void CXVodManager::FillFileInfo(const char *pFileName, J_FileInfo &fileInfo)
 
 int CXVodManager::SearchOneDayFiles(const j_char_t *pResid, const char *pDate, j_time_t begin_time, j_time_t end_time, j_vec_file_info_t &vecFileInfo)
 {
-	const char *pDir = CXConfig::GetVodPath();
 	j_char_t file_name[256] = {0};
 #ifdef WIN32
+	const char *pDir = CXConfig::GetVodPath();
 	WIN32_FIND_DATA FindFileData;  
 	HANDLE hFind;  
 
@@ -207,7 +217,7 @@ int CXVodManager::SearchOneDayFiles(const j_char_t *pResid, const char *pDate, j
 	hFind = FindFirstFile(file_name, &FindFileData);  
 	if (hFind == INVALID_HANDLE_VALUE)   
 	{  
-		J_OS::LOGERROR("CXFile::ListFiles FindFirstFile failed\n");  
+		J_OS::LOGERROR("CXFile::SearchOneDayFiles FindFirstFile failed\n");  
 		return J_UNKNOW;  
 	}  
 
@@ -228,19 +238,28 @@ int CXVodManager::SearchOneDayFiles(const j_char_t *pResid, const char *pDate, j
 	FindClose(hFind);
 #else
 	DIR *dirPointer = NULL;
+	char pDir [256] = {0};
+	m_fileHelper.GetVodDir(CXConfig::GetVodPath(), (char *)pDir);
 	struct dirent *entry;
 	sprintf(file_name, "%s/%s/%s", pDir, pResid, pDate);
 	if ((dirPointer = opendir(file_name)) == NULL)
 	{
-		J_OS::LOGERROR("CXFile::ListFiles opendir error");
+		J_OS::LOGERROR("CXVodManager::SearchOneDayFiles opendir error");
 		return J_UNKNOW;
 	}
 
+	char vod_name [256] = {0};
+	struct stat buff;
+	m_fileHelper.GetVodDir(CXConfig::GetVodPath(), (char *)pDir); 
+	J_FileInfo fileInfo;
 	while ((entry = readdir(dirPointer)) != NULL)
 	{
 		if (memcmp(entry->d_name, pResid, strlen(pResid)) == 0)
 		{
-			fileInfo.nFileSize = (FindFileData.nFileSizeHigh << 32) + FindFileData.nFileSizeLow;
+			memset(vod_name, 0, sizeof(vod_name));
+			sprintf(vod_name, "%s/%s", file_name, entry->d_name);
+			stat(vod_name, &buff);
+			fileInfo.nFileSize = buff.st_size;
 			FillFileInfo(entry->d_name, fileInfo);
 			if ((fileInfo.tStartTime >= begin_time && fileInfo.tStartTime <= end_time)
 				|| (fileInfo.tStoptime >= begin_time && fileInfo.tStoptime <= end_time))
@@ -259,18 +278,18 @@ int CXVodManager::SearchOneDayFiles(const j_char_t *pResid, const char *pDate, j
 int CXVodManager::DeleteFilesByResid(const j_char_t *pResid, j_time_t begin_time, j_time_t end_time)
 {
 	j_vec_file_info_t vecFileInfo;
-	const char *pDir = CXConfig::GetVodPath();
 	j_char_t file_name[256] = {0};
 
 #ifdef WIN32
 	WIN32_FIND_DATA FindFileData;  
 	HANDLE hFind;  
+	const char *pDir = CXConfig::GetVodPath();
 
 	sprintf(file_name, "%s/%s/*.*", pDir, pResid);
 	hFind = FindFirstFile(file_name, &FindFileData);  
 	if (hFind == INVALID_HANDLE_VALUE)   
 	{  
-		J_OS::LOGERROR("CXFile::GetRecordInfo FindFirstFile failed\n");  
+		J_OS::LOGERROR("CXVodManager::GetRecordInfo FindFirstFile failed\n");  
 		return J_UNKNOW;  
 	}  
 
@@ -306,29 +325,42 @@ int CXVodManager::DeleteFilesByResid(const j_char_t *pResid, j_time_t begin_time
 	FindClose(hFind);
 #else
 	DIR *dirPointer = NULL;
+	char pDir [256] = {0};
+	m_fileHelper.GetVodDir(CXConfig::GetVodPath(), (char *)pDir);
 	struct dirent *entry;
 	sprintf(file_name, "%s/%s", pDir, pResid);
 	if ((dirPointer = opendir(file_name)) == NULL)
 	{
-		J_OS::LOGERROR("CXFile::ListFiles opendir error");
+		J_OS::LOGERROR("CXVodManager::DeleteFilesByResid opendir error");
 		return J_UNKNOW;
 	}
 
 	while ((entry = readdir(dirPointer)) != NULL)
 	{
-		if (memcmp(FindFileData.cFileName, ".", 1) != 0 
-			&& memcmp(FindFileData.cFileName, "..", 2) != 0)
+		if (memcmp(entry->d_name, ".", 1) != 0 
+			&& memcmp(entry->d_name, "..", 2) != 0)
 		{
-			vecFileInfo.clear();
-			SearchOneDayFiles(pResid, FindFileData.cFileName, 0, 0xFFFFFFFFFFFFFFFF, vecFileInfo);
-			j_vec_file_info_t::iterator it = vecFileInfo.begin();
-			for (; it!=vecFileInfo.end(); ++it)
+			j_time_t date_time = atoi(entry->d_name);
+			if (begin_time < date_time  && end_time > date_time + 86400)
 			{
-				if (it->tStartTime < begin_time)
-					begin_time = it->tStartTime;
-				if (it->tStoptime > end_time);
-				end_time = it->tStoptime;
-				nSize += it->nFileSize;
+				memset(file_name, 0, sizeof(file_name));
+				sprintf(file_name, "%s/%s/%s", pDir, pResid, entry->d_name);
+				DeleteDirectory(file_name);
+			}
+			else if ((begin_time >= date_time && begin_time <= date_time + 86400)
+				|| (end_time >= date_time && end_time <= date_time + 86400))
+			{
+				SearchOneDayFiles(pResid, entry->d_name, begin_time, end_time, vecFileInfo);
+				j_vec_file_info_t::iterator it = vecFileInfo.begin();
+				for (; it!=vecFileInfo.end(); ++it)
+				{
+					if ((it->tStartTime >= begin_time) && it->tStoptime <= end_time)
+					{
+						memset(file_name, 0, sizeof(file_name));
+						sprintf(file_name, "%s/%s/%s/%s", pDir, pResid, entry->d_name, it->fileName.c_str());
+						remove(file_name);
+					}
+				}
 			}
 		}
 	}
@@ -378,6 +410,38 @@ int CXVodManager::DeleteDirectory(char *DirName)
 		J_OS::LOGINFO("delete current directory failed,please try again");
 		return J_UNKNOW;
 	}
+#else
+	DIR *dirPointer = NULL;
+	struct dirent *entry;
+	if ((dirPointer = opendir(DirName)) == NULL)
+	{
+		J_OS::LOGERROR("CXFile::DeleteDirectory opendir error");
+		return J_UNKNOW;
+	}
+
+	struct stat statbuf;
+	while ((entry = readdir(dirPointer)) != NULL)
+	{
+		if (memcmp(entry->d_name, ".", 1) != 0 
+			&& memcmp(entry->d_name, "..", 2) != 0)
+		{
+			char foundFileName[256];
+			sprintf(foundFileName, "%s/%s", DirName, entry->d_name);
+			stat(foundFileName, &statbuf);
+			if(S_ISDIR(statbuf.st_mode))
+			{
+				DeleteDirectory(foundFileName);
+			}
+			else
+			{
+				remove(foundFileName);
+			}
+		}
+	}  
+	closedir(dirPointer);
+	rmdir(DirName);
+
 #endif
+
 	return J_OK;
 }

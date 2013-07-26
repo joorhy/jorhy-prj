@@ -77,7 +77,9 @@ j_uint64_t CTime::GetLocalTime(int) const
 #else
 	struct timeval nowtimeval;
 	gettimeofday(&nowtimeval,0);
-	nMilliSecondsOfDay = ((uint64_t)(time(0) * 1000) + (uint64_t)nowtimeval.tv_usec / 1000);
+	nMilliSecondsOfDay = time(0);//((uint64_t)((time(0) * 1000) + (nowtimeval.tv_usec / 1000)));
+	nMilliSecondsOfDay *= 1000;
+	nMilliSecondsOfDay += (nowtimeval.tv_usec / 1000);
 #endif
 
 	return nMilliSecondsOfDay;

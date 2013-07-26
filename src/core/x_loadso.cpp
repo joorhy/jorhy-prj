@@ -52,7 +52,7 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 	hFind = FindFirstFile(modPath, &FindFileData);  
 	if (hFind == INVALID_HANDLE_VALUE)   
 	{  
-		J_OS::LOGERROR("CXFile::ListFiles FindFirstFile failed\n");  
+		J_OS::LOGERROR("CXLoadso::ListFiles FindFirstFile failed\n");  
 		return J_UNKNOW;  
 	}  
 
