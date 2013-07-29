@@ -118,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\src\player\include\ffmpeg;..\..\src\player\include;..\..\src\ui\vs_plugins\pl_utils\libpng\include"
+				AdditionalIncludeDirectories="..\..\src\player\include\ffmpeg;..\..\src\player\include;..\..\src\utils"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JO_PLAYER_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

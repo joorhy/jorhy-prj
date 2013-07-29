@@ -58,6 +58,7 @@ CPlCtrl::CPlCtrl(void)
 CPlCtrl::~CPlCtrl(void)
 {
 	m_layoutInfo.bInit = FALSE;
+	StopAll();
 	DestroyWindows();
 }
 
