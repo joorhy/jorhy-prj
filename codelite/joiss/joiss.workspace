@@ -25,10 +25,10 @@
   <Project Name="JosStream" Path="JosStream.project" Active="No"/>
   <Project Name="JospControl" Path="JospControl.project"/>
   <Project Name="MCControl" Path="MCControl.project" Active="No"/>
-  <Project Name="OnvifHost" Path="OnvifHost.project" Active="No"/>
   <Project Name="JoHost" Path="JoHost.project"/>
   <Project Name="JorReader" Path="JorReader.project"/>
   <Project Name="PlayManager" Path="PlayManager.project"/>
+  <Project Name="OnvifHost2" Path="OnvifHost2.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="joiss" ConfigName="Debug"/>
@@ -70,10 +70,10 @@
       <Project Name="JosStream" ConfigName="Debug"/>
       <Project Name="JospControl" ConfigName="Debug"/>
       <Project Name="MCControl" ConfigName="Debug"/>
-      <Project Name="OnvifHost" ConfigName="Debug"/>
       <Project Name="JoHost" ConfigName="Debug"/>
       <Project Name="JorReader" ConfigName="Debug"/>
       <Project Name="PlayManager" ConfigName="Debug"/>
+      <Project Name="OnvifHost2" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="joiss" ConfigName="Release"/>
@@ -115,10 +115,10 @@
       <Project Name="JosStream" ConfigName="Release"/>
       <Project Name="JospControl" ConfigName="Release"/>
       <Project Name="MCControl" ConfigName="Release"/>
-      <Project Name="OnvifHost" ConfigName="Release"/>
       <Project Name="JoHost" ConfigName="Release"/>
       <Project Name="JorReader" ConfigName="Release"/>
       <Project Name="PlayManager" ConfigName="Release"/>
+      <Project Name="OnvifHost2" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

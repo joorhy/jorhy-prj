@@ -1,8 +1,7 @@
-﻿#ifndef __INCLUDE_HEAD
+#ifndef __INCLUDE_HEAD
 #define __INCLUDE_HEAD
 
 #include <stdio.h>
-#include <tchar.h>
 #include <stdlib.h>
 
 #include <iostream>

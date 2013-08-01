@@ -195,7 +195,7 @@ int CTCPSocket::Write(j_socket_t sock, const char *pBuff, int nLen)
 {
 write_begin:
 	int nSend = send(sock.sock, pBuff, nLen, 0/*MSG_NOSIGNAL*/);
-	if (nSend <= 0)
+	if (nSend < 0)
 	{
 		J_OS::LOGERROR("CTCPSocket::Write nSend = %d, errno = %d", nSend, errno);
 		if (errno == EINTR)
@@ -215,6 +215,8 @@ write_begin:
 
 		return J_SOCKET_ERROR;
 	}
+	else if (nSend == 0)
+		return J_SOCKET_ERROR;
 
 	return nSend;
 	//return send(nSock, pBuff, nLen, MSG_WAITALL);

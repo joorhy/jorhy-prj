@@ -1,4 +1,4 @@
-﻿#include "RtspProxy.h"
+#include "RtspProxy.h"
 
 extern void sessionAfterPlaying(void* ActionRtspClient) ;
 
@@ -49,7 +49,13 @@ void CRtspProxy::Begin(void)
 void CRtspProxy::Stop(void)
 {
 	bStop = 1;
-	Sleep(500);
+	
+	// 等待结束（应当加上同步）
+	#ifdef WIN32
+	Sleep(1000);
+	#else
+	sleep(1);
+	#endif
 	sessionAfterPlaying((void *)&g_MyRtsp);
-	Sleep(500);
+
 }

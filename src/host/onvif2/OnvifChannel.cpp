@@ -1,8 +1,8 @@
-﻿#include "OnvifChannel.h"
+#include "OnvifChannel.h"
 #include "OnvifStream.h"
 #include "x_base64.h"
 
-#define RATE_CHANGE(nRate) (/*1.0f*/static_cast<float>(nRate/255.0f))
+#define RATE_CHANGE(nRate) (/*1.0f*/static_cast<float>(nRate/256.0f))
 
 COnvifChannel::COnvifChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStream, int nMode)
 : m_pAdapter(NULL)
@@ -24,7 +24,7 @@ COnvifChannel::~COnvifChannel()
 
 int COnvifChannel::PtzControl(int nCmd, int nParam)
 {
-	printf("COnvifChannel::PtzControl \n");
+	printf("COnvifChannel::PtzControl start\n");
 	char ptzCommand[1024] = {0};
 	if (nCmd == jo_ptz_pre_set || nCmd == jo_ptz_pre_clr || nCmd == jo_ptz_goto_pre)
 	{
@@ -107,8 +107,9 @@ int COnvifChannel::PtzControl(int nCmd, int nParam)
 			m_pAdapter->m_OnvifPtz.PTZStop();
 		}
 	}
+	printf("COnvifChannel::PtzControl end\n");
 
-	return SendCommand(ptzCommand);
+	return J_OK;
 }
 
 int COnvifChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
@@ -125,13 +126,6 @@ int COnvifChannel::OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer)
 
 		return J_OK;
 	}
-
-// 	int nRet = StartView();
-// 	if (nRet != J_OK)
-// 	{
-// 	    //m_pAdapter->Broken();
-// 		return J_STREAM_ERROR;
-// 	}
 
 	m_bOpened = true;
 	pObj = new COnvifStream(m_recvSocket, m_resid);
@@ -167,50 +161,3 @@ int COnvifChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 	return J_OK;
 }
 
-/*
-int COnvifChannel::StartView()
-{
-	if (m_recvSocket != NULL)
-	{
-		delete m_recvSocket;
-		m_recvSocket = NULL;
-	}
-	m_recvSocket = new J_OS::CTCPSocket();
-	m_recvSocket->Connect(m_pAdapter->GetRemoteIp(),
-			m_pAdapter->GetRemotePort());
-
-	if (m_rtspHelper.OpenStream(m_recvSocket, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemotePort(), m_nChannel) != J_OK)
-	{
-		delete m_recvSocket;
-		m_recvSocket = NULL;
-		
-		return J_INVALID_DEV;
-	}
-
-	return J_OK;
-}
-
-int COnvifChannel::StopView()
-{
-	m_rtspHelper.CloseStream(m_recvSocket, m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemotePort(), m_nChannel);
-	if (m_recvSocket != NULL)
-	{
-		delete m_recvSocket;
-		m_recvSocket = NULL;
-	}
-
-	return J_OK;
-}*/
-
-int COnvifChannel::SendCommand(const char *pCommand)
-{
-	J_OS::CTCPSocket cmdSocket(m_pAdapter->GetRemoteIp(),
-			m_pAdapter->GetRemotePort());
-	if (cmdSocket.GetHandle().sock == j_invalid_socket_val)
-		return J_INVALID_DEV;
-
-	if (cmdSocket.Write((char*)pCommand, strlen(pCommand)) < 0)
-		return J_INVALID_DEV;
-
-	return J_OK;
-}

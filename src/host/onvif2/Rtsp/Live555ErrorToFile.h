@@ -1,4 +1,4 @@
-﻿/**
+/**
 *  Copyright (c) 2013, 成都荣耀科技有限公司(http://www.ronyao.com/)
 *  All rights reserved.
 *
@@ -16,7 +16,7 @@
 #ifndef __MyBasicUsageEnvironment_head__
 #define __MyBasicUsageEnvironment_head__
 
-#include "basicusageenvironment.hh"
+#include "BasicUsageEnvironment.hh"
 #include <fstream>
 
 using namespace std;

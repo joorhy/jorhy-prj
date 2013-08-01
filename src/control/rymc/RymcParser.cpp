@@ -30,7 +30,7 @@ int CRymcParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
 int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out)
 {
 	memcpy(m_read_buff + m_read_len, pAsioData_in->ioRead.buf, pAsioData_in->ioRead.finishedLen);
-	printf("%s\n", m_read_buff);
+	//printf("%s\n", m_read_buff);
 	m_read_len += pAsioData_in->ioRead.finishedLen;
 	//printf("%s\n", pAsioData_in->ioRead.buf);
 	memset(pAsioData_in->ioRead.buf, 0, 2048);

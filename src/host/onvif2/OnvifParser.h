@@ -1,8 +1,7 @@
-﻿#ifndef __ONVIFPARSER_H_
+#ifndef __ONVIFPARSER_H_
 #define __ONVIFPARSER_H_
 #include "j_includes.h"
 #include "x_time.h"
-
 #define DATA_BUFFER_SIZE (1024 * 1024)
 	
 class COnvifParser : public J_MediaParser

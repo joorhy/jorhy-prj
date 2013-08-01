@@ -1,4 +1,4 @@
-﻿/**
+/**
 *  Copyright (c) 2013, 成都荣耀科技有限公司(http://www.ronyao.com/)
 *  All rights reserved.
 *
@@ -50,7 +50,7 @@ public:
 		I_FRAME_HEAD_SECOND = 8,	/** I帧头部二(0x68) */
 		I_FRAME_HEAD_THIRD = 5,		/** I帧头部三(0x65) */
 		I_FRAME_HEAD_NO = 31		/** I帧头部与值 */
-	};
+	}IFrameHeadFlag;
 
 	static CH264Frame* CreateNew(UsageEnvironment& env, unsigned bufferSize = EXPECTED_BUFF_SIZE);
 

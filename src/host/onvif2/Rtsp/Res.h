@@ -1,6 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include <stdio.h>
+
+#define WITH_DOM
 
 #include "liveMedia.hh"
 #include "Live555ErrorToFile.h"

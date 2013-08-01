@@ -30,8 +30,8 @@ CVodMediaObj::~CVodMediaObj()
 	if (m_pDataBuff != NULL)
 		delete m_pDataBuff;
 		
-	if (m_pConvetBuff != NULL)
-		delete m_pConvetBuff;
+	//if (m_pConvetBuff != NULL)
+	//	delete m_pConvetBuff;
 
 	J_OS::LOGINFO("CVodMediaObj::~CVodMediaObj destroyed socket =  %d", m_nSocket.sock);
 }

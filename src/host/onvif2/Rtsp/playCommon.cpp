@@ -1,11 +1,15 @@
-﻿#include "playCommon.h"
+#include "playCommon.h"
 
 #define JUDGE_NULL_POINTER_NO_RET(pPointer) \
 	if (NULL == pPointer) {\
 	return;\
 	}\
 
+#ifdef DEBUG_LOG
 #define ErrorLog(LogTip) (printf("%s\n", LogTip))
+#else
+#define ErrorLog(LogTip) 
+#endif
 
 void continueAfterClientCreation(CMyRtspClient * ActionRtspClient) 
 {

@@ -3231,7 +3231,7 @@ public:
 class SOAP_CMAC tt__PTZFilter : public xsd__anyType
 {
 public:
-	bool Status;	/* required element of type xsd:boolean */
+	bool Status___1;	/* required element of type xsd:boolean */
 	bool Position;	/* required element of type xsd:boolean */
 	char *__anyAttribute;	/* optional attribute */
 public:
@@ -5059,7 +5059,7 @@ class SOAP_CMAC tt__CertificateStatus : public xsd__anyType
 {
 public:
 	std::string CertificateID;	/* required element of type xsd:token */
-	bool Status;	/* required element of type xsd:boolean */
+	bool Status___1;	/* required element of type xsd:boolean */
 	std::vector<char * >__any;
 	char *__anyAttribute;	/* optional attribute */
 public:
@@ -8303,7 +8303,7 @@ class SOAP_CMAC _ns1__SubscribeResponse
 {
 public:
 	struct wsa5__EndpointReferenceType SubscriptionReference;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* required element of type wsa5:EndpointReferenceType */
-	time_t *CurrentTime;	/* optional element of type xsd:dateTime */
+	time_t *CurrentTime___1;	/* optional element of type xsd:dateTime */
 	time_t *TerminationTime;	/* optional element of type xsd:dateTime */
 	std::vector<char * >__any;
 	struct soap *soap;	/* transient */
@@ -8315,7 +8315,7 @@ public:
 	virtual int soap_out(struct soap*, const char*, int, const char*) const;
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
-	         _ns1__SubscribeResponse(): CurrentTime(NULL), TerminationTime(NULL), soap(NULL) { _ns1__SubscribeResponse::soap_default(NULL); }
+	         _ns1__SubscribeResponse(): CurrentTime___1(NULL), TerminationTime(NULL), soap(NULL) { _ns1__SubscribeResponse::soap_default(NULL); }
 	virtual ~_ns1__SubscribeResponse() { }
 };
 #endif
@@ -8527,7 +8527,7 @@ class SOAP_CMAC _ns1__RenewResponse
 {
 public:
 	time_t TerminationTime;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* required element of type xsd:dateTime */
-	time_t *CurrentTime;	/* optional element of type xsd:dateTime */
+	time_t *CurrentTime___2;	/* optional element of type xsd:dateTime */
 	std::vector<char * >__any;
 	struct soap *soap;	/* transient */
 public:
@@ -8538,7 +8538,7 @@ public:
 	virtual int soap_out(struct soap*, const char*, int, const char*) const;
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
-	         _ns1__RenewResponse(): CurrentTime(NULL), soap(NULL) { _ns1__RenewResponse::soap_default(NULL); }
+	         _ns1__RenewResponse(): CurrentTime___2(NULL), soap(NULL) { _ns1__RenewResponse::soap_default(NULL); }
 	virtual ~_ns1__RenewResponse() { }
 };
 #endif
@@ -11407,7 +11407,7 @@ public:
 class SOAP_CMAC _tev__PullMessagesResponse
 {
 public:
-	time_t CurrentTime;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* required element of type xsd:dateTime */
+	time_t CurrentTime___3;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* required element of type xsd:dateTime */
 	time_t TerminationTime;	/* required element of type xsd:dateTime */
 	std::vector<ns1__NotificationMessageHolderType * >ns1__NotificationMessage;	/* optional element of type ns1:NotificationMessageHolderType */
 	struct soap *soap;	/* transient */
@@ -11814,7 +11814,7 @@ public:
 class SOAP_CMAC _timg__GetStatusResponse
 {
 public:
-	tt__ImagingStatus20 *Status;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* required element of type tt:ImagingStatus20 */
+	tt__ImagingStatus20 *Status___2;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* required element of type tt:ImagingStatus20 */
 	struct soap *soap;	/* transient */
 public:
 	virtual int soap_type() const { return 618; } /* = unique id SOAP_TYPE__timg__GetStatusResponse */
@@ -11824,7 +11824,7 @@ public:
 	virtual int soap_out(struct soap*, const char*, int, const char*) const;
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
-	         _timg__GetStatusResponse(): Status(NULL), soap(NULL) { _timg__GetStatusResponse::soap_default(NULL); }
+	         _timg__GetStatusResponse(): Status___2(NULL), soap(NULL) { _timg__GetStatusResponse::soap_default(NULL); }
 	virtual ~_timg__GetStatusResponse() { }
 };
 #endif

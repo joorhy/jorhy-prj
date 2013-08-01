@@ -1,4 +1,4 @@
-﻿/**
+/**
 *  Copyright (c) 2013, 成都荣耀科技有限公司(http://www.ronyao.com/)
 *  All rights reserved.
 *
@@ -60,6 +60,7 @@ CRes::CRes(void)
 , socketInputBufferSize(0)
 , m_H264Frame(NULL)
 , setupIter(NULL)
+,createReceivers(true)
 {
 }
 

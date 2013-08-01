@@ -1,6 +1,5 @@
-﻿#ifndef __ONVIFSTREAM_H_
+#ifndef __ONVIFSTREAM_H_
 #define __ONVIFSTREAM_H_
-#include "OnvifParser.h"
 #include "x_asio.h"
 
 #include <stdlib.h>
@@ -8,6 +7,9 @@
 
 #define RECV_SIZE (1024 * 1024)
 
+#ifndef min
+#define min(a, b)  (((a)  < (b)) ? (a) : (b))
+#endif
 
 class COnvifStreamBase : public J_MediaStream
 {};
@@ -61,7 +63,17 @@ public:
 	}
 
 	//Lyc 获取RTSP工作线程
-	static unsigned X_JO_API RtspThread(void * pCOnvifStream);
+#ifdef WIN32
+	static unsigned X_JO_API RtspThread(void * pCOnvifStream)
+#else
+	static void *RtspThread(void *pCOnvifStream)
+#endif
+{
+	COnvifStream * pThis = (COnvifStream *)pCOnvifStream;
+	pThis->m_RtspProxy.Begin();
+
+	return 0;
+}
 
 private:
 	enum 
@@ -72,7 +84,6 @@ private:
 	j_boolean_t m_bStartup;
 	j_char_t *m_pRecvBuff;//[100 * 1024];
 
-	COnvifParser m_parser;
 	j_string_t m_resid;
 
 	J_OS::TLocker_t m_locker;

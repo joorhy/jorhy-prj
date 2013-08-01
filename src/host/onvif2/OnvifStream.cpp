@@ -1,4 +1,4 @@
-﻿#include "OnvifStream.h"
+#include "OnvifStream.h"
 
 #include "x_socket.h"
 #include "x_msg_queue.h"
@@ -13,14 +13,12 @@ COnvifStream::COnvifStream(void *pTCPSocket, std::string resid)
 	if (NULL == m_pRecvBuff)
 		m_pRecvBuff = new char[RECV_SIZE];
 
-	m_parser.Init();
 	m_RtspProxy.Init(COnvifStream::AddRtspBuffDataToDeque, this);
 	J_OS::LOGINFO("COnvifStream::COnvifStream create this = %d", this);
 }
 
 COnvifStream::~COnvifStream()
 {
-	m_parser.Deinit();
 	if (m_pRecvBuff != NULL)
 	{
 		delete m_pRecvBuff;
@@ -63,11 +61,3 @@ int COnvifStream::Shutdown()
 	return J_OK;
 }
 
-unsigned COnvifStream::RtspThread( void * pCOnvifStream )
-{
-	COnvifStream * pThis = (COnvifStream *)pCOnvifStream;
-	pThis->m_RtspProxy.Begin();
-
-	printf("lei yin chun 1111111111\n");
-	return 0;
-}

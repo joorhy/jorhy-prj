@@ -123,7 +123,7 @@ void CControlManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 
 void CControlManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 {
-	printf("CControlManager::OnWrite %s\n", pAsioData->ioWrite.buf);
+	//printf("CControlManager::OnWrite %s\n", pAsioData->ioWrite.buf);
 	if (pAsioData->ioWrite.buf != NULL)
 		delete pAsioData->ioWrite.buf;
 
