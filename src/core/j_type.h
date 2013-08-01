@@ -72,10 +72,10 @@ enum J_PtzCommand
 //拆包类型定义
 enum J_PacketType
 {
-	jo_intact_pack = 0,
-	jo_start_pack,
-	jo_mid_pack,
-	jo_end_pack
+	jo_intact_pack = 0,		//不拆分数据
+	jo_start_pack,				//拆分数据第一包
+	jo_mid_pack,					//拆分数据中间包
+	jo_end_pack					//拆分数据最后一包
 };
 
 ///NVR IO类型
@@ -88,14 +88,31 @@ enum J_IoType
 ///NVR 告警类型
 enum J_AlarmType
 {
-	jo_video_lost = 1,		//视频丢失
-	jo_video_motdet,		//移动侦测
-	jo_video_hide,			//视频遮挡
-	
+	///告警类型
+	jo_alarm_video = 1,	//视频告警
+	jo_alarm_disk,			//硬盘告警
+	jo_alarm_device,		//设备告警
+
+	///告警子类型
+	jo_video_lost = 101,		//视频丢失
+	jo_video_motdet,			//移动侦测
+	jo_video_hide,				//视频遮挡
+
+	jo_disk_insufficient_space = 201,	//磁盘空间不足
+	jo_disk_full,							//磁盘已满
+	jo_disk_cant_accessed,			//磁盘不能访问
+
+	jo_device_connected = 301,	//设备已连接
+	jo_device_broken,					//设备掉线
+};
+
+///NVR 录像类型
+enum J_RecordType
+{
 	jo_rcd_auto = 101,		//自动录像
-	jo_rcd_manual,
-	jo_rcd_timing,
-	jo_rcd_alarm,
+	jo_rcd_manual,				//手动录像
+	jo_rcd_timing,				//定时录像
+	jo_rcd_alarm,				//告警录像
 };
 
 ///NVR命令集合
@@ -126,7 +143,7 @@ enum J_MediaType
 	jo_media_broken,			//视频断线
 	jo_file_end,
 	
-	jo_video_normal = 100,
+	jo_video_normal = 100,	
 	jo_video_yuyv,
 	jo_video_mjpeg,
 };
@@ -134,8 +151,8 @@ enum J_MediaType
 ///设备状态枚举
 enum J_DevStatus
 {
-	jo_dev_ready = 1,
-	jo_dev_broken,
+	jo_dev_ready = 1,		//设备就绪
+	jo_dev_broken,			//设备断线
 };
 
 ///回放数据模式
@@ -522,6 +539,41 @@ struct J_ControlObj
 		J_DelRecordCtrl delRecordCtrl;
 		J_ResourceInfo resInfo;
 		j_char_t resid[32];
+	};
+};
+
+///视频告警数据
+struct J_VideoAlarmData
+{
+	j_int32_t nSubType;	//告警子类型，见J_AlarmType定义	
+	j_char_t resid[32];		//告警资源ID
+};
+
+///磁盘告警数据
+struct J_DiskAlarmData
+{
+	j_int32_t nSubType;		//告警子类型，见J_AlarmType定义
+	j_uint32_t nCapacity;		//磁盘总容量，单位KB
+	j_uint32_t nFree;			//磁盘剩余容量，单位KB
+	j_char_t sPath[256];		//磁盘路径
+};
+
+///设备告警数据
+struct J_DeviceAlarmData
+{
+	j_int32_t nSubType;		//告警子类型，见J_AlarmType定义
+	j_int32_t nDeviceId;		//设备ID
+};
+
+///告警数据结构
+struct J_AlarmData
+{
+	j_int32_t nAlarmType;		//告警类型，见J_AlarmType定义
+	union
+	{
+		J_VideoAlarmData videoAlarmData;
+		J_DiskAlarmData diskAlarmData;
+		J_DeviceAlarmData deviceAlarmData;
 	};
 };
 

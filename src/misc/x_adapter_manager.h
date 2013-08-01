@@ -28,8 +28,6 @@ public:
 	//查找DVR上的录像文件
 	int FindVodFile(const char *pResid, time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList);
 
-	int OnAlarm(int nDvrId, int nChannel, int nAlarmType);			//上传报警事件
-
 private:
 	typedef std::map<j_socket_t, CRingBuffer *> RingBufferMap;
 	struct StreamInfo

@@ -59,7 +59,7 @@ j_result_t CSamsungAdapter::DisableAlarm()
     return J_OK;
 }
 
-j_result_t CSamsungAdapter::EventAlarm(j_int32_t nDvrId, j_int32_t nChannel, j_int32_t nAlarmType)
+j_result_t CSamsungAdapter::EventAlarm(const J_AlarmData &alarmData)
 {
     return J_OK;
 }

@@ -29,8 +29,8 @@ int CRymcParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
 
 int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out)
 {
-	//printf(pAsioData_in->ioRead.buf);
 	memcpy(m_read_buff + m_read_len, pAsioData_in->ioRead.buf, pAsioData_in->ioRead.finishedLen);
+	printf("%s\n", m_read_buff);
 	m_read_len += pAsioData_in->ioRead.finishedLen;
 	//printf("%s\n", pAsioData_in->ioRead.buf);
 	memset(pAsioData_in->ioRead.buf, 0, 2048);
@@ -184,30 +184,33 @@ int CRymcParser::RecordSearch(const char *pResid, j_time_t beginTime, j_time_t e
 	json_object *json_file_obj = json_object_new_object();
 	j_int32_t nStartTime = -1;
 	j_int32_t nEndTime = -1;
-	j_vec_file_info_t::iterator it = vecFileInfo.begin();
-	for (; it!=vecFileInfo.end(); ++it)
+	if (!vecFileInfo.empty())
 	{
-		if (nStartTime < 0)
+		j_vec_file_info_t::iterator it = vecFileInfo.begin();
+		for (; it!=vecFileInfo.end(); ++it)
 		{
-			nStartTime = it->tStartTime;
-			nEndTime = it->tStoptime;
-			json_object_object_add(json_file_obj, (char *)"stime", json_object_new_int(nStartTime));
+			if (nStartTime < 0)
+			{
+				nStartTime = it->tStartTime;
+				nEndTime = it->tStoptime;
+				json_object_object_add(json_file_obj, (char *)"stime", json_object_new_int(nStartTime));
+			}
+			else if (it->tStartTime - nEndTime > 5)
+			{
+				json_object_object_add(json_file_obj, (char *)"etime", json_object_new_int(nEndTime));
+				json_object_array_add(json_file_array_obj, json_file_obj);
+				nStartTime = it->tStartTime;
+				nEndTime = it->tStoptime;
+				json_file_obj = json_object_new_object();
+				json_object_object_add(json_file_obj, (char *)"stime", json_object_new_int(nStartTime));
+			}
+			else
+			{
+				nEndTime = it->tStoptime;
+			}
 		}
-		else if (it->tStartTime - nEndTime > 20)
-		{
-			json_object_object_add(json_file_obj, (char *)"etime", json_object_new_int(nEndTime));
-			json_object_array_add(json_file_array_obj, json_file_obj);
-			nStartTime = it->tStartTime;
-			nEndTime = it->tStoptime;
-			json_file_obj = json_object_new_object();
-			json_object_object_add(json_file_obj, (char *)"stime", json_object_new_int(nStartTime));
-		}
-		else
-		{
-			nEndTime = it->tStoptime;
-		}
+		json_object_object_add(json_file_obj, (char *)"etime", json_object_new_int(nEndTime));
 	}
-	json_object_object_add(json_file_obj, (char *)"etime", json_object_new_int(nEndTime));
 	json_object_array_add(json_file_array_obj, json_file_obj);
 	json_object_object_add(*json_param_obj, (char *)"files", json_file_array_obj);
 

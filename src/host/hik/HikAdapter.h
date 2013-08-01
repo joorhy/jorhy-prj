@@ -34,7 +34,7 @@ public:
 	///J_AlarmAdapter
 	virtual int EnableAlarm();
 	virtual int DisableAlarm();
-	virtual int EventAlarm(int nDvrId, int nChannel, int nAlarmType);
+	virtual int EventAlarm(const J_AlarmData &alarmData);
 	///J_VoiceAdapter
 	virtual int MakeVoice(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel);
 

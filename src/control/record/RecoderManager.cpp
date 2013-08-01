@@ -45,7 +45,9 @@ int CRecoderManager::Deinit()
 int CRecoderManager::AddRecord(const char *pResid)
 {
     TLock(m_locker);
-    m_recordVec.push_back(pResid);
+	RecordVec::iterator it = m_recordVec.find(pResid);
+	if (it == m_recordVec.end())
+		m_recordVec[pResid] = false;
     TUnlock(m_locker);
 
     return J_OK;
@@ -54,15 +56,8 @@ int CRecoderManager::AddRecord(const char *pResid)
 int CRecoderManager::DelRecord(const char *pResid)
 {
     TLock(m_locker);
-    RecordVec::iterator it = m_recordVec.begin();
-    for (; it!=m_recordVec.end(); it++)
-    {
-        if (*it == pResid)
-        {
-            m_recordVec.erase(it);
-            break;
-        }
-    }
+    RecordVec::iterator it = m_recordVec.find(pResid);
+		m_recordVec.erase(it);
     TUnlock(m_locker);
     StopRecord(pResid);
 
@@ -173,22 +168,17 @@ void CRecoderManager::OnTimer()
 {
 	//m_cond.Wait();
 	TLock(m_locker);
-	while (!m_recordVec.empty())
+	RecordVec::iterator it = m_recordVec.begin();
+	for (; it != m_recordVec.end(); it++)
 	{
-		RecordVec::iterator it = m_recordVec.begin();
-		for (; it != m_recordVec.end(); it++)
+		if (!it->second)
 		{
-			if (StartRecord(it->c_str()) == J_OK)
+			if (StartRecord(it->first.c_str()) == J_OK)
 			{
-				J_OS::LOGINFO("CRecoderManager::OnTimer %s Recode Sucess", it->c_str());
-				m_recordVec.erase(it);
-				break;
+				J_OS::LOGINFO("CRecoderManager::OnTimer %s Recode Sucess", it->first.c_str());
+				it->second = true;
 			}
 		}
-		//if (it == m_recordVec.end())
-        //    break;
-
-		//usleep(1000);
 	}
 	//m_cond.Single();
 	//J_OS::LOGINFO("CControlManager::OnTimer() %d %d", m_recordVec.size(), m_recordVec.empty());

@@ -138,6 +138,7 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			m_nState = HIK_READ_HEAD;
 			m_nOffset = 0;
 	}
+	m_asioData->ioRead.finishedLen = 0;
 	JoXAsio->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
 }

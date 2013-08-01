@@ -238,7 +238,7 @@ int CXFile::DelFile(const j_char_t *filePath, const j_char_t *fileName)
 int CXFile::DeltmpByResid(const char *pDir, const char *pResid)
 {
     j_vec_str_t tmpFileVec;
-    ListFiles((char *)pDir, tmpFileVec);
+    ListFiles((char *)pDir, tmpFileVec, pResid);
     j_vec_str_t::iterator it = tmpFileVec.begin();
     for (; it!=tmpFileVec.end(); it++)
     {

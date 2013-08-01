@@ -18,7 +18,7 @@ CResourceManager::~CResourceManager()
 
 int CResourceManager::InitResource()
 {
-	m_timer.Create(10 * 1000, CResourceManager::TimerThread, this);
+	m_timer.Create(5 * 1000, CResourceManager::TimerThread, this);
 	return J_OK;
 }
 

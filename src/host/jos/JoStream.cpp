@@ -47,6 +47,7 @@ int CJoStream::Startup()
 	m_asioData.ioRead.buf = (j_char_t *)&m_dataHead;
 	m_asioData.ioRead.bufLen = sizeof(J_DataHead);
 	m_asioData.ioRead.whole = true;
+	m_asioData.ioRead.finishedLen = 0;
 	m_nState = JO_READ_HEAD;
 	JoXAsio->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
@@ -108,6 +109,7 @@ void CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			break;
 	}
 	m_asioData.ioRead.whole = true;
+	m_asioData.ioRead.finishedLen = 0;
 	JoXAsio->Read(m_nSocket, &m_asioData);
 	
 	TUnlock(m_locker);

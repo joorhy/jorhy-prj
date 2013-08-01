@@ -45,6 +45,7 @@ j_result_t CSamsungStream::Startup()
 	m_asioData.ioRead.buf = m_pRecvBuff;
 	m_asioData.ioRead.bufLen = RECV_SIZE;
 	m_asioData.ioRead.whole = false;
+	m_asioData.ioRead.finishedLen = 0;
 	JoXAsio->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 

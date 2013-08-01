@@ -194,17 +194,6 @@ int CAdapterManager::FindVodFile(const char *pResid, time_t beginTime, time_t en
 	return pRemoteVod->EmunFileByTime(beginTime, endTime, fileList);
 }
 
-int CAdapterManager::OnAlarm(int nDvrId, int nChannel, int nAlarmType)
-{
-	/*NorMsg *pMessage = new NorMsg();
-
-	pMessage->m_almType = nAlarmType;
-
-	CDBHelper::Instance()->GetDB().GetResidByDvrCh(nDvrId, nChannel, pMessage->m_resId);*/
-
-	return J_OK;
-}
-
 int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_RemoteVod *&pObj)
 {
     int nStreamType = 0;

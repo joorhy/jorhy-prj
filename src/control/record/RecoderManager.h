@@ -54,7 +54,7 @@ class JO_API CRecoderManager
         CJoThread m_thread;
 
         J_OS::CTimer m_timer;
-        typedef std::vector<std::string> RecordVec;
+        typedef std::map<j_string_t, j_boolean_t> RecordVec;
         RecordVec m_recordVec;
         J_OS::CTLock m_locker;
         J_OS::CTLock m_locker2;

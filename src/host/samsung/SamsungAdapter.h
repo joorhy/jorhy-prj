@@ -31,7 +31,7 @@ public:
     ///J_AlarmAdapter
     virtual j_result_t EnableAlarm();
     virtual j_result_t DisableAlarm();
-    virtual j_result_t EventAlarm(j_int32_t nDvrId, j_int32_t nChannel, j_int32_t nAlarmType);
+    virtual j_result_t EventAlarm(const J_AlarmData &alarmData);
 
 protected:
     j_char_t *GetRemoteIp() const

@@ -116,20 +116,23 @@ void CControlManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	else
 	{
 		delete pDataBase;
+		((J_AsioDataBase *)pAsioData)->ioRead.finishedLen = 0;
 		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
 	}
 }
 
 void CControlManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 {
+	printf("CControlManager::OnWrite %s\n", pAsioData->ioWrite.buf);
 	if (pAsioData->ioWrite.buf != NULL)
 		delete pAsioData->ioWrite.buf;
+
 	delete pAsioData;
 }
 
 void CControlManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
-	printf("CControlManager::OnBroken %d\n", pAsioData->ioHandle);
+	J_OS::LOGINFO("CControlManager::OnBroken %d\n", pAsioData->ioHandle);
     m_pCommandParser->DelUser(pAsioData->ioHandle);
 	m_asio.DelUser(pAsioData->ioHandle);
 }

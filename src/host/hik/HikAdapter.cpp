@@ -45,14 +45,14 @@ J_DevStatus CHikAdapter::GetStatus() const
 	return m_status;
 }
 
-int CHikAdapter::Broken()
+j_result_t CHikAdapter::Broken()
 {
 	Logout();
 
 	return J_OK;
 }
 
-int CHikAdapter::MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner,
+j_result_t CHikAdapter::MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner,
 		int nChannel, int nStream, int nMode)
 {
 	CHikChannel *pChannel = new CHikChannel(pResid, pOwner, nChannel, nStream, nMode);
@@ -64,7 +64,7 @@ int CHikAdapter::MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner,
 	return J_OK;
 }
 
-int CHikAdapter::EnableAlarm()
+j_result_t CHikAdapter::EnableAlarm()
 {
 	if (m_bStartAlarm)
 		return J_OK;
@@ -98,7 +98,7 @@ int CHikAdapter::EnableAlarm()
 	return J_OK;
 }
 
-int CHikAdapter::DisableAlarm()
+j_result_t CHikAdapter::DisableAlarm()
 {
 	if (!m_bStartAlarm)
 		return J_OK;
@@ -116,13 +116,12 @@ int CHikAdapter::DisableAlarm()
 	return J_OK;
 }
 
-int CHikAdapter::EventAlarm(int nDvrId, int nChannel, int nAlarmType)
+j_result_t CHikAdapter::EventAlarm(const J_AlarmData &alarmData)
 {
-	return JoAdapterManager->OnAlarm(nDvrId, nChannel,
-			nAlarmType);
+	return J_OK;
 }
 
-int CHikAdapter::MakeVoice(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel)
+j_result_t CHikAdapter::MakeVoice(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel)
 {
 	CHikIntercom *pIntercom = new CHikIntercom(pResid, pOwner, nChannel);
 	if (NULL == pIntercom)
@@ -133,7 +132,7 @@ int CHikAdapter::MakeVoice(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int 
 	return J_OK;
 }
 
-int CHikAdapter::Login()
+j_result_t CHikAdapter::Login()
 {
 	J_OS::CTCPSocket loginSocket(m_remoteIP, m_remotePort);
 	if (loginSocket.GetHandle().sock == j_invalid_socket_val)
@@ -201,7 +200,7 @@ int CHikAdapter::Login()
 	return J_OK;
 }
 
-int CHikAdapter::Logout()
+j_result_t CHikAdapter::Logout()
 {
 	int nRet = J_OK;
 	if (m_status == jo_dev_ready)
@@ -216,7 +215,7 @@ int CHikAdapter::Logout()
 	return nRet;
 }
 
-int CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
+j_result_t CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 {
 	J_OS::CTCPSocket cmdSocket(m_remoteIP, m_remotePort);
 	if (cmdSocket.GetHandle().sock == j_invalid_socket_val)
@@ -267,7 +266,7 @@ int CHikAdapter::SendCommand(int nCmd, const char *pSendData, int nDataLen)
 	return J_OK;
 }
 
-int CHikAdapter::GetLocalNetInfo(unsigned long & ipAddr, unsigned char* mac)
+j_result_t CHikAdapter::GetLocalNetInfo(unsigned long & ipAddr, unsigned char* mac)
 {
 	int ret = -1;
 #ifdef WIN32
@@ -339,7 +338,7 @@ int CHikAdapter::GetLocalNetInfo(unsigned long & ipAddr, unsigned char* mac)
 	return ret;
 }
 
-int CHikAdapter::Relogin()
+j_result_t CHikAdapter::Relogin()
 {
 	Logout();
 	Login();
@@ -419,13 +418,13 @@ void CHikAdapter::OnAlarm()
 			switch (alarmInfo.ulAlarmType)
 			{
 			case 2:
-				EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_lost);
+				//EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_lost);
 				break;
 			case 3:
-				EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_motdet);
+				//EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_motdet);
 				break;
 			case 6:
-				EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_hide);
+				//EventAlarm(m_drvId, alarmInfo.ulChannel, jo_video_hide);
 				break;
 			}
 		}

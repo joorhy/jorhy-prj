@@ -52,11 +52,9 @@ struct J_DevInput : virtual public J_Obj
 	virtual j_result_t DisableAlarm() = 0;
 
 	///报警事件上传
-	///param[in]	nDvrId 报警设备ID
-	///param[in]	nChannel 报警通道号
-	///param[in]	nAlarmype 报警类型
+	///param[in]	alarmData 报警数据
 	///@return 		参见x_error_type.h
-	virtual j_result_t EventAlarm(j_int32_t nDvrId, j_int32_t nChannel, j_int32_t nAlarmType) = 0;
+	virtual j_result_t EventAlarm(const J_AlarmData &alarmData) = 0;
 };
 
 struct J_VoiceIcom : virtual public J_Obj

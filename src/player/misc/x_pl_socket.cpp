@@ -46,7 +46,7 @@ J_PL_RESULT J_PlSocket::NRead(char *OUT_pBuff, int nLen)
 	int timeout = 0;
 	int error;
 
-	j_pl_error("nTotleLen = %d\n",nTotleLen);
+	//j_pl_error("nTotleLen = %d\n",nTotleLen);
 	while (nTotleLen > 0)
 	{
 		int nRet  = 0;
@@ -65,6 +65,7 @@ J_PL_RESULT J_PlSocket::NRead(char *OUT_pBuff, int nLen)
 				Sleep(1);
 				continue;
 			case WSAETIMEDOUT:
+				j_pl_error("Receive TimeOut\n");
 				break;
 
 			case WSAEMSGSIZE:			//udp only
@@ -137,7 +138,7 @@ J_PL_RESULT J_PlSocket::SetTimeOut(int nRcvMS,int nSendMS)
 {
 	DWORD dwError = 0L ;
 	DWORD dwBytes;
-	tcp_keepalive sKA_Settings = {0}, sReturned = {0} ;
+	/*tcp_keepalive sKA_Settings = {0}, sReturned = {0} ;
 	sKA_Settings.onoff					= 1 ;
 	sKA_Settings.keepalivetime		= 500 ; // Keep Alive in 5.5 sec.
 	sKA_Settings.keepaliveinterval	= 500 ; // Resend if No-Reply
@@ -147,7 +148,7 @@ J_PL_RESULT J_PlSocket::SetTimeOut(int nRcvMS,int nSendMS)
 	{
 		dwError = WSAGetLastError() ;
 		return J_PL_ERROR_SOCKET;
-	}
+	}*/
 	if(nRcvMS > 0)
 	{
 		if(setsockopt(m_hSocket, SOL_SOCKET, SO_RCVTIMEO, (char *)&nRcvMS, sizeof(nRcvMS)) == SOCKET_ERROR)
@@ -240,5 +241,5 @@ J_PL_RESULT J_PlSocket::NonblockConnect(const char *pAddr, int nPort,unsigned in
 	}
 	
 	m_bConnecting = true;
-	return SetTimeOut(2000,2000);
+	return SetTimeOut(5000, 5000);
 }

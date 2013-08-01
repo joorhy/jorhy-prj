@@ -244,7 +244,7 @@ J_PL_RESULT CXPlJospAccess::ReadBlockReal(char *OUT_buf,int &OUT_len)
 	if(br == J_PL_ERROR_RECEIVE_TIMEOUT)
 		return J_PL_ERROR_ACCESS_ERROR;
 
-	j_pl_info("%d \n", ntohl(head.data_len));
+	//j_pl_info("%d \n", ntohl(head.data_len));
 	if(_strnicmp((char*)head.start_code,"JOAV",4) == 0)
 	{
 		int datalen = ntohl(head.data_len);
@@ -278,7 +278,7 @@ J_PL_RESULT CXPlJospAccess::ReadBlockFile(char *OUT_buf,int &OUT_len)
 	if(br == J_PL_ERROR_RECEIVE_TIMEOUT)
 		return J_PL_ERROR_ACCESS_ERROR;
 
-	j_pl_info("%d %d\n", ntohl(head.data_len), sizeof(JOSP_DataHead));
+	//j_pl_info("%d %d\n", ntohl(head.data_len), sizeof(JOSP_DataHead));
 	if(_strnicmp((char*)head.start_code,"JOAV",4) == 0)
 	{
 		int datalen = ntohl(head.data_len);

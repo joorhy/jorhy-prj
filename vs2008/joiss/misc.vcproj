@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\misc\x_alarm_manager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\misc\x_config.h"
 				>
 			</File>
@@ -256,6 +260,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\misc\x_adapter_manager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\misc\x_alarm_manager.cpp"
 				>
 			</File>
 			<File
