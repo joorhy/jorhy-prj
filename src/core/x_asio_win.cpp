@@ -14,7 +14,7 @@ CXAsio::CXAsio()
 
 CXAsio::~CXAsio()
 {
-	WSACleanup();f
+	WSACleanup();
 }
 
 int CXAsio::Init()
