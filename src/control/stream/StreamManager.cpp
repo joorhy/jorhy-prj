@@ -21,6 +21,7 @@ int CStreamManager::StartService(int nPort, const char *pType)
 {
 	m_serviceType = pType;
 	m_asio.Init();
+	memset(&m_asioData, 0, sizeof(m_asioData));
 	m_asioData.ioAccept.peerPort = nPort;
 	m_asioData.ioUser = this;
 	m_asio.Listen(&m_asioData);
@@ -34,7 +35,7 @@ int CStreamManager::StopService()
 	return J_OK;
 }
 
-void CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 {
 	j_socket_t nSocket;
 	nSocket.sock = pAsioData->ioAccept.subHandle;
@@ -61,26 +62,27 @@ void CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 	info.pObj = NULL;
 	m_clientMap[nSocket.sock] = info;
 	m_asio.Read(nSocket, pDataBase);
+	
+	return J_OK;
 }
 
-void CStreamManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CStreamManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
 	ClientMap::iterator it = m_clientMap.find(pAsioData->ioHandle);
 	if (it == m_clientMap.end())
 	{
 		J_OS::LOGINFO("CStreamManager::OnRead No Client");
-		return;
+		return J_NOT_FOUND;
 	}
 
-	if (ParserRequest(pAsioData, it->second.pObj) < 0)
-		return;
+	return ParserRequest(pAsioData, it->second.pObj);
 }
 
-void CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 {
 	ClientMap::iterator it = m_clientMap.find(pAsioData->ioHandle);
 	if (it == m_clientMap.end())
-		return;
+		return J_NOT_FOUND;
 
 	int nResult = J_UNKNOW;
 	J_MediaObj *pClient = dynamic_cast<J_MediaObj *>(it->second.pObj);
@@ -109,16 +111,16 @@ void CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 	else
 	{
 		J_OS::LOGINFO("CStreamManager::OnWrite No Client");
-		return;
 	}
+	return nResult;
 }
 
-void CStreamManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CStreamManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
 	J_OS::LOGINFO("OnBroken");
 	ClientMap::iterator it = m_clientMap.find(pAsioData->ioHandle);
 	if (it == m_clientMap.end())
-		return;
+		return J_UNKNOW;
 
 	if (it->second.pObj != NULL)
 	{
@@ -129,6 +131,7 @@ void CStreamManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 
 	m_clientMap.erase(it);
 	m_asio.DelUser(pAsioData->ioHandle);
+	return J_OK;
 }
 
 int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *pClient)
@@ -154,12 +157,9 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 		if (it == m_clientMap.end())
 			return nRet;
 			
-		/*if(nRet == J_WIAT_NEXT_CMD && m_serviceType == "josp")
-		{
-			nRet = ProcessCommand(asioData, protocolFilter, pClient);
-		}*/
 		((J_AsioDataBase *)pAsioData)->ioRead.finishedLen = 0;
 		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
+		nRet = J_OK;
 	}
 
 	return nRet;
@@ -219,12 +219,6 @@ int CStreamManager::ProcessCommand(const J_AsioDataBase *pAsioData, J_Obj *pObj,
 	J_RequestFilter *protocolFilter = dynamic_cast<J_RequestFilter *>(pObj);
 	if ((nRet = protocolFilter->Complete(*pDataBase)) < 0)
 	{
-		/*if (nRet == J_WIAT_NEXT_CMD)
-		{
-			pAsioData->ioUser = this;
-			m_asio.Write(asioData.ioHandle, (J_AsioDataBase&)*pAsioData);
-			return J_OK;
-		}*/
 		delete pDataBase;
 			
 		J_OS::LOGERROR("CStreamManager::ProcessCommand Send Header error");
@@ -233,8 +227,6 @@ int CStreamManager::ProcessCommand(const J_AsioDataBase *pAsioData, J_Obj *pObj,
 	pDataBase->ioUser = this;
 	pDataBase->ioHandle = pAsioData->ioHandle;
 	pDataBase->ioCall = J_AsioDataBase::j_write_e;
-	//if (pDataBase->ioWrite.bufLen > 0)
-	//	printf("m_asio.Write 2\n");
 	m_asio.Write(pDataBase->ioHandle, pDataBase);
 	
 	pClient->Run();

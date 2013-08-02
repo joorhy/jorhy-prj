@@ -25,14 +25,16 @@ public:
 private:
 #ifdef WIN32
 	static unsigned X_JO_API WorkThread(void *param)
-#else
-	static void *WorkThread(void *param)
-#endif
 	{
 		(static_cast<CXAsio *>(param))->OnWork();
 		return 0;
 	}
 	void OnWork();
+#else
+	static void aio_completion_handler( int signo, siginfo_t *info, void *context);
+	void OnWork(J_AsioDataBase *pDataBase);
+#endif
+
 #ifdef WIN32
 	static unsigned X_JO_API ListenThread(void *param)
 #else

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="joiss" Database="./joiss.tags">
   <Project Name="AipstarHost" Path="AipstarHost.project" Active="No"/>
-  <Project Name="AironixHost" Path="AironixHost.project" Active="No"/>
   <Project Name="joiss" Path="joiss.project" Active="Yes"/>
   <Project Name="JoissManager" Path="JoissManager.project" Active="No"/>
   <Project Name="core" Path="core.project" Active="No"/>
@@ -46,7 +45,6 @@
       <Project Name="AipstarHost" ConfigName="Debug"/>
       <Project Name="AipstarHost" ConfigName="Debug"/>
       <Project Name="AironixHost" ConfigName="Debug"/>
-      <Project Name="AironixHost" ConfigName="Debug"/>
       <Project Name="joiss" ConfigName="Debug"/>
       <Project Name="JoissManager" ConfigName="Debug"/>
       <Project Name="core" ConfigName="Debug"/>
@@ -90,7 +88,6 @@
       <Project Name="misc" ConfigName="Release"/>
       <Project Name="AipstarHost" ConfigName="Release"/>
       <Project Name="AipstarHost" ConfigName="Release"/>
-      <Project Name="AironixHost" ConfigName="Release"/>
       <Project Name="AironixHost" ConfigName="Release"/>
       <Project Name="joiss" ConfigName="Release"/>
       <Project Name="JoissManager" ConfigName="Release"/>

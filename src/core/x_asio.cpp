@@ -19,14 +19,7 @@ int CXAsio::Init()
 {
 	if (!m_bStarted)
 	{
-		m_epoll_fd = 0;
-		m_epoll_fd = epoll_create(JO_MAX_ASIOSIZE);
-
 		m_bStarted = true;
-		j_thread_parm parm = {0};
-		parm.entry = CXAsio::WorkThread;
-		parm.data = this;
-		m_workThread.Create(parm);
 	}
 	return J_OK;
 }
@@ -36,13 +29,6 @@ void CXAsio::Deinit()
 	if (m_bStarted)
 	{
 		m_bStarted = false;
-		m_workThread.Release();
-
-		if (m_epoll_fd != 0)
-		{
-			close (m_epoll_fd);
-			m_epoll_fd = 0;
-		}
 	}
 }
 
@@ -57,44 +43,23 @@ int CXAsio::Listen(J_AsioDataBase *pAsioData)
 		J_OS::CTCPSocket tcpSocket;
 		if (tcpSocket.Listen(nSocket, pAsioData->ioAccept.peerPort, 1024, false) != J_OK)
 			return J_UNKNOW;
-
+			
 		m_listenSocket = nSocket;
 		m_listenAsioData = pAsioData;
 		
-		
-		m_evListen.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP/* | EPOLLET*/;
-		m_evListen.data.fd = m_listenSocket.sock;
-
-		if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_listenSocket.sock, &m_evListen) < 0)
-		{
-			J_OS::LOGERROR("CXService::Start epoll set insertion error");
-			return J_UNKNOW;
-		}
-		
-		/*j_thread_parm parm = {0};
+		j_thread_parm parm = {0};
 		parm.entry = CXAsio::ListenThread;
 		parm.data = this;
-		m_workThread.Create(parm);*/
+		m_workThread.Create(parm);
 	}
 	return J_OK;
 }
 
 int CXAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 {
-	m_evAsio.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLHUP;
-	m_evAsio.data.fd = nSocket.sock;
-
-	if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, nSocket.sock, &m_evAsio) < 0)
-	{
-		J_OS::LOGERROR("CRdAsio::AddUser epoll set insertion error");
-		return J_SOCKET_ERROR;
-	}
-	EnableKeepalive(nSocket);
-	//J_OS::LOGINFO("TLock(m_user_locker)");
 	TLock(m_user_locker);
 	m_userMap[nSocket] = pUser;
 	TUnlock(m_user_locker);
-	//J_OS::LOGINFO("TUnlock(m_user_locker)");
 
 	J_OS::LOGINFO("CXAsio::AddUser epoll set insertion sucess fd = %d", nSocket.sock);
 
@@ -103,138 +68,46 @@ int CXAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 
 void CXAsio::DelUser(j_socket_t nSocket)
 {
-	m_evAsio.events = EPOLLIN | EPOLLRDHUP;
-	m_evAsio.data.fd = nSocket.sock;
-	epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, nSocket.sock, &m_evAsio);
-
 	j_close_socket(nSocket.sock);
+	TLock(m_user_locker);
 	AsioUserMap::iterator it = m_userMap.find(nSocket);
 	if (it != m_userMap.end())
 	{
-		//J_OS::LOGINFO("TLock(m_user_locker)");
-		TLock(m_user_locker);
 		m_userMap.erase(it);
-		TUnlock(m_user_locker);
-		//J_OS::LOGINFO("TUnlock(m_user_locker)");
 	}
+	TUnlock(m_user_locker);
 		
 	J_OS::LOGINFO("CXAsio::DelUser epoll set insertion sucess fd = %d", nSocket.sock);
-	
-	//J_OS::LOGINFO("TLock(m_read_locker)");
-	TLock(m_read_locker);
-	AsioDataMap::iterator itData = m_readMap.find(nSocket);
-	if (itData != m_readMap.end())
-	{
-		J_AsioDataBase *pDataBase = NULL;
-		while (!itData->second.empty())
-		{
-			pDataBase = itData->second.front();
-			itData->second.pop();
-			if (pDataBase->ioRead.buf != NULL)
-			{
-				delete pDataBase->ioRead.buf;
-				pDataBase->ioRead.buf = NULL;
-			}
-			delete pDataBase;
-		}
-		m_readMap.erase(itData);
-	}
-	TUnlock(m_read_locker);
-	//J_OS::LOGINFO("TUnlock(m_read_locker)");
-	
-	//J_OS::LOGINFO("TLock(m_write_locker)");
-	TLock(m_write_locker);
-	AsioDataMap::iterator itData2 = m_writeMap.find(nSocket);
-	if (itData2 != m_writeMap.end())
-	{
-		J_AsioDataBase *pDataBase = NULL;
-		while (!itData2->second.empty())
-		{
-			pDataBase = itData2->second.front();
-			itData2->second.pop();
-			if (pDataBase->ioWrite.buf != NULL)
-				delete pDataBase->ioWrite.buf;
-			delete pDataBase;
-		}
-		m_writeMap.erase(itData2);
-	}
-	TUnlock(m_write_locker);
-	//J_OS::LOGINFO("TUnlock(m_write_locker)");
 }
 
-void CXAsio::OnWork()
+void CXAsio::OnWork(J_AsioDataBase *pDataBase)
 {
-	int nfds = 0;
-	int i = 0;
-	j_socket_t active_fd;
-	struct sockaddr_in sonnAddr;
-	socklen_t connLen;
-	j_asio_handle connSocket;
-	pthread_setcancelstate(PTHREAD_CANCEL_DEFERRED, NULL);
-	while (m_bStarted)
+	if (pDataBase->ioCall == J_AsioDataBase::j_read_e)
 	{
-		pthread_testcancel();
-		//TLock(m_user_locker);
-		nfds = epoll_wait(m_epoll_fd, m_evConnect, 1024, 200);
-		//TUnlock(m_user_locker);
-		if (nfds < 0)
+		j_sleep(1);
+		J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pDataBase->ioUser);
+		if (pDataBase->ioRead.bufLen < 0)
 		{
-			usleep(10);
-			if (errno == EINTR)
-			{
-				continue;
-			}
+			pDataBase->ioRead.finishedLen += 1;
+			if (strstr(pDataBase->ioRead.buf, pDataBase->ioRead.until_buf) == NULL)
+				Read(pDataBase->ioHandle, pDataBase);
 			else
-			{
-				printf("errno = %d\n", errno);
-				break;
-			}
+				pAsioUser->OnRead(pDataBase, J_OK);
 		}
-		else if (nfds == 0)
+		else
 		{
-			continue;
-			//J_OS::LOGERROR("nfds == 0 CXService::OnThread epoll error");
+			pDataBase->ioRead.finishedLen = pDataBase->ioRead.bufLen;
+			pAsioUser->OnRead(pDataBase, J_OK);
 		}
-
-		for (i = 0; i < nfds; i++)
-		{
-			if (m_evConnect[i].data.fd == m_listenSocket.sock)
-			{
-				OnListen();
-			}
-			else
-			{
-				active_fd.sock = m_evConnect[i].data.fd;
-				if ((m_evConnect[i].events & EPOLLRDHUP) && (m_evConnect[i].events & EPOLLIN))
-				{
-					//broken
-					ProcessIoEvent(active_fd, J_AsioDataBase::j_disconnect_e);
-					//TLock(m_user_locker);
-					epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, active_fd.sock, &m_evConnect[i]);
-					//TUnlock(m_user_locker);
-				}
-				else if (m_evConnect[i].events & EPOLLIN)
-				{
-					//read
-					ProcessIoEvent(active_fd, J_AsioDataBase::j_read_e);
-					m_evAsio.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLERR | EPOLLHUP | EPOLLPRI/* | EPOLLET*/;
-					m_evAsio.data.fd = m_evConnect[i].data.fd;
-					//TLock(m_user_locker);
-					epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, active_fd.sock, &m_evAsio);
-					//TUnlock(m_user_locker);
-				}
-				else if (m_evConnect[i].events & EPOLLOUT)
-				{
-					//write
-					ProcessIoEvent(active_fd, J_AsioDataBase::j_write_e);
-					m_evAsio.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLERR | EPOLLHUP | EPOLLPRI/* | EPOLLET*/;
-					m_evAsio.data.fd = m_evConnect[i].data.fd;
-					//TLock(m_user_locker);
-					epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, m_evConnect[i].data.fd, &m_evAsio);
-					//TUnlock(m_user_locker);
-				}
-			}
-		}
+	}
+	else if (pDataBase->ioCall == J_AsioDataBase::j_write_e)
+	{
+		//write
+		j_sleep(1);
+		//printf("%d = %d\n", pPerIoData->ioWrite.bufLen, dwBytesTransferred);
+		pDataBase->ioWrite.finishedLen = pDataBase->ioWrite.bufLen;
+		J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pDataBase->ioUser);
+		pAsioUser->OnWrite(pDataBase, J_OK);
 	}
 }
 
@@ -244,10 +117,13 @@ void CXAsio::OnListen()
 	struct sockaddr_in sonnAddr;
 	socklen_t connLen = sizeof(sockaddr_in);
 	j_asio_handle connSocket;
-	//while (true)
+	while (true)
 	{
 		if ((connSocket = accept(m_listenSocket.sock, (struct sockaddr*)&sonnAddr, &connLen)) == j_invalid_socket_val)
 		{
+			if (errno == 4)
+				continue;
+				
 			J_OS::LOGERROR("CXAsio::OnListen WSAAccept() failed with error");
 			return;
 		} 
@@ -291,22 +167,57 @@ int CXAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 		return -1;
 	}
 	TUnlock(m_user_locker);
-	
-	TLock(m_read_locker);
-	AsioDataMap::iterator itData = m_readMap.find(nSocket);
-	if (itData == m_readMap.end())
+
+	pAsioData->ioHandle = nSocket.sock;
+	struct sigaction sig_act;
+	//set up the signal handler
+	memset (&sig_act, 0, sizeof(sig_act));
+	sigemptyset(&sig_act.sa_mask);
+	sig_act.sa_flags = SA_SIGINFO;
+	sig_act.sa_sigaction = aio_completion_handler;
+
+	if (pAsioData->ioRead.bufLen < 0)
 	{
-		std::queue<J_AsioDataBase *> dataQ;
-		dataQ.push(pAsioData);
-		m_readMap[nSocket] = dataQ;
+		pAsioData->aio_buf = pAsioData->ioRead.buf + pAsioData->ioRead.finishedLen;
+		pAsioData->aio_nbytes = 1;//
 	}
 	else
 	{
-		itData->second.push(pAsioData);
+		pAsioData->aio_nbytes  = pAsioData->ioRead.bufLen;
+		pAsioData->aio_buf = pAsioData->ioRead.buf;
 	}
-	TUnlock(m_read_locker);
+	//set up the AIO request
+	pAsioData->aio_fildes = nSocket.sock;
+	pAsioData->aio_offset = 0;
+	pAsioData->context = this;
+	
+	//link the AIO request with the signal handler
+	pAsioData->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+	pAsioData->aio_sigevent.sigev_signo = SIGIO;
+	pAsioData->aio_sigevent.sigev_value.sival_ptr = pAsioData;
+	
+	//map the signal to the signal handler
+	sigaction(SIGIO, &sig_act, NULL);
+	
+	if (aio_read(pAsioData) < 0)
+	{
+		J_OS::LOGERROR("CXAsio::Read aio_read error");
+		return J_UNKNOW;
+	}
 
-	return 0;
+	return J_OK;
+}
+
+void CXAsio::aio_completion_handler( int signo, siginfo_t *info, void *context)
+{
+	if (info->si_signo == SIGIO)
+	{
+		J_AsioDataBase *req;
+		req = (J_AsioDataBase *)info->_sifields._rt.si_sigval.sival_ptr;
+		if (req != NULL)
+		//if (req->ioCall == J_AsioDataBase::j_read_e || req->ioCall == J_AsioDataBase::j_write_e)
+			((CXAsio *)req->context)->OnWork(req);
+	}
 }
 
 int CXAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
@@ -320,21 +231,34 @@ int CXAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	}
 	TUnlock(m_user_locker);
 
-	//J_OS::LOGINFO("TLock(m_write_locker);2");
-	TLock(m_write_locker);
-	AsioDataMap::iterator itData = m_writeMap.find(nSocket);
-	if (itData == m_writeMap.end())
+	pAsioData->ioHandle = nSocket.sock;
+	struct sigaction sig_act;
+	//set up the signal handler
+	memset (&sig_act, 0, sizeof(sig_act));
+	sigemptyset(&sig_act.sa_mask);
+	sig_act.sa_flags = SA_SIGINFO;
+	sig_act.sa_sigaction = aio_completion_handler;
+
+	//set up the AIO request
+	pAsioData->aio_fildes = nSocket.sock;
+	pAsioData->aio_buf = (void *)pAsioData->ioWrite.buf;
+	pAsioData->aio_nbytes = pAsioData->ioWrite.bufLen;
+	pAsioData->aio_offset = 0;
+	pAsioData->context = this;
+	
+	//link the AIO request with the signal handler
+	pAsioData->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+	pAsioData->aio_sigevent.sigev_signo = SIGIO;
+	pAsioData->aio_sigevent.sigev_value.sival_ptr = pAsioData;
+	
+	//map the signal to the signal handler
+	sigaction(SIGIO, &sig_act, NULL);
+	
+	if (aio_write(pAsioData) < 0)
 	{
-		std::queue<J_AsioDataBase *> dataQ;
-		dataQ.push(pAsioData);
-		m_writeMap[nSocket] = dataQ;
+		J_OS::LOGERROR("CXAsio::Write aio_write error");
+		return J_UNKNOW;
 	}
-	else
-	{
-		itData->second.push(pAsioData);
-	}
-	TUnlock(m_write_locker);
-	//J_OS::LOGINFO("TUnlock(m_write_locker);2");
 
 	return J_OK;
 }
@@ -351,12 +275,13 @@ int CXAsio::ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData)
 int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 {
 	AsioDataMap::iterator itData;
-	int nRet = 0;
+	int nResult = J_OK;
+	int nRetVal = 0;
 	J_AsioDataBase *pDataBase = NULL;
 	switch (nType)
 	{
 		case J_AsioDataBase::j_read_e:
-			//TLock(m_read_locker);
+			TLock(m_read_locker);
 			itData = m_readMap.find(nSocket);
 			if (itData != m_readMap.end() && !itData->second.empty())
 			{
@@ -367,12 +292,40 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 				{
 					if (pDataBase->ioRead.whole)
 					{
-						nRet = recv(nSocket.sock, pDataBase->ioRead.buf, pDataBase->ioRead.bufLen, MSG_WAITALL);
-						nReadLen -= nRet;
+						nRetVal = recv(nSocket.sock, pDataBase->ioRead.buf, pDataBase->ioRead.bufLen, MSG_WAITALL);
+						nReadLen -= nRetVal;
+						if (nRetVal == 0)
+						{
+							nResult = J_SOCKET_ERROR;
+							break;
+						}
+						else if (nRetVal < 0)
+						{
+							if (errno == EAGAIN || errno == EINTR)
+								continue;
+							else
+							{
+								nResult = J_SOCKET_ERROR;
+								break;
+							}
+						}
 					}
 					else
 					{
-						nRet = recv(nSocket.sock, pDataBase->ioRead.buf, pDataBase->ioRead.bufLen, 0);
+						nRetVal = recv(nSocket.sock, pDataBase->ioRead.buf, pDataBase->ioRead.bufLen, 0);
+						if (nRetVal == 0)
+						{
+							nResult = J_SOCKET_ERROR;
+						}
+						else if (nRetVal < 0)
+						{
+							if (errno == EAGAIN || errno == EINTR)
+								continue;
+							else
+							{
+								nResult = J_SOCKET_ERROR;
+							}
+						}
 						break;
 					}
 				}
@@ -381,79 +334,99 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 					j_int32_t n = 0;
 					while (strstr(pDataBase->ioRead.buf, pDataBase->ioRead.until_buf) == NULL)
 					{
-						nRet = recv(nSocket.sock, pDataBase->ioRead.buf + n, 1, 0);
-						n += nRet;
+						nRetVal = recv(nSocket.sock, pDataBase->ioRead.buf + n, 1, 0);
+						if (nRetVal == 0)
+						{
+							nResult = J_SOCKET_ERROR;
+							break;
+						}
+						else if (nRetVal < 0)
+						{
+							if (errno == EAGAIN || errno == EINTR)
+								continue;
+							else
+							{
+								nResult = J_SOCKET_ERROR;
+								break;
+							}
+						}
+						n += nRetVal;
 					}
-					nRet = n;
+					nRetVal = n;
 				}
 			}
-			//TUnlock(m_read_locker);
-			if (nRet > 0)
+			TUnlock(m_read_locker);
+			if (nRetVal > 0)
 			{
-				pDataBase->ioRead.finishedLen = nRet;
+				pDataBase->ioRead.finishedLen = nRetVal;
 				pDataBase->ioHandle = nSocket.sock;
 				pDataBase->ioCall = J_AsioDataBase::j_read_e;
 				J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pDataBase->ioUser);
-				pAsioUser->OnRead(pDataBase, J_OK);
+				nResult = pAsioUser->OnRead(pDataBase, J_OK);
 			}
 			break;
 		case J_AsioDataBase::j_write_e:
-			//J_OS::LOGINFO("TLock(m_write_locker);3");
-			//TLock(m_write_locker);
+			TLock(m_write_locker);
 			itData = m_writeMap.find(nSocket);
-			//TUnlock(m_write_locker);
 			if (itData != m_writeMap.end() && !itData->second.empty())
 			{
 				pDataBase = itData->second.front();
 				itData->second.pop();
 				int nWriteLen = pDataBase->ioWrite.bufLen;
 				int nSendLen = 0;
-				//if (nWriteLen > 0)
-				//	printf("%s %d\n", pDataBase->ioWrite.buf, nWriteLen);
 				while (nWriteLen > 0)
 				{
 					if (pDataBase->ioWrite.whole)
-						nRet = send(nSocket.sock, pDataBase->ioWrite.buf + nSendLen, nWriteLen, 0);
+						nRetVal = send(nSocket.sock, pDataBase->ioWrite.buf + nSendLen, nWriteLen, 0);
 					else 
-						nRet = send(nSocket.sock, pDataBase->ioWrite.buf + nSendLen, nWriteLen, 0);
+						nRetVal = send(nSocket.sock, pDataBase->ioWrite.buf + nSendLen, nWriteLen, 0);
 					
-					if (nRet <= 0)
+					if (nRetVal == 0)
 					{
-						//printf("nRet = %d \n", nRet);
 						J_AsioDataBase asioData;
 						asioData.ioHandle = nSocket.sock;
 						J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(pDataBase->ioUser);
-						pAsioUser->OnBroken(&asioData, J_SOCKET_ERROR);
-						//TUnlock(m_write_locker);
+						nResult = J_SOCKET_ERROR;
 						break;
 					}
-					nWriteLen -= nRet;
-					nSendLen += nRet;
+					else if (nRetVal < 0)
+					{
+						if (errno == EAGAIN || errno == EINTR)
+							continue;
+						else
+						{
+							J_AsioDataBase asioData;
+							asioData.ioHandle = nSocket.sock;
+							J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(pDataBase->ioUser);
+							nResult = J_SOCKET_ERROR;
+							break;
+						}
+					}
+					nWriteLen -= nRetVal;
+					nSendLen += nRetVal;
 				}
 			}
-			//J_OS::LOGINFO("TUnlock(m_write_locker);3");
-			if (pDataBase != NULL && nRet >= 0)
+			TUnlock(m_write_locker);
+			if (pDataBase != NULL && nResult >= 0)
 			{
-				//if (pDataBase->ioWrite.buf != NULL)
-				//	printf("%s \n", pDataBase->ioWrite.buf);
-				pDataBase->ioWrite.finishedLen = nRet;
+				pDataBase->ioWrite.finishedLen = nRetVal;
 				pDataBase->ioHandle = nSocket.sock;
 				pDataBase->ioCall = J_AsioDataBase::j_write_e;
 				J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(pDataBase->ioUser);
-				pAsioUser->OnWrite(pDataBase, J_OK);
+				nResult = pAsioUser->OnWrite(pDataBase, J_OK);
 			}
 			break;
 		case J_AsioDataBase::j_disconnect_e:
 		{
 			J_AsioUser *pAsioUser = NULL;
-			//TLock(m_user_locker);
+			TLock(m_user_locker);
 			AsioUserMap::iterator itUser = m_userMap.find(nSocket);
 			if (itUser != m_userMap.end())
 			{
 				pAsioUser = dynamic_cast<J_AsioUser *>(itUser->second);
 				//m_userMap.erase(itUser);
 			}
-			//TUnlock(m_user_locker);
+			TUnlock(m_user_locker);
 			if (pAsioUser != NULL)
 			{
 				J_AsioDataBase asioData;
@@ -464,6 +437,6 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 		}
 	}
 		
-	return J_OK;
+	return nResult;
 }
 

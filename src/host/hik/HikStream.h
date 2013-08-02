@@ -19,10 +19,10 @@ public:
 	virtual int Startup();
 	virtual int Shutdown();
 	///AsioUser
-	virtual void OnAccept(const J_AsioDataBase *pAsioData, int nRet) {}
-	virtual void OnRead(const J_AsioDataBase *pAsioData, int nRet);
-	virtual void OnWrite(const J_AsioDataBase *pAsioData, int nRet) {}
-	virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet);
+	virtual j_result_t OnAccept(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual j_result_t OnRead(const J_AsioDataBase *pAsioData, int nRet);
+	virtual j_result_t OnWrite(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual j_result_t OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 private:
 	enum 
 	{

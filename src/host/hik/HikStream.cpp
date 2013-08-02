@@ -60,7 +60,7 @@ int CHikStream::Startup()
 	JoXAsio->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
 
-	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", this);
+	J_OS::LOGINFO("CHikStream::Startup Startup this = %d", m_nSocket.sock);
 
 	return J_OK;
 }
@@ -75,17 +75,17 @@ int CHikStream::Shutdown()
 	JoXAsio->DelUser(m_nSocket);
 	TUnlock(m_locker);
 
-	J_OS::LOGINFO("CHikStream::Shutdown Shutdown this = %d", this);
+	J_OS::LOGINFO("CHikStream::Shutdown Shutdown this = %d", m_nSocket.sock);
 
 	return J_OK;
 }
 
-void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
 	if (!m_bStartup)
 	{
 		J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket.sock);
-		return;
+		return J_SOCKET_ERROR;
 	}
 
 	j_result_t nResult = 0;
@@ -119,11 +119,6 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
 			if (nResult == J_OK)
 			{
-				//if (fp == NULL)
-				//	fp = fopen("test.h264", "wb+");
-				//fwrite(m_pRecvBuff, 1, streamHeader.dataLen, fp);
-				//fflush(fp);
-				//printf ("dataLen = %d\n", streamHeader.dataLen);
 				TLock(m_vecLocker);
 				std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
 				for (; it != m_vecRingBuffer.end(); it++)
@@ -141,9 +136,11 @@ void CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	m_asioData->ioRead.finishedLen = 0;
 	JoXAsio->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
+	
+	return J_OK;
 }
 
-void CHikStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CHikStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
     J_OS::LOGINFO("CHikStream::OnBroken");
     TLock(m_locker);
@@ -160,6 +157,7 @@ void CHikStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     }
     TUnlock(m_vecLocker);
 	JoXAsio->DelUser(m_nSocket);
-
     TUnlock(m_locker);
+	
+	return J_OK;
 }

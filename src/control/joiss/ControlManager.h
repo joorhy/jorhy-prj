@@ -14,10 +14,10 @@ class JO_API CControlManager : public J_AsioUser
 
 	public:
 		///AsioUser
-		virtual void OnAccept(const J_AsioDataBase *pAsioData, int nRet);
-		virtual void OnRead(const J_AsioDataBase *pAsioData, int nRet);
-		virtual void OnWrite(const J_AsioDataBase *pAsioData, int nRet);
-		virtual void OnBroken(const J_AsioDataBase *pAsioData, int nRet);
+		virtual j_result_t OnAccept(const J_AsioDataBase *pAsioData, int nRet);
+		virtual j_result_t OnRead(const J_AsioDataBase *pAsioData, int nRet);
+		virtual j_result_t OnWrite(const J_AsioDataBase *pAsioData, int nRet);
+		virtual j_result_t OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 
 		///CStreamManager
 		j_result_t StartService(j_int32_t nPort, const j_char_t *pCommandType);

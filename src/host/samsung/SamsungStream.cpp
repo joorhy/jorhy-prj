@@ -69,12 +69,12 @@ j_result_t CSamsungStream::Shutdown()
     return J_OK;
 }
 
-void CSamsungStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CSamsungStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
     if (!m_bStartup)
     {
         J_OS::LOGINFO("CSamsungStream:: !m_bStartup socket = %d", m_nSocket);
-        return;
+        return J_SOCKET_ERROR;
     }
 
     TLock(m_locker);
@@ -100,9 +100,10 @@ void CSamsungStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	while (nResult == J_OK);
 
     TUnlock(m_locker);
+	return J_OK;
 }
 
-void CSamsungStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CSamsungStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
     J_OS::LOGERROR("CSamsungStream::OnBroken");
     TLock(m_locker);
@@ -120,4 +121,5 @@ void CSamsungStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TUnlock(m_vecLocker);
 
     TUnlock(m_locker);
+	return J_OK;
 }

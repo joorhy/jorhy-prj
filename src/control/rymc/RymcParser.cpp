@@ -30,9 +30,7 @@ int CRymcParser::AddUser(j_socket_t nSocket, const char *pAddr, short nPort)
 int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pAsioData_out)
 {
 	memcpy(m_read_buff + m_read_len, pAsioData_in->ioRead.buf, pAsioData_in->ioRead.finishedLen);
-	//printf("%s\n", m_read_buff);
 	m_read_len += pAsioData_in->ioRead.finishedLen;
-	//printf("%s\n", pAsioData_in->ioRead.buf);
 	memset(pAsioData_in->ioRead.buf, 0, 2048);
 	if (m_state == RYMC_HEAD)
 	{
@@ -79,7 +77,7 @@ int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pA
 	case jo_json_ctrl_record://录像控制
 	{
 		J_OS::LOGINFO("CRymcParser::ProcessRequest RecordControl resid = %s", controlObj.recordCtrl.resid);
-		nResult = RecordControl(controlObj.recordCtrl.resid, controlObj.recordCtrl.action, controlObj.recordCtrl.stream_type);
+		nResult = J_OK;//= RecordControl(controlObj.recordCtrl.resid, controlObj.recordCtrl.action, controlObj.recordCtrl.stream_type);
 		break;
 	}
 	case jo_json_ptz_ctrl://云台控制

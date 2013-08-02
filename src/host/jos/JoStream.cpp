@@ -70,12 +70,12 @@ int CJoStream::Shutdown()
 	return J_OK;
 }
 
-void CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
     if (!m_bStartup)
     {
         J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket);
-        return;
+        return J_SOCKET_ERROR;
     }
 
 	j_result_t nResult = J_OK;
@@ -113,9 +113,10 @@ void CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	JoXAsio->Read(m_nSocket, &m_asioData);
 	
 	TUnlock(m_locker);
+	return J_OK;
 }
 
-void CJoStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
+j_result_t CJoStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
     J_OS::LOGINFO("CJoStream::OnBroken");
     TLock(m_locker);
@@ -132,4 +133,5 @@ void CJoStream::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
     TUnlock(m_vecLocker);
 
     TUnlock(m_locker);
+	return J_OK;
 }
