@@ -2,7 +2,6 @@
 #define __JO_COMMON_H_
 
 #include "j_obj.h"
-
 #define JO_DECLARE_SINGLETON(_name) \
 	extern JO_API C##_name* Single_##_name; \
 	extern JO_API C##_name* X_JO_API Get##_name##Layer();  
