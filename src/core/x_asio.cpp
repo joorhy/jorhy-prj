@@ -4,7 +4,7 @@
 #include "x_socket.h"
 
 JO_IMPLEMENT_SINGLETON(XAsio)
-
+///
 CXAsio::CXAsio()
 {
 	m_bStarted = false;
