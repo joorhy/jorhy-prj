@@ -41,7 +41,7 @@ int CJoStream::Startup()
 
     TLock(m_locker);
     m_bStartup = true;
-    JoXAsio->Init();
+    //JoXAsio->Init();
     JoXAsio->AddUser(m_nSocket, this);
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = (j_char_t *)&m_dataHead;
@@ -74,7 +74,7 @@ j_result_t CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
     if (!m_bStartup)
     {
-        J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket);
+        J_OS::LOGINFO("!m_bStartup socket = %d", m_nSocket.sock);
         return J_SOCKET_ERROR;
     }
 

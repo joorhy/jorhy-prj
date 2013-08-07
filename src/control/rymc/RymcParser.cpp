@@ -77,7 +77,7 @@ int CRymcParser::ProcessRequest(J_AsioDataBase *pAsioData_in, J_AsioDataBase *pA
 	case jo_json_ctrl_record://录像控制
 	{
 		J_OS::LOGINFO("CRymcParser::ProcessRequest RecordControl resid = %s", controlObj.recordCtrl.resid);
-		nResult = J_OK;//= RecordControl(controlObj.recordCtrl.resid, controlObj.recordCtrl.action, controlObj.recordCtrl.stream_type);
+		nResult = RecordControl(controlObj.recordCtrl.resid, controlObj.recordCtrl.action, controlObj.recordCtrl.stream_type);
 		break;
 	}
 	case jo_json_ptz_ctrl://云台控制

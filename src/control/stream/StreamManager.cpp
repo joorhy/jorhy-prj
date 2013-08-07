@@ -20,7 +20,7 @@ CStreamManager::~CStreamManager()
 int CStreamManager::StartService(int nPort, const char *pType)
 {
 	m_serviceType = pType;
-	m_asio.Init();
+	//m_asio.Init();
 	memset(&m_asioData, 0, sizeof(m_asioData));
 	m_asioData.ioAccept.peerPort = nPort;
 	m_asioData.ioUser = this;
@@ -31,7 +31,7 @@ int CStreamManager::StartService(int nPort, const char *pType)
 
 int CStreamManager::StopService()
 {
-	m_asio.Deinit();
+	//m_asio.Deinit();
 	return J_OK;
 }
 

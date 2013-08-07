@@ -14,6 +14,7 @@ JO_IMPLEMENT_SINGLETON(XSdk)
 
 char *CXSdk::HttpCommunicate(char *body, char *uri)
 {
+	TLock(m_locker);
 	j_char_t *resrvdata = NULL;
 	j_char_t *ret_data = NULL;
 	m_httpHelper.SetUri(uri);
@@ -28,7 +29,8 @@ char *CXSdk::HttpCommunicate(char *body, char *uri)
 	j_int32_t ret_val = m_httpHelper.GetStatusCode();
 	switch(ret_val)
 	{
-	case 200:	resrvdata = m_httpHelper.GetBody();
+	case 200:
+				resrvdata = m_httpHelper.GetBody();
 				if (resrvdata == NULL)
 					return NULL;
 				
@@ -41,13 +43,14 @@ char *CXSdk::HttpCommunicate(char *body, char *uri)
         J_OS::LOGINFO("HttpCommunicate MC Error, code = %d", ret_val);
         return NULL;
 	}
+	TUnlock(m_locker);
 
 	return ret_data;
 }
 
 int CXSdk::JsonGetInt(json_object *p_object, const char *p_key)
 {
-    if (p_object == NULL)
+    if (p_object == NULL || is_error(p_object))
         return 0;
 
 	json_object *pObject = NULL;

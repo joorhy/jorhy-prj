@@ -210,8 +210,6 @@ typedef struct
 struct J_AsioDataBase
 #ifdef WIN32
 : public OVERLAPPED
-#else
-: public aiocb
 #endif
 {
 	/// 执行的异步IO调用
@@ -305,7 +303,6 @@ struct J_AsioDataBase
 	j_asio_handle ioHandle;		///异步Io句柄
 	J_Obj *ioUser;				///< 异步Io使用者
 	J_IoCall ioCall;			/// 执行的异步Io调用
-	void *context;
 	union
 	{
 		J_IoAccept ioAccept;

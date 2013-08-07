@@ -2,6 +2,7 @@
 #include "x_config.h"
 #include "x_time.h"
 
+#define JO_LARGE_UINT -1UL
 JO_IMPLEMENT_SINGLETON(XVodManager)
 
 CXVodManager::CXVodManager()
@@ -19,7 +20,7 @@ j_result_t CXVodManager::GetRecordInfo(const j_char_t *pResid, j_time_t &begin_t
 	j_vec_file_info_t vecFileInfo;
 	j_char_t file_name[256] = {0};
 
-	begin_time = 0xFFFFFFFFFFFFFFFF;
+	begin_time = JO_LARGE_UINT;
 	end_time = 0;
 	nSize = 0;
 
@@ -73,7 +74,7 @@ j_result_t CXVodManager::GetRecordInfo(const j_char_t *pResid, j_time_t &begin_t
 			&& memcmp(entry->d_name, "..", 2) != 0)
 		{
 			vecFileInfo.clear();
-			SearchOneDayFiles(pResid, entry->d_name, 0, 0xFFFFFFFFFFFFFFFF, vecFileInfo);
+			SearchOneDayFiles(pResid, entry->d_name, 0, JO_LARGE_UINT, vecFileInfo);
 			j_vec_file_info_t::iterator it = vecFileInfo.begin();
 			for (; it!=vecFileInfo.end(); ++it)
 			{
@@ -105,7 +106,7 @@ j_result_t CXVodManager::SearchVodFiles(const j_char_t *pResid, j_time_t begin_t
 j_result_t CXVodManager::DelFiles(J_DelRecordCtrl &delRecordCtrl)
 {
 	if (delRecordCtrl.end_time == 0)
-		delRecordCtrl.end_time = 0xFFFFFFFFFFFFFFFF;
+		delRecordCtrl.end_time = JO_LARGE_UINT;
 
 	if (j_string_t(delRecordCtrl.resid) == "")//É¾³ýÊ±¼ä¶ÎÄÚËùÓÐÂ¼Ïñ
 	{

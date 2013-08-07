@@ -13,12 +13,16 @@ static FILE *fp = NULL;
 CHikStream::CHikStream(void *pTCPSocket, std::string resid)
 : m_bStartup(false)
 , m_pRecvBuff(NULL)
+, m_pDataBuff(NULL)
 , m_resid(resid)
 {
 	m_pTCPSocket = pTCPSocket;
 	m_nSocket = ((J_OS::CTCPSocket *)pTCPSocket)->GetHandle();
 	if (NULL == m_pRecvBuff)
 		m_pRecvBuff = new char[RECV_SIZE];
+		
+	if (NULL == m_pDataBuff)
+		m_pDataBuff = new char[RECV_SIZE];
 	
 	m_asioData = new J_AsioDataBase;
 
@@ -30,11 +34,11 @@ CHikStream::CHikStream(void *pTCPSocket, std::string resid)
 CHikStream::~CHikStream()
 {
 	m_parser.Deinit();
-	/*if (m_pRecvBuff != NULL)
+	if (m_pDataBuff != NULL)
 	{
-		delete m_pRecvBuff;
-		m_pRecvBuff = NULL;
-	}*/
+		delete m_pDataBuff;
+		m_pDataBuff = NULL;
+	}
 
 	J_OS::LOGINFO("CHikStream::~CHikStream destroy this = %d", this);
 }
@@ -46,7 +50,7 @@ int CHikStream::Startup()
 
 	TLock(m_locker);
 	m_bStartup = true;
-	JoXAsio->Init();
+	//JoXAsio->Init();
 	JoXAsio->AddUser(m_nSocket, this);
 	//读取4字节头信息
 	memset(m_asioData, 0, sizeof(J_AsioDataBase));
@@ -91,7 +95,8 @@ j_result_t CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	j_result_t nResult = 0;
 	J_StreamHeader streamHeader;
 	TLock(m_locker);
-	m_nOffset += m_asioData->ioRead.bufLen;
+	memcpy(m_pDataBuff + m_nOffset, m_pRecvBuff, m_asioData->ioRead.finishedLen);
+	m_nOffset += m_asioData->ioRead.finishedLen;
 	m_asioData->ioRead.whole = true;
 	switch (m_nState)
 	{
@@ -103,7 +108,7 @@ j_result_t CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 				|| (memcmp(m_pRecvBuff, AUDIO_HEAD, 4) == 0))
 				m_asioData->ioRead.bufLen = 2;
 	
-			m_asioData->ioRead.buf = m_pRecvBuff + m_nOffset;
+			m_asioData->ioRead.buf = m_pRecvBuff;
 			m_nState = HIK_READ_PS_HEAD;
 			break;
 		case HIK_READ_PS_HEAD:
@@ -111,11 +116,11 @@ j_result_t CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 				m_asioData->ioRead.bufLen = (*(m_asioData->ioRead.buf + 9) & 0x07);
 			else if (m_asioData->ioRead.bufLen == 2)
 				m_asioData->ioRead.bufLen = (((*(m_asioData->ioRead.buf) & 0xFF) << 8) + (*(m_asioData->ioRead.buf + 1) & 0xFF));
-			m_asioData->ioRead.buf = m_pRecvBuff + m_nOffset;
+			m_asioData->ioRead.buf = m_pRecvBuff;
 			m_nState = HIK_READ_DATA;
 			break;
 		case HIK_READ_DATA:
-			m_parser.InputData(m_pRecvBuff, m_nOffset);
+			m_parser.InputData(m_pDataBuff, m_nOffset);
 			nResult = m_parser.GetOnePacket(m_pRecvBuff, streamHeader);
 			if (nResult == J_OK)
 			{

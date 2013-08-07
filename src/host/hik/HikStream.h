@@ -35,6 +35,7 @@ private:
 	CJoThread m_recvThread;
 	j_boolean_t m_bStartup;
 	char *m_pRecvBuff;//[100 * 1024];
+	char *m_pDataBuff;
 	void *m_pTCPSocket;
 
 	CHikParser2 m_parser;

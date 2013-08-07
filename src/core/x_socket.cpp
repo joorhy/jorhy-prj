@@ -113,18 +113,33 @@ int CTCPSocket::Connect(const char *pAddr, unsigned short nPort/*, struct timeva
     {
         m_handle.sock = socket(AF_INET, SOCK_STREAM, 0);
     }
-    SetNonblocking();
+    //SetNonblocking();
 
 	struct sockaddr_in sin_addr;
 	sin_addr.sin_family = AF_INET;
 	sin_addr.sin_port = htons(nPort);
 	sin_addr.sin_addr.s_addr = inet_addr(pAddr);
-//#ifdef WIN32
-//	if (WSAConnect(m_handle.sock, (struct sockaddr *)&sin_addr, sizeof(sin_addr), NULL, NULL, NULL, NULL) == SOCKET_ERROR)
-//#else
-    if (connect(m_handle.sock, (struct sockaddr *)&sin_addr, sizeof(sin_addr)) == -1)
-//#endif
+	if (connect(m_handle.sock, (struct sockaddr *)&sin_addr, sizeof(sin_addr)) == -1)
     {
+		/*if (errno == EINPROGRESS || errno == EALREADY)
+		{
+			fd_set fdSet;
+			FD_ZERO(&fdSet);
+			FD_SET(m_handle.sock, &fdSet);
+			timeval tv;
+			tv.tv_sec = 3;
+			tv.tv_usec = 0;
+			while(select(m_handle.sock + 1, &fdSet, NULL, NULL, &tv) < 0)
+			{
+				if (errno == EINTR)
+					continue;
+					
+				J_OS::LOGERROR("CTCPSocket::Connect select error");
+				j_close_socket(m_handle.sock);
+				m_handle.sock = j_invalid_socket_val;
+				return J_SOCKET_ERROR;
+			}
+		}*/
 		j_close_socket(m_handle.sock);
         m_handle.sock = j_invalid_socket_val;
 
@@ -132,7 +147,7 @@ int CTCPSocket::Connect(const char *pAddr, unsigned short nPort/*, struct timeva
         return J_SOCKET_ERROR;
     }
 
-	//SetNonblocking();
+	SetNonblocking();
 	SetKeepAlive();
 
 	return J_OK;
@@ -161,16 +176,20 @@ read_begin:
 	if (nRecv <= 0)
 	{
 		J_OS::LOGERROR("CTCPSocket::Read nRecv = %d, errno = %d", nRecv, errno);
-		if (errno == EINTR && Read_times > 0)
+		if (errno == EINTR && nRecv < 0 && Read_times > 0)
 		{
 			j_sleep(1);
 			--Read_times;
 			goto read_begin;
 		}
-		else if (errno == EAGAIN && nRecv == 0)
+		else if (errno == EAGAIN && nRecv < 0)
 		{
 			j_sleep(1);
 			goto read_begin;
+		}
+		else if (nRecv < 0)
+		{
+			return J_SOCKET_ERROR;
 		}
 		else if (errno == 0)
 		{
@@ -311,7 +330,7 @@ int CTCPSocket::Read_n(char *pBuff, int nLen)
 		if (nRet <= 0)
 		{
 			J_OS::LOGERROR("CTCPSocket::Read_n nRead = %d", nRet);
-			if ((errno == EAGAIN && nRet == 0) || (errno == EINTR/* && nRet < 0*/))
+			if ((errno == EAGAIN && nRet < 0) || (errno == EINTR && nRet < 0))
 			{
 				J_OS::LOGERROR("CTCPSocket::Read_n nRead2 = %d", nRet);
 				j_sleep(1);
@@ -347,7 +366,7 @@ int CTCPSocket::Write_n(const char *pBuff, int nLen)
 
 		if (nRet <= 0)
 		{
-			if ((errno == EAGAIN && nRet == 0) || (errno == EINTR/* && nRet < 0*/))
+			if ((errno == EAGAIN && nRet < 0) || (errno == EINTR && nRet < 0))
 			{
 			    J_OS::LOGERROR("CTCPSocket::Write_n");
 				j_sleep(1);

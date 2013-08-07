@@ -395,24 +395,20 @@ struct J_AsioUser : virtual public J_Obj
 	///连接事件完成(用于网络IO)
 	///@param[in]	asioData IO数据集
 	///@param[in]	错误码,见x_error_type.h	
-	///@return			错误码,见x_error_type.h
 	virtual j_result_t OnAccept(const J_AsioDataBase *pAsioData, j_result_t nRet) = 0;
 
 	///读事件完成
 	///@param[in]	asioData IO数据集
 	///@param[in]	错误码,见x_error_type.h
-	///@return			错误码,见x_error_type.h
 	virtual j_result_t OnRead(const J_AsioDataBase *pAsioData, j_result_t nRet) = 0;
 
 	///写事件完成
 	///@param[in]	asioData IO数据集
 	///@param[in]	错误码,见x_error_type.h
-	///@return			错误码,见x_error_type.h
 	virtual j_result_t OnWrite(const J_AsioDataBase *pAsioData, j_result_t nRet) = 0;
 
 	///断线事件完成(用于网络IO)
 	///@param[in]	错误码,见x_error_type.h
-	///@return			错误码,见x_error_type.h
 	virtual j_result_t OnBroken(const J_AsioDataBase *pAsioData, j_result_t nRet) = 0;
 };
 

@@ -8,8 +8,11 @@
 
 namespace J_OS
 {
-#define LOGINFO(...) CLog::Instance()->WriteLogInfo(__VA_ARGS__)
-#define LOGERROR(...) CLog::Instance()->WriteLogError(__VA_ARGS__)
+//#define LOGINFO(...) CLog::Instance()->WriteLogInfo(__VA_ARGS__)
+//#define LOGERROR(...) CLog::Instance()->WriteLogError(__VA_ARGS__)
+
+#define LOGINFO CLog::Instance()->WriteLogInfo
+#define LOGERROR CLog::Instance()->WriteLogError
 
 class JO_API CLog
 {

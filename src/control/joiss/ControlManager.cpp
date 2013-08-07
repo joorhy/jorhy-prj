@@ -23,7 +23,7 @@ j_result_t CControlManager::StartService(j_int32_t nPort, const j_char_t *pComma
 {
 	m_nPort = nPort;
 	m_serviceType = pCommandType;
-	m_asio.Init();
+	//m_asio.Init();
 	m_asioData.ioAccept.peerPort = nPort;
 	m_asioData.ioUser = this;
 	m_asio.Listen(&m_asioData);
@@ -42,7 +42,7 @@ j_result_t CControlManager::StopService()
 		delete m_pCommandParser;
 		m_pCommandParser = NULL;
 	}
-	m_asio.Deinit();
+	//m_asio.Deinit();
 	
 	return J_OK;
 }

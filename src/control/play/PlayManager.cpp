@@ -145,25 +145,25 @@ void CPlayManager::FreePlayManagerInfo(J_PlayManagerInfo &info)
 j_boolean_t CPlayManager::ParserUrl(const j_char_t *pUrl, const j_char_t *pUrl2, J_PlayManagerInfo &info)
 {
 	char *p = (char *)pUrl;
-	if ((p = get_string(p, "://", &info.host_type)) == NULL)
+	if ((p = get_string(p, (char *)"://", &info.host_type)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_string(p, ":", &info.host_addr)) == NULL)
+	if ((p = get_string(p, (char *)":", &info.host_addr)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_int(p, "?resid=", (int *)&info.host_port)) == NULL)
+	if ((p = get_int(p, (char *)"?resid=", (int *)&info.host_port)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_string(p, "&username=", &info.resid)) == NULL)
+	if ((p = get_string(p, (char *)"&username=", &info.resid)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_string(p, "&passwd=", &info.user_name)) == NULL)
+	if ((p = get_string(p, (char *)"&passwd=", &info.user_name)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_string(p, "&stream_type", &info.pass_word)) == NULL)
+	if ((p = get_string(p, (char *)"&stream_type", &info.pass_word)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_int(p, "\0", (int *)&info.stream_type)) == NULL)
+	if ((p = get_int(p, (char *)"\0", (int *)&info.stream_type)) == NULL)
 		goto parser_usr_error;
 
 	p = (char *)pUrl2;
-	if ((p = get_string(p, "://", &info.player_type)) == NULL)
+	if ((p = get_string(p, (char *)"://", &info.player_type)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_int(p, "\0", (int *)&info.play_wnd)) == NULL)
+	if ((p = get_int(p, (char *)"\0", (int *)&info.play_wnd)) == NULL)
 		goto parser_usr_error;
 
 	if (info.dev_id == NULL)
@@ -194,7 +194,7 @@ void CPlayManager::OnWork()
 		{
 			if (it->second.pPlayObj->ProcessMedia() != J_OK)
 			{
-				//断线重连处理
+				//露脧脧脽脰脴脕卢麓娄脌铆
 				it->second.pPlayObj->StopMedia();
 			}
 		}

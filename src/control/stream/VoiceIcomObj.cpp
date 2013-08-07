@@ -112,7 +112,7 @@ int CVoiceIcomObj::StopVoice()
 			J_OS::LOGINFO("CVoiceIcomObj::StopVoice StopVoice error ret = %d", nRet);
 			return nRet;
 		}
-		J_OS::LOGINFO("CNVRRealClient::StopVoice socket =  %d stop", m_nSocket);
+		J_OS::LOGINFO("CNVRRealClient::StopVoice socket =  %d stop", m_nSocket.sock);
 	}
 
 	return J_OK;

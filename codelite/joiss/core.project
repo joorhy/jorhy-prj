@@ -24,8 +24,8 @@
     <File Name="../../src/core/x_http.cpp"/>
     <File Name="../../src/core/x_mem_pool.cpp"/>
     <File Name="../../src/core/x_ping.cpp"/>
-    <File Name="../../src/core/x_asio.cpp"/>
     <File Name="../../src/core/x_asio_win.cpp" Flags="1"/>
+    <File Name="../../src/core/x_asio.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/core/j_includes.h"/>

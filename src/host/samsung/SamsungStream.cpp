@@ -39,7 +39,7 @@ j_result_t CSamsungStream::Startup()
 
     TLock(m_locker);
     m_bStartup = true;
-    JoXAsio->Init();
+    //JoXAsio->Init();
     JoXAsio->AddUser(m_nSocket, this);
 	m_asioData.ioUser = this;
 	m_asioData.ioRead.buf = m_pRecvBuff;
@@ -73,7 +73,7 @@ j_result_t CSamsungStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 {
     if (!m_bStartup)
     {
-        J_OS::LOGINFO("CSamsungStream:: !m_bStartup socket = %d", m_nSocket);
+        J_OS::LOGINFO("CSamsungStream:: !m_bStartup socket = %d", m_nSocket.sock);
         return J_SOCKET_ERROR;
     }
 

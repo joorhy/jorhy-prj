@@ -3,7 +3,7 @@
 #include "x_config.h"
 #include "x_manager_factory.h"
 
-#define JO_FILE_INTERVAL	(20)		//秒
+#define JO_FILE_INTERVAL	(120)		//秒
 
 /*#ifdef WIN32
 int CXConfig::m_mcPort = 6004;

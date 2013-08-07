@@ -188,7 +188,7 @@ j_result_t CXHttp::Process()
 			}
 		}
 	}
-	//J_OS::LOGINFO(m_pResponse);
+	J_OS::LOGINFO(m_pResponse);
 
 	return J_OK;
 }
