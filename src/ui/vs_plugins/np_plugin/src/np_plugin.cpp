@@ -46,7 +46,7 @@ NPBool CNPPlugin::init(NPWindow* pNPWindow)
 
 	m_Window = pNPWindow;
 	m_bInitialized = TRUE;
-	CPlCtrl::CreateInstance(m_hWnd)->RegisterCallBack(OnEvent, this);
+	//CPlCtrl::CreateInstance(m_hWnd)->RegisterCallBack(OnEvent, this);
 
 	return TRUE;
 }
@@ -208,6 +208,7 @@ bool CNPPlugin::SetWorkModel(char *js_workmodel,NPVariant *result)
 
 bool CNPPlugin::Play(char *js_playInfo,NPVariant *result)
 {
+	CPlCtrl::CreateInstance(m_hWnd)->RegisterCallBack(OnEvent, this);
 	if(CPlCtrl::CreateInstance(m_hWnd)->Play(js_playInfo))
 		SetRetValue("{\"rst\":0}",result);
 	else	

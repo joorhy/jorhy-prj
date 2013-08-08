@@ -1,4 +1,4 @@
-#include "x_asio.h"
+#include "x_asio_win.h"
 #include "x_errtype.h"
 #include "j_module.h"
 #include "x_socket.h"
@@ -100,6 +100,43 @@ void CXAsio::DelUser(j_socket_t nSocket)
 		
 	J_OS::LOGINFO("CXAsio::DelUser epoll set insertion sucess fd = %d", nSocket.sock);
 	TUnlock(m_user_locker);
+	
+	TLock(m_read_locker);
+	AsioDataMap::iterator itData = m_readMap.find(nSocket);
+	if (itData != m_readMap.end())
+	{
+		J_AsioDataBase *pDataBase = NULL;
+		while (!itData->second.empty())
+		{
+			pDataBase = itData->second.front();
+			itData->second.pop();
+			if (pDataBase->ioRead.buf != NULL)
+			{
+				delete pDataBase->ioRead.buf;
+				pDataBase->ioRead.buf = NULL;
+			}
+			delete pDataBase;
+		}
+		m_readMap.erase(itData);
+	}
+	TUnlock(m_read_locker);
+	
+	TLock(m_write_locker);
+	AsioDataMap::iterator itData2 = m_writeMap.find(nSocket);
+	if (itData2 != m_writeMap.end())
+	{
+		J_AsioDataBase *pDataBase = NULL;
+		while (!itData2->second.empty())
+		{
+			pDataBase = itData2->second.front();
+			itData2->second.pop();
+			if (pDataBase->ioWrite.buf != NULL)
+				delete pDataBase->ioWrite.buf;
+			delete pDataBase;
+		}
+		m_writeMap.erase(itData2);
+	}
+	TUnlock(m_write_locker);
 }
 
 void CXAsio::OnWork()
@@ -233,6 +270,10 @@ int CXAsio::Read(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 	if (dwError == SOCKET_ERROR)
 	{
 		dwError = WSAGetLastError();
+		//if (dwError == WSAECONNABORTED || dwError == WSAECONNRESET)
+		//{
+		//	ProcessIoEvent(nSocket, J_AsioDataBase::j_disconnect_e);
+		//}
 		if (dwError != ERROR_IO_PENDING)
 		{
 			ProcessIoEvent(nSocket, J_AsioDataBase::j_disconnect_e);
