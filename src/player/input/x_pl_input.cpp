@@ -18,19 +18,23 @@ CXPlInput::~CXPlInput(void)
 	J_PlAccess::ReleaseInstance(&m_access);
 	J_PlDemux::ReleaseInstance(&m_demux);
 	J_PlBuffer::ReleaseInstance(&m_buffer);
+	j_pl_info("CXPlInput::~CXPlInput(void)\n");
 }
 
 J_PL_RESULT CXPlInput::Init(j_pl_cfg_t &cfg,void *control)
 {
 	m_control = control;
+	j_pl_info("CXPlInput::Init(void) J_PlAccess::CreateInstance(cfg)\n");
 	m_access = J_PlAccess::CreateInstance(cfg);
 	if(m_access == NULL)
 		return J_PL_ERROR_ACCESS_CREATE;
 
+	j_pl_info("CXPlInput::Init(void) InitDemux()\n");
 	J_PL_RESULT br = InitDemux();
 	if(br != J_PL_NO_ERROR)
 		return br;
 
+	j_pl_info("CXPlInput::Init(void) J_PL_NO_ERROR\n");
 	return J_PL_NO_ERROR;
 }
 
@@ -145,6 +149,7 @@ J_PL_RESULT CXPlInput::InitDemux()
 		return J_PL_ERROR_ACCESS_CREATE;
 
 	j_pl_demux_t demux_parm;
+	j_pl_info("m_access->GetDemuxType(demux_parm) m_access=%d\n", m_access);
 	br = m_access->GetDemuxType(demux_parm);					//输出一个产生demux的参数
 	if(br != J_PL_NO_ERROR)
 	{
@@ -154,6 +159,7 @@ J_PL_RESULT CXPlInput::InitDemux()
 	
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
 	int size = 0;
+	j_pl_info("CXPlInput::InitDemux() m_control=%d\n", ctl);
 	if(ctl->m_WorkModel == J_PL_PLAY_REALTIME)
 		size = BUFFER_INPUT;
 	else

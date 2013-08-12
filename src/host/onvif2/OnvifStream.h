@@ -1,7 +1,10 @@
 #ifndef __ONVIFSTREAM_H_
 #define __ONVIFSTREAM_H_
+#ifdef WIN32
+#include "x_asio_win.h"
+#else
 #include "x_asio.h"
-
+#endif
 #include <stdlib.h>
 #include "Rtsp/RtspProxy.h"
 

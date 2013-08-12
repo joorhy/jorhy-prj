@@ -1,7 +1,11 @@
 #ifndef __SONYSTREAM_H_
 #define __SONYSTREAM_H_
 #include "SonyParser.h"
+#ifdef WIN32
+#include "x_asio_win.h"
+#else
 #include "x_asio.h"
+#endif
 
 class CSonyStreamBase : public J_MediaStream
     , public J_AsioUser

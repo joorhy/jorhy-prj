@@ -52,7 +52,7 @@ BOOL JoPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 	if (m_player == NULL)
 		m_player = new J_PlControl();
 
-	char mrl[128] = {0};
+	char mrl[256] = {0};
 	if (playInfo.nPlayMode == STREAME_REALTIME)
 	{
 		sprintf(mrl,"RYSP://%s:%d/%s", playInfo.strIpaddr, 8002, playInfo.strResid);
@@ -62,7 +62,8 @@ BOOL JoPlayer::Play(HWND hPlayWnd, const PL_PlayInfo &playInfo)
 	else
 	{
 		Stop();
-		sprintf(mrl,"RYSP://%s:%d/%s?start=%d&end=%d", playInfo.strIpaddr, 8002, playInfo.strResid, playInfo.nStartTime, playInfo.nEndTime);
+		sprintf(mrl,"RYSP://%s:%d/%s?start=%d&end=", playInfo.strIpaddr, 8002, playInfo.strResid, playInfo.nStartTime);
+		sprintf(mrl, "%s%d", mrl, playInfo.nEndTime);
 		br = m_player->InitPlayByNetwork(mrl, J_PL_PLAY_FILE);
 		m_player->SetDisplayCBK(JoPlayer::DisplayCbFunc, this);
 	}

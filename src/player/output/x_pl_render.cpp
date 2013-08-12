@@ -19,6 +19,7 @@ CXPlRender::~CXPlRender(void)
 {
 	CXPlVideoOutput::ReleaseInstance(&m_vOut);
 	CXPlAudioOutput::ReleaseInstance(&m_aOut);
+	j_pl_info("CXPlRender::~CXPlRender(void) \n");
 }
 
 J_PL_RESULT CXPlRender::CreateVout(j_pl_video_out_t &vParm)

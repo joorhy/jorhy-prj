@@ -306,22 +306,28 @@ J_PL_RESULT CXPlVoutDDraw::SetHwnd(HWND hwnd)
 {
 	m_hwnd = hwnd;
 
+	j_pl_info("OpenDDraw \n");
 	if (OpenDDraw() != J_PL_NO_ERROR)
 	{
 		j_pl_info("OpenDDraw Error\n");
 		return J_PL_ERROR_UNKNOW;
 	}
 
+	j_pl_info("OpenDisplay \n");
 	if (OpenDisplay() != J_PL_NO_ERROR)
 	{
 		j_pl_info("OpenDisplay Error\n");
 		return J_PL_ERROR_UNKNOW;
 	}
+
+	j_pl_info("CreateCliper \n");
 	if (CreateCliper(m_pDDSPrimary,m_hwnd) != J_PL_NO_ERROR)
 	{
 		j_pl_info("CreateCliper Error\n");
 		return J_PL_ERROR_UNKNOW;
 	}
+
+	j_pl_info("CreateSurface \n");
 	if (CreateSurface(m_parm) != J_PL_NO_ERROR)
 	{
 		j_pl_info("CreateSurface Error\n");

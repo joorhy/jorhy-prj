@@ -1,6 +1,10 @@
 #ifndef __HIKSTREAM_H_
 #define __HIKSTREAM_H_
+#ifdef WIN32
+#include "x_asio_win.h"
+#else
 #include "x_asio.h"
+#endif
 #include "HikParser.h"
 #include "HikParser2.h"
 

@@ -201,7 +201,7 @@ bool CNPPlugin::SetWorkModel(char *js_workmodel,NPVariant *result)
 	if(CPlCtrl::CreateInstance(m_hWnd)->InitDisPlay(m_hWnd,js_workmodel))
 		SetRetValue("{\"rst\":0}",result);
 	else
-		SetRetValue("{\"rst\":-1}",result);
+		SetRetValue("{\"rst\":1}",result);
 
 	return true;
 }

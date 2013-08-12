@@ -1,7 +1,10 @@
 #ifndef __JOSTREAM_H_
 #define __JOSTREAM_H_
-//#include "JoParser.h"
+#ifdef WIN32
+#include "x_asio_win.h"
+#else
 #include "x_asio.h"
+#endif
 
 class CJoStreamBase : public J_MediaStream
     , public J_AsioUser

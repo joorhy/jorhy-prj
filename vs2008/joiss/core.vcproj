@@ -174,10 +174,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\core\x_asio.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\core\x_asio_win.cpp"
 				>
 			</File>

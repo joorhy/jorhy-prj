@@ -60,7 +60,8 @@ protected:
 
 	J_PlSem			m_AllClose;				//所有线程都关闭？
 	J_PlSem			m_SafeClose;			//外部Stop的时候，Player安全关闭
-	J_PlVariable		*m_ThreadNumer;			//工作的所有线程数量 int 
+	J_PlSem			m_SafeCloseBroken;	//网络连接不成功的时候，Player安全关闭
+	J_PlVariable		*m_ThreadNumer;	//工作的所有线程数量 int 
 
 	j_pl_work_type	m_WorkModel;			//播放器工作模式
 

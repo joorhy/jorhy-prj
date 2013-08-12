@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../src/core;../../src/misc;../../src/utils;../../src/host/onvif2/Rtsp/live555/BasicUsageEnvironment/include;../../src/host/onvif2/Rtsp/live555/groupsock/include;../../src/host/onvif2/Rtsp/live555/UsageEnvironment/include;../../src/host/onvif2/Rtsp/live555/liveMedia/include;&quot;../../src/host/onvif2/Onvif/OnvifAPIAll/openssl-1.0.0/include&quot;"
+				AdditionalIncludeDirectories="../../src/core;../../src/misc;../../src/utils;../../src/host/onvif2/Rtsp/live555/include;&quot;../../src/host/onvif2/Onvif/OnvifAPIAll/openssl-1.0.0/include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;ONVIFHOST_EXPORTS;WITH_DOM;WITH_OPENSSL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -353,675 +353,743 @@
 				Name="RTSP"
 				>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AACAudioMatroskaFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AACAudioMatroskaFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AC3AudioFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AACAudioMatroskaFileServerMediaSubsession.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AC3AudioMatroskaFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AC3AudioFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AC3AudioRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AC3AudioMatroskaFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AC3AudioRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AC3AudioMatroskaFileServerMediaSubsession.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AC3AudioStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AC3AudioRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\ADTSAudioFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AC3AudioRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\ADTSAudioFileSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AC3AudioStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AMRAudioFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\ADTSAudioFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AMRAudioFileSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\ADTSAudioFileSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AMRAudioFileSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AMRAudioFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AMRAudioRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AMRAudioFileSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AMRAudioRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AMRAudioFileSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AMRAudioSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AMRAudioRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AudioInputDevice.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AMRAudioRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AudioRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AMRAudioSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\AVIFileSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AudioInputDevice.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\Base64.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AudioRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\BasicUsageEnvironment\BasicHashTable.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\AVIFileSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\BasicUsageEnvironment\BasicTaskScheduler.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\Base64.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\BasicUsageEnvironment\BasicTaskScheduler0.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BasicHashTable.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\BasicUDPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BasicTaskScheduler.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\BasicUDPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BasicTaskScheduler0.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\BasicUsageEnvironment\BasicUsageEnvironment.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BasicUDPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\BasicUsageEnvironment\BasicUsageEnvironment0.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BasicUDPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\BitVector.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BasicUsageEnvironment.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\ByteStreamFileSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BasicUsageEnvironment0.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\ByteStreamMemoryBufferSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\BitVector.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\ByteStreamMultiFileSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\ByteStreamFileSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\DarwinInjector.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\ByteStreamMemoryBufferSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\BasicUsageEnvironment\DelayQueue.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\ByteStreamMultiFileSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\DeviceSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DarwinInjector.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\DigestAuthentication.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DelayQueue.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\DVVideoFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DeviceSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\DVVideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DigestAuthentication.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\DVVideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DVVideoFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\DVVideoStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DVVideoRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\EBMLNumber.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DVVideoRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\FileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\DVVideoStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\FileSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\EBMLNumber.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\FramedFileSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\EBMLNumber.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\FramedFilter.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\FileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\FramedSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\FileSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\groupsock\GroupEId.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\FramedFileSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\groupsock\Groupsock.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\FramedFilter.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\groupsock\GroupsockHelper.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\FramedSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\GSMAudioRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\GroupEId.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H261VideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\Groupsock.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H263plusVideoFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\GroupsockHelper.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H263plusVideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\GSMAudioRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H263plusVideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H261VideoRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H263plusVideoStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H263plusVideoFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H263plusVideoStreamParser.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H263plusVideoRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H264VideoFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H263plusVideoRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H264VideoFileSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H263plusVideoStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H264VideoMatroskaFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H263plusVideoStreamParser.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H264VideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H263plusVideoStreamParser.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H264VideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H264VideoStreamDiscreteFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoFileSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\H264VideoStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoMatroskaFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\UsageEnvironment\HashTable.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoMatroskaFileServerMediaSubsession.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\groupsock\inet.c"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\InputFile.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\groupsock\IOHandlers.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoStreamDiscreteFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\JPEGVideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\H264VideoStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\JPEGVideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\HashTable.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\JPEGVideoSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\inet.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\Locale.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\InputFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MatroskaDemuxedTrack.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\IOHandlers.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MatroskaFile.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\JPEGVideoRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MatroskaFileParser.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\JPEGVideoRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MatroskaFileServerDemux.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\JPEGVideoSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\Media.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\Locale.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MediaSession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MatroskaDemuxedTrack.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MediaSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MatroskaDemuxedTrack.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MediaSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MatroskaFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3ADU.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MatroskaFileParser.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3ADUdescriptor.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MatroskaFileParser.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3ADUinterleaving.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MatroskaFileServerDemux.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3ADURTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\Media.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3ADURTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MediaSession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3ADUTranscoder.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MediaSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3AudioFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MediaSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3AudioMatroskaFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3ADU.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3FileSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3ADUdescriptor.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3Internals.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3ADUdescriptor.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3InternalsHuffman.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3ADUinterleaving.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3InternalsHuffmanTable.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3ADURTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3StreamState.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3ADURTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MP3Transcoder.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3ADUTranscoder.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2AudioRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3AudioFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2AudioRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3AudioMatroskaFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2AudioStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3AudioMatroskaFileServerMediaSubsession.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2Demux.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3FileSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2DemuxedElementaryStream.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3Internals.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2DemuxedServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3Internals.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2FileServerDemux.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3InternalsHuffman.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2VideoFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3InternalsHuffman.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2VideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3InternalsHuffmanTable.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2VideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3StreamState.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2VideoStreamDiscreteFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3StreamState.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG1or2VideoStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MP3Transcoder.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2IndexFromTransportStream.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2AudioRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2AudioRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2AudioStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportStreamFromESSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2Demux.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportStreamFromPESSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2DemuxedElementaryStream.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportStreamIndexFile.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2DemuxedServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportStreamMultiplexor.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2FileServerDemux.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportStreamTrickModeFilter.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2VideoFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG2TransportUDPServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2VideoRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4ESVideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2VideoRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4ESVideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2VideoStreamDiscreteFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4GenericRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG1or2VideoStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4GenericRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2IndexFromTransportStream.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4LATMAudioRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4LATMAudioRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4VideoFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportStreamFromESSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4VideoStreamDiscreteFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportStreamFromPESSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEG4VideoStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportStreamIndexFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEGVideoStreamFramer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportStreamMultiplexor.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MPEGVideoStreamParser.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportStreamTrickModeFilter.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MultiFramedRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG2TransportUDPServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\MultiFramedRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4ESVideoRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\groupsock\NetAddress.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4ESVideoRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\groupsock\NetInterface.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4GenericRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\OnDemandServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4GenericRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\our_md5.c"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4LATMAudioRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\our_md5.h"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4LATMAudioRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\our_md5hl.c"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4VideoFileServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\OutputFile.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4VideoStreamDiscreteFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\PassiveServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEG4VideoStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\ProxyServerMediaSession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEGVideoStreamFramer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\QCELPAudioRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEGVideoStreamParser.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\QuickTimeFileSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MPEGVideoStreamParser.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\QuickTimeGenericRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MultiFramedRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTCP.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\MultiFramedRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\rtcp_from_spec.c"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\NetAddress.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\rtcp_from_spec.h"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\NetInterface.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTPInterface.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\OnDemandServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\our_md5.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\our_md5.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTSPClient.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\our_md5hl.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTSPCommon.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\OutputFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTSPServer.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\PassiveServerMediaSubsession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\RTSPServerSupportingHTTPStreaming.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\ProxyServerMediaSession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\ServerMediaSession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\QCELPAudioRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\SimpleRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\QuickTimeFileSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\SimpleRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\QuickTimeGenericRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\SIPClient.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTCP.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\UsageEnvironment\strDup.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\rtcp_from_spec.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\StreamParser.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\rtcp_from_spec.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\StreamReplicator.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTPInterface.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\T140TextMatroskaFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\T140TextRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\TCPStreamSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTSPClient.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\TextRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTSPCommon.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\uLawAudioFilter.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTSPServer.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\UsageEnvironment\UsageEnvironment.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\RTSPServerSupportingHTTPStreaming.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\VideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\ServerMediaSession.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\VorbisAudioMatroskaFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\SimpleRTPSink.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\VorbisAudioRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\SimpleRTPSource.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\VorbisAudioRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\SIPClient.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\VP8VideoMatroskaFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\strDup.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\VP8VideoRTPSink.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\StreamParser.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\VP8VideoRTPSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\StreamParser.hh"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\WAVAudioFileServerMediaSubsession.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\StreamReplicator.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\host\onvif2\Rtsp\live555\liveMedia\WAVAudioFileSource.cpp"
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\T140TextMatroskaFileServerMediaSubsession.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\T140TextMatroskaFileServerMediaSubsession.hh"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\T140TextRTPSink.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\TCPStreamSink.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\TextRTPSink.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\uLawAudioFilter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\UsageEnvironment.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VideoRTPSink.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VorbisAudioMatroskaFileServerMediaSubsession.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VorbisAudioMatroskaFileServerMediaSubsession.hh"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VorbisAudioRTPSink.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VorbisAudioRTPSource.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VP8VideoMatroskaFileServerMediaSubsession.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VP8VideoMatroskaFileServerMediaSubsession.hh"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VP8VideoRTPSink.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\VP8VideoRTPSource.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\WAVAudioFileServerMediaSubsession.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\host\onvif2\Rtsp\live555\src\WAVAudioFileSource.cpp"
 					>
 				</File>
 			</Filter>

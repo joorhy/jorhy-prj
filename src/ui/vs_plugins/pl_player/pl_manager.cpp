@@ -97,7 +97,7 @@ void PlManager::CreateMrl(const PL_PlayInfo &playInfo)
 	else
 		sprintf((char *)playInfo.pUrl, PROTO_JOSP);
 
-	char tmpInfo[128];
+	char tmpInfo[256] = {0};
 	if(STREAME_REALTIME == playInfo.nPlayMode)
 	{
 		sprintf(tmpInfo,"%s:%d/real?resid=%s&cmd=%d&type=%d",
@@ -106,8 +106,8 @@ void PlManager::CreateMrl(const PL_PlayInfo &playInfo)
 	else if(STREAME_FILE == playInfo.nPlayMode)
 	{
 		m_nVodEndTime = playInfo.nEndTime;
-		sprintf(tmpInfo,"%s:%d/vodl?resid=%s&cmd=%d&start=%d&end=%d",
-			playInfo.strIpaddr, playInfo.nPort, playInfo.strResid, 3, playInfo.nStartTime, playInfo.nEndTime);
+		sprintf(tmpInfo,"%s:%d/vodl?resid=%s&cmd=3&start=%d&end=", playInfo.strIpaddr, playInfo.nPort, playInfo.strResid, playInfo.nStartTime);
+		sprintf(tmpInfo, "%s%d", tmpInfo, playInfo.nEndTime);
 	}
 	strcat((char *)playInfo.pUrl, tmpInfo);
 }

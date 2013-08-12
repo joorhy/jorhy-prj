@@ -5,7 +5,11 @@
 #include "x_lock.h"
 #include "x_msg_queue.h"
 #include "x_media_msg.h"
+#ifdef WIN32
+#include "x_asio_win.h"
+#else
 #include "x_asio.h"
+#endif
 
 #include <map>
 #include <string>

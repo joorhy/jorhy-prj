@@ -1,7 +1,11 @@
 #ifndef __CONTROLMANAGER_H_
 #define __CONTROLMANAGER_H_
 #include "j_includes.h"
+#ifdef WIN32
+#include "x_asio_win.h"
+#else
 #include "x_asio.h"
+#endif
 
 #define MAX_READ_SIZE 1024
 #define TEST_JO_UI

@@ -44,7 +44,7 @@ J_PlControl::J_PlControl(void)
 J_PlControl::~J_PlControl(void)
 {
 	if (m_bBroken)
-		m_SafeClose.Wait();
+		m_SafeCloseBroken.Wait();
 
 	int state = J_PL_NORMAL;
 	m_state->GetVariable(&state);
@@ -52,7 +52,7 @@ J_PlControl::~J_PlControl(void)
 	{
 		Stop();
 	}
-
+	
 	delete m_state;
 	delete m_displayTime;
 	delete m_ThreadNumer;
@@ -131,7 +131,7 @@ J_PL_RESULT J_PlControl::Stop()
 	m_state->SetVariable(&state);
 	m_FrameSwitch.Single();
 
-	//m_SafeClose.Wait();
+	m_SafeClose.Wait();
 
 	return J_PL_NO_ERROR;
 }
@@ -334,6 +334,7 @@ J_PL_RESULT J_PlControl::CallBackStop()
 	ResetCBK();
 
 	m_SafeClose.Post();
+	m_SafeCloseBroken.Post();
 
 	return J_PL_NO_ERROR;
 }

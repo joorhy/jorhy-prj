@@ -1,7 +1,11 @@
 #ifndef __SAMSUNGSTREAM_H_
 #define __SAMSUNGSTREAM_H_
 #include "SamsungParser.h"
+#ifdef WIN32
+#include "x_asio_win.h"
+#else
 #include "x_asio.h"
+#endif
 
 class CSamsungStreamBase : public J_MediaStream
     , public J_AsioUser
