@@ -49,6 +49,7 @@ int CJoStream::Startup()
 	m_asioData.ioRead.whole = true;
 	m_asioData.ioRead.finishedLen = 0;
 	m_nState = JO_READ_HEAD;
+	m_asioData.ioRead.shared = true;
 	JoXAsio->Read(m_nSocket, &m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
@@ -110,6 +111,7 @@ j_result_t CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	}
 	m_asioData.ioRead.whole = true;
 	m_asioData.ioRead.finishedLen = 0;
+	m_asioData.ioRead.shared = true;
 	JoXAsio->Read(m_nSocket, &m_asioData);
 	
 	TUnlock(m_locker);

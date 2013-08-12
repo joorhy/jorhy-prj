@@ -55,7 +55,7 @@ void CXAsioClient::Deinit()
 		{
 			pDataBase = itData->second.front();
 			itData->second.pop();
-			if (pDataBase->ioRead.buf != NULL)
+			if (pDataBase->ioRead.buf != NULL && !pDataBase->ioRead.shared)
 			{
 				delete pDataBase->ioRead.buf;
 				pDataBase->ioRead.buf = NULL;
@@ -75,7 +75,7 @@ void CXAsioClient::Deinit()
 		{
 			pDataBase = itData2->second.front();
 			itData2->second.pop();
-			if (pDataBase->ioWrite.buf != NULL)
+			if (pDataBase->ioWrite.buf != NULL && !pDataBase->ioWrite.shared)
 			{
 				delete pDataBase->ioWrite.buf;
 				pDataBase->ioWrite.buf = NULL;

@@ -39,6 +39,11 @@ CHikStream::~CHikStream()
 		delete m_pDataBuff;
 		m_pDataBuff = NULL;
 	}
+	if (m_pRecvBuff != NULL)
+	{
+		delete m_pRecvBuff;
+		m_pRecvBuff = NULL;
+	}
 
 	J_OS::LOGINFO("CHikStream::~CHikStream destroy this = %d", this);
 }
@@ -61,6 +66,7 @@ int CHikStream::Startup()
 	m_asioData->ioCall = J_AsioDataBase::j_read_e;
 	m_nState = HIK_READ_HEAD;
 	m_nOffset = 0;
+	m_asioData->ioRead.shared = true;
 	JoXAsio->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
 
@@ -139,6 +145,7 @@ j_result_t CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 			m_nOffset = 0;
 	}
 	m_asioData->ioRead.finishedLen = 0;
+	m_asioData->ioRead.shared = true;
 	JoXAsio->Read(m_nSocket, m_asioData);
 	TUnlock(m_locker);
 	

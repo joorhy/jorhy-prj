@@ -61,6 +61,7 @@ j_result_t CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 	info.pAsioData = pDataBase;
 	info.pObj = NULL;
 	m_clientMap[nSocket.sock] = info;
+	pDataBase->ioRead.shared = false;
 	m_asio.Read(nSocket, pDataBase);
 	
 	return J_OK;
@@ -100,6 +101,7 @@ j_result_t CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 		}
 		if (nResult == J_OK)
 		{
+			pDataBase->ioWrite.shared = true;
 			m_asio.Write(pDataBase->ioHandle, pDataBase);
 		}
 		else
@@ -158,6 +160,7 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 			return nRet;
 			
 		((J_AsioDataBase *)pAsioData)->ioRead.finishedLen = 0;
+		((J_AsioDataBase *)pAsioData)->ioRead.shared = false;
 		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
 		nRet = J_OK;
 	}
@@ -227,6 +230,7 @@ int CStreamManager::ProcessCommand(const J_AsioDataBase *pAsioData, J_Obj *pObj,
 	pDataBase->ioUser = this;
 	pDataBase->ioHandle = pAsioData->ioHandle;
 	pDataBase->ioCall = J_AsioDataBase::j_write_e;
+	pDataBase->ioWrite.shared = false;
 	m_asio.Write(pDataBase->ioHandle, pDataBase);
 	
 	pClient->Run();

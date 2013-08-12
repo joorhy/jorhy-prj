@@ -46,6 +46,7 @@ int CSonyStream::Startup()
 	m_asioData.ioRead.whole = false;
 	m_asioData.ioRead.finishedLen = 0;
 	JoXAsio->Read(m_nSocket, &m_asioData);
+	m_asioData.ioRead.shared = true;
     TUnlock(m_locker);
 	J_OS::LOGINFO("CSonyStream::Startup Startup this = %d", this);
 

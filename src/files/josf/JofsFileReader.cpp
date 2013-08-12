@@ -8,6 +8,7 @@
 #define RECORD_INTERVAL	(24 * 60 * 60)
 #define TIMER_INTERVAL	128
 #define RECORD_BUFF_SIZE 	(1024 * 1024 * 5)
+#define JO_FILE_INTERVAL	(120)		//秒
 
 JO_IMPLEMENT_INTERFACE(FileReader, "jofs", CNvrFileReader::Maker)
 
@@ -152,7 +153,7 @@ int CNvrFileReader::SetScale(float nScale)
 int CNvrFileReader::SetTime(j_uint64_t s_time, j_uint64_t e_time)
 {
 	int nRet = J_OK;
-	nRet = ListRecord(s_time, s_time + 86400);
+	nRet = ListRecord(s_time, e_time);
 	if (nRet != J_OK)
 	{
 		return nRet;
@@ -219,7 +220,7 @@ int CNvrFileReader::OpenFile()
 	char fileName[512] = {0};
 	char filePath[512] = {0};
 	sprintf(fileName, "%s/%s/%s/%s", m_file.GetVodDir(CXConfig::GetVodPath(), filePath), m_resid.c_str()
-		, JoTime->GetDate(it->tStartTime).c_str(), it->fileName.c_str());
+		, JoTime->GetDate(it->tStartTime+JO_FILE_INTERVAL).c_str(), it->fileName.c_str());
 	vecFileInfo.pop_front();
 
 #ifdef WIN32

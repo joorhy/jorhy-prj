@@ -74,6 +74,7 @@ j_result_t CControlManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 	pDataBase->ioUser = this;
 	pDataBase->ioCall = J_AsioDataBase::j_read_e;
 	pDataBase->ioHandle = nSocket.sock;
+	pDataBase->ioRead.shared = false;
 	m_asio.Read(nSocket, pDataBase);
 	
 	return J_OK;
@@ -91,6 +92,7 @@ j_result_t CControlManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	{
 		j_socket_t nSocket;
 		nSocket.sock = pDataBase->ioHandle;
+		pDataBase->ioWrite.shared = false;
 		m_asio.Write(pDataBase->ioHandle, pDataBase);
 		if (pAsioData->ioRead.buf != NULL)
 			delete pAsioData->ioRead.buf;
@@ -113,12 +115,14 @@ j_result_t CControlManager::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 		pDataBase2->ioUser = this;
 		pDataBase2->ioCall = J_AsioDataBase::j_read_e;
 		pDataBase2->ioHandle = nSocket.sock;
+		pDataBase2->ioRead.shared = false;
 		m_asio.Read(nSocket, pDataBase2);
 	}
 	else
 	{
 		delete pDataBase;
 		((J_AsioDataBase *)pAsioData)->ioRead.finishedLen = 0;
+		((J_AsioDataBase *)pAsioData)->ioRead.shared = false;
 		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
 	}
 	return J_OK;
