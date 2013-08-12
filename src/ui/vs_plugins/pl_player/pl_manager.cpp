@@ -275,7 +275,7 @@ BOOL PlManager::RegisterCallBack(NpnNotifyFunc funcAddr)
 {
 	if(NULL == funcAddr)
 		return FALSE;
-	else
+	else if (m_pFuncCallBk == NULL)
 		m_pFuncCallBk = funcAddr;
 
 	return TRUE;

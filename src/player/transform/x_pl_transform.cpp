@@ -466,6 +466,7 @@ J_PL_BOOL CXPlTransform::ConsiderVDecoder(j_pl_decode_t format, bool &bNeedDec, 
 					bRet = J_PL_FALSE;
 					bNeedIframe = true;
 				}
+				//j_pl_info("%d\n", nInfo);
 			}
 
 			if(bNeedIframe)			//如果需要I帧

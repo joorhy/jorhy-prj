@@ -354,6 +354,23 @@ BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
 			return FALSE;
 		}
 	}
+	else
+	{
+		//隐藏不需要显示的窗口
+		for (int i=nWindows; i<nOldWnds; ++i)
+		{
+			CPlWnd *r_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i));
+			r_tmp->Init();
+			::ShowWindow(((CWnd*)r_tmp)->m_hWnd, SW_HIDE);
+		}
+		//显示需要显示的窗口
+		for (int i=0; i<nWindows; ++i)
+		{
+			CPlWnd *r_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i));
+			r_tmp->Init();
+			::ShowWindow(((CWnd*)r_tmp)->m_hWnd, SW_SHOW);
+		}
+	}
 
 	return TRUE;
 }

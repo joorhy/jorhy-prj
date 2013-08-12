@@ -62,7 +62,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libvlc.lib PlayCtrl.lib"
 				OutputFile="$(CHROME_PLUGINS_PATH)\$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\libs\windows\vlc;..\..\libs\windows\hik"
@@ -469,18 +468,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="pl_vlc"
-			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_vlc\VlcPlayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_vlc\VlcPlayer.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="pl_jo"
 			>
 			<File
@@ -489,46 +476,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\ui\vs_plugins\pl_jo\JoPlayer.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="pl_hik"
-			>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondBuffer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondRecv.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondRecv.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondSocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\BeyondSocket.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\HikPlayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\HikPlayer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\ui\vs_plugins\pl_hik\PlayM4.h"
 				>
 			</File>
 		</Filter>
