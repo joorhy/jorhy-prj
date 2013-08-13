@@ -10,10 +10,12 @@ CXAsio::CXAsio()
 	m_bStarted = false;
 	WSADATA wsaData; 
 	WSAStartup(MAKEWORD(2,2), &wsaData);
+	Init();
 }
 
 CXAsio::~CXAsio()
 {
+	Deinit();
 	WSACleanup();
 }
 
@@ -77,7 +79,7 @@ int CXAsio::Listen(J_AsioDataBase *pAsioData)
 int CXAsio::AddUser(j_socket_t nSocket, J_AsioUser *pUser)
 {
 	TLock(m_user_locker);
-	if (CreateIoCompletionPort((HANDLE)nSocket.sock, m_hCompletionPort, (DWORD)&nSocket, 1) == NULL)
+	if (CreateIoCompletionPort((HANDLE)nSocket.sock, m_hCompletionPort, (DWORD)&nSocket, 0) == NULL)
 	{
 		J_OS::LOGINFO("CXAsio::AddUser CreateIoCompletionPort failed with error %d\n", WSAGetLastError());
 		return J_SOCKET_ERROR;

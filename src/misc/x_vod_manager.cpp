@@ -1,18 +1,30 @@
 #include "x_vod_manager.h"
 #include "x_config.h"
 #include "x_time.h"
+#include "x_alarm_manager.h"
 
 #define JO_LARGE_UINT -1UL
 JO_IMPLEMENT_SINGLETON(XVodManager)
 
 CXVodManager::CXVodManager()
 {
-
+	
 }
 
 CXVodManager::~CXVodManager()
 {
+	
+}
 
+int CXVodManager::InitVodManager()
+{
+	m_timer.Create(10 * 1000, CXVodManager::TimerThread, this);
+	return J_OK;
+}
+
+void CXVodManager::ReleaseVodManager()
+{
+	m_timer.Destroy();
 }
 
 j_result_t CXVodManager::GetRecordInfo(const j_char_t *pResid, j_time_t &begin_time, j_time_t &end_time, j_int64_t &nSize)
@@ -446,3 +458,63 @@ int CXVodManager::DeleteDirectory(char *DirName)
 
 	return J_OK;
 }
+
+void CXVodManager::OnTimer()
+{
+	 j_float_t free_size = 0;
+	 j_float_t totle_size = 0;
+	 char pDir[256] = {0};
+	if (GetDiskSpaceInfo(pDir, free_size, totle_size))
+	{
+		if (free_size / totle_size <= 0.05)
+		{
+			J_AlarmData alarmData = {0};
+			alarmData.nAlarmType = jo_alarm_disk;
+			alarmData.diskAlarmData.nCapacity = totle_size;
+			alarmData.diskAlarmData.nFree = free_size;
+			alarmData.diskAlarmData.nSubType = jo_disk_insufficient_space;
+			sprintf(alarmData.diskAlarmData.sPath, "%s", pDir);
+			JoAlarmManager->OnAlarm(alarmData);
+		}
+	}
+}
+
+j_boolean_t CXVodManager::GetDiskSpaceInfo(char *pszDrive, j_float_t &free_size, j_float_t &totle_size)
+{    
+	j_boolean_t bResult;
+  
+	char *p = (char *)CXConfig::GetVodPath();
+	char *p2 = strstr(p, "/vod");
+#ifdef WIN32
+	if (p2 != NULL)
+		memcpy(pszDrive, p, p2 - p);
+	else
+		sprintf(pszDrive, "%s", p);
+	//使用GetDiskFreeSpaceEx获取磁盘信息并打印结果   
+	DWORD64 qwFreeBytesToCaller, qwTotalBytes, qwFreeBytes;  
+	bResult = GetDiskFreeSpaceEx (pszDrive,    
+		(PULARGE_INTEGER)&qwFreeBytesToCaller,    
+		(PULARGE_INTEGER)&qwTotalBytes,    
+		(PULARGE_INTEGER)&qwFreeBytes);    
+
+	if (bResult)
+	{
+		free_size = qwFreeBytesToCaller / 1024.0;
+		totle_size = qwTotalBytes / 1024.0;
+	}
+#else
+	if (p2 != NULL)
+		memcpy(pszDrive, p + strlen("file://"), p2 - p - strlen("file://"));
+	else
+		sprintf(pszDrive, "%s", p);
+
+	struct statfs diskInfo = {0};
+	if (statfs(pszDrive,&diskInfo) == 0)
+	{
+		free_size = diskInfo.f_blocks * diskInfo.f_bsize / 1024.0;
+		totle_size = diskInfo.f_bfree * diskInfo.f_bsize / 1024.0;
+	}
+#endif
+
+	return bResult;    
+}     

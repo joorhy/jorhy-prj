@@ -2,6 +2,7 @@
 #include "StreamManager.h"
 #include "ControlManager.h"
 #include "x_resource_manager.h"
+#include "x_vod_manager.h"
 #include "x_loadso.h"
 #include "x_include.h"
 #include "x_thread_pool.h"
@@ -37,6 +38,7 @@ int main(int argc,char **argv)
         return 0;
     }
 	JoResourceManager->InitResource();
+	JoVodManager->InitVodManager();
 	
 	//CThreadPool::Instance()->Create(2);
 
@@ -85,6 +87,7 @@ end:
 		(*itControlManager)->StopService();
 		delete (*itControlManager);
 	}
+	JoVodManager->ReleaseVodManager();
 	JoResourceManager->ReleaseResource();
 	loadSo.JoUnloadSo();
 	JoThreadPool->Destroy();

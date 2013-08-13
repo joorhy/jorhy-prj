@@ -102,7 +102,6 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 		case 11:	//播放实时视频
 			pPlugin->Play(js_parm,result);
 			break;
-
 		case 3:		//得到当前焦点播放窗口参数
 			pPlugin->GetWndParm(FOCUS_WINDOW, result);
 			break;

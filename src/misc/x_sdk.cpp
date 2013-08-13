@@ -399,3 +399,70 @@ j_result_t CXSdk::ParserRecordCtrl(const char *pJsonStr, J_ControlObj &ctrlObj)
 
 	return J_OK;
 }
+
+j_result_t CXSdk::NotifyAlarmInfo(const J_AlarmData &alarmData, j_char_t *pUrl)
+{
+	//生成发送数据
+	json_object *json_request_obj = json_object_new_object();
+	json_object *json_param_obj = json_object_new_object();
+	switch (alarmData.nAlarmType)
+	{
+	case jo_alarm_video:
+		//处理视频告警信息
+		json_object_object_add(json_request_obj, (char *)"cmd", json_object_new_int(jo_json_video_ararm));
+		json_object_object_add(json_param_obj ,(char *)"resid", json_object_new_string((char *)alarmData.videoAlarmData.resid));
+		json_object_object_add(json_param_obj ,(char *)"cap", json_object_new_int(alarmData.videoAlarmData.nSubType - 100));
+		json_object_object_add(json_request_obj, (char *)"parm", json_param_obj);
+		break;
+	case jo_alarm_disk:
+		//处理硬盘告警信息
+		json_object_object_add(json_request_obj, (char *)"cmd", json_object_new_int(jo_json_disk_alarm));
+		json_object_object_add(json_param_obj ,(char *)"type", json_object_new_int((alarmData.diskAlarmData.nSubType - 200)));
+		json_object_object_add(json_param_obj ,(char *)"cap", json_object_new_int(alarmData.diskAlarmData.nCapacity));
+		json_object_object_add(json_param_obj ,(char *)"free", json_object_new_int(alarmData.diskAlarmData.nFree));
+		json_object_object_add(json_param_obj ,(char *)"msg", json_object_new_string((char *)alarmData.diskAlarmData.sPath));
+		json_object_object_add(json_request_obj, (char *)"parm", json_param_obj);
+		break;
+	case jo_alarm_device:
+		//处理设备告警信息
+		json_object_object_add(json_request_obj, (char *)"cmd", json_object_new_int(jo_json_device_alarm));
+		json_object_object_add(json_param_obj ,(char *)"id", json_object_new_int(alarmData.deviceAlarmData.nDeviceId));
+		json_object_object_add(json_param_obj ,(char *)"state", json_object_new_int(alarmData.deviceAlarmData.nSubType));
+		json_object_object_add(json_param_obj ,(char *)"parm", json_object_new_int(0));
+		json_object_object_add(json_request_obj, (char *)"parm", json_param_obj);
+		break;
+	default:
+		J_OS::LOGINFO(" CXSdk::NotifyAlarmInfo Type Unknow");
+		return J_UNKNOW;
+		break;
+	}
+
+	//发送并接受数据
+	char *json_return_buf = HttpCommunicate(json_object_to_json_string(json_request_obj), pUrl);
+	json_object_put(json_request_obj);
+	if(json_return_buf == NULL)
+	{
+		J_OS::LOGINFO(" CXSdk::NotifyAlarmInfo HttpCommunicate Faild");
+		return J_UNKNOW;
+	}
+
+	//解析数据
+	json_object *json_respose_obj = json_object_new_object();
+	json_respose_obj = json_tokener_parse(json_return_buf);
+	if(is_error(json_respose_obj))
+	{
+		J_OS::LOGINFO("CXSdk::NotifyAlarmInfo json_tokener_parse error");
+		J_OS::LOGINFO("json_data = %s", json_return_buf);
+		JSON_CLEAN_ALL();
+		return J_UNKNOW;
+	}
+	j_result_t nResult = JsonGetInt(json_respose_obj, "rst");
+	if (nResult != 0)
+	{
+		JSON_CLEAN_ALL();
+		return J_UNKNOW;
+	}
+	JSON_CLEAN_ALL();
+
+	return J_OK;
+}

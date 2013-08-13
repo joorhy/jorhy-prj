@@ -75,6 +75,9 @@
 ///录像文件管理器Singleton对象
 #define JoVodManager \
 	JO_INSTANSE(XVodManager)
+///报警管理Singleton对象
+#define JoAlarmManager \
+	JO_INSTANSE(AlarmManager)
 
 #include "x_errtype.h"
 
@@ -93,6 +96,7 @@ typedef int 									j_int32_t;
 typedef unsigned int 					j_uint32_t;
 typedef long long 						j_int64_t;
 typedef unsigned long long 			j_uint64_t;
+typedef float									j_float_t;
 
 typedef std::string							j_string_t;	
 typedef std::vector<j_string_t>		j_vec_str_t;

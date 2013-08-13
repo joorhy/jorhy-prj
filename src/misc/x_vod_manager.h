@@ -2,6 +2,7 @@
 #define __X_VOD_MANAGER_H_
 #include "j_includes.h"
 #include "x_file.h"
+#include "x_timer.h"
 
 class JO_API CXVodManager
 {
@@ -10,6 +11,11 @@ public:
 	~CXVodManager();
 
 public:
+	///启动定时器
+	///@return 		参考x_error_type.h
+	int InitVodManager();
+	///停止定时器
+	void ReleaseVodManager();
 	///²éÑ¯ÀúÊ·ÎÄ¼þÐÅÏ¢
 	///@param[in]		pResid ×ÊÔ´ID
 	///@param[in]		begin_time ¿ªÊ¼Ê±¼ä
@@ -37,13 +43,24 @@ public:
 	j_result_t DelFiles(J_DelRecordCtrl &delRecordCtrl);
 
 private:
+	static void TimerThread(void *pUser)
+	{
+		CXVodManager *pThis = static_cast<CXVodManager *>(pUser);
+		if (pThis != NULL)
+			pThis->OnTimer();
+	}
+	void OnTimer();
+
+private:
 	void FillFileInfo(const char *pFileName, J_FileInfo &fileInfo);
 	int SearchOneDayFiles(const j_char_t *pResid, const char *pDate, j_time_t begin_time, j_time_t end_time, j_vec_file_info_t &vecFileInfo);
 	int DeleteFilesByResid(const j_char_t *pResid, j_time_t begin_time, j_time_t end_time);
 	int DeleteDirectory(char *DirName);
+	j_boolean_t GetDiskSpaceInfo(char *pszDrive, j_float_t &free_size, j_float_t &totle_size);
 	
 private:
 	CXFile m_fileHelper;
+	J_OS::CTimer m_timer;
 };
 JO_DECLARE_SINGLETON(XVodManager)
 #endif //~__X_VOD_MANAGER_H_

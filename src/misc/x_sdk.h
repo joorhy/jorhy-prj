@@ -43,6 +43,12 @@ public:
 	///@return			²Î¼ûj_errtype.h
 	j_result_t ParserRecordCtrl(const char *pJsonStr, J_ControlObj &ctrlObj);
 
+	///通知告警消息
+	///@prarm[in]		alarmData告警数据
+	///@param[in]		pUrl ¹ÜÀí·þÎñÆ÷URL
+	///@return			参见j_errtype.h
+	j_result_t NotifyAlarmInfo(const J_AlarmData &alarmData, j_char_t *pUrl);
+
 private:
 	char *HttpCommunicate(char *body,char *uri);
 	int JsonGetInt(json_object *p_object, const char *p_key);
