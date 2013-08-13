@@ -54,7 +54,7 @@ struct J_DevInput : virtual public J_Obj
 	///报警事件上传
 	///param[in]	alarmData 报警数据
 	///@return 		参见x_error_type.h
-	virtual j_result_t EventAlarm(const J_AlarmData &alarmData) = 0;
+	//virtual j_result_t EventAlarm(const J_AlarmData &alarmData) = 0;
 };
 
 struct J_VoiceIcom : virtual public J_Obj
