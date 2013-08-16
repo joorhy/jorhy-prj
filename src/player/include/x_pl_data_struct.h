@@ -108,6 +108,12 @@ struct j_pl_audio_out_t		//for init audio output
 	int sample;
 };
 
+struct j_pl_video_info_t
+{
+	int width;
+	int height;
+};
+
 struct j_pl_video_out_t		//for init video output
 {
 	int VoutDev;			//ÏÔÊ¾Ä£¿é ddraw£¿

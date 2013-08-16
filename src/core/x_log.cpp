@@ -17,11 +17,9 @@ CLog* CLog::m_pInstance = NULL;
 CLog::CLog()
 : m_pFile(NULL)
 {
-	/*CTime curTime;
-	char fileName[128] = {0};
-	sprintf(fileName, "%s.log", curTime.GetLocalTime().c_str());
-
-	m_pFile = (void *)fopen(fileName, "wb+");*/
+#ifdef WIN32
+	InitConsole();
+#endif
 	m_dataBuff = new char[LOG_DATA_BUFF_SIZE];
 	CreateFile();
 }
@@ -36,6 +34,10 @@ CLog::~CLog()
 	
 	if (m_dataBuff)
 		delete m_dataBuff;
+
+#ifdef WIN32
+	UnInitConsole();
+#endif
 }
 
 CLog* CLog::Instance()
@@ -136,6 +138,22 @@ int CLog::CreateFile()
 	m_pFile = fopen(fileName, "wb+");
 
 	return J_OK;
+}
+
+void CLog::InitConsole()
+{
+	AllocConsole();
+	SetConsoleTitle("BTKPlayer-Debug");
+	freopen("CONOUT$", "w", stderr);
+	freopen("CONOUT$", "w", stdout);
+	m_hConsloe = GetStdHandle(STD_OUTPUT_HANDLE);
+
+}
+
+void CLog::UnInitConsole()
+{
+	FreeConsole();
+	m_hConsloe = NULL;
 }
 
 }

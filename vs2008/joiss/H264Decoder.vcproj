@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../src/core;../../include/ffmpeg"
+				AdditionalIncludeDirectories="../../src/core;../../include/ffmpeg;../../src/misc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;H264DECODER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib"
-				OutputFile="$(OutDir)\plugins\$(ProjectName).dll"
+				OutputFile="$(OutDir)\plugins\$(ProjectName).jo"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\libs\windows\ffmpeg"
 				GenerateDebugInformation="true"

@@ -2,9 +2,11 @@
 
 void *CH264Decoder::m_mtx = NULL;
 
+JO_IMPLEMENT_INTERFACE(Decoder, "h264", CH264Decoder::Maker)
+
 CH264Decoder::CH264Decoder()
 {
-
+	m_bInit = false;
 }
 
 CH264Decoder::~CH264Decoder()
@@ -35,6 +37,8 @@ j_result_t CH264Decoder::InidDecoder()
 	if(avcodec_open(m_pContext,m_pCodec) < 0)
 		return J_DECODER_INIT_ERROR;
 
+	m_bInit = true;
+
 	return J_OK;
 }
 
@@ -52,6 +56,15 @@ j_result_t CH264Decoder::GetDecodeParam(J_VideoDecodeParam &decParam)
 
 j_result_t CH264Decoder::DecodeOneFrame(j_char_t *pInputData, j_int32_t nInputLen, j_char_t *pOutuptData, j_int32_t &nOutputLen)
 {
+	nOutputLen = 0;
+	if (!m_bInit)
+	{
+		return J_OK;
+	}
+	static FILE *fp = NULL;
+	if (fp == NULL)
+		fp = fopen("test.h264", "wb+");
+	fwrite(pInputData, 1, nInputLen, fp);
 	int nRet = 0;
 	int size = 0;
 	m_Packet.data	= (uint8_t*)pInputData;

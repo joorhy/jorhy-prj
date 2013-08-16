@@ -8,11 +8,11 @@
 
 namespace J_OS
 {
-//#define LOGINFO(...) CLog::Instance()->WriteLogInfo(__VA_ARGS__)
-//#define LOGERROR(...) CLog::Instance()->WriteLogError(__VA_ARGS__)
+#define LOGINFO(...) CLog::Instance()->WriteLogInfo(__VA_ARGS__)
+#define LOGERROR(...) CLog::Instance()->WriteLogError(__VA_ARGS__)
 
-#define LOGINFO CLog::Instance()->WriteLogInfo
-#define LOGERROR CLog::Instance()->WriteLogError
+//#define LOGINFO CLog::Instance()->WriteLogInfo
+//#define LOGERROR CLog::Instance()->WriteLogError
 
 class JO_API CLog
 {
@@ -29,12 +29,17 @@ protected:
 
 private:
 	int CreateFile();
+	void InitConsole();
+	void UnInitConsole();
 
 private:
 	static CLog* m_pInstance;
 	void *m_pFile;
 	char *m_dataBuff;
 	CTLock m_locker;
+#ifdef WIN32
+	void *m_hConsloe;
+#endif
 };
 
 }

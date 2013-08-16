@@ -27,9 +27,9 @@ BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 	if (it != m_playerMap.end() && it->second.bPlay)
 	{
 		SendMessage(hWnd, WM_OWN_ERASEBKGROUND,TRUE,0);
+		it->second.bPlay = FALSE;
 		it->second.pPlayer->Stop();
 		CPlFactory::Instance()->DelPlayer(hWnd);
-		it->second.bPlay = FALSE;
 
 		m_nPlayNum--;
 		m_nVodEndTime = 0;

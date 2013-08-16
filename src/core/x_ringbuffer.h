@@ -17,7 +17,7 @@ struct J_MEMNODE
 class JO_API CRingBuffer
 {
 	public:
-		CRingBuffer(int nCacheFrameNum = BUFFER_SIZE, int nBufferSize = BUFFER_SIZE);
+		CRingBuffer(int nCacheFrameNum = CACHE_FRAME_NUM, int nBufferSize = BUFFER_SIZE);
 		~CRingBuffer();
 
 	public:

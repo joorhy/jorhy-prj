@@ -1,6 +1,8 @@
 #include "JoRender.h"
 #include "JoPictrue.h"
 
+JO_IMPLEMENT_INTERFACE(Render, "live", CJoRender::Maker)
+
 CJoRender::CJoRender()
 {
 	m_pDD		= NULL;
@@ -10,7 +12,13 @@ CJoRender::CJoRender()
 	m_pDDSPrimary	= NULL;
 	m_oldProc	= NULL;
 	memset(&m_videoparm, 0, sizeof(m_videoparm));
-	m_bShow		= true;
+
+	m_videoparm.width = 352;
+	m_videoparm.height = 288;
+	m_videoparm.vout_dev = jo_dev_ddraw;
+	m_videoparm.fourcc_type = jo_codec_yv12;
+
+	m_bShow		= false;
 	J_OS::LOGINFO("CJoRender::CJoRender()\n");
 }
 
@@ -22,7 +30,7 @@ CJoRender::~CJoRender()
 j_result_t CJoRender::InitRender(j_wnd_t hwnd)
 {
 	m_hwnd = hwnd;
-
+	//CoUninitialize();
 	if (OpenDDraw() != J_OK)
 	{
 		J_OS::LOGINFO("OpenDDraw Error\n");
@@ -51,11 +59,16 @@ j_result_t CJoRender::InitRender(j_wnd_t hwnd)
 	if(!m_oldProc)
 		return J_INVALID_HANDLE;
 
+	m_bShow = true;
+
 	return J_OK;
 }
 
 j_result_t CJoRender::DisplayFrame(j_char_t *pData, j_int32_t nLen)
 {
+	if (!m_bShow)
+		return J_OK;
+
 	j_result_t br;
 	br = CopyData(pData, nLen);
 	if(br != J_OK)
@@ -76,16 +89,28 @@ j_result_t CJoRender::DeinitRender()
 	}
 
 	if(m_pcClipper)
+	{
 		m_pcClipper->Release();
+		m_pcClipper = NULL;
+	}
 
 	if(m_pSurface)
+	{
 		m_pSurface->Release();
+		m_pSurface = NULL;
+	}
 
 	if(m_pDDSPrimary)
+	{
 		m_pDDSPrimary->Release();
+		m_pDDSPrimary = NULL;
+	}
 
 	if(m_pDD)
+	{
 		m_pDD->Release();
+		m_pDD = NULL;
+	}
 
 	CoUninitialize();
 	InvalidateRect(m_hwnd,NULL,TRUE);
@@ -97,8 +122,8 @@ j_result_t CJoRender::OpenDDraw()
 {
 	HRESULT hr;
 	hr = CoInitializeEx(NULL,COINIT_MULTITHREADED|COINIT_SPEED_OVER_MEMORY);
-	if(hr !=  S_OK) 
-		return J_RENDER_INIT_ERROR;
+	//if(hr !=  S_OK) 
+	//	return J_RENDER_INIT_ERROR;
 
 	hr = DirectDrawCreateEx(NULL,(LPVOID*)&m_pDD,IID_IDirectDraw7,NULL);
 	if(hr != DD_OK) 
@@ -194,7 +219,7 @@ j_result_t CJoRender::CreateSurface(J_VideoDecodeParam &videoParam)
 		J_OS::LOGINFO("CJoRender::CreateSurface Error = %x\n", hr);
 		return J_ERROR_CREATE_SURFACE;
 	}
-	m_videoparm = videoParam;
+	//m_videoparm = videoParam;
 
 	return J_OK;
 }

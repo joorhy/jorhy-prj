@@ -3,6 +3,7 @@
 #include "np_plugin.h"
 #include "pl_type.h"
 #include <string>
+#include "x_pl_log.h"
 
 ScriptablePluginObject::ScriptablePluginObject(NPP npp) : ScriptablePluginObjectBase(npp)
 {
@@ -10,6 +11,7 @@ ScriptablePluginObject::ScriptablePluginObject(NPP npp) : ScriptablePluginObject
 	m_CallBkPtz	= NULL;
 	m_CallBkState = NULL;
 	m_CallBkVod = NULL;
+	m_lastInvokeTime = 0;
 }
 
 ScriptablePluginObject::~ScriptablePluginObject()
@@ -55,27 +57,30 @@ bool  ScriptablePluginObject::SetProperty(NPIdentifier name, const NPVariant *va
 
 bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result)  
 {  
-	//if (InterlockedExchangeAdd(&m_bCbReturn, 0) > 0)
-	if (m_bCbReturn > 0)
-	{
-		char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":5}")+1);
-		strncpy(tmp, "{\"rst\":5}", strlen("{\"rst\":5}"));
-		tmp[strlen("{\"rst\":5}")] = '\0';
-		STRINGZ_TO_NPVARIANT(tmp, *result);
-		return true;
-	}
 	CNPPlugin * pPlugin = (CNPPlugin *)mNpp->pdata;
-	//InterlockedExchangeAdd(&m_bCbReturn, 1);
-	m_bCbReturn = 1;
 	if(name == NPN_GetStringIdentifier("Plugin_Interface"))
 	{
-		int	cmd			= (int)NPVARIANT_TO_DOUBLE(args[0]);
+		int	cmd	= (int)NPVARIANT_TO_DOUBLE(args[0]);
+		j_pl_info("ScriptablePluginObject::Invoke 222 %d\n", GetTickCount() - m_lastInvokeTime);
+		if (m_bCbReturn > 0 || (GetTickCount() - m_lastInvokeTime < 2000 && cmd == 21) )
+		{
+			char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":5}")+1);
+			strncpy(tmp, "{\"rst\":5}", strlen("{\"rst\":5}"));
+			tmp[strlen("{\"rst\":5}")] = '\0';
+			STRINGZ_TO_NPVARIANT(tmp, *result);
+			return true;
+		}
+		m_bCbReturn = 1;
+		if (cmd == 21)
+			m_lastInvokeTime = GetTickCount();
+
 		char *js_parm	= NULL;
 		switch (cmd)
 		{
 		case 1:case 2:case 5:case 21:case 23:case 11:
 			{
 				NPString jsonStr= NPVARIANT_TO_STRING(args[1]);
+				j_pl_info("ScriptablePluginObject::Invoke %d %d %s\n", cmd, jsonStr.UTF8Length, jsonStr.UTF8Characters);
 				js_parm		= new char[jsonStr.UTF8Length + 1];
 				memcpy(js_parm,jsonStr.UTF8Characters,jsonStr.UTF8Length);
 				js_parm[jsonStr.UTF8Length] = '\0';
@@ -94,7 +99,9 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 			pPlugin->ChangePath(js_parm,result);
 			break;
 		case 21:	//打开历史流
+			j_pl_info("ScriptablePluginObject::Play %d %s\n", pPlugin, js_parm);
 			pPlugin->Play(js_parm,result);
+			j_pl_info("ScriptablePluginObject::Play End\n");
 			break;
 		case 23:	//历史流跳转
 			pPlugin->VodPlayJump(js_parm,result);

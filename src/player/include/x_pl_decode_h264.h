@@ -12,7 +12,7 @@ public:
 	CXPlDecodeH264(void);
 	~CXPlDecodeH264(void);
 
-	virtual J_PL_RESULT Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len);
+	virtual J_PL_RESULT Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len, j_pl_video_info_t &vInfo);
 	virtual J_PL_RESULT FlushBuffer();
 	virtual J_PL_RESULT GetOutputType(j_pl_video_out_t &t);
 	virtual J_PL_RESULT InitDecode();

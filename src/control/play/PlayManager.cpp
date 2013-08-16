@@ -11,8 +11,9 @@ static char *get_string(char *src, char *xxx,char **dst)
 	if (p2 != NULL)
 	{
 		*dst = (j_char_t *)malloc(p2 - p + 1);
+		memset(*dst, 0, p2 - p + 1);
 		memcpy(*dst, p, p2-p);
-		*dst[p2 - p] = '\0';
+		(*dst)[p2 - p] = '\0';
 		return p2 + strlen(xxx);
 	}
 	return NULL;
@@ -32,7 +33,7 @@ static char *get_int(char *src, char *xxx,int *dst)
 
 CPlayManager::CPlayManager()
 {
-	m_nDevId = 0;
+	m_nDevId = 3;
 	m_bStart = false;
 	for (int i=0; i<100; i++)
 	{
@@ -48,11 +49,11 @@ CPlayManager::~CPlayManager()
 
 j_result_t CPlayManager::Init()
 {
-	if (m_loadSo.JoLoadSo() != J_OK)
+	/*if (m_loadSo.JoLoadSo() != J_OK)
 	{
 		J_OS::LOGINFO("CPlayManager::Init loadSo JoLoadSo error");
 		return J_UNKNOW;
-	}
+	}*/
 	m_bStart = true;
 	j_thread_parm parm = {0};
 	parm.entry = CPlayManager::WorkThread;
@@ -65,7 +66,7 @@ j_result_t CPlayManager::Init()
 void CPlayManager::Deinit()
 {
 	m_bStart = false;
-	m_loadSo.JoUnloadSo();
+	//m_loadSo.JoUnloadSo();
 }
 
 j_int32_t CPlayManager::OpenStream(const j_char_t *pUrl, const j_char_t *pUrl2)
@@ -169,9 +170,11 @@ j_boolean_t CPlayManager::ParserUrl(const j_char_t *pUrl, const j_char_t *pUrl2,
 	if (info.dev_id == NULL)
 	{
 		info.dev_id = (j_char_t *)malloc(strlen(info.host_type) + strlen(info.host_addr) + 2);
+		memset (info.dev_id, 0, strlen(info.host_type) + strlen(info.host_addr) + 2);
 		sprintf(info.dev_id, "%s_%s", info.host_type, info.host_addr);
 		info.dev_id[strlen(info.host_type) + strlen(info.host_addr) + 2] = '\0';
 	}
+	return true;
 
 parser_usr_error:
 	FreePlayManagerInfo(info);
@@ -192,7 +195,7 @@ void CPlayManager::OnWork()
 		it = m_streamMap.begin();
 		for (;it != m_streamMap.end(); it++)
 		{
-			if (it->second.pPlayObj->ProcessMedia() != J_OK)
+			if (it->second.bStart && it->second.pPlayObj->ProcessMedia() != J_OK)
 			{
 				//¶ÏÏßÖØÁ¬´¦Àí
 				it->second.pPlayObj->StopMedia();

@@ -32,6 +32,7 @@ CRealPlayObj::~CRealPlayObj()
 
 j_result_t CRealPlayObj::PlayMedia(j_wnd_t hWnd)
 {
+	StartVideo();
 	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->Play(hWnd);
 	return J_OK;
 }
@@ -39,12 +40,16 @@ j_result_t CRealPlayObj::PlayMedia(j_wnd_t hWnd)
 j_result_t CRealPlayObj::StopMedia()
 {
 	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->Stop();
+	StopVideo();
 	return J_OK;
 }
 
 j_result_t CRealPlayObj::ProcessMedia()
 {
 	int nRet = J_OK;
+	if (!m_bStart)
+		return nRet;
+
 	memset(&m_streamHeader, 0, sizeof(m_streamHeader));
 	nRet = m_pRingBuffer->PopBuffer(m_pDataBuff, m_streamHeader);
 	if (nRet == J_OK && m_streamHeader.dataLen > 0)
@@ -100,7 +105,7 @@ j_result_t CRealPlayObj::StartVideo()
 		J_OS::LOGINFO("CRealPlayObj::StartVideo GetRingBuffer error ret = %d", nRet);
 		return nRet;
 	}
-	//m_bStart = true;
+	m_bStart = true;
 	J_OS::LOGINFO("CRealPlayObj::StartVideo socket =  %d start", m_nSocket.sock);
 	return J_OK;
 }

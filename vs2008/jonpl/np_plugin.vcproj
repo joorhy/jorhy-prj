@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\np_plugin\include;&quot;..\..\src\utils\xulrunner-sdk&quot;;..\..\src\ui\vs_plugins\np_plugin\;..\..\src\ui\vs_plugins\np_utils\json\include;..\..\src\ui\vs_plugins\pl_player;..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_utils\json\include"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\np_plugin\include;&quot;..\..\src\utils\xulrunner-sdk&quot;;..\..\src\ui\vs_plugins\np_plugin\;..\..\src\ui\vs_plugins\np_utils\json\include;..\..\src\ui\vs_plugins\pl_player;..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\player\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;MOZILLA_STRICT_API;XPCOM_GLUE;XP_WIN;_X86_;_AFXDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\np_plugin\include;&quot;..\..\src\utils\xulrunner-sdk&quot;;..\..\src\ui\vs_plugins\np_plugin\;..\..\src\ui\vs_plugins\np_utils\json\include;..\..\src\ui\vs_plugins\pl_player;..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_utils\json\include"
+				AdditionalIncludeDirectories="..\..\src\ui\vs_plugins\np_plugin\include;&quot;..\..\src\utils\xulrunner-sdk&quot;;..\..\src\ui\vs_plugins\np_plugin\;..\..\src\ui\vs_plugins\np_utils\json\include;..\..\src\ui\vs_plugins\pl_player;..\..\src\ui\vs_plugins\pl_core;..\..\src\ui\vs_plugins\pl_utils\json\include;..\..\src\player\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MOZILLA_STRICT_API;XPCOM_GLUE;XP_WIN;_X86_"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

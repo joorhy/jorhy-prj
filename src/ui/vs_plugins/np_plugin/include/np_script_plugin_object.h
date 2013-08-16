@@ -23,6 +23,7 @@ private:
 	NPObject *m_CallBkState;
 	NPObject *m_CallBkVod;
 	long volatile m_bCbReturn;
+	DWORD m_lastInvokeTime;
 };
 
 static NPObject *AllocateScriptablePluginObject(NPP npp, NPClass *aClass)

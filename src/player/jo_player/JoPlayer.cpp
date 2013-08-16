@@ -104,7 +104,10 @@ void CJoPlayer::Deinit()
 
 j_result_t CJoPlayer::InputData(j_char_t *pData, J_StreamHeader &streamHeader)
 {
-	m_rawBuffer->PushBuffer(pData, streamHeader);
+	if (m_rawBuffer != NULL)
+	{
+		m_rawBuffer->PushBuffer(pData, streamHeader);
+	}
 
 	return J_OK;
 }
@@ -122,11 +125,20 @@ void CJoPlayer::OnDecode()
 		nResult = m_rawBuffer->PopBuffer(pInputDataBuff, streamHeader);
 		if (nResult == J_OK && streamHeader.dataLen > 0)
 		{
-			nResult = m_decoder->DecodeOneFrame(pInputDataBuff, streamHeader.dataLen, pOutputDataBuff, nOutputLen);
-			if (nResult == J_OK)
+			static FILE *fp2 = NULL;
+			if (fp2 == NULL)
+				fp2 = fopen("test2.h264", "wb+");
+			fwrite(pInputDataBuff, 1, streamHeader.dataLen, fp2);
+
+			if (streamHeader.frameType == jo_video_i_frame ||
+				streamHeader.frameType == jo_video_b_frame || streamHeader.frameType == jo_video_p_frame)
 			{
-				streamHeader.dataLen = nOutputLen;
-				m_vBuffer->PushBuffer(pOutputDataBuff, streamHeader);
+				nResult = m_decoder->DecodeOneFrame(pInputDataBuff, streamHeader.dataLen, pOutputDataBuff, nOutputLen);
+				if (nResult == J_OK && nOutputLen > 0)
+				{
+					streamHeader.dataLen = nOutputLen;
+					m_vBuffer->PushBuffer(pOutputDataBuff, streamHeader);
+				}
 			}
 		}
 		else
@@ -146,7 +158,7 @@ void CJoPlayer::OnRend()
 	while (m_bStart)
 	{
 		memset(&streamHeader, 0, sizeof(streamHeader));
-		nResult = m_rawBuffer->PopBuffer(pDataBuff, streamHeader);
+		nResult = m_vBuffer->PopBuffer(pDataBuff, streamHeader);
 		if (nResult == J_OK && streamHeader.dataLen > 0)
 		{
 			nResult = m_render->DisplayFrame(pDataBuff, streamHeader.dataLen);

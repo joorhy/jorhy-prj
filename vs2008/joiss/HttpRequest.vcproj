@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\plugins\$(ProjectName).dll"
+				OutputFile="$(OutDir)\plugins\$(ProjectName).jo"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"

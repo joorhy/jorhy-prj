@@ -25,7 +25,7 @@ J_PL_RESULT CXPlDecodeH264::FlushBuffer()
 	return J_PL_NO_ERROR;
 }
 
-J_PL_RESULT CXPlDecodeH264::Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len)
+J_PL_RESULT CXPlDecodeH264::Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len, j_pl_video_info_t &vInfo)
 {
 	int nRet = 0;
 	int size = 0;
@@ -37,6 +37,8 @@ J_PL_RESULT CXPlDecodeH264::Decode(char *IN_buf,int In_len,char *OUT_buf,int *OU
 		j_pl_error("CXPlDecodeH264::Decode error :%d\n",nRet);
 		return J_PL_NO_ERROR;
 	}
+	vInfo.height = m_pContext->height;
+	vInfo.width = m_pContext->width;
 
 	SetOutputType(m_voutT);
 	*OUT_len = CopyData(m_pPicture,OUT_buf,OUT_len);

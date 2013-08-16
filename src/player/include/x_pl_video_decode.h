@@ -15,7 +15,7 @@ public:
 	
 	//子类需要重写
 	virtual J_PL_RESULT InitDecode() = 0;
-	virtual J_PL_RESULT Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len) = 0;
+	virtual J_PL_RESULT Decode(char *IN_buf,int In_len,char *OUT_buf,int *OUT_len, j_pl_video_info_t &vInfo) = 0;
 	virtual J_PL_RESULT FlushBuffer() = 0;
 	virtual J_PL_RESULT GetOutputType(j_pl_video_out_t &t) = 0;
 

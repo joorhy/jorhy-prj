@@ -1,6 +1,7 @@
 #ifndef __JORENDER_H_
 #define __JORENDER_H_
 #include "j_includes.h"
+#include "x_module_manager_def.h"
 #include <ddraw.h>
 extern "C"
 {
@@ -13,6 +14,12 @@ class CJoRender : public J_Render
 public:
 	CJoRender();
 	~CJoRender();
+
+	static int Maker(J_Obj *&pObj)
+	{
+		pObj = new CJoRender();
+		return J_OK;
+	}
 
 public:
 	///J_Render

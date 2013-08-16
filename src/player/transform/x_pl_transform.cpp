@@ -72,7 +72,8 @@ unsigned CXPlTransform::VideoThread(void *parm)
 		{
 			if(ctl->m_WorkModel == J_PL_PLAY_REALTIME)
 			{
-				pThis->m_vbuffer = J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);		//参见m_decoders动态生成大小
+				//pThis->m_vbuffer = J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);		//参见m_decoders动态生成大小
+				pThis->m_vbuffer = NULL;
 				br = pThis->VideoLoopPush();
 			}
 			else
@@ -163,6 +164,7 @@ J_PL_RESULT CXPlTransform::VideoLoopPush()
 	int dstlen = 0;
 	int state = J_PL_NORMAL;
 	++(*ctl->m_ThreadNumer);
+	j_pl_video_info_t vInfo = {0};
 
 	while(true)
 	{
@@ -188,10 +190,12 @@ J_PL_RESULT CXPlTransform::VideoLoopPush()
 					{
 						if (bIsIFrame)
 							m_vDecoder->FlushBuffer();
-
-						br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen);
+						
+						br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen, vInfo);
 						if(br == J_PL_NO_ERROR)
 						{
+							if (m_vbuffer == NULL)
+								m_vbuffer = J_PlBuffer::CreateInstance(BUFFER_FIFO, vInfo.height * vInfo.width * 3);
 							if(bFirst)
 							{
 								InitVideo();
@@ -340,7 +344,8 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 	int dstlen		= 0;
 	int state		= J_PL_NORMAL;
 	++(*ctl->m_ThreadNumer);
-
+	j_pl_video_info_t vInfo = {0};
+ 
 	while(true)
 	{
 		j_pl_buffer_t head;
@@ -370,7 +375,7 @@ J_PL_RESULT CXPlTransform::VideoLoopPull()
 			{
 				if(format.type != DECODE_AUDIO)
 				{	
-					br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen);
+					br = m_vDecoder->Decode(srcData,format.size,dstData,&dstlen, vInfo);
 					if(br == J_PL_NO_ERROR)
 					{
 						if(bFirst)

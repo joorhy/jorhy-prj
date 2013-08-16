@@ -45,7 +45,7 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 {
     char modPath[256] = {0};
 #ifdef WIN32
-	sprintf(modPath, "%s\\%s\\*.dll", pPath, subPath);
+	sprintf(modPath, "%s\\%s\\*.jo", pPath, subPath);
 	WIN32_FIND_DATA FindFileData;  
 	HANDLE hFind;  
 
@@ -61,7 +61,7 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 	{   
 		memset(modName, 0, sizeof(modName));
 		sprintf(modName, "%s\\%s", subPath, FindFileData.cFileName);
-		if (strstr(modName, ".dll") != NULL)
+		if (strstr(modName, ".jo") != NULL)
 		{
 			j_module_t module;
 			module.handle = GetModuleHandle(modName);
@@ -76,8 +76,8 @@ int CXLoadso::LoadSo(const char *pPath, const char *subPath)
 			}
 
 			Register_fun fun = (Register_fun)GetProcAddress(module.handle, "Register");
-			int n = GetLastError();
-			fun();
+			if (fun != NULL)
+				fun();
 			m_vecHandle.push_back(module);
 		}
 	} while (FindNextFile(hFind, &FindFileData));  

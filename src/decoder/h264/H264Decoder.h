@@ -1,6 +1,7 @@
 #ifndef __H264DECODER_H_
 #define __H264DECODER_H_
 #include "j_includes.h"
+#include "x_module_manager_def.h"
 extern "C"
 {
 #include "libavcodec\avcodec.h"
@@ -11,6 +12,12 @@ class CH264Decoder : public J_Decoder
 public:
 	CH264Decoder();
 	~CH264Decoder();
+
+	static int Maker(J_Obj *&pObj)
+	{
+		pObj = new CH264Decoder();
+		return J_OK;
+	}
 
 public:
 	///J_Decoder
@@ -32,6 +39,7 @@ private:
 	AVFrame *m_pPicture;
 	AVPacket m_Packet;
 	AVCodec *m_pCodec;
+	j_boolean_t m_bInit;
 };
 
 #endif //~__H264DECODER_H_
