@@ -1,0 +1,21 @@
+#! /bin/sh
+
+JO_USER=root
+JO_BIN=ss
+
+JO_Dir=/$JO_USER/$JO_BIN
+cd $JO_Dir
+
+while :
+do
+  JO_Running=$(ps -A |grep "$JO_Dir/joiss")
+  if [ "$JO_Running" ] ; then
+    : 
+  else
+    $JO_Dir/joiss &
+  fi
+
+  sleep 3
+done
+
+
