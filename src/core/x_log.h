@@ -29,8 +29,10 @@ protected:
 
 private:
 	int CreateFile();
+#ifdef WIN32
 	void InitConsole();
 	void UnInitConsole();
+#endif
 
 private:
 	static CLog* m_pInstance;

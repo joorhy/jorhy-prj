@@ -140,6 +140,7 @@ int CLog::CreateFile()
 	return J_OK;
 }
 
+#ifdef WIN32
 void CLog::InitConsole()
 {
 	AllocConsole();
@@ -155,5 +156,6 @@ void CLog::UnInitConsole()
 	FreeConsole();
 	m_hConsloe = NULL;
 }
+#endif
 
 }

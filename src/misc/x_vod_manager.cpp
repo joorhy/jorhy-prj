@@ -466,7 +466,8 @@ void CXVodManager::OnTimer()
 	 char pDir[256] = {0};
 	if (GetDiskSpaceInfo(pDir, free_size, totle_size))
 	{
-		if (free_size / totle_size <= 0.05)
+		//j_float_t xx = free_size / totle_size;
+		//if (free_size / totle_size <= 0.9)
 		{
 			J_AlarmData alarmData = {0};
 			alarmData.nAlarmType = jo_alarm_disk;
@@ -481,7 +482,7 @@ void CXVodManager::OnTimer()
 
 j_boolean_t CXVodManager::GetDiskSpaceInfo(char *pszDrive, j_float_t &free_size, j_float_t &totle_size)
 {    
-	j_boolean_t bResult;
+	j_boolean_t bResult = true;
   
 	char *p = (char *)CXConfig::GetVodPath();
 	char *p2 = strstr(p, "/vod");
@@ -511,8 +512,8 @@ j_boolean_t CXVodManager::GetDiskSpaceInfo(char *pszDrive, j_float_t &free_size,
 	struct statfs diskInfo = {0};
 	if (statfs(pszDrive,&diskInfo) == 0)
 	{
-		free_size = diskInfo.f_blocks * diskInfo.f_bsize / 1024.0;
-		totle_size = diskInfo.f_bfree * diskInfo.f_bsize / 1024.0;
+		free_size = diskInfo.f_bfree * (diskInfo.f_bsize / 1024.0);
+		totle_size = diskInfo.f_blocks * (diskInfo.f_bsize / 1024.0);
 	}
 #endif
 

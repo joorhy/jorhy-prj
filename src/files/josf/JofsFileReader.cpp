@@ -220,7 +220,7 @@ int CNvrFileReader::OpenFile()
 	char fileName[512] = {0};
 	char filePath[512] = {0};
 	sprintf(fileName, "%s/%s/%s/%s", m_file.GetVodDir(CXConfig::GetVodPath(), filePath), m_resid.c_str()
-		, JoTime->GetDate(it->tStartTime+JO_FILE_INTERVAL).c_str(), it->fileName.c_str());
+		, JoTime->GetDate(it->tStoptime/*it->tStartTime+JO_FILE_INTERVAL*/).c_str(), it->fileName.c_str());
 	vecFileInfo.pop_front();
 
 #ifdef WIN32

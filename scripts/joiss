@@ -9,14 +9,14 @@
 ### END INIT INFO
 
 
-USER=ivs
-BIN=ivs/ivs/ss
+USER=root
+BIN=ss
 
-HOME=/home/$USER
+HOME=/$USER
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
-DESC="joiss deamon"
-NAME=jorhy-msvr
-DAEMON="$HOME/$BIN/joiss-deamon"
+DESC="jo deamon"
+NAME=joiss-deamon
+DAEMON="$HOME/$BIN/jo-deamon"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 

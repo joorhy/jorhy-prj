@@ -58,6 +58,7 @@ struct JO_API J_Obj
 #include <netinet/tcp.h>
 #include <X11/Xlib.h>
 #include <aio.h>
+#include <sys/vfs.h>
 #endif
 
 #include <math.h>

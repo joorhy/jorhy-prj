@@ -28,6 +28,7 @@
   <Project Name="JorReader" Path="JorReader.project"/>
   <Project Name="PlayManager" Path="PlayManager.project"/>
   <Project Name="OnvifHost2" Path="OnvifHost2.project" Active="No"/>
+  <Project Name="test" Path="test/test.project"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="joiss" ConfigName="Debug"/>
@@ -72,6 +73,7 @@
       <Project Name="JorReader" ConfigName="Debug"/>
       <Project Name="PlayManager" ConfigName="Debug"/>
       <Project Name="OnvifHost2" ConfigName="Debug"/>
+      <Project Name="test" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="joiss" ConfigName="Release"/>
@@ -116,6 +118,7 @@
       <Project Name="JorReader" ConfigName="Release"/>
       <Project Name="PlayManager" ConfigName="Release"/>
       <Project Name="OnvifHost2" ConfigName="Release"/>
+      <Project Name="test" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

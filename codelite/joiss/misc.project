@@ -19,6 +19,7 @@
     <File Name="../../src/misc/x_adapter_factory.cpp"/>
     <File Name="../../src/misc/x_resource_manager.cpp"/>
     <File Name="../../src/misc/x_vod_manager.cpp"/>
+    <File Name="../../src/misc/x_alarm_manager.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/misc/x_config.h"/>
@@ -39,6 +40,7 @@
     <File Name="../../src/misc/x_player_factory.h"/>
     <File Name="../../src/misc/x_resource_manager.h"/>
     <File Name="../../src/misc/x_vod_manager.h"/>
+    <File Name="../../src/misc/x_alarm_manager.h"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
