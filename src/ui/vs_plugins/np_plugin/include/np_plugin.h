@@ -63,6 +63,7 @@ private:
 
 private:
 	static WNDPROC CNPPlugin::lpOldProc;
+	void *m_pl_ctrl;
 };
 
 #endif // __NP_PLUGIN_H__

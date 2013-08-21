@@ -13,6 +13,7 @@ m_bInitialized(FALSE),
 m_pScriptableObject(NULL)
 {
 	m_hWnd = NULL;
+	m_pl_ctrl = NULL;
 	NPN_GetValue(m_pNPInstance, NPNVWindowNPObject, &m_pWindowObj);
 }
 
@@ -46,6 +47,7 @@ NPBool CNPPlugin::init(NPWindow* pNPWindow)
 
 	m_Window = pNPWindow;
 	m_bInitialized = TRUE;
+	m_pl_ctrl = new CPlCtrl();//::CreateInstance(m_hWnd);
 	//CPlCtrl::CreateInstance(m_hWnd)->RegisterCallBack(OnEvent, this);
 
 	return TRUE;
@@ -58,7 +60,12 @@ void CNPPlugin::shut()
 	(WNDPROC) SetWindowLongPtr( m_hWnd,
 								GWLP_WNDPROC,
 								(LONG_PTR)lpOldProc );
-	CPlCtrl::ReleaseInstance(m_hWnd);
+	//CPlCtrl::ReleaseInstance(m_hWnd);
+	if (m_pl_ctrl)
+	{
+		delete ((CPlCtrl *)m_pl_ctrl);
+		m_pl_ctrl = NULL;
+	}
 	m_hWnd = NULL;
 	m_bInitialized = FALSE;
 }
@@ -198,7 +205,8 @@ void CNPPlugin::DefaultInvoke(UINT nType, int args[],UINT argCount)
 
 bool CNPPlugin::SetWorkModel(char *js_workmodel,NPVariant *result)
 {
-	if(CPlCtrl::CreateInstance(m_hWnd)->InitDisPlay(m_hWnd,js_workmodel))
+	//if(CPlCtrl::CreateInstance(m_hWnd)->InitDisPlay(m_hWnd,js_workmodel))
+	if(((CPlCtrl *)m_pl_ctrl)->InitDisPlay(m_hWnd,js_workmodel))
 		SetRetValue("{\"rst\":0}",result);
 	else
 		SetRetValue("{\"rst\":1}",result);
@@ -208,8 +216,10 @@ bool CNPPlugin::SetWorkModel(char *js_workmodel,NPVariant *result)
 
 bool CNPPlugin::Play(char *js_playInfo,NPVariant *result)
 {
-	CPlCtrl::CreateInstance(m_hWnd)->RegisterCallBack(OnEvent, this);
-	if(CPlCtrl::CreateInstance(m_hWnd)->Play(js_playInfo))
+	//CPlCtrl::CreateInstance(m_hWnd)->RegisterCallBack(OnEvent, this);
+	((CPlCtrl *)m_pl_ctrl)->RegisterCallBack(OnEvent, this);
+	//if(CPlCtrl::CreateInstance(m_hWnd)->Play(js_playInfo))
+	if (((CPlCtrl *)m_pl_ctrl)->Play(js_playInfo))
 		SetRetValue("{\"rst\":0}",result);
 	else	
 		SetRetValue("{\"rst\":1}",result);
@@ -218,7 +228,8 @@ bool CNPPlugin::Play(char *js_playInfo,NPVariant *result)
 
 bool CNPPlugin::ChangeLayout(char *js_layout,NPVariant *result)
 {
-	if(CPlCtrl::CreateInstance(m_hWnd)->SetLayout(js_layout))
+	//if(CPlCtrl::CreateInstance(m_hWnd)->SetLayout(js_layout))
+	if (((CPlCtrl *)m_pl_ctrl)->SetLayout(js_layout))
 		SetRetValue("{\"rst\":0}",result);
 
 	return true;
@@ -226,7 +237,8 @@ bool CNPPlugin::ChangeLayout(char *js_layout,NPVariant *result)
 
 bool CNPPlugin::ChangePath(char *js_path,NPVariant *result)
 {
-	if(CPlCtrl::CreateInstance(m_hWnd)->SetPath(js_path))
+	//if(CPlCtrl::CreateInstance(m_hWnd)->SetPath(js_path))
+	if (((CPlCtrl *)m_pl_ctrl)->SetPath(js_path))
 		SetRetValue("{\"rst\":0}",result);
 
 	return true;
@@ -234,13 +246,15 @@ bool CNPPlugin::ChangePath(char *js_path,NPVariant *result)
 
 bool CNPPlugin::SetLayout()
 {
-	CPlCtrl::CreateInstance(m_hWnd)->SetLayout();
+	//CPlCtrl::CreateInstance(m_hWnd)->SetLayout();
+	((CPlCtrl *)m_pl_ctrl)->SetLayout();
 	return true;
 }
 
 bool CNPPlugin::StopAllPlay(NPVariant *result)
 {
-	if(CPlCtrl::CreateInstance(m_hWnd)->StopAll())
+	//if(CPlCtrl::CreateInstance(m_hWnd)->StopAll())
+	if (((CPlCtrl *)m_pl_ctrl)->StopAll())
 		SetRetValue("{\"rst\":0}",result);
 	else
 		SetRetValue("{\"rst\":101}",result);
@@ -250,7 +264,8 @@ bool CNPPlugin::StopAllPlay(NPVariant *result)
 
 bool CNPPlugin::VodPlayJump(char *js_time,NPVariant *result)
 {
-	if(CPlCtrl::CreateInstance(m_hWnd)->VodStreamJump(js_time))
+	//if(CPlCtrl::CreateInstance(m_hWnd)->VodStreamJump(js_time))
+	if (((CPlCtrl *)m_pl_ctrl)->VodStreamJump(js_time))
 		SetRetValue("{\"rst\":0}",result);
 	else
 		SetRetValue("{\"rst\":4}",result);
@@ -261,7 +276,8 @@ bool CNPPlugin::VodPlayJump(char *js_time,NPVariant *result)
 bool CNPPlugin::GetWndParm(int nType,NPVariant *result)
 {
 	char info[1024] = {0};
-	if(CPlCtrl::CreateInstance(m_hWnd)->GetWndParm(info,nType))
+	//if(CPlCtrl::CreateInstance(m_hWnd)->GetWndParm(info,nType))
+	if (((CPlCtrl *)m_pl_ctrl)->GetWndParm(info,nType))
 		SetRetValue(info,result);
 
 	return true;
@@ -269,7 +285,8 @@ bool CNPPlugin::GetWndParm(int nType,NPVariant *result)
 
 bool CNPPlugin::SleepPlayer(bool bSleep,NPVariant *result)
 {
-	CPlCtrl::CreateInstance(m_hWnd)->SleepPlayer(bSleep);
+	//CPlCtrl::CreateInstance(m_hWnd)->SleepPlayer(bSleep);
+	((CPlCtrl *)m_pl_ctrl)->SleepPlayer(bSleep);
 	SetRetValue("{\"rst\":0}",result);
 	return true;
 }

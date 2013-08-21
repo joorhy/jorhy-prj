@@ -113,7 +113,7 @@ void CStreamPlayer::OnPlay(wxMouseEvent& evnet)
 {
 	char desUrl[256] = {0};
 	sprintf(desUrl, "jo_player://%d", (j_wnd_t)((CStreamPlayer *)GetParent())->m_displayWindow.GetHandle());
-	((CStreamPlayer *)GetParent())->m_streamId = ((CStreamPlayer *)GetParent())->m_playManager.OpenStream("hik://192.168.1.11:8000?resid=49&username=admin&passwd=12345&stream_type=0", desUrl);
+	((CStreamPlayer *)GetParent())->m_streamId = ((CStreamPlayer *)GetParent())->m_playManager.OpenStream("hik://192.168.1.11:8000?resid=121&username=admin&passwd=12345&stream_type=0", desUrl);
 }
 
 void CStreamPlayer::OnStop(wxMouseEvent &evnet)

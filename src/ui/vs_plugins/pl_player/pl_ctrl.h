@@ -10,13 +10,13 @@
 class CPlWnd;
 class PL_API CPlCtrl
 {
-public:
-	static CPlCtrl *CreateInstance(HWND pWnd);
-	static void ReleaseInstance(HWND pWnd); 
+//public:
+//	static CPlCtrl *CreateInstance(HWND pWnd);
+//	static void ReleaseInstance(HWND pWnd); 
 
-private:
-	static std::map<HWND, CPlCtrl*>	m_ctrlMap;
-	static PlLock	m_lock;
+//private:
+//	static std::map<HWND, CPlCtrl*>	m_ctrlMap;
+//	static PlLock	m_lock;
 
 public:
 	CPlCtrl(void);
@@ -41,7 +41,7 @@ public:
 
 private:
 	HWND m_hParent;
-	static int m_nIndex;
+	//static int m_nIndex;
 	//work model
 	PL_LayoutInfo m_layoutInfo;
 	typedef std::map<UINT, CPlWnd *> PlayWndMap;

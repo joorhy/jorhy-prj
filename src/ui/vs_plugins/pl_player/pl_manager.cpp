@@ -3,7 +3,7 @@
 #include "pl_factory.h"
 #include "pl_reconn.h"
 #include "pl_json_parser.h"
-#include "runner_log.h"
+#include "x_pl_log.h"
 
 /*******************ÀàÊµÏÖ*****************************/
 PlManager::PlManager()
@@ -12,7 +12,7 @@ PlManager::PlManager()
 	m_nVodEndTime	= 0;
 	m_pFuncCallBk		= NULL;
 	m_nPlayNum		= 0;
-	m_playerMap.clear();
+	//m_playerMap.clear();
 }
 
 PlManager::~PlManager(void)
@@ -245,6 +245,12 @@ BOOL PlManager::IsPlaying(HWND hWnd)
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end() && it->second.bPlay)
 		bRet = it->second.pPlayer->IsPlaying();
+	else
+	{
+		j_pl_info("PlManager::IsPlaying %d\n", it == m_playerMap.end());
+		if (it != m_playerMap.end())
+			j_pl_info("PlManager::IsPlaying 2 %d\n", it->second.bPlay);
+	}
 
 	m_locker.Unlock();
 	return bRet;

@@ -33,7 +33,7 @@ static char *get_int(char *src, char *xxx,int *dst)
 
 CPlayManager::CPlayManager()
 {
-	m_nDevId = 3;
+	m_nDevId = 19;
 	m_bStart = false;
 	for (int i=0; i<100; i++)
 	{

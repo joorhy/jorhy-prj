@@ -8,40 +8,40 @@
 #include <cmath>
 using namespace std;
 
-std::map<HWND, CPlCtrl*>	CPlCtrl::m_ctrlMap;
-PlLock	CPlCtrl::m_lock;
-int CPlCtrl::m_nIndex		= 0;
+//std::map<HWND, CPlCtrl*>	CPlCtrl::m_ctrlMap;
+//PlLock	CPlCtrl::m_lock;
+//int CPlCtrl::m_nIndex		= 0;
 
-CPlCtrl *CPlCtrl::CreateInstance(HWND pWnd)
-{
-	m_lock.Lock();
-	CPlCtrl *pCtrl = NULL;
-	std::map<HWND, CPlCtrl*>::iterator it = m_ctrlMap.find(pWnd);
-	if (it == m_ctrlMap.end())
-	{
-		pCtrl = new CPlCtrl();
-		m_ctrlMap[pWnd] = pCtrl;
-	}
-	else
-		pCtrl = it->second;
-	m_lock.Unlock();
-
-	return pCtrl;
-}
-
-void CPlCtrl::ReleaseInstance(HWND pWnd)
-{
-	m_lock.Lock();
-	CPlCtrl *pCtrl = NULL;
-	std::map<HWND, CPlCtrl*>::iterator it = m_ctrlMap.find(pWnd);
-	if (it != m_ctrlMap.end())
-	{
-		delete  it->second;
-		m_ctrlMap.erase(it);
-	}
-	m_lock.Unlock();
-	PlManager::Destroy();
-}
+//CPlCtrl *CPlCtrl::CreateInstance(HWND pWnd)
+//{
+//	m_lock.Lock();
+//	CPlCtrl *pCtrl = NULL;
+//	std::map<HWND, CPlCtrl*>::iterator it = m_ctrlMap.find(pWnd);
+//	if (it == m_ctrlMap.end())
+//	{
+//		pCtrl = new CPlCtrl();
+//		m_ctrlMap[pWnd] = pCtrl;
+//	}
+//	else
+//		pCtrl = it->second;
+//	m_lock.Unlock();
+//
+//	return pCtrl;
+//}
+//
+//void CPlCtrl::ReleaseInstance(HWND pWnd)
+//{
+//	m_lock.Lock();
+//	CPlCtrl *pCtrl = NULL;
+//	std::map<HWND, CPlCtrl*>::iterator it = m_ctrlMap.find(pWnd);
+//	if (it != m_ctrlMap.end())
+//	{
+//		delete  it->second;
+//		m_ctrlMap.erase(it);
+//	}
+//	m_lock.Unlock();
+//	PlManager::Destroy();
+//}
 
 CPlCtrl::CPlCtrl(void)
 {

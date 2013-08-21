@@ -181,14 +181,30 @@ void CPlRealWnd::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		switch(FindArea(point))
 		{
-		case PTZ_UP:		m_nowCusID = IDC_UP;		break;
-		case PTZ_DOWN:		m_nowCusID = IDC_DOWN;		break;
-		case PTZ_LEFT:		m_nowCusID = IDC_LEFT;		break;
-		case PTZ_RIGHT:		m_nowCusID = IDC_RIGHT;		break;
-		case PTZ_LEFT_UP:	m_nowCusID = IDC_LEFTUP;	break;
-		case PTZ_RIGHT_UP:	m_nowCusID = IDC_RIGHTUP;	break;
-		case PTZ_LEFT_DOWN:	m_nowCusID = IDC_LEFTDOWN;	break;
-		case PTZ_RIGHT_DOWN:m_nowCusID = IDC_RIGHTDOWN; break;
+		case PTZ_UP:		
+			m_nowCusID = IDC_UP;		
+			break;
+		case PTZ_DOWN:		
+			m_nowCusID = IDC_DOWN;		
+			break;
+		case PTZ_LEFT:		
+			m_nowCusID = IDC_LEFT;		
+			break;
+		case PTZ_RIGHT:		
+			m_nowCusID = IDC_RIGHT;		
+			break;
+		case PTZ_LEFT_UP:	
+			m_nowCusID = IDC_LEFTUP;	
+			break;
+		case PTZ_RIGHT_UP:	
+			m_nowCusID = IDC_RIGHTUP;	
+			break;
+		case PTZ_LEFT_DOWN:	
+			m_nowCusID = IDC_LEFTDOWN;	
+			break;
+		case PTZ_RIGHT_DOWN:
+			m_nowCusID = IDC_RIGHTDOWN; 
+			break;
 		}
 	}
 	/*if(m_bTrack)
