@@ -137,10 +137,10 @@ j_result_t CHikStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 					//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
 					(*it)->PushBuffer(m_pRecvBuff, streamHeader);
 				}
-				static FILE *fp2 = NULL;
+				/*static FILE *fp2 = NULL;
 				if (fp2 == NULL)
 					fp2 = fopen("test3.h264", "wb+");
-				fwrite(m_pRecvBuff, 1, streamHeader.dataLen, fp2);
+				fwrite(m_pRecvBuff, 1, streamHeader.dataLen, fp2);*/
 
 				TUnlock(m_vecLocker);
 			}
