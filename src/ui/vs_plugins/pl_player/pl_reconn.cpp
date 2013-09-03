@@ -5,9 +5,10 @@
 #include "pl_reconn.h"
 #include "pl_type.h"
 #include "pl_manager.h"
+#include <process.h>
+#include <direct.h>
 
 #define TIMER 1234
-#define TIMER2 1235
 // CWaitStatus dialog
 
 IMPLEMENT_DYNAMIC(CWaitStatus, CDialog)
@@ -15,35 +16,38 @@ IMPLEMENT_DYNAMIC(CWaitStatus, CDialog)
 CWaitStatus::CWaitStatus(CWnd* pParent /*=NULL*/)
 	: CDialog(CWaitStatus::IDD, pParent)
 {
-	m_csText.Format("重连中");
-	for(int i=0;i<MAX_POINTNUM;i++)
-	{
-		m_scPoint += "..";
-	}
-	m_nPointNum = 0;
-
 	Create(IDD_WAITSTAUS,pParent);
-	LOGFONT logfnt; 
-	logfnt.lfCharSet   =   DEFAULT_CHARSET; 
-	logfnt.lfClipPrecision   =   CLIP_DEFAULT_PRECIS; 
-	logfnt.lfEscapement   =   0; 
-	strcpy(logfnt.lfFaceName, FONT_TYPE);
-	logfnt.lfHeight   =   15; 
-	logfnt.lfItalic   =   false; 
-	logfnt.lfOrientation   =   0; 
-	logfnt.lfPitchAndFamily   =   FF_SWISS; 
-	logfnt.lfQuality   =   DEFAULT_QUALITY; 
-	logfnt.lfStrikeOut   =   false; 
-	logfnt.lfUnderline   =   false; 
-	logfnt.lfWeight   =   400; 
-	logfnt.lfWidth   =   9; 
-	logfnt.lfOutPrecision   =   OUT_DEFAULT_PRECIS; 
-	m_font.CreateFontIndirect(&logfnt);
+
+	GdiplusStartupInput gdiplusStartupInput; 
+	GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL); 
+
+	char curPath[256] = {0};
+	getcwd(curPath, 255);
+	m_image = ::new Image(L"..\\plugins\\reconnect.gif");
+	UINT count = 0;
+	count = m_image->GetFrameDimensionsCount();
+	GUID *pDimensionIDs=(GUID*)new GUID[count];
+	m_image->GetFrameDimensionsList(pDimensionIDs, count);
+	WCHAR strGuid[39];
+	StringFromGUID2(pDimensionIDs[0], strGuid, 39);
+	m_frameCount=m_image->GetFrameCount(&pDimensionIDs[0]);
+	delete []pDimensionIDs; 
+
+	int size =m_image->GetPropertyItemSize(PropertyTagFrameDelay);
+	PropertyItem* pItem = NULL;
+	pItem = (PropertyItem*)malloc(size);
+	m_image->GetPropertyItem(PropertyTagFrameDelay,size,pItem);
+
+	m_Guid = FrameDimensionTime;
+	m_hDC = GetDC()->GetSafeHdc();
+	m_fcount = 0;
+	m_bRun = FALSE;
 }
 
 CWaitStatus::~CWaitStatus()
 {
 	//CWaitStatus::EndWait(this);
+	GdiplusShutdown(m_gdiplusToken);
 }
 
 void CWaitStatus::DoDataExchange(CDataExchange* pDX)
@@ -53,8 +57,8 @@ void CWaitStatus::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CWaitStatus, CDialog)
+	ON_WM_PAINT()
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDOK, &CWaitStatus::OnBnClickedOk)
 	ON_MESSAGE(WM_OWN_START_WAIT,CWaitStatus::StartWait)
 	ON_WM_NCLBUTTONDOWN()
 END_MESSAGE_MAP()
@@ -65,10 +69,14 @@ LRESULT CWaitStatus::StartWait(WPARAM wParam,LPARAM lParam)
 {
 	m_pPlWnd = (HWND)wParam;
 	SetTimer(TIMER,WAITSTATUS_TIME,NULL);
-	SetTimer(TIMER2,RESIZE_TIME,NULL);
 	CenterWindow(CWnd::FromHandle(m_pPlWnd));
-	SetWindowPos(CWnd::FromHandle(HWND_TOP),0,0,0,0,SWP_NOSIZE|SWP_NOMOVE);
+	CRect rect;
+	CWnd::FromHandle(m_pPlWnd)->GetWindowRect(rect);
+
+	SetWindowPos(CWnd::FromHandle(HWND_TOP),0,0,rect.Width(),rect.Height(),/*SWP_NOSIZE|*/SWP_NOMOVE);
 	ShowWindow(SW_SHOW);
+	m_bRun = TRUE;
+	_beginthread(CWaitStatus::WorkThread, 0, this);
 
 	return TRUE;
 }
@@ -84,62 +92,23 @@ void CWaitStatus::OnTimer(UINT_PTR nIDEvent)
 	{
 		if(!(PlManager::Instance()->IsPlaying(m_pPlWnd)))
 		{
-			DrawStatus();
 			if (PlManager::Instance()->RePlay(m_pPlWnd))
+			{
+				m_bRun = FALSE;
+				KillTimer(TIMER);
 				OnOK();//重连
+			}
 		}
 		else
 		{
+			m_bRun = FALSE;
 			KillTimer(TIMER);
-			KillTimer(TIMER2);
 			OnOK();
 		}
 	}
-	else if(nIDEvent == TIMER2)
-	{
-		CenterWindow(CWnd::FromHandle(m_pPlWnd));
-	}
 	
-
 	CDialog::OnTimer(nIDEvent);
 }
-
-void CWaitStatus::DrawStatus()
-{
-	CClientDC dc(this);
-	dc.SetBkMode(TRANSPARENT);
-	CFont *oldFont = dc.SelectObject(&m_font);
-	CRect rect;
-	GetClientRect(&rect);
-	if(m_nPointNum <= MAX_POINTNUM)
-	{
-		dc.DrawText(m_csText+m_scPoint.Left(m_nPointNum*2),
-			&rect,DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-		m_nPointNum++;
-	}
-	else
-	{
-		COLORREF color;
-		color = dc.SetTextColor(dc.GetBkColor());
-		dc.DrawText(m_csText+m_scPoint.Left(m_nPointNum*2),
-			&rect,DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-
-		dc.SetTextColor(color);
-		m_nPointNum = 0;
-		dc.DrawText(m_csText+m_scPoint.Left(m_nPointNum*2),
-			&rect,DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-	}
-	dc.SelectObject(oldFont);
-	oldFont->DeleteObject();
-}
-void CWaitStatus::OnBnClickedOk()
-{
-	PlManager::Instance()->Stop(m_pPlWnd);
-	KillTimer(TIMER);
-	KillTimer(TIMER2);
-	OnOK();
-}
-
 
 void CWaitStatus::OnNcLButtonDown(UINT nHitTest, CPoint point)
 {
@@ -147,4 +116,52 @@ void CWaitStatus::OnNcLButtonDown(UINT nHitTest, CPoint point)
 	if(nHitTest == HTCAPTION)
 		return;
 	CDialog::OnNcLButtonDown(nHitTest, point);
+}
+
+void CWaitStatus::ShowGifPicture()
+{
+	while (m_bRun)
+	{
+			CenterWindow(CWnd::FromHandle(m_pPlWnd));
+			//m_hDC是外部传入的画图DC
+			Graphics gh(m_hDC); 
+			CRect rect;
+			GetWindowRect(rect);
+			int w = m_image->GetWidth();
+			int h = m_image->GetHeight();
+			if (w >= (rect.Width() / 6))
+			{
+				w = rect.Height() / 4;
+				h = w;
+				//w /= 4;
+				//h /= 4;
+			}
+			else if (w >= (rect.Width() / 3))
+			{
+				w = rect.Width() / 4;
+				h = w;
+				//w /= 2;
+				//h /= 2;
+			}
+			int x = rect.Width() - w;
+			int y = rect.Height() - h;
+			gh.DrawImage(m_image, x / 2, y / 2, w, h);
+			//重新设置当前的活动数据帧
+			m_image->SelectActiveFrame(&m_Guid, m_fcount++);
+			//frameCount是上面GetFrameCount返回值
+			if(m_fcount == m_frameCount)	
+			{
+				//如果到了最后一帧数据又重新开始
+				m_fcount= 0;			
+			}
+			Sleep(100);
+	}
+}
+
+void CWaitStatus::OnPaint()
+{
+	CRect rect;
+	CPaintDC dc(this);
+	GetClientRect(rect);
+	dc.FillSolidRect(rect,RGB(0,0,0)); //设置为黑色背景
 }

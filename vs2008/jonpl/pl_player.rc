@@ -37,7 +37,7 @@ END
 2 TEXTINCLUDE 
 BEGIN
     "#ifndef APSTUDIO_INVOKED\r\n"
-    "#include ""..\\..\\src\\ui\vs_plugins\\pl_core\\targetver.h""\r\n"
+    "#include ""..\\..\\src\\ui\\vs_plugins\\pl_core\\targetver.h""\r\n"
     "#endif\r\n"
     "#include ""afxres.h""\0"
 END
@@ -144,13 +144,11 @@ IDB_BACKGROUND          BITMAP                  "..\\..\\src\\ui\\vs_plugins\\pl
 // Dialog
 //
 
-IDD_WAITSTAUS DIALOGEX 0, 0, 141, 30
-STYLE DS_ABSALIGN | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_CLIPSIBLINGS | WS_CAPTION
+IDD_WAITSTAUS DIALOGEX 0, 0, 48, 43
+STYLE DS_ABSALIGN | DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_CLIPSIBLINGS
 EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
-CAPTION "断线"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "取消重连",IDOK,84,7,50,16
 END
 
 
@@ -165,9 +163,9 @@ BEGIN
     IDD_WAITSTAUS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 134
+        RIGHTMARGIN, 41
         TOPMARGIN, 7
-        BOTTOMMARGIN, 23
+        BOTTOMMARGIN, 36
     END
 END
 #endif    // APSTUDIO_INVOKED

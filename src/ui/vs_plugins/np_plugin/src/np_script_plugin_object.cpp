@@ -61,7 +61,7 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 	if(name == NPN_GetStringIdentifier("Plugin_Interface"))
 	{
 		int	cmd	= (int)NPVARIANT_TO_DOUBLE(args[0]);
-		if (m_bCbReturn > 0 || (GetTickCount() - m_lastInvokeTime < 2000 && (cmd == 21 || cmd == 11)) )
+		if (m_bCbReturn > 0 || (GetTickCount() - m_lastInvokeTime < 2000 && (cmd == 21/* || cmd == 11*/)) )
 		{
 			char *tmp = (char*)NPN_MemAlloc(strlen("{\"rst\":5}")+1);
 			strncpy(tmp, "{\"rst\":5}", strlen("{\"rst\":5}"));
@@ -70,7 +70,7 @@ bool ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args, ui
 			return true;
 		}
 		m_bCbReturn = 1;
-		if (cmd == 21 || cmd == 11)
+		if (cmd == 21/* || cmd == 11*/)
 			m_lastInvokeTime = GetTickCount();
 
 		char *js_parm	= NULL;

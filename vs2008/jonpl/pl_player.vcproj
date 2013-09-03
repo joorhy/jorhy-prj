@@ -246,6 +246,10 @@
 				RelativePath="..\..\src\ui\vs_plugins\pl_player\pl_wnd.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\ui\vs_plugins\pl_core\resource.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="res"
@@ -543,7 +547,43 @@
 			RelativePath=".\pl_player.rc"
 			>
 		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_down.cur"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_left.cur"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_left_down.cur"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_left_up.cur"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_right.cur"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_right_down.cur"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_right_up.cur"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ui\vs_plugins\pl_ui\res\arrow\win_ptz_up.cur"
+			>
+		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="pl_player.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

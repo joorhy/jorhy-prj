@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by Plugin_2.1.rc
+// Used by f:\WorkSpace\jorhy-prj\vs2008\jonpl\pl_player.rc
 //
 #define IDC_UP                          1000
 #define IDC_DOWN                        1001
@@ -62,22 +62,22 @@
 #define IDP_CAPTURE_N                   1057
 #define IDP_CAPTURE_V                   1058
 #define IDP_CAPTURE_X                   1059
-#define IDBN_STOP							1060
-#define IDB_BITMAP1						1060
-#define IDB_BACKGROUND              1060
+#define IDBN_STOP                       1060
+#define IDB_BITMAP1                     1060
+#define IDB_BACKGROUND                  1060
 #define IDBN_SOUND                      1061
-#define IDBN_CAPTURE                   1062
-#define IDBN_SLIDER						1063
-#define IDBN_SPEAK							1064
+#define IDBN_CAPTURE                    1062
+#define IDBN_SLIDER                     1063
+#define IDBN_SPEAK                      1064
 #define IDBN_RECORD                     1065
-#define IDBN_PAUSE						1066
-#define IDBN_FRAMEPLAY               1067
-#define IDBN_SPEEDUP					1068
-#define IDBN_SLOWDOWN              1069
-#define IDBN_DOWNLOAD              1070
-#define IDT_TOOL								1071
-#define IDD_WAITSTAUS                  1072
-#define IDF_SCREEN							1075
+#define IDBN_PAUSE                      1066
+#define IDBN_FRAMEPLAY                  1067
+#define IDBN_SPEEDUP                    1068
+#define IDBN_SLOWDOWN                   1069
+#define IDBN_DOWNLOAD                   1070
+#define IDT_TOOL                        1071
+#define IDD_WAITSTAUS                   1072
+#define IDF_SCREEN                      1075
 
 // Next default values for new objects
 // 

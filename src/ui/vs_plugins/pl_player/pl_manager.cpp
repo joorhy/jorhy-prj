@@ -247,9 +247,9 @@ BOOL PlManager::IsPlaying(HWND hWnd)
 		bRet = it->second.pPlayer->IsPlaying();
 	else
 	{
-		j_pl_info("PlManager::IsPlaying %d\n", it == m_playerMap.end());
-		if (it != m_playerMap.end())
-			j_pl_info("PlManager::IsPlaying 2 %d\n", it->second.bPlay);
+		//j_pl_info("PlManager::IsPlaying %d\n", it == m_playerMap.end());
+		//if (it != m_playerMap.end())
+		//	j_pl_info("PlManager::IsPlaying 2 %d\n", it->second.bPlay);
 	}
 
 	m_locker.Unlock();
