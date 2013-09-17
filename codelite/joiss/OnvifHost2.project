@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="OnvifHost2" InternalType="Library">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="../../src/host/onvif2/OnvifChannel.cpp"/>
+    <File Name="../../src/host/onvif2/OnvifStream.cpp"/>
+    <File Name="../../src/host/onvif2/OnvifAdapter.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="include">
+    <File Name="../../src/host/onvif2/OnvifAdapter.h"/>
+    <File Name="../../src/host/onvif2/OnvifChannel.h"/>
+    <File Name="../../src/host/onvif2/OnvifStream.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Onvif">
+    <VirtualDirectory Name="include">
+      <File Name="../../src/host/onvif2/Onvif/Includes.h"/>
+      <File Name="../../src/host/onvif2/Onvif/OnvifCore.h"/>
+      <File Name="../../src/host/onvif2/Onvif/OnvifPTZ.h"/>
+      <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapStub.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="src">
+      <File Name="../../src/host/onvif2/Onvif/OnvifCore.cpp"/>
+      <File Name="../../src/host/onvif2/Onvif/OnvifPTZ.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="onvif">
+      <VirtualDirectory Name="include">
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/duration.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/smdevp.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapAnalyticsEngineBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapAnalyticsEngineBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapCreatePullPointBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapCreatePullPointBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapDeviceBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapDeviceBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapDiscoveryLookupBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapDiscoveryLookupBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapEventBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapEventBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapH.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapImagingBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapImagingBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapMediaBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapMediaBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapNotificationConsumerBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapNotificationConsumerBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapNotificationProducerBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapNotificationProducerBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPausableSubscriptionManagerBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPausableSubscriptionManagerBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPTZBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPTZBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPullPointBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPullPointBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPullPointSubscriptionBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapPullPointSubscriptionBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapRemoteDiscoveryBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapRemoteDiscoveryBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapRuleEngineBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapRuleEngineBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapSubscriptionManagerBindingObject.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapSubscriptionManagerBindingProxy.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/stdsoap2.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/threads.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/wsaapi.h"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/wsseapi.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="src">
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/DeviceBinding.nsmap"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/dom.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/duration.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/smdevp.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapC.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/soapClient.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/stdsoap2.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/threads.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/wsaapi.cpp"/>
+        <File Name="../../src/host/onvif2/Onvif/OnvifAPIAll/wsseapi.cpp"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Rtsp">
+    <VirtualDirectory Name="rtsp">
+      <VirtualDirectory Name="include">
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AC3AudioFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AC3AudioRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AC3AudioRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AC3AudioStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/ADTSAudioFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/ADTSAudioFileSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AMRAudioFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AMRAudioFileSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AMRAudioFileSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AMRAudioRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AMRAudioRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AMRAudioSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AudioInputDevice.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AudioRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/AVIFileSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/Base64.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/BasicHashTable.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/BasicUDPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/BasicUDPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/BasicUsageEnvironment.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/BasicUsageEnvironment0.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/BasicUsageEnvironment_version.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/BitVector.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/Boolean.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/ByteStreamFileSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/ByteStreamMemoryBufferSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/ByteStreamMultiFileSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DarwinInjector.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DelayQueue.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DeviceSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DigestAuthentication.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DVVideoFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DVVideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DVVideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/DVVideoStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/FileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/FileSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/FramedFileSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/FramedFilter.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/FramedSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/GroupEId.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/Groupsock.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/GroupsockHelper.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/groupsock_version.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/GSMAudioRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H261VideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H263plusVideoFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H263plusVideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H263plusVideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H263plusVideoStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H264VideoFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H264VideoFileSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H264VideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H264VideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H264VideoStreamDiscreteFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/H264VideoStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/HandlerSet.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/HashTable.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/InputFile.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/IOHandlers.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/JPEGVideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/JPEGVideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/JPEGVideoSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/liveMedia.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/liveMedia_version.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/Locale.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MatroskaFile.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MatroskaFileServerDemux.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/Media.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MediaSession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MediaSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MediaSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3ADU.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3ADUinterleaving.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3ADURTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3ADURTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3ADUTranscoder.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3AudioFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3FileSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MP3Transcoder.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2AudioRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2AudioRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2AudioStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2Demux.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2DemuxedElementaryStream.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2DemuxedServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2FileServerDemux.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2VideoFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2VideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2VideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2VideoStreamDiscreteFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG1or2VideoStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2IndexFromTransportStream.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportStreamFromESSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportStreamFromPESSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportStreamIndexFile.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportStreamMultiplexor.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportStreamTrickModeFilter.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG2TransportUDPServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4ESVideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4ESVideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4GenericRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4GenericRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4LATMAudioRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4LATMAudioRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4VideoFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4VideoStreamDiscreteFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEG4VideoStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MPEGVideoStreamFramer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MultiFramedRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/MultiFramedRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/NetAddress.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/NetCommon.h"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/NetInterface.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/OnDemandServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/OutputFile.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/PassiveServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/ProxyServerMediaSession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/QCELPAudioRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/QuickTimeFileSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/QuickTimeGenericRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTCP.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTPInterface.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTSPClient.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTSPCommon.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTSPServer.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/RTSPServerSupportingHTTPStreaming.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/ServerMediaSession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/SimpleRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/SimpleRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/SIPClient.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/strDup.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/StreamReplicator.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/T140TextRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/TCPStreamSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/TextRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/TunnelEncaps.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/uLawAudioFilter.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/UsageEnvironment.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/UsageEnvironment_version.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/VideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/VorbisAudioRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/VorbisAudioRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/VP8VideoRTPSink.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/VP8VideoRTPSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/WAVAudioFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/include/WAVAudioFileSource.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AACAudioMatroskaFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AC3AudioMatroskaFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/EBMLNumber.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H263plusVideoStreamParser.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoMatroskaFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MatroskaDemuxedTrack.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MatroskaFileParser.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3ADUdescriptor.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3AudioMatroskaFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3Internals.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3InternalsHuffman.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3StreamState.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEGVideoStreamParser.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/our_md5.h"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/rtcp_from_spec.h"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/StreamParser.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/T140TextMatroskaFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VorbisAudioMatroskaFileServerMediaSubsession.hh"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VP8VideoMatroskaFileServerMediaSubsession.hh"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="src">
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AC3AudioFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AC3AudioMatroskaFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AC3AudioRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AC3AudioRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AC3AudioStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/ADTSAudioFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/ADTSAudioFileSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AMRAudioFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AMRAudioFileSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AMRAudioFileSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AMRAudioRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AMRAudioRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AMRAudioSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AudioInputDevice.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AudioRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AVIFileSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/Base64.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BasicHashTable.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BasicTaskScheduler.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BasicTaskScheduler0.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BasicUDPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BasicUDPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BasicUsageEnvironment.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BasicUsageEnvironment0.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/BitVector.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/ByteStreamFileSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/ByteStreamMemoryBufferSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/ByteStreamMultiFileSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DarwinInjector.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DelayQueue.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DeviceSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DigestAuthentication.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DVVideoFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DVVideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DVVideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/DVVideoStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/EBMLNumber.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/FileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/FileSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/FramedFileSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/FramedFilter.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/FramedSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/GroupEId.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/Groupsock.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/GroupsockHelper.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/GSMAudioRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H261VideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H263plusVideoFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H263plusVideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H263plusVideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H263plusVideoStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H263plusVideoStreamParser.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoFileSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoMatroskaFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoStreamDiscreteFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/H264VideoStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/HashTable.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/inet.c"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/InputFile.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/IOHandlers.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/JPEGVideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/JPEGVideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/JPEGVideoSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/Locale.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MatroskaDemuxedTrack.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MatroskaFile.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MatroskaFileParser.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MatroskaFileServerDemux.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/Media.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MediaSession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MediaSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MediaSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3ADU.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3ADUdescriptor.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3ADUinterleaving.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3ADURTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3ADURTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3ADUTranscoder.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3AudioFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3AudioMatroskaFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3FileSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3Internals.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3InternalsHuffman.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3InternalsHuffmanTable.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3StreamState.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MP3Transcoder.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2AudioRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2AudioRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2AudioStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2Demux.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2DemuxedElementaryStream.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2DemuxedServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2FileServerDemux.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2VideoFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2VideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2VideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2VideoStreamDiscreteFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG1or2VideoStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2IndexFromTransportStream.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportStreamFromESSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportStreamFromPESSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportStreamIndexFile.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportStreamMultiplexor.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportStreamTrickModeFilter.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG2TransportUDPServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4ESVideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4ESVideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4GenericRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4GenericRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4LATMAudioRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4LATMAudioRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4VideoFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4VideoStreamDiscreteFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEG4VideoStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEGVideoStreamFramer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MPEGVideoStreamParser.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MultiFramedRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/MultiFramedRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/NetAddress.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/NetInterface.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/OnDemandServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/our_md5.c"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/our_md5hl.c"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/OutputFile.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/PassiveServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/ProxyServerMediaSession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/QCELPAudioRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/QuickTimeFileSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/QuickTimeGenericRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTCP.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/rtcp_from_spec.c"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTPInterface.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTSPClient.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTSPCommon.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTSPServer.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/RTSPServerSupportingHTTPStreaming.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/ServerMediaSession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/SimpleRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/SimpleRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/SIPClient.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/strDup.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/StreamParser.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/StreamReplicator.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/T140TextMatroskaFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/T140TextRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/TCPStreamSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/TextRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/uLawAudioFilter.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VorbisAudioMatroskaFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VorbisAudioRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VorbisAudioRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VP8VideoMatroskaFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VP8VideoRTPSink.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/VP8VideoRTPSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/WAVAudioFileServerMediaSubsession.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/WAVAudioFileSource.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/UsageEnvironment.cpp"/>
+        <File Name="../../src/host/onvif2/Rtsp/live555/src/AACAudioMatroskaFileServerMediaSubsession.cpp"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="include">
+      <File Name="../../src/host/onvif2/Rtsp/H264Frame.h"/>
+      <File Name="../../src/host/onvif2/Rtsp/Live555ErrorToFile.h"/>
+      <File Name="../../src/host/onvif2/Rtsp/MyRtspClient.h"/>
+      <File Name="../../src/host/onvif2/Rtsp/playCommon.h"/>
+      <File Name="../../src/host/onvif2/Rtsp/Res.h"/>
+      <File Name="../../src/host/onvif2/Rtsp/RtspProxy.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="src">
+      <File Name="../../src/host/onvif2/Rtsp/H264Frame.cpp"/>
+      <File Name="../../src/host/onvif2/Rtsp/Live555ErrorToFile.cpp"/>
+      <File Name="../../src/host/onvif2/Rtsp/MyRtspClient.cpp"/>
+      <File Name="../../src/host/onvif2/Rtsp/playCommon.cpp"/>
+      <File Name="../../src/host/onvif2/Rtsp/Res.cpp"/>
+      <File Name="../../src/host/onvif2/Rtsp/RtspProxy.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g;-D WITH_OPENSSL" C_Options="-g;" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="../../src/core"/>
+        <IncludePath Value="../../src/misc"/>
+        <IncludePath Value="../../src/utils"/>
+        <IncludePath Value="../../src/host/onvif2/Rtsp/live555/include/"/>
+        <IncludePath Value="/usr/local/include"/>
+      </Compiler>
+      <Linker Options="-lssl" Required="yes">
+        <LibraryPath Value="/usr/local/lib"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Debug/plugins" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+</CodeLite_Project>

@@ -467,7 +467,7 @@ void CXVodManager::OnTimer()
 	if (GetDiskSpaceInfo(pDir, free_size, totle_size))
 	{
 		//j_float_t xx = free_size / totle_size;
-		//if (free_size / totle_size <= 0.9)
+		if (free_size / totle_size <= 0.9)
 		{
 			J_AlarmData alarmData = {0};
 			alarmData.nAlarmType = jo_alarm_disk;
