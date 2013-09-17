@@ -13,21 +13,21 @@ struct J_PlayManagerInfo
 	j_char_t *resid;
 	j_char_t *user_name;
 	j_char_t *pass_word;
-	j_char_t *dev_id;
 	j_char_t *player_type;
-	j_uint8_t reserve[3];
+	j_uint32_t dev_id;
 	j_wnd_t play_wnd;
 };
 
 struct J_PlayStreamInfo
 {
 	J_PlayerObj *pPlayObj;
+	j_int32_t nDevid;
 	j_boolean_t bStart;
 };
 
 class JO_API CPlayManager
 {
-	typedef std::map<j_string_t, j_int32_t> AdapterMap;
+	typedef std::map<j_int32_t, j_int32_t> AdapterMap;
 	typedef std::map<j_int32_t, J_PlayStreamInfo> StreamMap;
 public:
 	CPlayManager();
@@ -68,6 +68,7 @@ private:
 
 private:
 	j_boolean_t m_bStart;
+	j_int32_t m_nStreamId;
 	j_int32_t m_nDevId;
 	//CXLoadso m_loadSo;
 	AdapterMap m_adapterMap;

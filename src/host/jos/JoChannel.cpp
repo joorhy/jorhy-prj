@@ -88,9 +88,9 @@ int CJoChannel::StartView()
 	}
 	
 	J_StreamServerInfo info = {0};
-	if (JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetStreamServerInfo(m_resid.c_str(), info) != J_OK)
-		return J_INVALID_DEV;
-	//strcpy(info.devIp, "192.168.1.6");
+	//if (JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetStreamServerInfo(m_resid.c_str(), info) != J_OK)
+	//	return J_INVALID_DEV;
+	strcpy(info.devIp, "192.168.1.12");
 	info.devPort = 8002;
 	
 	m_recvSocket = new J_OS::CTCPSocket();

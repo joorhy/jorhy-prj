@@ -447,10 +447,10 @@ struct J_PlayerObj : virtual public J_Obj
 	///播放视频
 	///@param	 hWnd 播放窗口
 	///@return	 参见x_errtype.j
-	virtual j_result_t PlayMedia(j_wnd_t hWnd) = 0;
+	virtual j_result_t PlayMedia(j_wnd_t hWnd, j_int32_t nDevid) = 0;
 	///停止播放
 	///@return	 参见x_errtype.j
-	virtual j_result_t StopMedia() = 0;
+	virtual j_result_t StopMedia(j_int32_t nDevid) = 0;
 	///处理媒体数据
 	///@return	 参见x_errtype.j
 	virtual j_result_t ProcessMedia() = 0;

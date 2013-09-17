@@ -30,17 +30,17 @@ CRealPlayObj::~CRealPlayObj()
 		delete m_pConvetBuff;
 }
 
-j_result_t CRealPlayObj::PlayMedia(j_wnd_t hWnd)
+j_result_t CRealPlayObj::PlayMedia(j_wnd_t hWnd, j_int32_t nDevid)
 {
-	StartVideo();
+	StartVideo(nDevid);
 	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->Play(hWnd);
 	return J_OK;
 }
 
-j_result_t CRealPlayObj::StopMedia()
+j_result_t CRealPlayObj::StopMedia(j_int32_t nDevid)
 {
 	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->Stop();
-	StopVideo();
+	StopVideo(nDevid);
 	return J_OK;
 }
 
@@ -90,9 +90,9 @@ j_result_t CRealPlayObj::ProcessMedia()
 	return nRet;
 }
 
-j_result_t CRealPlayObj::StartVideo()
+j_result_t CRealPlayObj::StartVideo(j_int32_t nDevid)
 {
-	int nRet = JoAdapterManager->StartVideo(m_resid.c_str(), m_nStreamType, m_nSocket);
+	int nRet = JoAdapterManager->StartVideo(m_resid.c_str(), m_nStreamType, m_nSocket, nDevid);
 	if (nRet < 0)
 	{
 		J_OS::LOGINFO("CRealPlayObj::StartVideo StartVideo error ret = %d", nRet);
@@ -110,12 +110,12 @@ j_result_t CRealPlayObj::StartVideo()
 	return J_OK;
 }
 
-j_result_t CRealPlayObj::StopVideo()
+j_result_t CRealPlayObj::StopVideo(j_int32_t nDevid)
 {
 	if (m_bStart)
 	{
 		m_bStart = false;
-		int nRet = JoAdapterManager->StopVideo(m_resid.c_str(), m_nStreamType, m_nSocket);
+		int nRet = JoAdapterManager->StopVideo(m_resid.c_str(), m_nStreamType, m_nSocket, nDevid);
 		if (nRet < 0)
 		{
 			J_OS::LOGINFO("CRealPlayObj::StopVideo StopVideo error ret = %d", nRet);

@@ -83,7 +83,7 @@ CStreamPlayer::CStreamPlayer(const wxString& title)
 	m_urlDesc.SetSize(wxSize(50, 15));
 	m_ctrlSizer.Add(&m_urlDesc);
 	m_ctrlSizer.AddSpacer(10);
-	m_textUrl.SetValue(wxT("RYSP://192.168.1.12:8002/"));
+	m_textUrl.SetValue(wxT("joh://192.168.1.12:8002?resid=121&username=admin&passwd=12345&stream_type=0"));
 	m_ctrlSizer.Add(&m_textUrl);
 	m_ctrlSizer.AddSpacer(60);
 	m_ctrlSizer.Add(&m_btnPlay);
@@ -112,8 +112,9 @@ CStreamPlayer::~CStreamPlayer()
 void CStreamPlayer::OnPlay(wxMouseEvent& evnet)
 {
 	char desUrl[256] = {0};
-	sprintf(desUrl, "jo_player://%d", (j_wnd_t)((CStreamPlayer *)GetParent())->m_displayWindow.GetHandle());
-	((CStreamPlayer *)GetParent())->m_streamId = ((CStreamPlayer *)GetParent())->m_playManager.OpenStream("hik://192.168.1.11:8000?resid=121&username=admin&passwd=12345&stream_type=0", desUrl);
+	CStreamPlayer *pStreamPlayer = (CStreamPlayer *)GetParent();
+	sprintf(desUrl, "jo_player://%d", (j_wnd_t)pStreamPlayer->m_displayWindow.GetHandle());
+	pStreamPlayer->m_streamId = pStreamPlayer->m_playManager.OpenStream(pStreamPlayer->m_textUrl.GetValue(), desUrl);
 }
 
 void CStreamPlayer::OnStop(wxMouseEvent &evnet)

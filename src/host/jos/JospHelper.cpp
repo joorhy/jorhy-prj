@@ -19,7 +19,15 @@ int CJospHelper::OpenStream(J_OS::CTCPSocket *recvSocket, const char *pResid, in
 	J_RealViewData *pRealViewData = (J_RealViewData *)(temp_buff + sizeof(J_CtrlHead));
 	
 	const char *pNextId = strstr(pResid, ".");
-	memcpy(pRealViewData->res_id, pNextId + 1, strlen(pNextId + 1));
+	if (pNextId != NULL)
+	{
+		memcpy(pRealViewData->res_id, pNextId + 1, strlen(pNextId + 1));
+	}
+	else
+	{
+		memcpy(pRealViewData->res_id, pResid, strlen(pResid));
+	}
+	
 	pRealViewData->stream_type = htonl(nStreamType);
 	recvSocket->Write_n(temp_buff, sizeof(J_CtrlHead) + sizeof(J_RealViewData));
 	

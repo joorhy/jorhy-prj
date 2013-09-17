@@ -33,13 +33,9 @@ static char *get_int(char *src, char *xxx,int *dst)
 
 CPlayManager::CPlayManager()
 {
-	m_nDevId = 19;
 	m_bStart = false;
-	for (int i=0; i<100; i++)
-	{
-		J_PlayStreamInfo info = {0};
-		m_streamMap[i] = info;
-	}
+	m_nStreamId = 0;
+	m_nDevId = 0;
 }
 
 CPlayManager::~CPlayManager()
@@ -78,28 +74,22 @@ j_int32_t CPlayManager::OpenStream(const j_char_t *pUrl, const j_char_t *pUrl2)
 	AdapterMap::iterator itAdapter = m_adapterMap.find(info.dev_id);
 	if (itAdapter == m_adapterMap.end())
 	{
-		GetAdapterFactoryLayer()->MakeAdapterDev(info.host_type, ++m_nDevId, info.host_addr, info.host_port, info.user_name, info.pass_word);
-		m_adapterMap[info.dev_id] = m_nDevId;
+		GetAdapterFactoryLayer()->MakeAdapterDev(info.host_type, info.dev_id, info.host_addr, info.host_port, info.user_name, info.pass_word);
+		m_adapterMap[info.dev_id] = 0;
 	}
 	TUnlock(m_adapterLocker);
 
-	j_int32_t nStreamId = 0;
 	TLock(m_streamLocker);
-	StreamMap::iterator itStream = m_streamMap.begin();
-	for (; itStream!=m_streamMap.end(); ++itStream)
-	{
-		if (!itStream->second.bStart)
-		{
-			nStreamId = itStream->first;
-			itStream->second.pPlayObj = new CRealPlayObj(nStreamId, info.player_type, info.stream_type, info.resid);
-			itStream->second.bStart = true;
-			break;
-		}
-	}
+	J_PlayStreamInfo streamInfo = {0};
+	streamInfo.pPlayObj = new CRealPlayObj(m_nStreamId, info.player_type, info.stream_type, info.resid);
+	streamInfo.pPlayObj->PlayMedia(info.play_wnd, info.dev_id);
+	streamInfo.nDevid = info.dev_id;
+	streamInfo.bStart = true;
+	m_streamMap[m_nStreamId] = streamInfo;
 	TUnlock(m_streamLocker);
-	itStream->second.pPlayObj->PlayMedia(info.play_wnd);
+	
 
-	return nStreamId;
+	return m_nStreamId++;
 }
 
 void CPlayManager::CloseStream(j_int32_t streamHandle)
@@ -110,7 +100,7 @@ void CPlayManager::CloseStream(j_int32_t streamHandle)
 	{
 		if (itStream->second.bStart)
 		{
-			itStream->second.pPlayObj->StopMedia();
+			itStream->second.pPlayObj->StopMedia(itStream->second.nDevid);
 			delete itStream->second.pPlayObj;
 			itStream->second.pPlayObj = NULL;
 			itStream->second.bStart = false;
@@ -138,8 +128,8 @@ void CPlayManager::FreePlayManagerInfo(J_PlayManagerInfo &info)
 		free(info.pass_word);
 	if (info.player_type != NULL)
 		free(info.player_type);
-	if (info.dev_id != NULL)
-		free(info.dev_id);
+	//if (info.dev_id != NULL)
+	//	free(info.dev_id);
 	memset(&info, 0, sizeof(J_PlayManagerInfo));
 }
 
@@ -156,7 +146,7 @@ j_boolean_t CPlayManager::ParserUrl(const j_char_t *pUrl, const j_char_t *pUrl2,
 		goto parser_usr_error;
 	if ((p = get_string(p, (char *)"&passwd=", &info.user_name)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_string(p, (char *)"&stream_type", &info.pass_word)) == NULL)
+	if ((p = get_string(p, (char *)"&stream_type=", &info.pass_word)) == NULL)
 		goto parser_usr_error;
 	if ((p = get_int(p, (char *)"\0", (int *)&info.stream_type)) == NULL)
 		goto parser_usr_error;
@@ -167,13 +157,8 @@ j_boolean_t CPlayManager::ParserUrl(const j_char_t *pUrl, const j_char_t *pUrl2,
 	if ((p = get_int(p, (char *)"\0", (int *)&info.play_wnd)) == NULL)
 		goto parser_usr_error;
 
-	if (info.dev_id == NULL)
-	{
-		info.dev_id = (j_char_t *)malloc(strlen(info.host_type) + strlen(info.host_addr) + 2);
-		memset (info.dev_id, 0, strlen(info.host_type) + strlen(info.host_addr) + 2);
-		sprintf(info.dev_id, "%s_%s", info.host_type, info.host_addr);
-		info.dev_id[strlen(info.host_type) + strlen(info.host_addr) + 2] = '\0';
-	}
+	info.dev_id = m_nDevId++;
+
 	return true;
 
 parser_usr_error:
@@ -198,7 +183,7 @@ void CPlayManager::OnWork()
 			if (it->second.bStart && it->second.pPlayObj->ProcessMedia() != J_OK)
 			{
 				//¶ÏÏßÖØÁ¬´¦Àí
-				it->second.pPlayObj->StopMedia();
+				it->second.pPlayObj->StopMedia( it->second.nDevid);
 			}
 		}
 		TUnlock(m_streamLocker);

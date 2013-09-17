@@ -22,9 +22,9 @@ public:
 	virtual int Startup();
 	virtual int Shutdown();
     ///AsioUser
-	virtual j_result_t OnAccept(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual j_result_t OnAccept(const J_AsioDataBase *pAsioData, int nRet) { return 0; }
 	virtual j_result_t OnRead(const J_AsioDataBase *pAsioData, int nRet);
-	virtual j_result_t OnWrite(const J_AsioDataBase *pAsioData, int nRet) {}
+	virtual j_result_t OnWrite(const J_AsioDataBase *pAsioData, int nRet) { return 0; }
 	virtual j_result_t OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 
 private:
@@ -42,7 +42,7 @@ private:
 	j_string_t m_resid;
 
 	J_OS::TLocker_t m_locker;
-	J_AsioDataBase m_asioData;
+	J_AsioDataBase *m_asioData;
 	j_int32_t m_nState;
 	J_DataHead m_dataHead;
 };

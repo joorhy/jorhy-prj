@@ -125,10 +125,10 @@ void CJoPlayer::OnDecode()
 		nResult = m_rawBuffer->PopBuffer(pInputDataBuff, streamHeader);
 		if (nResult == J_OK && streamHeader.dataLen > 0)
 		{
-			static FILE *fp2 = NULL;
-			if (fp2 == NULL)
-				fp2 = fopen("test2.h264", "wb+");
-			fwrite(pInputDataBuff, 1, streamHeader.dataLen, fp2);
+			//static FILE *fp2 = NULL;
+			//if (fp2 == NULL)
+			//	fp2 = fopen("test2.h264", "wb+");
+			//fwrite(pInputDataBuff, 1, streamHeader.dataLen, fp2);
 
 			if (streamHeader.frameType == jo_video_i_frame ||
 				streamHeader.frameType == jo_video_b_frame || streamHeader.frameType == jo_video_p_frame)

@@ -11,14 +11,14 @@ public:
 
 public:
 	///J_PlayerObj
-	virtual j_result_t PlayMedia(j_wnd_t hWnd);
-	virtual j_result_t StopMedia();
+	virtual j_result_t PlayMedia(j_wnd_t hWnd, j_int32_t nDevid);
+	virtual j_result_t StopMedia(j_int32_t nDevid);
 	virtual j_result_t ProcessMedia();
 
 private:
 	// µ ± ”∆µ
-	j_result_t StartVideo();
-	j_result_t StopVideo();
+	j_result_t StartVideo(j_int32_t nDevid);
+	j_result_t StopVideo(j_int32_t nDevid);
 
 private:
 	j_socket_t m_nSocket;

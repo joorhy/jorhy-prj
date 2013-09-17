@@ -61,10 +61,7 @@ j_result_t CH264Decoder::DecodeOneFrame(j_char_t *pInputData, j_int32_t nInputLe
 	{
 		return J_OK;
 	}
-	static FILE *fp = NULL;
-	if (fp == NULL)
-		fp = fopen("test.h264", "wb+");
-	fwrite(pInputData, 1, nInputLen, fp);
+
 	int nRet = 0;
 	int size = 0;
 	m_Packet.data	= (uint8_t*)pInputData;
