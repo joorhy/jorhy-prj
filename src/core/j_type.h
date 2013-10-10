@@ -489,6 +489,7 @@ struct J_VideoDecodeParam		//for init video output
 	j_int32_t width;
 	j_int32_t height;
 };
+typedef J_VideoDecodeParam J_VideoDisplayParam;
 
 struct J_VideoFormat
 {

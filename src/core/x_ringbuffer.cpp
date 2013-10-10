@@ -60,12 +60,16 @@ int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 	Write((const char *)&streamHeader, sizeof(J_StreamHeader));
 	Write(pBuffer, nLen);
 	m_mutex._Unlock();
+	//m_cond.Single();
+	m_sem.Post();
 	
 	return J_UNKNOW;
 }
 
 int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 {
+	m_sem.WaitTime(1000);
+	//m_cond.Wait();
 	m_mutex._Lock();
 	if (m_nDataLen > 0)
 	{

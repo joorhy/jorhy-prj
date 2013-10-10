@@ -26,6 +26,7 @@ public:
 	virtual j_result_t InitRender(j_wnd_t hwnd);
 	virtual j_result_t DisplayFrame(j_char_t *pData, j_int32_t nLen);
 	virtual j_result_t DeinitRender();
+	virtual j_result_t SetDisplayParam(const J_VideoDisplayParam &displayParam);
 
 private:
 	j_result_t OpenDDraw();

@@ -357,7 +357,8 @@ BOOL CPlToolBar::AttachPlayer(PL_PlayParm *pPlayParm, void *parent)
 		SetParent((CWnd *)parent);
 		return FALSE;
 	}
-
+	
+	SetParent((CWnd *)parent);
 	if(m_pPlayParm == pPlayParm) 
 	{
 		DWORD newTime = GetTickCount();

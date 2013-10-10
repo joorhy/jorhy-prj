@@ -513,6 +513,10 @@ struct J_Render : virtual public J_Obj
 	///释放Render
 	///@return	 参见x_errtype.j
 	virtual j_result_t DeinitRender() = 0;
+	///设置显示参数
+	///@param	 displayParam 显示参数
+	///@return	 参见x_errtype.j
+	virtual j_result_t SetDisplayParam(const J_VideoDisplayParam &displayParam) = 0;
 };
 
 template <typename CBase>

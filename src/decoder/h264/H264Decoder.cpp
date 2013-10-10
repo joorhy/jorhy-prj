@@ -99,8 +99,8 @@ j_result_t CH264Decoder::InitDecodeParam(J_VideoDecodeParam &decParam)
 {
 	decParam.fourcc_type	= jo_codec_yv12;
 	decParam.vout_dev		= jo_dev_ddraw;
-	decParam.height		= m_pContext->height;
-	decParam.width		= m_pContext->width;
+	decParam.height			= m_pContext->height;
+	decParam.width			= m_pContext->width;
 
 	return J_OK;
 }
