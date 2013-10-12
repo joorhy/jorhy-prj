@@ -56,7 +56,6 @@ private:
 	CPlayManager m_playManager;
 	j_int32_t m_streamId;
 	std::map<wxWindow *, j_int32_t> m_playerMap;
-	j_int32_t m_streamType;
 }; 
 
 bool MyApp::OnInit() 
@@ -94,10 +93,9 @@ CStreamPlayer::CStreamPlayer(const wxString& title)
 , m_displayWindow3(this, wxID_ANY)
 , m_displayWindow4(this, wxID_ANY)
 , m_displayForcus(NULL)
-, m_streamType(0)
 {
 	//历史视频
-	m_streamType = 1;
+	//m_streamType = 1;
 
 	m_displayWindow1.GetHandle();
 	SetSize(wxSize(805, 805));
@@ -107,16 +105,8 @@ CStreamPlayer::CStreamPlayer(const wxString& title)
 	m_urlDesc.SetSize(wxSize(50, 15));
 	m_ctrlSizer.Add(&m_urlDesc);
 	m_ctrlSizer.AddSpacer(10);
-	if (m_streamType == 0)
-	{
-		m_textUrl.Append(wxT("joh://192.168.1.12:8002?resid=121&username=admin&passwd=12345&stream_type=0"));
-		m_textUrl.Append(wxT("joh://192.168.1.12:8002?resid=161&username=admin&passwd=12345&stream_type=0"));
-	}
-	else
-	{
-		m_textUrl.Append(wxT("jorf://192.168.1.12:8002?resid=121&username=admin&passwd=12345&start=1381507200&end=1381549188"));
-		m_textUrl.Append(wxT("jorf://192.168.1.12:8002?resid=161&username=admin&passwd=12345&start=1381507200&end=1381549188"));
-	}
+	m_textUrl.Append(wxT("joh://192.168.1.12:8002?resid=121&username=admin&passwd=12345&stream_type=0"));
+	m_textUrl.Append(wxT("joh://192.168.1.12:8002?resid=161&username=admin&passwd=12345&stream_type=0"));
 
 	m_textUrl.SetSelection(0);
 	m_ctrlSizer.Add(&m_textUrl);
@@ -147,7 +137,7 @@ CStreamPlayer::CStreamPlayer(const wxString& title)
 	m_sizer.AddSpacer(50);
 	m_sizer.Add(&m_ctrlSizer);
 	SetSizer(&m_sizer);
-
+	
 	m_playManager.Init();
 	m_btnPlay.Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CStreamPlayer::OnPlay));
 	m_btnStop.Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CStreamPlayer::OnStop));
@@ -191,16 +181,8 @@ void CStreamPlayer::Play()
 		char desUrl[256] = {0};
 		sprintf(desUrl, "jo_player://%d", (j_wnd_t)m_displayForcus->GetHandle());
 		j_int32_t streamId = -1;
-		if (m_streamType == 0)
-		{
-			//实时视频
-			streamId = m_playManager.OpenStream(m_textUrl.GetValue(), desUrl);
-		}
-		else
-		{
-			//历史视频
-			streamId = m_playManager.OpenVod(m_textUrl.GetValue(), desUrl);
-		}
+		//实时视频
+		streamId = m_playManager.OpenStream(m_textUrl.GetValue(), desUrl);
 		m_displayForcus->SetId(streamId);
 		m_playerMap[m_displayForcus] = streamId;
 	}
@@ -211,16 +193,8 @@ void CStreamPlayer::Stop()
 	std::map<wxWindow *, j_int32_t>::iterator it = m_playerMap.find(m_displayForcus);
 	if (it != m_playerMap.end())
 	{
-		if (m_streamType == 0)
-		{
-			//实时视频
-			m_playManager.CloseStream(m_displayForcus->GetId());
-		}
-		else
-		{
-			//历史视频
-			m_playManager.CloseVod(m_displayForcus->GetId());
-		}
+		//实时视频
+		m_playManager.CloseStream(m_displayForcus->GetId());
 		m_playerMap.erase(it);
 	}
 }
