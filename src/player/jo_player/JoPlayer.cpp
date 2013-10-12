@@ -1,7 +1,7 @@
 #include "JoPlayer.h"
 
-#define RAW_DATA_BUFF_LEN (2 * 1024 * 1024)
-#define VIDEO_DATA_BUFF_LEN (5 * 1024 * 1024)
+#define RAW_DATA_BUFF_LEN (5 * 1024 * 1024)
+#define VIDEO_DATA_BUFF_LEN (10 * 1024 * 1024)
 
 JO_IMPLEMENT_INTERFACE(Player, "jo_player", CJoPlayer::Maker)
 
@@ -53,6 +53,10 @@ j_result_t CJoPlayer::Play(j_wnd_t hWnd)
 j_result_t CJoPlayer::Stop()
 {
 	m_bStart = false;
+	//m_semDec.WaitTime(1000);
+	//m_semRend.WaitTime(1000);
+	m_semDec.Wait();
+	m_semRend.Wait();
 	Deinit();
 	m_decThread.Release();
 	m_rendThread.Release();
@@ -81,15 +85,10 @@ void CJoPlayer::Deinit()
 		JoDecoderFactory->DelDecoder(m_hwnd);
 		m_decoder = NULL;
 	}
-	if (m_vBuffer != NULL)
+	if (m_rawBuffer != NULL)
 	{
-		delete m_vBuffer;
-		m_vBuffer = NULL;
-	}
-	if (m_vBuffer2 != NULL)
-	{
-		delete m_vBuffer2;
-		m_vBuffer2 = NULL;
+		delete m_rawBuffer;
+		m_rawBuffer = NULL;
 	}
 	m_lockerDec._Unlock();
 
@@ -100,17 +99,22 @@ void CJoPlayer::Deinit()
 		JoRenderFactory->DelRender(m_hwnd);
 		m_render = NULL;
 	}
-	if (m_rawBuffer != NULL)
+	if (m_vBuffer != NULL)
 	{
-		delete m_rawBuffer;
-		m_rawBuffer = NULL;
+		delete m_vBuffer;
+		m_vBuffer = NULL;
+	}
+	if (m_vBuffer2 != NULL)
+	{
+		delete m_vBuffer2;
+		m_vBuffer2 = NULL;
 	}
 	m_lockerRend._Unlock();
 }
 
 j_result_t CJoPlayer::InputData(j_char_t *pData, J_StreamHeader &streamHeader)
 {
-	if (m_rawBuffer != NULL)
+	if (m_bStart && m_rawBuffer != NULL)
 	{
 		m_rawBuffer->PushBuffer(pData, streamHeader);
 	}
@@ -150,15 +154,16 @@ void CJoPlayer::OnDecode()
 				}
 			}
 		}
-		else
+		/*else
 		{
 			m_lockerDec._Unlock();
 			continue;
-		}
+		}*/
 		m_lockerDec._Unlock();
 	}
 	delete pInputDataBuff;
 	delete pOutputDataBuff;
+	m_semDec.Post();
 }
 
 void CJoPlayer::OnRend()
@@ -175,12 +180,13 @@ void CJoPlayer::OnRend()
 		{
 			nResult = m_render->DisplayFrame(pDataBuff, streamHeader.dataLen);
 		}
-		else
+		/*else
 		{
 			m_lockerRend._Unlock();
 			continue;
-		}
+		}*/
 		m_lockerRend._Unlock();
 	}
 	delete pDataBuff;
+	m_semRend.Post();
 }

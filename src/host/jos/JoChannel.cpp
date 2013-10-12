@@ -57,23 +57,24 @@ int CJoChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 	if (!m_bOpened)
 		return J_OK;
 
-	CJoStream *pSonyStream = dynamic_cast<CJoStream *>(pObj);
-	if (pSonyStream == NULL)
+	CJoStream *pJoStream = dynamic_cast<CJoStream *>(pObj);
+	if (pJoStream == NULL)
 		return J_OK;
 
-	if (pSonyStream->RingBufferCount() == 1)
+	if (pJoStream->RingBufferCount() == 1)
 	{
 		StopView();
 		m_bOpened = false;
-		(dynamic_cast<CJoStream *> (pObj))->Shutdown();
-		pSonyStream->DelRingBuffer(pRingBuffer);
+
+		pJoStream->Shutdown();
+		pJoStream->DelRingBuffer(pRingBuffer);
 		delete pObj;
 
 		return J_NO_REF;
 	}
 
-	if (pSonyStream->RingBufferCount() > 0)
-		pSonyStream->DelRingBuffer(pRingBuffer);
+	if (pJoStream->RingBufferCount() > 0)
+		pJoStream->DelRingBuffer(pRingBuffer);
 
 	return J_OK;
 }

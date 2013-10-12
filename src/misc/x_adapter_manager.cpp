@@ -66,16 +66,23 @@ int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_sock
 	if (it2 == it->second.ringBufferMap.end())
 		return J_NOT_EXIST;
 
-	J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
-	if (pChannelStream->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
+	J_Obj *pObj = JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid);
+	if (pObj != NULL)
 	{
-		DelRingBuffer(pResId, nStreamType, nSocket);
-		if (!pChannelStream->HasMultiStream())
+		J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(pObj);
+		if (pChannelStream != NULL)
 		{
-			DelRingBuffer(pResId, nStreamType == 0 ? 1 : 0, nSocket);
-			JoAdapterFactory->ReleaseChannel(pResId, nStreamType == 0 ? 1 : 0);
+			if (pChannelStream->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
+			{
+				DelRingBuffer(pResId, nStreamType, nSocket);
+				if (!pChannelStream->HasMultiStream())
+				{
+					DelRingBuffer(pResId, nStreamType == 0 ? 1 : 0, nSocket);
+					JoAdapterFactory->ReleaseChannel(pResId, nStreamType == 0 ? 1 : 0);
+				}
+				JoAdapterFactory->ReleaseChannel(pResId, nStreamType);
+			}
 		}
-		JoAdapterFactory->ReleaseChannel(pResId, nStreamType);
 	}
 
 	return J_OK;

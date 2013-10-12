@@ -68,7 +68,7 @@ int CRingBuffer::PushBuffer(const char *pBuffer, J_StreamHeader &streamHeader)
 
 int CRingBuffer::PopBuffer(char *pBuffer, J_StreamHeader &streamHeader)
 {
-	m_sem.WaitTime(1000);
+	m_sem.WaitTime(39);
 	//m_cond.Wait();
 	m_mutex._Lock();
 	if (m_nDataLen > 0)

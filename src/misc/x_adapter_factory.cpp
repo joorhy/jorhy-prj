@@ -81,6 +81,7 @@ J_Obj* CAdapterFactory::FatchChannel(const char *pResId, int nStreamType, j_int3
 			return NULL;
 
 		J_Obj *pObjChannel = NULL;
+		printf("8---%x\n", it->second);
 		J_DevAdapter *pDevAdapter = dynamic_cast<J_DevAdapter *>(it->second);
 		if (pDevAdapter != NULL)
 		{
@@ -94,6 +95,7 @@ J_Obj* CAdapterFactory::FatchChannel(const char *pResId, int nStreamType, j_int3
 		if (pObjChannel != NULL)
 		{
 			m_channelMap[key] = pObjChannel;
+			printf("9---%x\n", pObjChannel);
 			J_ChannelStream *pChannel = dynamic_cast<J_ChannelStream *>(pObjChannel);
 			if (pChannel && !pChannel->HasMultiStream())
 			{

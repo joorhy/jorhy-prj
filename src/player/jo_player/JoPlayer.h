@@ -62,6 +62,8 @@ private:
 	CJoThread m_rendThread;
 	J_OS::CTLock m_lockerDec;
 	J_OS::CTLock m_lockerRend;
+	J_OS::CXSem m_semDec;
+	J_OS::CXSem m_semRend;
 };
 
 #endif //~__JOPLAYER_H_

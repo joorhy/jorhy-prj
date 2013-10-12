@@ -11,7 +11,7 @@ CRealPlayObj::CRealPlayObj(int nStreamId, const char *pPlayerType, int nStreamTy
 
 	m_bStart = false;
 	m_pDataBuff = new char[CLIENT_BUFFER_SIZE];
-	m_pConvetBuff = new char[CLIENT_BUFFER_SIZE];
+	//m_pConvetBuff = new char[CLIENT_BUFFER_SIZE];
 
 	m_nextFrameTime = 0;
 	m_lastFrameTime = 0;
@@ -26,8 +26,8 @@ CRealPlayObj::~CRealPlayObj()
 	if (m_pDataBuff != NULL)
 		delete m_pDataBuff;
 
-	if (m_pConvetBuff != NULL)
-		delete m_pConvetBuff;
+	//if (m_pConvetBuff != NULL)
+	//	delete m_pConvetBuff;
 }
 
 j_result_t CRealPlayObj::PlayMedia(j_wnd_t hWnd, j_int32_t nDevid)
@@ -41,6 +41,7 @@ j_result_t CRealPlayObj::StopMedia(j_int32_t nDevid)
 {
 	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->Stop();
 	StopVideo(nDevid);
+
 	return J_OK;
 }
 

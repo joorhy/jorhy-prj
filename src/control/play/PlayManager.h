@@ -16,6 +16,8 @@ struct J_PlayManagerInfo
 	j_char_t *player_type;
 	j_uint32_t dev_id;
 	j_wnd_t play_wnd;
+	j_uint64_t start_time;
+	j_uint64_t end_time;
 };
 
 struct J_PlayStreamInfo
@@ -49,11 +51,21 @@ public:
 	///@param	 streamHandle OpenStream的返回值
 	///@return	 void
 	void CloseStream(j_int32_t streamHandle);
+	///打开点播流
+	///@param	 pUrl-源URL(joh://192.168.1.109:8002?resid=102&username=admin&passwd=admin&start=0&end=0)
+	///@param	 pUrl-目的URL(jo_player://12345678)
+	///@return	 流编号,后续操作都基于这个编号, < 0表示失败
+	j_int32_t OpenVod(const j_char_t *pUrl, const j_char_t *pUrl2);
+	///关闭点播流
+	///@param	 streamHandle OpenVod的返回值
+	///@return	 void
+	void CloseVod(j_int32_t streamHandle);
 
 private:
 	void InitPlayManagerInfo(J_PlayManagerInfo &info);
 	void FreePlayManagerInfo(J_PlayManagerInfo &info);
 	j_boolean_t ParserUrl(const j_char_t *pUrl, const j_char_t *pUrl2, J_PlayManagerInfo &info);
+	j_boolean_t ParserUrl2(const j_char_t *pUrl, const j_char_t *pUrl2, J_PlayManagerInfo &info);
 
 #ifdef WIN32
 	static unsigned X_JO_API WorkThread(void *param)
@@ -68,8 +80,8 @@ private:
 
 private:
 	j_boolean_t m_bStart;
-	j_int32_t m_nStreamId;
 	j_int32_t m_nDevId;
+	j_int32_t m_nStreamId;
 	//CXLoadso m_loadSo;
 	AdapterMap m_adapterMap;
 	StreamMap m_streamMap;

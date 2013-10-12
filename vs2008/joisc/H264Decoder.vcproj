@@ -44,7 +44,7 @@
 				AdditionalIncludeDirectories="../../src/core;../../include/ffmpeg;../../src/misc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;H264DECODER_EXPORTS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

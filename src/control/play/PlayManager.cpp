@@ -1,6 +1,7 @@
 #include "PlayManager.h"
 #include "x_adapter_factory.h"
 #include "RealPlayObj.h"
+#include "VodPlayObj.h"
 
 JO_IMPLEMENT_SINGLETON(PlayManager)
 
@@ -10,10 +11,11 @@ static char *get_string(char *src, char *xxx,char **dst)
 	char *p2 = strstr(p, xxx);
 	if (p2 != NULL)
 	{
-		*dst = (j_char_t *)malloc(p2 - p + 1);
-		memset(*dst, 0, p2 - p + 1);
-		memcpy(*dst, p, p2-p);
-		(*dst)[p2 - p] = '\0';
+		int index = p2 - p;
+		*dst = (j_char_t *)malloc(index + 10);
+		memset(*dst, 0, index + 1);
+		memcpy(*dst, p, index);
+		//(*dst)[index] = '\0';
 		return p2 + strlen(xxx);
 	}
 	return NULL;
@@ -34,7 +36,7 @@ static char *get_int(char *src, char *xxx,int *dst)
 CPlayManager::CPlayManager()
 {
 	m_bStart = false;
-	m_nStreamId = 0;
+	m_nStreamId = 1;
 	m_nDevId = 0;
 }
 
@@ -87,7 +89,7 @@ j_int32_t CPlayManager::OpenStream(const j_char_t *pUrl, const j_char_t *pUrl2)
 	streamInfo.bStart = true;
 	m_streamMap[m_nStreamId] = streamInfo;
 	TUnlock(m_streamLocker);
-	
+	FreePlayManagerInfo(info);
 
 	return m_nStreamId++;
 }
@@ -105,6 +107,44 @@ void CPlayManager::CloseStream(j_int32_t streamHandle)
 			itStream->second.pPlayObj = NULL;
 			itStream->second.bStart = false;
 		}
+		m_streamMap.erase(itStream);
+	}
+	TUnlock(m_streamLocker);
+}
+
+j_int32_t CPlayManager::OpenVod(const j_char_t *pUrl, const j_char_t *pUrl2)
+{
+	J_PlayManagerInfo info;
+	InitPlayManagerInfo(info);
+	ParserUrl2(pUrl, pUrl2, info);
+
+	TLock(m_streamLocker);
+	J_PlayStreamInfo streamInfo = {0};
+	streamInfo.pPlayObj = new CVodPlayObj(m_nStreamId, info.player_type, info.host_type, info.resid);
+	streamInfo.pPlayObj->PlayVod(info.play_wnd, info.start_time, info.end_time);
+	streamInfo.nDevid = info.dev_id;
+	streamInfo.bStart = true;
+	m_streamMap[m_nStreamId] = streamInfo;
+	TUnlock(m_streamLocker);
+	FreePlayManagerInfo(info);
+
+	return m_nStreamId++;
+}
+
+void CPlayManager::CloseVod(j_int32_t streamHandle)
+{
+	TLock(m_streamLocker);
+	StreamMap::iterator itStream = m_streamMap.find(streamHandle);
+	if (itStream!=m_streamMap.end())
+	{
+		if (itStream->second.bStart)
+		{
+			itStream->second.pPlayObj->StopVod();
+			delete itStream->second.pPlayObj;
+			itStream->second.pPlayObj = NULL;
+			itStream->second.bStart = false;
+		}
+		m_streamMap.erase(itStream);
 	}
 	TUnlock(m_streamLocker);
 }
@@ -166,6 +206,41 @@ parser_usr_error:
 	return false;
 }
 
+j_boolean_t CPlayManager::ParserUrl2(const j_char_t *pUrl, const j_char_t *pUrl2, J_PlayManagerInfo &info)
+{
+	char *p = (char *)pUrl;
+	if ((p = get_string(p, (char *)"://", &info.host_type)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_string(p, (char *)":", &info.host_addr)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"?resid=", (int *)&info.host_port)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_string(p, (char *)"&username=", &info.resid)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_string(p, (char *)"&passwd=", &info.user_name)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_string(p, (char *)"&start=", &info.pass_word)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"&end=", (int *)&info.start_time)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"\0", (int *)&info.end_time)) == NULL)
+		goto parser_usr_error;
+
+	p = (char *)pUrl2;
+	if ((p = get_string(p, (char *)"://", &info.player_type)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"\0", (int *)&info.play_wnd)) == NULL)
+		goto parser_usr_error;
+
+	info.dev_id = m_nDevId++;
+
+	return true;
+
+parser_usr_error:
+	FreePlayManagerInfo(info);
+	return false;
+}
+
 void CPlayManager::OnWork()
 {
 	StreamMap::iterator it;
@@ -182,7 +257,7 @@ void CPlayManager::OnWork()
 			if (it->second.bStart && it->second.pPlayObj->ProcessMedia() != J_OK)
 			{
 				//¶ÏÏßÖØÁ¬´¦Àí
-				it->second.pPlayObj->StopMedia( it->second.nDevid);
+				it->second.pPlayObj->StopMedia(it->second.nDevid);
 			}
 		}
 		TUnlock(m_streamLocker);
