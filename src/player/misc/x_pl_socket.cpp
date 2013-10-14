@@ -206,7 +206,8 @@ J_PL_RESULT J_PlSocket::NonblockConnect(const char *pAddr, int nPort,unsigned in
 	FD_ZERO(&wset);
 	FD_SET(m_hSocket,&rset);
 	wset = rset;
-	timeout.tv_sec = unTimeout;
+	//timeout.tv_sec = unTimeout;
+	timeout.tv_usec = 10 * 1000;
 	if((nRet = select(1,0,&rset,0,&timeout)) == 0)
 	{
 		closesocket(m_hSocket);
@@ -241,5 +242,5 @@ J_PL_RESULT J_PlSocket::NonblockConnect(const char *pAddr, int nPort,unsigned in
 	}
 	
 	m_bConnecting = true;
-	return SetTimeOut(5000, 5000);
+	return SetTimeOut(3000, 3000);
 }

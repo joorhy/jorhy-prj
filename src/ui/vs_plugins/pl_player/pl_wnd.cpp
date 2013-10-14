@@ -169,15 +169,12 @@ void CPlWnd::SetFullModel(UINT nType)
 void CPlWnd::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
-
 	if(!m_Tool) 
 		return;
-
 	//dynamic_cast<CWnd *>(m_Tool)->
 	//CWnd *p = dynamic_cast<CWnd *>(m_Tool)->GetParent();
 	//if(dynamic_cast<CWnd *>(m_Tool)->GetParent() != this) 
 	//	return;
-
 	if(nType == SIZE_MINIMIZED)
 	{
 		m_Tool->ShowControls(FALSE);

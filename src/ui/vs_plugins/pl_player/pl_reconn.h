@@ -5,35 +5,35 @@
 #include "gdiplus.h" 
 using namespace Gdiplus; 
 
-class CWaitStatus : public CDialog
+class CReconnWindow : public CDialog
 {
-	DECLARE_DYNAMIC(CWaitStatus)
-
+	DECLARE_DYNAMIC(CReconnWindow)
 public:
-	CWaitStatus(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CWaitStatus();
+	CReconnWindow(CWnd* pParent = NULL);   // standard constructor
+	virtual ~CReconnWindow();
 
 // Dialog Data
 	enum { IDD = IDD_WAITSTAUS };
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-	DECLARE_MESSAGE_MAP()
-
-public:
-	void EndWait(CWaitStatus *pUser);
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	DECLARE_MESSAGE_MAP()	
 
 private:
-	void ShowGifPicture();
 	static void WorkThread(void *pUser)
 	{
-		CWaitStatus *pThis = (CWaitStatus *)pUser;
+		CReconnWindow *pThis = (CReconnWindow *)pUser;
 		if (pThis)
 			pThis->ShowGifPicture();
 	}
-	//void ShowGifPicture();
+	void ShowGifPicture();
+	static void ReconnectThread(void *pUser)
+	{
+		CReconnWindow *pThis = (CReconnWindow *)pUser;
+		if (pThis)
+			pThis->Reconnect();
+	}
+	void Reconnect();
 
 private:
 	CString m_csText;
@@ -50,7 +50,9 @@ private:
 	GUID m_Guid;
 	BOOL m_bRun;
 public:
-	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
 	afx_msg LRESULT StartWait(WPARAM wParam,LPARAM lParam);
 	afx_msg void OnPaint();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 };

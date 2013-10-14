@@ -325,7 +325,7 @@ BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
 		switch(m_layoutInfo.nMod)
 		{
 		case STREAME_REALTIME:		//real
-			TRACE("%d\n", GetTickCount());
+			//TRACE("%d\n", GetTickCount());
 			for(int i=nOldWnds; i<nWindows; ++i)
 			{
 				CPlWnd *r_tmp = dynamic_cast<CPlWnd *>(CPlFactoryWnd::Instance()->GetWindow("r_play", m_hParent, i));
@@ -336,7 +336,7 @@ BOOL CPlCtrl::CreateWindows(const PL_LayoutInfo &layoutInfo)
 				//m_key.nId = i + (UINT)m_hParent;
 				m_playWndMap[i] = r_tmp;
 			}
-			TRACE("%d\n", GetTickCount());
+			//TRACE("%d\n", GetTickCount());
 			break;
 		case STREAME_FILE:				//vod
 			for(int i=nOldWnds; i<nWindows; ++i)

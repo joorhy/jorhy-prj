@@ -1,6 +1,3 @@
-// WaitStaus.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "pl_reconn.h"
 #include "pl_type.h"
@@ -8,13 +5,10 @@
 #include <process.h>
 #include <direct.h>
 
-#define TIMER 1234
-// CWaitStatus dialog
+IMPLEMENT_DYNAMIC(CReconnWindow, CDialog)
 
-IMPLEMENT_DYNAMIC(CWaitStatus, CDialog)
-
-CWaitStatus::CWaitStatus(CWnd* pParent /*=NULL*/)
-	: CDialog(CWaitStatus::IDD, pParent)
+CReconnWindow::CReconnWindow(CWnd* pParent /*=NULL*/)
+: CDialog(CReconnWindow::IDD, pParent)
 {
 	Create(IDD_WAITSTAUS,pParent);
 
@@ -44,124 +38,123 @@ CWaitStatus::CWaitStatus(CWnd* pParent /*=NULL*/)
 	m_bRun = FALSE;
 }
 
-CWaitStatus::~CWaitStatus()
+CReconnWindow::~CReconnWindow()
 {
-	//CWaitStatus::EndWait(this);
 	GdiplusShutdown(m_gdiplusToken);
 }
 
-void CWaitStatus::DoDataExchange(CDataExchange* pDX)
+void CReconnWindow::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 }
 
-
-BEGIN_MESSAGE_MAP(CWaitStatus, CDialog)
+BEGIN_MESSAGE_MAP(CReconnWindow, CDialog)
 	ON_WM_PAINT()
-	ON_WM_TIMER()
-	ON_MESSAGE(WM_OWN_START_WAIT,CWaitStatus::StartWait)
-	ON_WM_NCLBUTTONDOWN()
+	ON_WM_SIZE()
+	ON_MESSAGE(WM_OWN_START_WAIT,CReconnWindow::StartWait)
+	ON_WM_LBUTTONDOWN()
+	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
-
 // CWaitStatus message handlers
-LRESULT CWaitStatus::StartWait(WPARAM wParam,LPARAM lParam)
+LRESULT CReconnWindow::StartWait(WPARAM wParam,LPARAM lParam)
 {
 	m_pPlWnd = (HWND)wParam;
-	SetTimer(TIMER,WAITSTATUS_TIME,NULL);
 	CenterWindow(CWnd::FromHandle(m_pPlWnd));
 	CRect rect;
 	CWnd::FromHandle(m_pPlWnd)->GetWindowRect(rect);
 
-	SetWindowPos(CWnd::FromHandle(HWND_TOP),0,0,rect.Width(),rect.Height(),/*SWP_NOSIZE|*/SWP_NOMOVE);
+	//SetWindowPos(CWnd::FromHandle(m_hWnd),0,0,rect.Width(),rect.Height(),SWP_NOMOVE);
+	SetWindowPos(CWnd::FromHandle(HWND_TOP),1,1,rect.Width()-2,rect.Height()-2,SWP_NOMOVE);
 	ShowWindow(SW_SHOW);
 	m_bRun = TRUE;
-	_beginthread(CWaitStatus::WorkThread, 0, this);
+	_beginthread(CReconnWindow::WorkThread, 0, this);
+	_beginthread(CReconnWindow::ReconnectThread, 0, this);
 
 	return TRUE;
 }
 
-void CWaitStatus::EndWait(CWaitStatus *pUser)
+void CReconnWindow::ShowGifPicture()
 {
-	
+	while (m_bRun)
+	{
+		CenterWindow(CWnd::FromHandle(m_pPlWnd));
+		//m_hDC是外部传入的画图DC
+		Graphics gh(m_hDC); 
+		CRect rect;
+		GetWindowRect(rect);
+		int w = m_image->GetWidth();
+		int h = m_image->GetHeight();
+		if (w >= (rect.Width() / 6))
+		{
+			w = rect.Height() / 4;
+			h = w;
+		}
+		else if (w >= (rect.Width() / 3))
+		{
+			w = rect.Width() / 4;
+			h = w;
+		}
+		int x = rect.Width() - w;
+		int y = rect.Height() - h;
+		gh.DrawImage(m_image, x / 2, y / 2, w, h);
+		//重新设置当前的活动数据帧
+		m_image->SelectActiveFrame(&m_Guid, m_fcount++);
+		//frameCount是上面GetFrameCount返回值
+		if(m_fcount == m_frameCount)	
+		{
+			//如果到了最后一帧数据又重新开始
+			m_fcount= 0;			
+		}
+		Sleep(100);
+	}
 }
 
-void CWaitStatus::OnTimer(UINT_PTR nIDEvent)
+void CReconnWindow::Reconnect()
 {
-	if(nIDEvent == TIMER)
+	while (m_bRun)
 	{
+		Sleep(3000);
 		if(!(PlManager::Instance()->IsPlaying(m_pPlWnd)))
 		{
 			if (PlManager::Instance()->RePlay(m_pPlWnd))
 			{
 				m_bRun = FALSE;
-				KillTimer(TIMER);
-				OnOK();//重连
+				ShowWindow(SW_HIDE);
 			}
 		}
-		else
-		{
-			m_bRun = FALSE;
-			KillTimer(TIMER);
-			OnOK();
-		}
-	}
-	
-	CDialog::OnTimer(nIDEvent);
-}
-
-void CWaitStatus::OnNcLButtonDown(UINT nHitTest, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-	if(nHitTest == HTCAPTION)
-		return;
-	CDialog::OnNcLButtonDown(nHitTest, point);
-}
-
-void CWaitStatus::ShowGifPicture()
-{
-	while (m_bRun)
-	{
-			CenterWindow(CWnd::FromHandle(m_pPlWnd));
-			//m_hDC是外部传入的画图DC
-			Graphics gh(m_hDC); 
-			CRect rect;
-			GetWindowRect(rect);
-			int w = m_image->GetWidth();
-			int h = m_image->GetHeight();
-			if (w >= (rect.Width() / 6))
-			{
-				w = rect.Height() / 4;
-				h = w;
-				//w /= 4;
-				//h /= 4;
-			}
-			else if (w >= (rect.Width() / 3))
-			{
-				w = rect.Width() / 4;
-				h = w;
-				//w /= 2;
-				//h /= 2;
-			}
-			int x = rect.Width() - w;
-			int y = rect.Height() - h;
-			gh.DrawImage(m_image, x / 2, y / 2, w, h);
-			//重新设置当前的活动数据帧
-			m_image->SelectActiveFrame(&m_Guid, m_fcount++);
-			//frameCount是上面GetFrameCount返回值
-			if(m_fcount == m_frameCount)	
-			{
-				//如果到了最后一帧数据又重新开始
-				m_fcount= 0;			
-			}
-			Sleep(100);
 	}
 }
 
-void CWaitStatus::OnPaint()
+void CReconnWindow::OnPaint()
 {
 	CRect rect;
 	CPaintDC dc(this);
 	GetClientRect(rect);
 	dc.FillSolidRect(rect,RGB(0,0,0)); //设置为黑色背景
+}
+
+void CReconnWindow::OnSize(UINT nType, int cx, int cy)
+{
+	//CReconnWindow::OnSize(nType,cx,cy);
+	if (m_bRun == TRUE)
+	{
+		CenterWindow(CWnd::FromHandle(m_pPlWnd));
+		CRect rect;
+		CWnd::FromHandle(m_pPlWnd)->GetWindowRect(rect);
+		SetWindowPos(CWnd::FromHandle(HWND_TOP),1,1,rect.Width()-2,rect.Height()-2,SWP_NOMOVE);
+		Invalidate(TRUE);
+	}
+}
+
+void CReconnWindow::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	::SendMessage(m_pPlWnd,WM_LBUTTONDOWN,(WPARAM)&nFlags,(LPARAM)&point);
+	//OnLButtonDown(nFlags, point);
+}
+
+void CReconnWindow::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	m_bRun = FALSE;
+	ShowWindow(SW_HIDE);
 }

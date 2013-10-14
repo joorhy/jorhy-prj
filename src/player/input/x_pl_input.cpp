@@ -24,17 +24,14 @@ CXPlInput::~CXPlInput(void)
 J_PL_RESULT CXPlInput::Init(j_pl_cfg_t &cfg,void *control)
 {
 	m_control = control;
-	j_pl_info("CXPlInput::Init(void) J_PlAccess::CreateInstance(cfg)\n");
 	m_access = J_PlAccess::CreateInstance(cfg);
 	if(m_access == NULL)
 		return J_PL_ERROR_ACCESS_CREATE;
 
-	j_pl_info("CXPlInput::Init(void) InitDemux()\n");
 	J_PL_RESULT br = InitDemux();
 	if(br != J_PL_NO_ERROR)
 		return br;
 
-	j_pl_info("CXPlInput::Init(void) J_PL_NO_ERROR\n");
 	return J_PL_NO_ERROR;
 }
 

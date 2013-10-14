@@ -105,8 +105,8 @@ CStreamPlayer::CStreamPlayer(const wxString& title)
 	m_urlDesc.SetSize(wxSize(50, 15));
 	m_ctrlSizer.Add(&m_urlDesc);
 	m_ctrlSizer.AddSpacer(10);
-	m_textUrl.Append(wxT("joh://192.168.1.12:8002?resid=121&username=admin&passwd=12345&stream_type=0"));
-	m_textUrl.Append(wxT("joh://192.168.1.12:8002?resid=161&username=admin&passwd=12345&stream_type=0"));
+	m_textUrl.Append(wxT("joh://192.168.1.88:8002?resid=121&username=admin&passwd=12345&stream_type=0"));
+	m_textUrl.Append(wxT("joh://192.168.1.88:8002?resid=161&username=admin&passwd=12345&stream_type=0"));
 
 	m_textUrl.SetSelection(0);
 	m_ctrlSizer.Add(&m_textUrl);
