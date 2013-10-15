@@ -51,6 +51,7 @@ private:
 private:
 	J_Decoder *m_decoder;
 	J_Render *m_render;
+	j_boolean_t m_bInitRender;
 	j_wnd_t m_hwnd;
 	CRingBuffer *m_rawBuffer;
 	CRingBuffer *m_vBuffer;
@@ -59,6 +60,10 @@ private:
 	j_boolean_t m_bStart;
 	CJoThread m_decThread;
 	CJoThread m_rendThread;
+	J_OS::CTLock m_lockerDec;
+	J_OS::CTLock m_lockerRend;
+	J_OS::CXSem m_semDec;
+	J_OS::CXSem m_semRend;
 };
 
 #endif //~__JOPLAYER_H_

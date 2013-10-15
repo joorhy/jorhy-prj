@@ -109,6 +109,62 @@ j_result_t CXCond::TimeWait(CTLock &mutex, j_uint32_t sec, j_uint32_t nsec)
 	return nRet > 0 ? J_OK : J_UNKNOW;
 }
 
+/*************************************Sem********************************/
+CXSem::CXSem()
+{
+	m_sem.handle =  CreateSemaphore (NULL,0,INT_MAX,NULL);
+}
+
+CXSem::CXSem(LONG InitCount,LONG MaxCount,LPCTSTR lpName)
+{
+	m_sem.handle =  CreateSemaphore (NULL,InitCount,MaxCount,lpName);
+}
+
+CXSem::~CXSem()
+{
+	CloseHandle(m_sem.handle);
+}
+
+void CXSem::Post()
+{
+	ReleaseSemaphore (m_sem.handle,1,NULL);
+}
+
+void CXSem::Post(int n)
+{
+	if(n < 0)
+		return;
+	ReleaseSemaphore (m_sem.handle,n,NULL);
+}
+
+void CXSem::Wait()
+{
+	DWORD ret;
+
+	do
+	{
+		ret = WaitForSingleObject(m_sem.handle,INFINITE);
+	}
+	while (ret == WAIT_IO_COMPLETION);
+}
+
+void CXSem::WaitTime(int ms_time)
+{
+	DWORD ret;
+
+	do
+	{
+		ret = WaitForSingleObject(m_sem.handle,ms_time);
+	}
+	while (ret == WAIT_IO_COMPLETION);
+}
+
+void CXSem::Wait(int times)
+{
+	for(int i=0;i<times;i++)
+		Wait();
+}
+
 CPLock::CPLock()
 {
 	m_lock.hFile = j_invalid_filemap_val;

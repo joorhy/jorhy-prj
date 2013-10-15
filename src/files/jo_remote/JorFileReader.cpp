@@ -114,7 +114,7 @@ int CJorFileReader::OpenFile(j_uint64_t s_time, j_uint64_t e_time)
 	J_DeviceInfo info = {0};
 	//if (CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
 	//	return J_INVALID_DEV;
-	strcpy(info.devIp, "192.168.1.6");
+	strcpy(info.devIp, "192.168.1.12");
 	info.devPort = 8002;
 	
 	m_recvSocket = new J_OS::CTCPSocket();
@@ -153,7 +153,7 @@ void CJorFileReader::OnWork()
 		{
 			TLock(m_mux);
 			m_cond.Wait(m_mux);
-			m_jorHelper.ReadFile(m_recvSocket, m_resid.c_str(), 0, 2*60*1000);
+			//m_jorHelper.ReadFile(m_recvSocket, m_resid.c_str(), 0, 2*60*1000);
 			//m_lastTime += 2*60*1000;
 			//nfd = m_recvSocket->GetHandle();
 			TUnlock(m_mux);

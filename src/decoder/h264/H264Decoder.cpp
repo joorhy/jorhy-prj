@@ -61,10 +61,7 @@ j_result_t CH264Decoder::DecodeOneFrame(j_char_t *pInputData, j_int32_t nInputLe
 	{
 		return J_OK;
 	}
-	static FILE *fp = NULL;
-	if (fp == NULL)
-		fp = fopen("test.h264", "wb+");
-	fwrite(pInputData, 1, nInputLen, fp);
+
 	int nRet = 0;
 	int size = 0;
 	m_Packet.data	= (uint8_t*)pInputData;
@@ -102,8 +99,8 @@ j_result_t CH264Decoder::InitDecodeParam(J_VideoDecodeParam &decParam)
 {
 	decParam.fourcc_type	= jo_codec_yv12;
 	decParam.vout_dev		= jo_dev_ddraw;
-	decParam.height		= m_pContext->height;
-	decParam.width		= m_pContext->width;
+	decParam.height			= m_pContext->height;
+	decParam.width			= m_pContext->width;
 
 	return J_OK;
 }

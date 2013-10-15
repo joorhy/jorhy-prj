@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="JoPlayer"
-	ProjectGUID="{A6B9537B-F420-4D32-8F31-78155C9845AE}"
-	RootNamespace="JoPlayer"
+	Name="H264Decoder"
+	ProjectGUID="{E4259BC5-49FD-44E5-8493-1B96B5AE7ABD}"
+	RootNamespace="H264Decoder"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -41,10 +41,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../src/core;../../src/misc;../../src/utils"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_EXPORTS"
+				AdditionalIncludeDirectories="../../src/core;../../include/ffmpeg;../../src/misc"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;H264DECODER_EXPORTS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -61,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="avcodec.lib avutil.lib swscale.lib avformat.lib avcore.lib"
 				OutputFile="$(OutDir)\plugins\$(ProjectName).jo"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="..\..\libs\windows\ffmpeg"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -116,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JOPLAYER_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;H264DECODER_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -173,7 +175,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\src\player\jo_player\JoPlayer.h"
+				RelativePath="..\..\src\decoder\h264\H264Decoder.h"
 				>
 			</File>
 		</Filter>
@@ -183,7 +185,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\src\player\jo_player\JoPlayer.cpp"
+				RelativePath="..\..\src\decoder\h264\H264Decoder.cpp"
 				>
 			</File>
 		</Filter>

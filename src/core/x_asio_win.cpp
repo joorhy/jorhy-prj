@@ -172,25 +172,29 @@ void CXAsio::OnWork()
 			//read
 			//printf("%d = %d\n", pPerIoData->ioRead.bufLen, dwBytesTransferred);
 			j_sleep(1);
-			J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pPerIoData->ioUser);
-			if (pPerIoData->ioRead.bufLen < 0)
+			try 
 			{
-				pPerIoData->ioRead.finishedLen += dwBytesTransferred;
-				if (strstr(pPerIoData->ioRead.buf, pPerIoData->ioRead.until_buf) == NULL)
-					Read(pPerIoData->ioHandle, pPerIoData);
-				else
-					pAsioUser->OnRead(pPerIoData, J_OK);
-			}
-			else
-			{
-				pPerIoData->ioRead.finishedLen += dwBytesTransferred;
-				if (pPerIoData->ioRead.finishedLen < pPerIoData->ioRead.bufLen)
+				J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pPerIoData->ioUser);
+				if (pPerIoData->ioRead.bufLen < 0)
 				{
-					Read(pPerIoData->ioHandle, pPerIoData);
+					pPerIoData->ioRead.finishedLen += dwBytesTransferred;
+					if (strstr(pPerIoData->ioRead.buf, pPerIoData->ioRead.until_buf) == NULL)
+						Read(pPerIoData->ioHandle, pPerIoData);
+					else
+						pAsioUser->OnRead(pPerIoData, J_OK);
 				}
 				else
-					pAsioUser->OnRead(pPerIoData, J_OK);
+				{
+					pPerIoData->ioRead.finishedLen += dwBytesTransferred;
+					if (pPerIoData->ioRead.finishedLen < pPerIoData->ioRead.bufLen)
+					{
+						Read(pPerIoData->ioHandle, pPerIoData);
+					}
+					else
+						pAsioUser->OnRead(pPerIoData, J_OK);
+				}
 			}
+			catch(...){}
 		}
 		else if (pPerIoData->ioCall == J_AsioDataBase::j_write_e)
 		{
@@ -199,8 +203,12 @@ void CXAsio::OnWork()
 			assert(pPerIoData->ioWrite.bufLen == dwBytesTransferred);
 			//printf("%d = %d\n", pPerIoData->ioWrite.bufLen, dwBytesTransferred);
 			pPerIoData->ioWrite.finishedLen = dwBytesTransferred;
-			J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pPerIoData->ioUser);
-			pAsioUser->OnWrite(pPerIoData, J_OK);
+			try 
+			{
+				J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pPerIoData->ioUser);
+				pAsioUser->OnWrite(pPerIoData, J_OK);
+			}
+			catch(...){}
 		}
 	}
 }
@@ -322,6 +330,7 @@ int CXAsio::Write(j_socket_t nSocket, J_AsioDataBase *pAsioData)
 int CXAsio::ProcessAccept(j_socket_t nSocket, J_AsioDataBase *asioData)
 {
 	TLock(m_listen_locker);
+	printf("3---%x\n", asioData->ioUser);
 	J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(asioData->ioUser);
 	pAsioUser->OnAccept(asioData, J_OK);
 	TUnlock(m_listen_locker);
@@ -373,6 +382,7 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 				pDataBase->ioRead.finishedLen = nRet;
 				pDataBase->ioHandle = nSocket.sock;
 				pDataBase->ioCall = J_AsioDataBase::j_read_e;
+				printf("4---%x\n", pDataBase->ioUser);
 				J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>((J_Obj *)pDataBase->ioUser);
 				pAsioUser->OnRead(pDataBase, J_OK);
 			}
@@ -400,6 +410,7 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 						//printf("nRet = %d \n", nRet);
 						J_AsioDataBase asioData;
 						asioData.ioHandle = nSocket.sock;
+						printf("5---%x\n", pDataBase->ioUser);
 						J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(pDataBase->ioUser);
 						pAsioUser->OnBroken(&asioData, J_SOCKET_ERROR);
 						break;
@@ -416,6 +427,7 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 				pDataBase->ioWrite.finishedLen = nRet;
 				pDataBase->ioHandle = nSocket.sock;
 				pDataBase->ioCall = J_AsioDataBase::j_write_e;
+				printf("6---%x\n", pDataBase->ioUser);
 				J_AsioUser *pAsioUser = dynamic_cast<J_AsioUser *>(pDataBase->ioUser);
 				pAsioUser->OnWrite(pDataBase, J_OK);
 			}
@@ -427,6 +439,7 @@ int CXAsio::ProcessIoEvent(j_socket_t nSocket, int nType)
 			AsioUserMap::iterator itUser = m_userMap.find(nSocket);
 			if (itUser != m_userMap.end())
 			{
+				printf("7---%x\n", itUser->second);
 				pAsioUser = dynamic_cast<J_AsioUser *>(itUser->second);
 				//m_userMap.erase(itUser);
 			}

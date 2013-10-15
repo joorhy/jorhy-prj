@@ -44,6 +44,23 @@ private:
 	j_cond_t m_cond;
 };
 
+class JO_API CXSem
+{
+public:
+	CXSem();
+	CXSem(LONG InitCount,LONG MaxCount,LPCTSTR lpName);
+	~CXSem();
+
+	void Post();
+	void Post(int n);
+	void Wait();
+	void WaitTime(int ms_time);			//等待多长时间
+	void Wait(int times);			//等待多少次
+
+private:
+	j_sem_t m_sem;
+};
+
 ///进程锁
 #define PLocker_t CPLock
 #define PLock(x) (x)._Lock()

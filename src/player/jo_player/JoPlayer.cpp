@@ -1,7 +1,7 @@
 #include "JoPlayer.h"
 
-#define RAW_DATA_BUFF_LEN (2 * 1024 * 1024)
-#define VIDEO_DATA_BUFF_LEN (5 * 1024 * 1024)
+#define RAW_DATA_BUFF_LEN (5 * 1024 * 1024)
+#define VIDEO_DATA_BUFF_LEN (10 * 1024 * 1024)
 
 JO_IMPLEMENT_INTERFACE(Player, "jo_player", CJoPlayer::Maker)
 
@@ -13,6 +13,7 @@ CJoPlayer::CJoPlayer()
 	m_vBuffer = NULL;
 	m_vBuffer2 = NULL;
 	m_bStart = false;
+	m_bInitRender = false;
 }
 
 CJoPlayer::~CJoPlayer()
@@ -31,7 +32,7 @@ j_result_t CJoPlayer::Play(j_wnd_t hWnd)
 	if (m_render == NULL)
 	{
 		m_render = JoRenderFactory->GetRender(hWnd, "live");
-		m_render->InitRender(hWnd);
+		//m_render->InitRender(hWnd);
 	}
 
 	Init();
@@ -52,9 +53,13 @@ j_result_t CJoPlayer::Play(j_wnd_t hWnd)
 j_result_t CJoPlayer::Stop()
 {
 	m_bStart = false;
+	//m_semDec.WaitTime(1000);
+	//m_semRend.WaitTime(1000);
+	m_semDec.Wait();
+	m_semRend.Wait();
+	Deinit();
 	m_decThread.Release();
 	m_rendThread.Release();
-	Deinit();
 
 	return J_OK;
 }
@@ -73,22 +78,26 @@ j_result_t CJoPlayer::Init()
 
 void CJoPlayer::Deinit()
 {
+	m_lockerDec._Lock();
 	if (m_decoder != NULL)
 	{
 		m_decoder->DeinitDecoder();
 		JoDecoderFactory->DelDecoder(m_hwnd);
 		m_decoder = NULL;
 	}
+	if (m_rawBuffer != NULL)
+	{
+		delete m_rawBuffer;
+		m_rawBuffer = NULL;
+	}
+	m_lockerDec._Unlock();
+
+	m_lockerRend._Lock();
 	if (m_render != NULL)
 	{
 		m_render->DeinitRender();
 		JoRenderFactory->DelRender(m_hwnd);
 		m_render = NULL;
-	}
-	if (m_rawBuffer != NULL)
-	{
-		delete m_rawBuffer;
-		m_rawBuffer = NULL;
 	}
 	if (m_vBuffer != NULL)
 	{
@@ -100,11 +109,12 @@ void CJoPlayer::Deinit()
 		delete m_vBuffer2;
 		m_vBuffer2 = NULL;
 	}
+	m_lockerRend._Unlock();
 }
 
 j_result_t CJoPlayer::InputData(j_char_t *pData, J_StreamHeader &streamHeader)
 {
-	if (m_rawBuffer != NULL)
+	if (m_bStart && m_rawBuffer != NULL)
 	{
 		m_rawBuffer->PushBuffer(pData, streamHeader);
 	}
@@ -118,18 +128,15 @@ void CJoPlayer::OnDecode()
 	j_char_t *pOutputDataBuff = new j_char_t[VIDEO_DATA_BUFF_LEN];
 	j_int32_t nOutputLen = 0;
 	J_StreamHeader streamHeader;
+	J_VideoDecodeParam decParam;
 	j_result_t nResult = J_OK;
 	while (m_bStart)
 	{
+		m_lockerDec._Lock();
 		memset(&streamHeader, 0, sizeof(streamHeader));
 		nResult = m_rawBuffer->PopBuffer(pInputDataBuff, streamHeader);
 		if (nResult == J_OK && streamHeader.dataLen > 0)
 		{
-			static FILE *fp2 = NULL;
-			if (fp2 == NULL)
-				fp2 = fopen("test2.h264", "wb+");
-			fwrite(pInputDataBuff, 1, streamHeader.dataLen, fp2);
-
 			if (streamHeader.frameType == jo_video_i_frame ||
 				streamHeader.frameType == jo_video_b_frame || streamHeader.frameType == jo_video_p_frame)
 			{
@@ -137,17 +144,26 @@ void CJoPlayer::OnDecode()
 				if (nResult == J_OK && nOutputLen > 0)
 				{
 					streamHeader.dataLen = nOutputLen;
+					if (!m_bInitRender)
+					{
+						m_decoder->GetDecodeParam(decParam);
+						m_render->SetDisplayParam(decParam);
+						m_bInitRender = (m_render->InitRender(m_hwnd) == J_OK);
+					}
 					m_vBuffer->PushBuffer(pOutputDataBuff, streamHeader);
 				}
 			}
 		}
-		else
+		/*else
 		{
+			m_lockerDec._Unlock();
 			continue;
-		}
+		}*/
+		m_lockerDec._Unlock();
 	}
 	delete pInputDataBuff;
 	delete pOutputDataBuff;
+	m_semDec.Post();
 }
 
 void CJoPlayer::OnRend()
@@ -157,16 +173,20 @@ void CJoPlayer::OnRend()
 	j_result_t nResult = J_OK;
 	while (m_bStart)
 	{
+		m_lockerRend._Lock();
 		memset(&streamHeader, 0, sizeof(streamHeader));
 		nResult = m_vBuffer->PopBuffer(pDataBuff, streamHeader);
 		if (nResult == J_OK && streamHeader.dataLen > 0)
 		{
 			nResult = m_render->DisplayFrame(pDataBuff, streamHeader.dataLen);
 		}
-		else
+		/*else
 		{
+			m_lockerRend._Unlock();
 			continue;
-		}
+		}*/
+		m_lockerRend._Unlock();
 	}
 	delete pDataBuff;
+	m_semRend.Post();
 }

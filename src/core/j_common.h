@@ -172,6 +172,15 @@ typedef struct
 typedef struct  
 {
 #ifdef WIN32
+	HANDLE	handle;
+#else
+
+#endif
+}j_sem_t;
+
+typedef struct  
+{
+#ifdef WIN32
 	HMODULE handle;
 #else
 	void *handle;

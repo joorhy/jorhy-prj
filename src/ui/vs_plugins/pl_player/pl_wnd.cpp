@@ -169,13 +169,12 @@ void CPlWnd::SetFullModel(UINT nType)
 void CPlWnd::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
-
 	if(!m_Tool) 
 		return;
-
-	if(dynamic_cast<CWnd *>(m_Tool)->GetParent() != this) 
-		return;
-
+	//dynamic_cast<CWnd *>(m_Tool)->
+	//CWnd *p = dynamic_cast<CWnd *>(m_Tool)->GetParent();
+	//if(dynamic_cast<CWnd *>(m_Tool)->GetParent() != this) 
+	//	return;
 	if(nType == SIZE_MINIMIZED)
 	{
 		m_Tool->ShowControls(FALSE);
@@ -216,7 +215,7 @@ void CPlWnd::SetNowShowWindow(int nNum)
 
 HWND CPlWnd::GetFocusWnd()
 {
-	return ::GetDlgItem(GetParent()->m_hWnd,m_nFocus);
+	return ::GetDlgItem(GetParent()->m_hWnd, m_nFocus);
 }
 
 void CPlWnd::OnPaint()
@@ -307,7 +306,10 @@ void CPlWnd::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	m_PlayerParm.bNeedShowCTRL = !m_PlayerParm.bNeedShowCTRL;
 	if(m_Tool && PlManager::Instance()->IsPlaying(m_hWnd))
+	{
+		m_Tool->AttachPlayer(&m_PlayerParm, this);
 		m_Tool->ShowControls(m_PlayerParm.bNeedShowCTRL);
+	}
 }
 
 LRESULT CPlWnd::SetEraseType(WPARAM wParam,LPARAM lParam)

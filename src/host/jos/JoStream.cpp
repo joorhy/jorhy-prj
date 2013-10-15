@@ -20,6 +20,8 @@ CJoStream::CJoStream(void *pTCPSocket, std::string resid)
 	if (NULL == m_pRecvBuff)
 		m_pRecvBuff = new char[RECV_SIZE];
 
+	m_asioData = new J_AsioDataBase;
+
 	J_OS::LOGINFO("CJoStream::CJoStream create this = %d", this);
 }
 
@@ -43,14 +45,16 @@ int CJoStream::Startup()
     m_bStartup = true;
     //JoXAsio->Init();
     JoXAsio->AddUser(m_nSocket, this);
-	m_asioData.ioUser = this;
-	m_asioData.ioRead.buf = (j_char_t *)&m_dataHead;
-	m_asioData.ioRead.bufLen = sizeof(J_DataHead);
-	m_asioData.ioRead.whole = true;
-	m_asioData.ioRead.finishedLen = 0;
+	memset(m_asioData, 0, sizeof(J_AsioDataBase));
+	m_asioData->ioUser = this;
+	m_asioData->ioRead.buf = (j_char_t *)&m_dataHead;
+	m_asioData->ioRead.bufLen = sizeof(J_DataHead);
+	m_asioData->ioRead.whole = true;
+	m_asioData->ioRead.finishedLen = 0;
+	m_asioData->ioCall = J_AsioDataBase::j_read_e;
 	m_nState = JO_READ_HEAD;
-	m_asioData.ioRead.shared = true;
-	JoXAsio->Read(m_nSocket, &m_asioData);
+	m_asioData->ioRead.shared = true;
+	JoXAsio->Read(m_nSocket, m_asioData);
     TUnlock(m_locker);
 	J_OS::LOGINFO("COnvifStream::Startup Startup this = %d", this);
 
@@ -85,12 +89,12 @@ j_result_t CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 	switch (m_nState)
 	{
 		case JO_READ_HEAD:
-			m_asioData.ioRead.bufLen = ntohl(m_dataHead.data_len);
+			m_asioData->ioRead.bufLen = ntohl(m_dataHead.data_len);
 			m_nState = JO_READ_DATA;
-			m_asioData.ioRead.buf = m_pRecvBuff;
+			m_asioData->ioRead.buf = m_pRecvBuff;
 			break;
 		case JO_READ_DATA:
-			m_asioData.ioRead.bufLen = sizeof(J_DataHead);
+			m_asioData->ioRead.bufLen = sizeof(J_DataHead);
 			streamHeader.timeStamp = JoTime->GetLocalTime(0);//ntohll(head.time_stamp);
 			streamHeader.frameType = ntohl(m_dataHead.frame_type);
 			streamHeader.dataLen = ntohl(m_dataHead.data_len);;
@@ -106,13 +110,13 @@ j_result_t CJoStream::OnRead(const J_AsioDataBase *pAsioData, int nRet)
 				TUnlock(m_vecLocker);
 			}
 			m_nState = JO_READ_HEAD;
-			m_asioData.ioRead.buf = (j_char_t *)&m_dataHead;
+			m_asioData->ioRead.buf = (j_char_t *)&m_dataHead;
 			break;
 	}
-	m_asioData.ioRead.whole = true;
-	m_asioData.ioRead.finishedLen = 0;
-	m_asioData.ioRead.shared = true;
-	JoXAsio->Read(m_nSocket, &m_asioData);
+	m_asioData->ioRead.whole = true;
+	m_asioData->ioRead.finishedLen = 0;
+	m_asioData->ioRead.shared = true;
+	JoXAsio->Read(m_nSocket, m_asioData);
 	
 	TUnlock(m_locker);
 	return J_OK;

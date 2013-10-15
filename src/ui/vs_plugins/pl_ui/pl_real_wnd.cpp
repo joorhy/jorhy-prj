@@ -272,9 +272,11 @@ void CPlRealWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 	CPlWnd::OnLButtonDblClk(nFlags, point);
 }
 
-
 void CPlRealWnd::OnSize(UINT nType, int cx, int cy)
 {
+	HWND hReWnd = PlManager::Instance()->GetRecntWnd(m_hWnd);
+	if (hReWnd != NULL)
+		::PostMessage(hReWnd, WM_SIZE, 0, 0);
 	CPlWnd::OnSize(nType,cx,cy);
 }
 

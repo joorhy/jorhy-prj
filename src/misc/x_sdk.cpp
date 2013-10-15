@@ -404,6 +404,7 @@ j_result_t CXSdk::ParserRecordCtrl(const char *pJsonStr, J_ControlObj &ctrlObj)
 
 j_result_t CXSdk::NotifyAlarmInfo(const J_AlarmData &alarmData, j_char_t *pUrl)
 {
+	return 0;
 	//生成发送数据
 	json_object *json_request_obj = json_object_new_object();
 	json_object *json_param_obj = json_object_new_object();

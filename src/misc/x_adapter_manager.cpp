@@ -12,9 +12,9 @@ CAdapterManager::~CAdapterManager()
 
 }
 
-int CAdapterManager::StartVideo(const char *pResId, int nStreamType, const j_socket_t nSocket)
+int CAdapterManager::StartVideo(const char *pResId, int nStreamType, const j_socket_t nSocket, j_int32_t nDevid)
 {
-	J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, nStreamType));
+	J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
 	if (pChannelStream == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StartVideo channel not exist, resid = %s", pResId);
@@ -53,7 +53,7 @@ int CAdapterManager::StartVideo(const char *pResId, int nStreamType, const j_soc
 	return nRet;
 }
 
-int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_socket_t nSocket)
+int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_socket_t nSocket, j_int32_t nDevid)
 {
     J_ChannelKey key;
 	key.resid = pResId;
@@ -66,25 +66,32 @@ int CAdapterManager::StopVideo(const char *pResId, int nStreamType, const j_sock
 	if (it2 == it->second.ringBufferMap.end())
 		return J_NOT_EXIST;
 
-	J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, nStreamType));
-	if (pChannelStream->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
+	J_Obj *pObj = JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid);
+	if (pObj != NULL)
 	{
-		DelRingBuffer(pResId, nStreamType, nSocket);
-		if (!pChannelStream->HasMultiStream())
+		J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(pObj);
+		if (pChannelStream != NULL)
 		{
-			DelRingBuffer(pResId, nStreamType == 0 ? 1 : 0, nSocket);
-			JoAdapterFactory->ReleaseChannel(pResId, nStreamType == 0 ? 1 : 0);
+			if (pChannelStream->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
+			{
+				DelRingBuffer(pResId, nStreamType, nSocket);
+				if (!pChannelStream->HasMultiStream())
+				{
+					DelRingBuffer(pResId, nStreamType == 0 ? 1 : 0, nSocket);
+					JoAdapterFactory->ReleaseChannel(pResId, nStreamType == 0 ? 1 : 0);
+				}
+				JoAdapterFactory->ReleaseChannel(pResId, nStreamType);
+			}
 		}
-		JoAdapterFactory->ReleaseChannel(pResId, nStreamType);
 	}
 
 	return J_OK;
 }
 
-int CAdapterManager::StartVoice(const char *pResId, const j_socket_t nSocket)
+int CAdapterManager::StartVoice(const char *pResId, const j_socket_t nSocket, j_int32_t nDevid)
 {
     int nStreamType = 0;
-	J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, nStreamType));
+	J_ChannelStream *pChannelStream = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
 	if (pChannelStream == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StartVoice channel not exist, resid = %s", pResId);
@@ -114,7 +121,7 @@ int CAdapterManager::StartVoice(const char *pResId, const j_socket_t nSocket)
 	return nRet;
 }
 
-int CAdapterManager::StopVoice(const char *pResId, const j_socket_t nSocket)
+int CAdapterManager::StopVoice(const char *pResId, const j_socket_t nSocket, j_int32_t nDevid)
 {
     J_ChannelKey key;
 	key.resid = pResId;
@@ -127,7 +134,7 @@ int CAdapterManager::StopVoice(const char *pResId, const j_socket_t nSocket)
 	if (it2 == it->second.ringBufferMap.end())
 		return J_NOT_EXIST;
 
-	J_ChannelStream *pVoiceChannel = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, key.stream_type));
+	J_ChannelStream *pVoiceChannel = dynamic_cast<J_ChannelStream *>(JoAdapterFactory->FatchChannel(pResId, key.stream_type, nDevid));
 	if (pVoiceChannel->CloseStream(it->second.videoStream, it2->second) == J_NO_REF)
 	{
 		m_streamMap.erase(it);
@@ -137,10 +144,10 @@ int CAdapterManager::StopVoice(const char *pResId, const j_socket_t nSocket)
 	return J_OK;
 }
 
-int CAdapterManager::GetParser(const char *pResId, J_StreamParser *&pObj)
+int CAdapterManager::GetParser(const char *pResId, J_StreamParser *&pObj, j_int32_t nDevid)
 {
     int nStreamType = 0;
-	J_StreamParser *pVideoParser = dynamic_cast<J_StreamParser *>(JoAdapterFactory->FatchChannel(pResId, nStreamType));
+	J_StreamParser *pVideoParser = dynamic_cast<J_StreamParser *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
 	if (pVideoParser == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StartRecord channel not exist, resid = %s", pResId);
@@ -159,10 +166,10 @@ int CAdapterManager::GetParser(const char *pResId, J_StreamParser *&pObj)
 	return J_OK;
 }
 
-int CAdapterManager::DelParser(const char *pResId)
+int CAdapterManager::DelParser(const char *pResId, j_int32_t nDevid)
 {
     int nStreamType = 0;
-	J_StreamParser *pVideoParser = dynamic_cast<J_StreamParser *>(JoAdapterFactory->FatchChannel(pResId, nStreamType));
+	J_StreamParser *pVideoParser = dynamic_cast<J_StreamParser *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
 	if (pVideoParser == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::StopRecord channel not exist, resid = %s", pResId);
@@ -181,10 +188,10 @@ int CAdapterManager::DelParser(const char *pResId)
 	return J_OK;
 }
 
-int CAdapterManager::FindVodFile(const char *pResid, time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList)
+int CAdapterManager::FindVodFile(const char *pResid, time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList, j_int32_t nDevid)
 {
     int nStreamType = 0;
-	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResid, nStreamType));
+	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResid, nStreamType, nDevid));
 	if (pRemoteVod == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::GetVodStream channel not exist, resid = %s", pResid);
@@ -194,10 +201,10 @@ int CAdapterManager::FindVodFile(const char *pResid, time_t beginTime, time_t en
 	return pRemoteVod->EmunFileByTime(beginTime, endTime, fileList);
 }
 
-int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_RemoteVod *&pObj)
+int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_RemoteVod *&pObj, j_int32_t nDevid)
 {
     int nStreamType = 0;
-	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResId, nStreamType));
+	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
 	if (pRemoteVod == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::GetVodStream channel not exist, resid = %s", pResId);
@@ -216,10 +223,10 @@ int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_Remo
 	return J_OK;
 }
 
-int CAdapterManager::DelVodStream(j_socket_t nSocket, const char *pResId)
+int CAdapterManager::DelVodStream(j_socket_t nSocket, const char *pResId, j_int32_t nDevid)
 {
     int nStreamType = 0;
-	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResId, nStreamType));
+	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
 	if (pRemoteVod == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::DelVodStream channel not exist, resid = %s", pResId);

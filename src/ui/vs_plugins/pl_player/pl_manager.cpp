@@ -78,7 +78,7 @@ BOOL PlManager::Play(HWND hWnd, const PL_PlayInfo &playInfo)
 		if(playInfo.nPlayMode == STREAME_REALTIME)
 		{
 			if(!it->second.pReconnWnd)
-				it->second.pReconnWnd = new CWaitStatus(CWnd::FromHandle(::GetParent(hWnd)));
+				it->second.pReconnWnd = new CReconnWindow(CWnd::FromHandle(::GetParent(hWnd)));
 		}
 		else
 		{
@@ -406,7 +406,7 @@ HWND PlManager::GetRecntWnd(HWND hWnd)
 	m_locker.Lock();
 	HWND hRet = NULL;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
-	if (it != m_playerMap.end())
+	if (it != m_playerMap.end() &&  it->second.pReconnWnd != NULL)
 		hRet = it->second.pReconnWnd->m_hWnd;
 	
 	m_locker.Unlock();

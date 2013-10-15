@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="PlayManager"
-	ProjectGUID="{7EB11F82-A3A0-4A14-AC2E-6E3FB92AB97C}"
-	RootNamespace="PlayManager"
+	Name="JorReader"
+	ProjectGUID="{23926CE6-6060-4DFC-994D-B8C1BBBD62A4}"
+	RootNamespace="JorReader"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="0"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,10 +41,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../src/control/play;../../src/core;../../src/misc;../../src/utils"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JO_EXPORTS"
+				AdditionalIncludeDirectories="../../src/core;../../src/misc;../../src/utils"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JORREADER_EXPORTS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -61,7 +61,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
+				AdditionalDependencies="ws2_32.lib"
+				OutputFile="$(OutDir)\plugins\$(ProjectName).jo"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -116,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLAYMANAGER_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JORREADER_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -168,30 +169,30 @@
 	</References>
 	<Files>
 		<Filter
+			Name="src"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+			<File
+				RelativePath="..\..\src\files\jo_remote\JorFileHelper.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\files\jo_remote\JorFileReader.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
 			Name="include"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\src\control\play\PlayManager.h"
+				RelativePath="..\..\src\files\jo_remote\JorFileHelper.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\control\play\RealPlayObj.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="src"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
-			<File
-				RelativePath="..\..\src\control\play\PlayManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\control\play\RealPlayObj.cpp"
+				RelativePath="..\..\src\files\jo_remote\JorFileReader.h"
 				>
 			</File>
 		</Filter>

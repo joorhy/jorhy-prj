@@ -37,6 +37,8 @@ class JO_API CRingBuffer
 		
 	private:
 		J_OS::CTLock m_mutex;
+		//J_OS::CTLock m_condMtx;
+		J_OS::CXSem m_sem;
 	
 		char *m_pBuffer;
 		char *m_pBegin;

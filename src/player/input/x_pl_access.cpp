@@ -15,7 +15,6 @@ J_PlAccess::~J_PlAccess(void)
 J_PlAccess *J_PlAccess::CreateInstance(j_pl_cfg_t &cfg)
 {
 	J_PlAccess *pInstance = NULL;
-	j_pl_info("J_PlAccess::CreateInstance protcol = %d\n", cfg.i_protocol);
 	switch(cfg.i_protocol)
 	{
 	case PROTOCOL_RYSP: 

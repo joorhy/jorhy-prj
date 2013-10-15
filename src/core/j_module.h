@@ -444,13 +444,24 @@ struct J_EventParser : virtual public J_Obj
 
 struct J_PlayerObj : virtual public J_Obj
 {
-	///播放视频
+	///播放实时视频
+	///@param	 hWnd 播放窗口
+	///@param	 nDevid 设备ID
+	///@return	 参见x_errtype.j
+	virtual j_result_t PlayMedia(j_wnd_t hWnd, j_int32_t nDevid) { return J_NOT_IMPLEMENT; }
+	///停止实时播放
+	///@param	 nDevid 设备ID
+	///@return	 参见x_errtype.j
+	virtual j_result_t StopMedia(j_int32_t nDevid) { return J_NOT_IMPLEMENT; }
+	///播放历史视频
 	///@param	 hWnd 播放窗口
 	///@return	 参见x_errtype.j
-	virtual j_result_t PlayMedia(j_wnd_t hWnd) = 0;
-	///停止播放
+	virtual j_result_t PlayVod(j_wnd_t hWnd, j_uint64_t nStart, j_uint64_t nEnd) { return J_NOT_IMPLEMENT; }
+	///停止历史播放
+	///@param	 nDevid 设备ID
 	///@return	 参见x_errtype.j
-	virtual j_result_t StopMedia() = 0;
+	virtual j_result_t StopVod() { return J_NOT_IMPLEMENT; }
+
 	///处理媒体数据
 	///@return	 参见x_errtype.j
 	virtual j_result_t ProcessMedia() = 0;
@@ -513,6 +524,10 @@ struct J_Render : virtual public J_Obj
 	///释放Render
 	///@return	 参见x_errtype.j
 	virtual j_result_t DeinitRender() = 0;
+	///设置显示参数
+	///@param	 displayParam 显示参数
+	///@return	 参见x_errtype.j
+	virtual j_result_t SetDisplayParam(const J_VideoDisplayParam &displayParam) = 0;
 };
 
 template <typename CBase>

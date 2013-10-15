@@ -57,23 +57,24 @@ int CJoChannel::CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer)
 	if (!m_bOpened)
 		return J_OK;
 
-	CJoStream *pSonyStream = dynamic_cast<CJoStream *>(pObj);
-	if (pSonyStream == NULL)
+	CJoStream *pJoStream = dynamic_cast<CJoStream *>(pObj);
+	if (pJoStream == NULL)
 		return J_OK;
 
-	if (pSonyStream->RingBufferCount() == 1)
+	if (pJoStream->RingBufferCount() == 1)
 	{
 		StopView();
 		m_bOpened = false;
-		(dynamic_cast<CJoStream *> (pObj))->Shutdown();
-		pSonyStream->DelRingBuffer(pRingBuffer);
+
+		pJoStream->Shutdown();
+		pJoStream->DelRingBuffer(pRingBuffer);
 		delete pObj;
 
 		return J_NO_REF;
 	}
 
-	if (pSonyStream->RingBufferCount() > 0)
-		pSonyStream->DelRingBuffer(pRingBuffer);
+	if (pJoStream->RingBufferCount() > 0)
+		pJoStream->DelRingBuffer(pRingBuffer);
 
 	return J_OK;
 }
@@ -88,13 +89,13 @@ int CJoChannel::StartView()
 	}
 	
 	J_StreamServerInfo info = {0};
-	if (JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetStreamServerInfo(m_resid.c_str(), info) != J_OK)
-		return J_INVALID_DEV;
-	//strcpy(info.devIp, "192.168.1.6");
-	info.devPort = 8002;
+	//if (JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetStreamServerInfo(m_resid.c_str(), info) != J_OK)
+	//	return J_INVALID_DEV;
+	//strcpy(info.devIp, "192.168.1.12");
+	//info.devPort = 8002;
 	
 	m_recvSocket = new J_OS::CTCPSocket();
-	m_recvSocket->Connect(info.devIp, info.devPort);
+	m_recvSocket->Connect(m_pAdapter->GetRemoteIp(), m_pAdapter->GetRemotePort());
 	//m_recvSocket->Connect("192.168.1.6", 8002);
 
 	if (m_jospHelper.OpenStream(m_recvSocket, m_resid.c_str(), m_nStreamType) != J_OK)

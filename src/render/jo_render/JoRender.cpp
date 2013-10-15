@@ -13,10 +13,10 @@ CJoRender::CJoRender()
 	m_oldProc	= NULL;
 	memset(&m_videoparm, 0, sizeof(m_videoparm));
 
-	m_videoparm.width = 352;
-	m_videoparm.height = 288;
-	m_videoparm.vout_dev = jo_dev_ddraw;
-	m_videoparm.fourcc_type = jo_codec_yv12;
+	//m_videoparm.width = 704;
+	//m_videoparm.height = 576;
+	//m_videoparm.vout_dev = jo_dev_ddraw;
+	//m_videoparm.fourcc_type = jo_codec_yv12;
 
 	m_bShow		= false;
 	J_OS::LOGINFO("CJoRender::CJoRender()\n");
@@ -115,6 +115,12 @@ j_result_t CJoRender::DeinitRender()
 	CoUninitialize();
 	InvalidateRect(m_hwnd,NULL,TRUE);
 
+	return J_OK;
+}
+
+j_result_t CJoRender::SetDisplayParam(const J_VideoDisplayParam &displayParam)
+{
+	m_videoparm = displayParam;
 	return J_OK;
 }
 

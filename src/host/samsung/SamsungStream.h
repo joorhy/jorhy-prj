@@ -22,9 +22,9 @@ public:
     virtual j_result_t Startup();
     virtual j_result_t Shutdown();
     ///AsioUser
-	j_result_t OnAccept(const J_AsioDataBase *pAsioData, int nRet) {}
+	j_result_t OnAccept(const J_AsioDataBase *pAsioData, int nRet) { return 0; }
 	j_result_t OnRead(const J_AsioDataBase *pAsioData, int nRet);
-	j_result_t OnWrite(const J_AsioDataBase *pAsioData, int nRet) {}
+	j_result_t OnWrite(const J_AsioDataBase *pAsioData, int nRet) { return 0; }
 	j_result_t OnBroken(const J_AsioDataBase *pAsioData, int nRet);
 
 private:

@@ -41,7 +41,7 @@ J_Obj *CAdapterFactory::FatchAdapter(const char *pResId)
 	return NULL;
 }
 
-J_Obj* CAdapterFactory::FatchChannel(const char *pResId, int nStreamType)
+J_Obj* CAdapterFactory::FatchChannel(const char *pResId, int nStreamType, j_int32_t nDevId)
 {
 	//pResId 标识的是通道ID
 	if (NULL == pResId)
@@ -56,12 +56,20 @@ J_Obj* CAdapterFactory::FatchChannel(const char *pResId, int nStreamType)
 	ChannelMap::iterator it = m_channelMap.find(key);
 	if (it == m_channelMap.end())
 	{
-		J_ResourceInfo channelInfo;
-		int nRet = JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
-		if (nRet != J_OK)
+		J_ResourceInfo channelInfo = {0};
+		if (nDevId < 0)
 		{
-			J_OS::LOGINFO("CAdapterFactory::FatchChannel GetDevinfoByChannel error, resid = %s", pResId);
-			return NULL;
+			int nRet = JoManagerFactory->GetManager(CXConfig::GetConfigType())->GetChannelInfo(pResId, channelInfo);
+			if (nRet != J_OK)
+			{
+				J_OS::LOGINFO("CAdapterFactory::FatchChannel GetDevinfoByChannel error, resid = %s", pResId);
+				return NULL;
+			}
+		}
+		else
+		{
+			channelInfo.devInfo.devId = nDevId;
+			channelInfo.chNum = atoi(pResId);
 		}
 
 		char res_or_dvr[TYPE_OR_ID_SIZE];
@@ -73,6 +81,7 @@ J_Obj* CAdapterFactory::FatchChannel(const char *pResId, int nStreamType)
 			return NULL;
 
 		J_Obj *pObjChannel = NULL;
+		printf("8---%x\n", it->second);
 		J_DevAdapter *pDevAdapter = dynamic_cast<J_DevAdapter *>(it->second);
 		if (pDevAdapter != NULL)
 		{
@@ -86,6 +95,7 @@ J_Obj* CAdapterFactory::FatchChannel(const char *pResId, int nStreamType)
 		if (pObjChannel != NULL)
 		{
 			m_channelMap[key] = pObjChannel;
+			printf("9---%x\n", pObjChannel);
 			J_ChannelStream *pChannel = dynamic_cast<J_ChannelStream *>(pObjChannel);
 			if (pChannel && !pChannel->HasMultiStream())
 			{

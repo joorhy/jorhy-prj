@@ -479,7 +479,7 @@ struct J_DataHead
 	j_uint32_t frame_seq;		//帧序列号
 	j_int32_t b_last_frame;		//数据结束标准
 	j_int32_t reserve;				//预留
-	j_int64_t time_stamp;		//时间戳
+	j_uint64_t time_stamp;		//时间戳
 };
 
 struct J_VideoDecodeParam		//for init video output
@@ -489,6 +489,7 @@ struct J_VideoDecodeParam		//for init video output
 	j_int32_t width;
 	j_int32_t height;
 };
+typedef J_VideoDecodeParam J_VideoDisplayParam;
 
 struct J_VideoFormat
 {
