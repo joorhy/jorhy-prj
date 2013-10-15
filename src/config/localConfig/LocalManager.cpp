@@ -32,24 +32,46 @@ j_result_t CLocalManager::GetResourceInfo(ResourceMap &resInfo)
 	{
 		for (int i=1; i<=nRow; i++)
 		{
-			J_DeviceInfo devInfo = {0};
+			J_ResourceInfo resourceInfo = {0};
 			for (int j=0; j<nColumn; j++)
 			{
 				if (memcmp(dbResult[j], "id", strlen("id")) == 0)
-					devInfo.devId = atoi(dbResult[j+i*nColumn]);
+					resourceInfo.devInfo.devId = atoi(dbResult[j+i*nColumn]);
 				else if (memcmp(dbResult[j], "ip_addr", strlen("ip_addr")) == 0)
-					memcpy(devInfo.devIp, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
+					memcpy(resourceInfo.devInfo.devIp, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
 				else if (memcmp(dbResult[j], "port", strlen("port")) == 0)
-					devInfo.devPort = (short)atoi(dbResult[j+i*nColumn]);
+					resourceInfo.devInfo.devPort = (short)atoi(dbResult[j+i*nColumn]);
 				else if (memcmp(dbResult[j], "dev_type", strlen("dev_type")) == 0)
-					memcpy(devInfo.devType, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
+					memcpy(resourceInfo.devInfo.devType, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
 				else if (memcmp(dbResult[j], "user_name", strlen("user_name")) == 0)
-					memcpy(devInfo.userName, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
+					memcpy(resourceInfo.devInfo.userName, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
 				else if (memcmp(dbResult[j], "pass_wd", strlen("pass_wd")) == 0)
-					memcpy(devInfo.passWd, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
+					memcpy(resourceInfo.devInfo.passWd, dbResult[j+i*nColumn], strlen(dbResult[j+i*nColumn]));
 			}
-			devInfo.devStatus = jo_dev_broken;
-			//devList.push_back(devInfo);
+			resourceInfo.devInfo.devStatus = jo_dev_broken;
+			
+			char sql2_buff[128] = {0};
+			const char *sql2 = "select cha_num, res_id from t_channel where dev_id=%d;";
+			sprintf(sql2_buff, sql2, resourceInfo.devInfo.devId);
+			char **dbResult2 = NULL;
+			int nRow2 = 0;
+			int nColumn2 = 0;
+			char **errMessage2 = NULL;
+			if (sqlite3_get_table(m_sqlite, sql2_buff, &dbResult2, &nRow2, &nColumn2, errMessage2) == SQLITE_OK)
+			{
+				for (int i=1; i<=nRow2; i++)
+				{
+					for (int j=0; j<nColumn2; j++)
+					{
+						if (memcmp(dbResult2[j], "cha_num", strlen("cha_num")) == 0)
+							resourceInfo.chNum = atoi(dbResult2[j+i*nColumn2]);
+						else if (memcmp(dbResult2[j], "res_id", strlen("res_id")) == 0)
+							memcpy(resourceInfo.resid, dbResult2[j+i*nColumn2], strlen(dbResult2[j+i*nColumn2]));
+						resourceInfo.streamType = 0;
+					}
+				}
+				resInfo[resourceInfo.resid] = resourceInfo;
+			}
 		}
 
 		return J_OK;

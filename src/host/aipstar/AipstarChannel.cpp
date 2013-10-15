@@ -4,7 +4,6 @@
 CAipstarChannel::CAipstarChannel(const j_char_t *pResid, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream, j_int32_t nMode)
 {
 	m_bOpened = false;
-	m_nChannel = nChannel;
 
 	m_pAdapter = dynamic_cast<CAipstarAdapter *> (pOwner);
 	m_nChannel = nChannel;

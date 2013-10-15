@@ -1,7 +1,7 @@
 #include "x_sdk.h"
 
 static const char *dev_type[] = 
-{ "", "hik", "sony", "aipstar", "aironix", "samsung", "dahua", "onvif"};
+{ "", "hik", "sony", "aipstar", "aironix", "samsung", "dahua", "onvif", "hiksdk"};
 
 #define JSON_CLEAN_ALL() \
     if (!is_error(json_respose_obj) && json_respose_obj != NULL)\
@@ -24,6 +24,7 @@ char *CXSdk::HttpCommunicate(char *body, char *uri)
 	if(m_httpHelper.Process() != J_OK)
 	{
 	    J_OS::LOGINFO("HttpCommunicate MC Error");
+		TUnlock(m_locker);
 		return NULL;
 	}
 	j_int32_t ret_val = m_httpHelper.GetStatusCode();
@@ -41,6 +42,7 @@ char *CXSdk::HttpCommunicate(char *body, char *uri)
 				break;
 	default:
         J_OS::LOGINFO("HttpCommunicate MC Error, code = %d", ret_val);
+		TUnlock(m_locker);
         return NULL;
 	}
 	TUnlock(m_locker);

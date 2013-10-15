@@ -51,6 +51,10 @@ void CResourceManager::OnTimer()
 		{
 			m_bRegiste = true;
 		}
+		else
+		{
+			return;
+		}
 	}
 	else
 	{
