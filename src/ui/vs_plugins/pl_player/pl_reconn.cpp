@@ -66,7 +66,8 @@ LRESULT CReconnWindow::StartWait(WPARAM wParam,LPARAM lParam)
 
 	//SetWindowPos(CWnd::FromHandle(m_hWnd),0,0,rect.Width(),rect.Height(),SWP_NOMOVE);
 	SetWindowPos(CWnd::FromHandle(HWND_TOP),1,1,rect.Width()-2,rect.Height()-2,SWP_NOMOVE);
-	ShowWindow(SW_SHOW);
+	if (::IsWindowVisible(m_pPlWnd))
+		ShowWindow(SW_SHOW);
 	m_bRun = TRUE;
 	_beginthread(CReconnWindow::WorkThread, 0, this);
 	_beginthread(CReconnWindow::ReconnectThread, 0, this);
@@ -79,6 +80,10 @@ void CReconnWindow::ShowGifPicture()
 	while (m_bRun)
 	{
 		CenterWindow(CWnd::FromHandle(m_pPlWnd));
+		if (::IsWindowVisible(m_pPlWnd))
+			ShowWindow(SW_SHOW);
+		else
+			ShowWindow(SW_HIDE);
 		//m_hDC是外部传入的画图DC
 		Graphics gh(m_hDC); 
 		CRect rect;
@@ -124,6 +129,7 @@ void CReconnWindow::Reconnect()
 			}
 		}
 	}
+	ShowWindow(SW_HIDE);
 }
 
 void CReconnWindow::OnPaint()

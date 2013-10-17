@@ -9,7 +9,7 @@ public:
     ~CXLoadso();
 
 public:
-    int JoLoadSo();
+    int JoLoadSo(const char *pPath = NULL);
     int JoUnloadSo();
 
 private:

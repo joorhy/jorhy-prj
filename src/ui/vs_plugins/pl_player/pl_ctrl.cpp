@@ -172,6 +172,20 @@ void CPlCtrl::GridWindow(int nWndNum)
 			((CWnd*)m_playWndMap[i*nWndNum+j])->Invalidate(TRUE);
 		}
 	}
+	int nTotleWindow = m_playWndMap.size();
+	int m = nWndNum * nWndNum;
+	//WINDOWPLACEMENT placement;
+	//BOOL dwError;
+	for (; m < nTotleWindow; ++m)
+	{
+		::ShowWindow(m_playWndMap[m]->m_hWnd, SW_HIDE);
+		//dwError = IsWindowVisible(m_playWndMap[m]->m_hWnd);
+		/*::GetWindowPlacement(m_playWndMap[m]->m_hWnd, &placement);
+		placement.showCmd = SW_HIDE;
+		if (::SetWindowPlacement(m_playWndMap[m]->m_hWnd, &placement) == 0)
+			dwError = GetLastError();
+		::GetWindowPlacement(m_playWndMap[m]->m_hWnd, &placement);*/
+	}
 }
 
 HWND CPlCtrl::GetFocusWnd()

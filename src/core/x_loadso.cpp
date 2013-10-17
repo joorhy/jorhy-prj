@@ -14,24 +14,31 @@ CXLoadso::~CXLoadso()
 
 }
 
-int CXLoadso::JoLoadSo()
+int CXLoadso::JoLoadSo(const char *pPath)
 {
-    char currentPath[256] = {0};
-#ifdef WIN32
-	if (!GetCurrentDirectory(255, currentPath))  
-#else
-    if (!getcwd(currentPath, 255))
-#endif
-    {
-        J_OS::LOGERROR("CXLoadso::LoadSo getcwd error");
-        return J_UNKNOW;
-    }
-    //LoadSo(currentPath, "plugins/access");
-    //LoadSo(currentPath, "plugins/config");
-#ifdef _DEBUG
-	sprintf(currentPath, "%s\\Debug", currentPath);
-#endif
-	LoadSo(currentPath, "plugins");
+	if (pPath == NULL)
+	{
+		char currentPath[256] = {0};
+	#ifdef WIN32
+		if (!GetCurrentDirectory(255, currentPath))  
+	#else
+		if (!getcwd(currentPath, 255))
+	#endif
+		{
+			J_OS::LOGERROR("CXLoadso::LoadSo getcwd error");
+			return J_UNKNOW;
+		}
+		//LoadSo(currentPath, "plugins/access");
+		//LoadSo(currentPath, "plugins/config");
+	#ifdef _DEBUG
+		sprintf(currentPath, "%s\\Debug", currentPath);
+	#endif
+		LoadSo(currentPath, "plugins");
+	}
+	else
+	{
+		LoadSo(pPath, "plugins");
+	}
 
     return J_OK;
 }
