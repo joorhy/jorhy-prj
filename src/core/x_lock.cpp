@@ -112,51 +112,70 @@ j_result_t CXCond::TimeWait(CTLock &mutex, j_uint32_t sec, j_uint32_t nsec)
 /*************************************Sem********************************/
 CXSem::CXSem()
 {
+#ifdef WIN32
 	m_sem.handle =  CreateSemaphore (NULL,0,INT_MAX,NULL);
+#else
+#endif
 }
 
-CXSem::CXSem(LONG InitCount,LONG MaxCount,LPCTSTR lpName)
+CXSem::CXSem(j_long_t InitCount,j_long_t MaxCount,j_char_t *lpName)
 {
+#ifdef WIN32
 	m_sem.handle =  CreateSemaphore (NULL,InitCount,MaxCount,lpName);
+#else
+#endif
 }
 
 CXSem::~CXSem()
 {
+#ifdef WIN32S
 	CloseHandle(m_sem.handle);
+#else
+#endif
 }
 
 void CXSem::Post()
 {
+#ifdef WIN32
 	ReleaseSemaphore (m_sem.handle,1,NULL);
+#else
+#endif
 }
 
 void CXSem::Post(int n)
 {
 	if(n < 0)
 		return;
+#ifdef WIN32
 	ReleaseSemaphore (m_sem.handle,n,NULL);
+#else
+#endif
 }
 
 void CXSem::Wait()
 {
+#ifdef WIN32
 	DWORD ret;
-
 	do
 	{
 		ret = WaitForSingleObject(m_sem.handle,INFINITE);
 	}
 	while (ret == WAIT_IO_COMPLETION);
+#else
+#endif
 }
 
 void CXSem::WaitTime(int ms_time)
 {
+#ifdef WIN32
 	DWORD ret;
-
 	do
 	{
 		ret = WaitForSingleObject(m_sem.handle,ms_time);
 	}
 	while (ret == WAIT_IO_COMPLETION);
+#else
+#endif
 }
 
 void CXSem::Wait(int times)

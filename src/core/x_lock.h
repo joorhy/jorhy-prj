@@ -48,7 +48,7 @@ class JO_API CXSem
 {
 public:
 	CXSem();
-	CXSem(LONG InitCount,LONG MaxCount,LPCTSTR lpName);
+	CXSem(j_long_t InitCount,j_long_t MaxCount,j_char_t *lpName);
 	~CXSem();
 
 	void Post();

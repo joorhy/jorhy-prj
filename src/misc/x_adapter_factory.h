@@ -34,7 +34,7 @@ public:
 	///@param[in]	nStreamType 码流类型 0-主码流, 1-子码流
 	///@param[in]	nDevId 设备ID号
 	///@return 		NULL-获取失败,需要调用CreateInstence; 非空-对象的地址
-	J_Obj *FatchChannel(const char *pResId, int nStreamType, j_int32_t nDevId);
+	J_Obj *FatchChannel(const char *pResId, int nStreamType, j_int32_t nDevId = -1);
 
 	///构造Channel对象
 	///@param[in] 	pResId 全局唯一的资源ID
