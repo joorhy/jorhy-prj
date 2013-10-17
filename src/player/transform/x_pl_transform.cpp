@@ -78,8 +78,8 @@ unsigned CXPlTransform::VideoThread(void *parm)
 			}
 			else
 			{
-				pThis->m_vbuffer	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT *  20);		//参见m_decoders动态生成大小
-				pThis->m_vbufferEX	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT * 20);
+				pThis->m_vbuffer	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);		//参见m_decoders动态生成大小
+				pThis->m_vbufferEX	= J_PlBuffer::CreateInstance(BUFFER_FIFO,BUFFER_VIDEO_OUTPUT);
 				br = pThis->VideoLoopPull();
 			}
 		}

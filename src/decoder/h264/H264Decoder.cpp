@@ -32,7 +32,7 @@ j_result_t CH264Decoder::InidDecoder()
 		return J_DECODER_INIT_ERROR;
 
 	if(m_pCodec->capabilities & CODEC_CAP_TRUNCATED)
-		m_pContext->flags|= CODEC_FLAG_TRUNCATED; /* we do not send complete frames */
+		m_pContext->flags|= CODEC_FLAG_TRUNCATED;  /*we do not send complete frames */
 
 	if(avcodec_open(m_pContext,m_pCodec) < 0)
 		return J_DECODER_INIT_ERROR;

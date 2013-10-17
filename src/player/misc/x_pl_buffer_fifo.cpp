@@ -125,7 +125,7 @@ J_PL_RESULT CXPlBufferFIFO::Flush()
 
 void CXPlBufferFIFO::WaitData()
 {
-	m_sem.WaitTime(300);
+	m_sem.WaitTime(30);
 }
 
 void CXPlBufferFIFO::Read(char *pData, int nLen)
