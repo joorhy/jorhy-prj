@@ -143,6 +143,7 @@ j_result_t CXHttp::Process()
 		if (memcmp(m_pResponse + (m_nRespHeadLen - 4), x_http_end_tag, strlen(x_http_end_tag)) == 0)
 			break;
 	}
+
 	char *p = strstr(m_pResponse, "Content-Length: ");
 	if (p == NULL)
 		p = strstr(m_pResponse, "CONTENT-LENGTH: ");

@@ -1,7 +1,7 @@
 #include "x_sdk.h"
 
 static const char *dev_type[] = 
-{ "", "hik", "sony", "aipstar", "aironix", "samsung", "dahua", "onvif", "hiksdk"};
+{ "joh", "hik", "sony", "aipstar", "aironix", "samsung", "dahua", "onvif", "hiksdk"};
 
 #define JSON_CLEAN_ALL() \
     if (!is_error(json_respose_obj) && json_respose_obj != NULL)\
@@ -31,15 +31,18 @@ char *CXSdk::HttpCommunicate(char *body, char *uri)
 	switch(ret_val)
 	{
 	case 200:
-				resrvdata = m_httpHelper.GetBody();
-				if (resrvdata == NULL)
-					return NULL;
-				
-				//J_OS::LOGINFO("%d", httpHelper.GetBodyLen());
-				ret_data = new char[m_httpHelper.GetBodyLen() + 1];
-				memset(ret_data, 0, m_httpHelper.GetBodyLen() + 1);
-				strncpy(ret_data, resrvdata, m_httpHelper.GetBodyLen());
-				break;
+		resrvdata = m_httpHelper.GetBody();
+		if (resrvdata == NULL)
+		{
+			TUnlock(m_locker);
+			return NULL;
+		}
+		
+		//J_OS::LOGINFO("%d", httpHelper.GetBodyLen());
+		ret_data = new char[m_httpHelper.GetBodyLen() + 1];
+		memset(ret_data, 0, m_httpHelper.GetBodyLen() + 1);
+		strncpy(ret_data, resrvdata, m_httpHelper.GetBodyLen());
+		break;
 	default:
         J_OS::LOGINFO("HttpCommunicate MC Error, code = %d", ret_val);
 		TUnlock(m_locker);
@@ -161,20 +164,29 @@ j_result_t CXSdk::Login(j_int32_t nId, j_char_t *pUrl, ResourceMap &resInfo)
 		sprintf(devInfo.passWd, "%s", JsonGetString(json_dev_obj, "pass"));
 		json_res_obj = json_object_object_get(json_dev_obj, (char *)"cha");
         if (json_res_obj == NULL)
-		    continue;
-
-		for(int j=0; j<json_object_array_length(json_res_obj); j++)
 		{
-			json_channel_obj = json_object_array_get_idx(json_res_obj, j);
-            if (json_channel_obj == NULL)
-                continue;
-
 			J_ResourceInfo resourceInfo;
 			resourceInfo.devInfo = devInfo;
 			resourceInfo.chNum = JsonGetInt(json_channel_obj, "cha");
-			sprintf(resourceInfo.resid, "%s", JsonGetString(json_channel_obj, "resid"));
+			sprintf(resourceInfo.resid, "%s", "0");
 			resourceInfo.streamType	= JsonGetInt(json_channel_obj, "ms");
 			resInfo[resourceInfo.resid] = resourceInfo;
+		}
+		else
+		{
+			for(int j=0; j<json_object_array_length(json_res_obj); j++)
+			{
+				json_channel_obj = json_object_array_get_idx(json_res_obj, j);
+				if (json_channel_obj == NULL)
+					continue;
+
+				J_ResourceInfo resourceInfo;
+				resourceInfo.devInfo = devInfo;
+				resourceInfo.chNum = JsonGetInt(json_channel_obj, "cha");
+				sprintf(resourceInfo.resid, "%s", JsonGetString(json_channel_obj, "resid"));
+				resourceInfo.streamType	= JsonGetInt(json_channel_obj, "ms");
+				resInfo[resourceInfo.resid] = resourceInfo;
+			}
 		}
 	}
 	JSON_CLEAN_ALL();
@@ -191,6 +203,7 @@ j_result_t CXSdk::GetResourceInfo(j_char_t *pResid, j_char_t *pUrl, J_ResourceIn
 		memset(resInfo.resid, 0, sizeof(resInfo.resid));
 		resInfo.chNum = 0;
 		resInfo.streamType = 0;
+		resInfo.devInfo.devId = atoi(pResid);
 	}
 	else
 	{
