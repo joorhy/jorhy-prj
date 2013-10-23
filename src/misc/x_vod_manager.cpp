@@ -109,6 +109,15 @@ j_result_t CXVodManager::SearchVodFiles(const j_char_t *pResid, j_time_t begin_t
 	j_string_t strBeginDate = JoTime->GetDate(begin_time);
 	j_string_t strEndDate = JoTime->GetDate(end_time);
 	SearchOneDayFiles(pResid, strBeginDate.c_str(), begin_time, end_time, vecFileInfo);
+	j_time_t temp_begin_time = begin_time + 86400;
+	int i = 1;
+	while (temp_begin_time < end_time)
+	{
+		strBeginDate = JoTime->GetDate(begin_time);
+		temp_begin_time = atoi(strBeginDate.c_str());
+		SearchOneDayFiles(pResid, strBeginDate.c_str(), temp_begin_time, end_time, vecFileInfo);
+		temp_begin_time = begin_time + (86400 * ++i);
+	}
 	if (strBeginDate != strEndDate)
 		SearchOneDayFiles(pResid, strEndDate.c_str(), begin_time, end_time, vecFileInfo);
 

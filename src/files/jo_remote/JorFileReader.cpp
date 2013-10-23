@@ -1,6 +1,7 @@
 #include "JorFileReader.h"
 #include "x_sdk.h"
 #include "x_config.h"
+#include "x_adapter_manager.h"
 extern "C"
 {
 #include "x_inet.h"
@@ -114,13 +115,22 @@ int CJorFileReader::OpenFile(j_uint64_t s_time, j_uint64_t e_time)
 	J_DeviceInfo info = {0};
 	//if (CManagerFactory::Instance()->GetManager(CXConfig::GetConfigType())->GetDeviceInfo(m_resid.c_str(), info) != J_OK)
 	//	return J_INVALID_DEV;
-	strcpy(info.devIp, "192.168.1.12");
-	info.devPort = 8002;
+	J_Obj *pObj = NULL;
+	int nIndex = m_resid.find('.');
+	if (nIndex >= 0)
+		pObj = JoAdapterFactory->FatchAdapter(m_resid.substr(0, nIndex).c_str());
+	else
+		pObj = JoAdapterFactory->FatchAdapter(m_resid.c_str());
+	
+	J_DevAdapter *pAdapter = dynamic_cast<J_DevAdapter *>(pObj);
+	if (pAdapter == NULL)
+		return J_UNKNOW;
+	pAdapter->GetDevInfo(info);
 	
 	m_recvSocket = new J_OS::CTCPSocket();
 	m_recvSocket->Connect(info.devIp, info.devPort);
 	
-	if (m_jorHelper.OpenFile(m_recvSocket, m_resid.c_str(), s_time, e_time) != J_OK)
+	if (m_jorHelper.OpenFile(m_recvSocket, m_resid.substr(nIndex + 1).c_str(), s_time, e_time) != J_OK)
 	{
 		delete m_recvSocket;
 		m_recvSocket = NULL;
@@ -166,6 +176,7 @@ void CJorFileReader::OnWork()
 
 		TLock(m_locker);
 		J_DataHead head = {0};
+		j_sleep(39);
 		int	nLen = m_recvSocket->Read_n((char *)&head, sizeof(head));
 		if (nLen < 0)
 		{

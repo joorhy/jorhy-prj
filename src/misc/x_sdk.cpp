@@ -168,7 +168,7 @@ j_result_t CXSdk::Login(j_int32_t nId, j_char_t *pUrl, ResourceMap &resInfo)
 			J_ResourceInfo resourceInfo;
 			resourceInfo.devInfo = devInfo;
 			resourceInfo.chNum = JsonGetInt(json_channel_obj, "cha");
-			sprintf(resourceInfo.resid, "%s", "0");
+			sprintf(resourceInfo.resid, "%d", devInfo.devId);
 			resourceInfo.streamType	= JsonGetInt(json_channel_obj, "ms");
 			resInfo[resourceInfo.resid] = resourceInfo;
 		}

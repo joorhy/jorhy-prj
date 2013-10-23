@@ -17,11 +17,7 @@ int CJorFileHelper::OpenFile(J_OS::CTCPSocket *recvSocket, const char *pResid, j
 	JoXJoSdk->MakeReqHeader(temp_buff, NULL, jo_open_file_req, jo_intact_pack, 0, sizeof(J_VodPlayData));
 	J_VodPlayData *pVodPlayData = (J_VodPlayData *)(temp_buff + sizeof(J_CtrlHead));
 	
-	const char *pNextId = strstr(pResid, ".");
-	if (pNextId != NULL)
-		memcpy(pVodPlayData->res_id, pNextId + 1, strlen(pNextId + 1));
-	else
-		memcpy(pVodPlayData->res_id, pResid, strlen(pResid));
+	memcpy(pVodPlayData->res_id, pResid, strlen(pResid));
 	pVodPlayData->begin_time = htonl(begin);
 	pVodPlayData->end_time = htonl(end);
 	recvSocket->Write_n(temp_buff, sizeof(J_CtrlHead) + sizeof(J_VodPlayData));

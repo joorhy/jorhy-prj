@@ -22,13 +22,17 @@ typedef std::queue<J_Task *> j_queue_task;
 
 struct J_DevAdapter : virtual public J_Obj
 {
+	///获得设备信息
+	///@param[out] info 设备信息
+	///@return 		参见x_error_type.h
+	virtual j_result_t GetDevInfo(J_DeviceInfo &info) = 0;
 	///获得设备状态
 	///@return 		READY-已经登录, BROKEN-断线或者未登录状态
 	virtual J_DevStatus GetStatus() const  = 0;
 
 	///断线通知
 	///@return 		参见x_error_type.h
-	virtual int Broken() = 0;
+	virtual j_result_t Broken() = 0;
 
 	///构造视频通道对象
 	///@param[in] 	pResid 全局唯一标识
@@ -38,7 +42,7 @@ struct J_DevAdapter : virtual public J_Obj
 	///@param[in] 	nStream 码流类型, 0-主码流, 1-子码流
 	///@param[in] 	nMode 传输方式 0-TCP, 1-UDP
 	///@return 		参见x_error_type.h
-	virtual int MakeChannel(const j_char_t *pResid, J_Obj *&pObj, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream = 0, j_int32_t nMode = 0) = 0;
+	virtual j_result_t MakeChannel(const j_char_t *pResid, J_Obj *&pObj, J_Obj *pOwner, j_int32_t nChannel, j_int32_t nStream = 0, j_int32_t nMode = 0) = 0;
 };
 
 struct J_DevInput : virtual public J_Obj

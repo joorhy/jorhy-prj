@@ -5,16 +5,15 @@ JO_IMPLEMENT_INTERFACE(Adapter, "joh", CJoAdapter::Maker)
 
 CJoAdapter::CJoAdapter(int nDvrId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword)
 {
-	memset(m_remoteIP, 0, sizeof(m_remoteIP));
-	memset(m_username, 0, sizeof(m_username));
-	memset(m_password, 0, sizeof(m_password));
+	memset (&m_devInfo, 0, sizeof(J_DeviceInfo));
 
-	m_remotePort = nPort;
-	strcpy(m_remoteIP, pAddr);
-	strcpy(m_username, pUsername);
-	strcpy(m_password, pPassword);
-
-	m_status = jo_dev_ready;
+	m_devInfo.devPort = nPort;
+	m_devInfo.devId = nDvrId;
+	strcpy(m_devInfo.devIp, pAddr);
+	strcpy(m_devInfo.userName, pUsername);
+	strcpy(m_devInfo.passWd, pPassword);
+	strcpy(m_devInfo.devType, "joh");
+	m_devInfo.devStatus = jo_dev_ready;
 
 	J_OS::LOGINFO("CJoAdapter::CJoAdapter(ip = %s, port = %d)", pAddr, nPort);
 }
@@ -24,14 +23,21 @@ CJoAdapter::~CJoAdapter()
 
 }
 
+j_result_t CJoAdapter::GetDevInfo(J_DeviceInfo &info)
+{
+	
+	memcpy(&info, &m_devInfo, sizeof(J_DeviceInfo));
+	return J_OK;
+}
+
 J_DevStatus CJoAdapter::GetStatus() const
 {
-	return m_status;
+	return (J_DevStatus)m_devInfo.devStatus;
 }
 
 int CJoAdapter::Broken()
 {
-    m_status = jo_dev_broken;
+    m_devInfo.devStatus = jo_dev_broken;
 	return J_OK;
 }
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="joiss" Database="./joiss.tags">
-  <Project Name="AipstarHost" Path="AipstarHost.project" Active="No"/>
   <Project Name="joiss" Path="joiss.project" Active="Yes"/>
   <Project Name="JoissManager" Path="JoissManager.project" Active="No"/>
   <Project Name="core" Path="core.project" Active="No"/>
@@ -9,17 +8,10 @@
   <Project Name="MCConfig" Path="MCConfig.project" Active="No"/>
   <Project Name="misc" Path="misc.project" Active="No"/>
   <Project Name="RecordManager" Path="RecordManager.project" Active="No"/>
-  <Project Name="SamsungHost" Path="SamsungHost.project" Active="No"/>
-  <Project Name="SonyHost" Path="SonyHost.project" Active="No"/>
   <Project Name="StreamManager" Path="StreamManager.project" Active="No"/>
   <Project Name="utils" Path="utils.project" Active="No"/>
-  <Project Name="PSStream" Path="PSStream.project" Active="No"/>
-  <Project Name="TSStream" Path="TSStream.project" Active="No"/>
-  <Project Name="RtpStream" Path="RtpStream.project"/>
   <Project Name="HttpRequest" Path="HttpRequest.project" Active="No"/>
-  <Project Name="RtspRequest" Path="RtspRequest.project" Active="No"/>
   <Project Name="JofsReader" Path="JofsReader.project" Active="No"/>
-  <Project Name="DahuaHost" Path="DahuaHost.project"/>
   <Project Name="JospRequest" Path="JospRequest.project" Active="No"/>
   <Project Name="JosStream" Path="JosStream.project" Active="No"/>
   <Project Name="JospControl" Path="JospControl.project"/>
@@ -27,24 +19,19 @@
   <Project Name="JoHost" Path="JoHost.project"/>
   <Project Name="JorReader" Path="JorReader.project"/>
   <Project Name="PlayManager" Path="PlayManager.project"/>
-  <Project Name="OnvifHost2" Path="OnvifHost2.project" Active="No"/>
-  <Project Name="Hikv3Host" Path="Hikv3Host.project" Active="No"/>
-  <Project Name="HikSdkHost" Path="HikSdkHost.project"/>
+  <Project Name="HikSdkHost" Path="HikSdkHost.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="joiss" ConfigName="Debug"/>
       <Project Name="core" ConfigName="Debug"/>
       <Project Name="utils" ConfigName="Debug"/>
       <Project Name="HikHost" ConfigName="Debug"/>
-      <Project Name="SamsungHost" ConfigName="Debug"/>
-      <Project Name="SonyHost" ConfigName="Debug"/>
       <Project Name="JoissManager" ConfigName="Debug"/>
       <Project Name="RecordManager" ConfigName="Debug"/>
       <Project Name="StreamManager" ConfigName="Debug"/>
       <Project Name="LocalConfig" ConfigName="Debug"/>
       <Project Name="MCConfig" ConfigName="Debug"/>
       <Project Name="joiss" ConfigName="Debug"/>
-      <Project Name="AipstarHost" ConfigName="Debug"/>
       <Project Name="AipstarHost" ConfigName="Debug"/>
       <Project Name="AironixHost" ConfigName="Debug"/>
       <Project Name="joiss" ConfigName="Debug"/>
@@ -59,13 +46,8 @@
       <Project Name="SonyHost" ConfigName="Debug"/>
       <Project Name="StreamManager" ConfigName="Debug"/>
       <Project Name="utils" ConfigName="Debug"/>
-      <Project Name="PSStream" ConfigName="Debug"/>
-      <Project Name="TSStream" ConfigName="Debug"/>
-      <Project Name="RtpStream" ConfigName="Debug"/>
       <Project Name="HttpRequest" ConfigName="Debug"/>
-      <Project Name="RtspRequest" ConfigName="Debug"/>
       <Project Name="JofsReader" ConfigName="Debug"/>
-      <Project Name="DahuaHost" ConfigName="Debug"/>
       <Project Name="JospRequest" ConfigName="Debug"/>
       <Project Name="JosStream" ConfigName="Debug"/>
       <Project Name="JospControl" ConfigName="Debug"/>
@@ -73,8 +55,6 @@
       <Project Name="JoHost" ConfigName="Debug"/>
       <Project Name="JorReader" ConfigName="Debug"/>
       <Project Name="PlayManager" ConfigName="Debug"/>
-      <Project Name="OnvifHost2" ConfigName="Debug"/>
-      <Project Name="Hikv3Host" ConfigName="Debug"/>
       <Project Name="HikSdkHost" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
@@ -82,15 +62,12 @@
       <Project Name="core" ConfigName="Release"/>
       <Project Name="utils" ConfigName="Release"/>
       <Project Name="HikHost" ConfigName="Release"/>
-      <Project Name="SamsungHost" ConfigName="Release"/>
-      <Project Name="SonyHost" ConfigName="Release"/>
       <Project Name="JoissManager" ConfigName="Release"/>
       <Project Name="RecordManager" ConfigName="Release"/>
       <Project Name="StreamManager" ConfigName="Release"/>
       <Project Name="LocalConfig" ConfigName="Release"/>
       <Project Name="MCConfig" ConfigName="Release"/>
       <Project Name="misc" ConfigName="Release"/>
-      <Project Name="AipstarHost" ConfigName="Release"/>
       <Project Name="AipstarHost" ConfigName="Release"/>
       <Project Name="AironixHost" ConfigName="Release"/>
       <Project Name="joiss" ConfigName="Release"/>
@@ -105,13 +82,8 @@
       <Project Name="SonyHost" ConfigName="Release"/>
       <Project Name="StreamManager" ConfigName="Release"/>
       <Project Name="utils" ConfigName="Release"/>
-      <Project Name="PSStream" ConfigName="Release"/>
-      <Project Name="TSStream" ConfigName="Release"/>
-      <Project Name="RtpStream" ConfigName="Release"/>
       <Project Name="HttpRequest" ConfigName="Release"/>
-      <Project Name="RtspRequest" ConfigName="Release"/>
       <Project Name="JofsReader" ConfigName="Release"/>
-      <Project Name="DahuaHost" ConfigName="Release"/>
       <Project Name="JospRequest" ConfigName="Release"/>
       <Project Name="JosStream" ConfigName="Release"/>
       <Project Name="JospControl" ConfigName="Release"/>
@@ -119,8 +91,6 @@
       <Project Name="JoHost" ConfigName="Release"/>
       <Project Name="JorReader" ConfigName="Release"/>
       <Project Name="PlayManager" ConfigName="Release"/>
-      <Project Name="OnvifHost2" ConfigName="Release"/>
-      <Project Name="Hikv3Host" ConfigName="Release"/>
       <Project Name="HikSdkHost" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
