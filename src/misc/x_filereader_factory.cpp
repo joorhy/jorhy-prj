@@ -1,4 +1,5 @@
 #include "x_filereader_factory.h"
+#include "x_adapter_manager.h"
 #include "x_string.h"
 
 JO_IMPLEMENT_SINGLETON(FileReaderFactory)
@@ -24,18 +25,25 @@ J_FileReader *CFileReaderFactory::GetFileReader(j_socket_t nSocket, const char *
 	FileReaderMap::iterator it = m_fileReaderMap.find(nSocket);
 	if (it == m_fileReaderMap.end())
 	{
-		FileReaderRegistMap::iterator itFileReader = m_fileReaderRegistMap.find(pType);
-		if (itFileReader == m_fileReaderRegistMap.end())
+		if (strcmp(pType, "remote") == 0)
 		{
-			J_OS::LOGINFO("CFileReaderFactory::GetFileReader FileReader not registed, fileReaderType = %s", pType);
+			JoAdapterManager->GetVodStream(nSocket, pResid, fileReader);
 		}
 		else
 		{
-			itFileReader->second(fileReader, pResid);
+			FileReaderRegistMap::iterator itFileReader = m_fileReaderRegistMap.find(pType);
+			if (itFileReader == m_fileReaderRegistMap.end())
+			{
+				J_OS::LOGINFO("CFileReaderFactory::GetFileReader FileReader not registed, fileReaderType = %s", pType);
+			}
+			else
+			{
+				itFileReader->second(fileReader, pResid);
+			}
 		}
-		
 		if (fileReader != NULL)
-			m_fileReaderMap[nSocket] = dynamic_cast<J_FileReader *>(fileReader);	}
+			m_fileReaderMap[nSocket] = dynamic_cast<J_FileReader *>(fileReader);	
+	}
 	else
 		fileReader = it->second;
 

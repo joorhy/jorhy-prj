@@ -22,11 +22,11 @@ public:
 	int GetRingBuffer(const char *pResId, int nStreamType, const j_socket_t nSocket, CRingBuffer *&pRingBuffer);		//获取某一路的视频的流队列
 	int DelRingBuffer(const char *pResId, int nStreaType, const j_socket_t nSocket);									//销毁一路视频的流队列
 
-	int GetVodStream(j_socket_t nSocket, const char *pResId, J_RemoteVod *&pObj, j_int32_t nDevid = -1);						//获得DVR录像点播流
+	int GetVodStream(j_socket_t nSocket, const char *pResId, J_Obj *&pObj, j_int32_t nDevid = -1);						//获得DVR录像点播流
 	int DelVodStream(j_socket_t nSocket, const char *pResId, j_int32_t nDevid = -1);												//删除DVR录像点播流
 
 	//查找DVR上的录像文件
-	int FindVodFile(const char *pResid, time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList, j_int32_t nDevid = -1);
+	int FindRemoteFile(const char *pResid, time_t beginTime, time_t endTime, j_vec_file_info_t &vecFileInfo, j_int32_t nDevid = -1);
 
 private:
 	typedef std::map<j_socket_t, CRingBuffer *> RingBufferMap;

@@ -7,6 +7,7 @@
 
 class CHikSdkChannelBase : public J_ChannelStream
                       , public J_PtzControl
+					  , public J_RemoteVod
 {};
 
 class CHikSdkChannel : public J_ResidTmpl<J_BaseAdapter, CHikSdkChannelBase>
@@ -17,11 +18,15 @@ public:
 
 public:
 	///J_StreamChannel
-	virtual int OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
-	virtual int CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
-	virtual bool HasMultiStream() { return true; }
+	virtual j_result_t OpenStream(J_Obj *&pObj, CRingBuffer *pRingBuffer);
+	virtual j_result_t CloseStream(J_Obj *pObj, CRingBuffer *pRingBuffer);
+	virtual j_boolean_t HasMultiStream() { return true; }
 	///J_PtzControl
-	virtual int PtzControl(int nCmd, int nParam);
+	virtual j_result_t PtzControl(int nCmd, int nParam);
+	///J_RemoteVod
+	virtual j_result_t EmunFileByTime(time_t beginTime, time_t endTime, j_vec_file_info_t &vecFileInfo);
+	virtual j_result_t OpenVodStream(J_Obj *&pObj);
+	virtual j_result_t CloseVodStream(J_Obj *pObj);
 
 private:
 	CHikSdkAdapter *m_pAdapter;

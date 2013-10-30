@@ -30,14 +30,28 @@ void CResourceManager::ReleaseResource()
 j_result_t CResourceManager::AddResource(J_ResourceInfo &resInfo)
 {
 	TLock(m_locker);
-	ResourceMap::iterator itDev = m_devMap.find(resInfo.resid);
-	if (itDev == m_devMap.end())
+	ResourceMap::iterator itDev = m_resMap.find(resInfo.resid);
+	if (itDev == m_resMap.end())
 	{
 		resInfo.devInfo.devStatus = jo_dev_broken;
-		m_devMap[resInfo.resid] = resInfo;
+		m_resMap[resInfo.resid] = resInfo;
 	}
 	TUnlock(m_locker);
 	return J_OK;
+}
+
+j_result_t CResourceManager::GetResource(const char *pResid, J_ResourceInfo &resInfo)
+{
+	j_result_t nResult = J_UNKNOW;
+	TLock(m_locker);
+	ResourceMap::iterator itDev = m_resMap.find(pResid);
+	if (itDev != m_resMap.end())
+	{
+		resInfo = itDev->second;
+		nResult = J_OK;
+	}
+	TUnlock(m_locker);
+	return nResult;
 }
 
 void CResourceManager::OnTimer()
@@ -46,7 +60,7 @@ void CResourceManager::OnTimer()
 	if (!m_bRegiste)
 	{
 		J_JoManager *pManager = JoManagerFactory->GetManager(CXConfig::GetConfigType());
-		nRet = pManager->GetResourceInfo(m_devMap);
+		nRet = pManager->GetResourceInfo(m_resMap);
 		if (nRet == J_OK)
 		{
 			m_bRegiste = true;
@@ -63,8 +77,8 @@ void CResourceManager::OnTimer()
 	}
 
 	TLock(m_locker);
-	ResourceMap::iterator itDev = m_devMap.begin();
-	for (; itDev != m_devMap.end(); ++itDev)
+	ResourceMap::iterator itDev = m_resMap.begin();
+	for (; itDev != m_resMap.end(); ++itDev)
 	{
 		if (itDev->second.devInfo.devStatus == jo_dev_broken)
 		{

@@ -67,7 +67,10 @@ int main(int argc,char **argv)
 		controlManagerVec.push_back(pControlManager);
 	}
 
+#ifdef WIN32
+#else
     signal(SIGINT, OnSignal);
+#endif
 	while(bRun)
 	{
 		j_sleep(10);

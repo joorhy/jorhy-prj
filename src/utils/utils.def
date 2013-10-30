@@ -99,13 +99,3 @@ sqlite3_value_text16be
 sqlite3_value_text16le
 sqlite3_value_type
 sqlite3_vmprintf
-faacEncGetVersion
-faacEncGetCurrentConfiguration
-faacEncSetConfiguration
-faacEncOpen
-faacEncGetDecoderSpecificInfo
-faacEncEncode
-faacEncClose
-mlt_based_coder_init
-G722_1_1C_Float_encoder
-G722_1_1C_Float_decoder

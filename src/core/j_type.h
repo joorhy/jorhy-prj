@@ -313,7 +313,8 @@ struct J_ResourceInfo
 {
 	j_char_t resid[32];			//资源ID
 	j_int32_t chNum;			//通道编号
-	j_int32_t streamType;	//码流类型0-主码流，1-子码流
+	j_int32_t streamType;	//码流类型 0-主码流，1-子码流
+	j_int32_t storeType;		//存储类型 0-本地存储，1-远程存储
 	J_DeviceInfo devInfo;	//设备信息
 };
 typedef std::map<j_string_t, J_ResourceInfo> ResourceMap;

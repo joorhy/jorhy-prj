@@ -49,6 +49,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				CallingConvention="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -167,68 +168,6 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="faac"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
-			>
-			<File
-				RelativePath="..\..\src\utils\faac\aacquant.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\backpred.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\bitstream.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\channels.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\fft.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\filtbank.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\frame.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\huffman.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\ltp.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\midside.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\psychkni.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\sqlite3\sqlite3.def"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\tns.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\utils\faac\util.c"
-				>
-			</File>
-		</Filter>
 		<Filter
 			Name="include"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
@@ -466,14 +405,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\utils\common\x_sha1.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="g722_1"
-			>
-			<File
-				RelativePath="..\..\src\utils\g722_1\G722_1_1C_Float.c"
 				>
 			</File>
 		</Filter>

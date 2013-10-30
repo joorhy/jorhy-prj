@@ -188,20 +188,21 @@ int CAdapterManager::DelParser(const char *pResId, j_int32_t nDevid)
 	return J_OK;
 }
 
-int CAdapterManager::FindVodFile(const char *pResid, time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList, j_int32_t nDevid)
+int CAdapterManager::FindRemoteFile(const char *pResid, time_t beginTime, time_t endTime, j_vec_file_info_t &vecFileInfo, j_int32_t nDevid)
 {
     int nStreamType = 0;
-	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResid, nStreamType, nDevid));
+	J_Obj *pObj = JoAdapterFactory->FatchChannel(pResid, nStreamType, nDevid);
+	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(pObj);
 	if (pRemoteVod == NULL)
 	{
 		J_OS::LOGINFO("CAdapterManager::GetVodStream channel not exist, resid = %s", pResid);
 		return J_NOT_EXIST;
 	}
 
-	return pRemoteVod->EmunFileByTime(beginTime, endTime, fileList);
+	return pRemoteVod->EmunFileByTime(beginTime, endTime, vecFileInfo);
 }
 
-int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_RemoteVod *&pObj, j_int32_t nDevid)
+int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_Obj *&pObj, j_int32_t nDevid)
 {
     int nStreamType = 0;
 	J_RemoteVod *pRemoteVod = dynamic_cast<J_RemoteVod *>(JoAdapterFactory->FatchChannel(pResId, nStreamType, nDevid));
@@ -218,7 +219,7 @@ int CAdapterManager::GetVodStream(j_socket_t nSocket, const char *pResId, J_Remo
 		pRemoteVod->OpenVodStream(pVodStream);
 		m_vodMap[nSocket] = pVodStream;
 	}
-	pObj = dynamic_cast<J_RemoteVod *>(m_vodMap[nSocket]);
+	pObj = dynamic_cast<J_FileReader *>(m_vodMap[nSocket]);
 
 	return J_OK;
 }

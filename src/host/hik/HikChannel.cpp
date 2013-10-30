@@ -7,7 +7,6 @@
 #include "x_media_msg.h"
 
 #define DATA_BUFF_SIZE	1024
-
 CHikChannel::CHikChannel(const char *pResid, J_Obj *pOwner, int nChannel,
 		int nStream, int nMode) :
 	m_pAdapter(NULL), m_nChannel(0), m_pDataBuff(NULL), m_bOpened(false)
@@ -128,13 +127,12 @@ int CHikChannel::PtzControl(int nCmd, int nParam)
 	return SendCommand(mainCmd, (const char *) &ptzData, sizeof(HikPtzData));
 }
 
-int CHikChannel::EmunFileByTime(time_t beginTime, time_t endTime,
-		std::vector<J_FileInfo> &fileList)
+int CHikChannel::EmunFileByTime(time_t beginTime, time_t endTime, j_vec_file_info_t &vecFileInfo)
 {
-	HikCommHead commHead;
+	/*HikCommHead commHead;
 	memset(&commHead, 0, sizeof(HikCommHead));
 	commHead.len = htonl(sizeof(HikCommHead) + sizeof(HikFindFile));
-	commHead.protoType = 90;/*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99*/;
+	commHead.protoType = 90;/*(THIS_SDK_VERSION < NETSDK_VERSION_V30) ? 90 : 99;
 	commHead.command = htonl(HIK_CMD_FIND_FILE_V3);
 	commHead.userId = htonl(m_pAdapter->GetUserId());
 	m_pAdapter->GetLocalNetInfo(commHead.clientIP, commHead.clientMAC);
@@ -229,7 +227,7 @@ int CHikChannel::EmunFileByTime(time_t beginTime, time_t endTime,
 					nFindState, fileNum);
 			break;
 		}
-	}
+	}*/
 
 	return J_OK;
 }

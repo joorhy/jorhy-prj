@@ -21,13 +21,13 @@ public:
 	}
 
 public:
-	virtual int GetContext(J_MediaContext *&mediaContext);
-	virtual int GetPacket(j_char_t *pBuffer, J_StreamHeader &streamHeader);
-	virtual int Pause();
-	virtual int SetScale(float nScale = 1);
-	virtual int SetTime(j_uint64_t s_time, j_uint64_t e_time);
-	virtual int SetPosition(j_int32_t nPos);
-	virtual int GetMediaData(j_uint64_t beginTime, j_int32_t nIval);
+	virtual j_result_t GetContext(J_MediaContext *&mediaContext);
+	virtual j_result_t GetPacket(j_char_t *pBuffer, J_StreamHeader &streamHeader);
+	virtual j_result_t Pause();
+	virtual j_result_t SetScale(float nScale = 1);
+	virtual j_result_t SetTime(j_uint64_t s_time, j_uint64_t e_time);
+	virtual j_result_t SetPosition(j_int32_t nPos);
+	virtual j_result_t GetMediaData(j_uint64_t beginTime, j_int32_t nIval);
 
 private:
 	int ListRecord(j_uint64_t beginTime, j_uint64_t endTime);

@@ -14,6 +14,7 @@ class CHikSdkAdapterBase : public J_DevAdapter
 class CHikSdkAdapter : public J_BaseAdapter<CHikSdkAdapterBase>
 {
 	friend class CHikSdkChannel;
+	friend class CHikRemoteReader;
 public:
 	CHikSdkAdapter(int nDvrId, const char *pAddr, int nPort, const char *pUsername, const char *pPassword);
 	~CHikSdkAdapter();

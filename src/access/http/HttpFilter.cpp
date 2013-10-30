@@ -2,6 +2,7 @@
 #include "x_string.h"
 #include "x_socket.h"
 #include "x_mux_factory.h"
+#include "x_resource_manager.h"
 
 const int RATE = 1024;
 
@@ -95,6 +96,12 @@ const char *CHttpFilter::GetResourceType()
 {
 	if (strstr(m_strResid, ".") != NULL)
 		return "jorf";
+
+	J_ResourceInfo info = {0};
+	JoResourceManager->GetResource(m_strResid, info);
+	if (info.storeType == 1)
+		return "remote";
+
 		
 	return "jofs";
 }

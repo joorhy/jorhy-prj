@@ -96,8 +96,8 @@ struct J_PtzControl : virtual public J_Obj
 	///云台控制
 	///@param[in]	nCmd 云台控制命令, 见NvrType.h
 	///@param[in]	nParam 云台控制参数,
-	///				nParam > 0,如果云台控制命令为PTZ_PRE_SET or PTZ_PRE_CLR or PTZ_GOTO_PRE,参数为预置点位置;其他命令,参数为速度,取值范围1-255;
-	///				nParam = 0,表示停止命令
+	///					nParam > 0,如果云台控制命令为PTZ_PRE_SET or PTZ_PRE_CLR or PTZ_GOTO_PRE,参数为预置点位置;其他命令,参数为速度,取值范围1-255;
+	///					nParam = 0,表示停止命令
 	///@return		见x_error_type.h
 	virtual j_result_t PtzControl(j_int32_t nCmd, j_int32_t nParam) = 0;
 };
@@ -107,9 +107,9 @@ struct J_RemoteVod : virtual public J_Obj
 	///枚举录像文件列表
 	///@param[in]	beginTime 查询的起始时间
 	///@param[in]	endTime	查询的结束时间
-	///@param[out]	fileList 查询结果
+	///@param[out]	vecFileInfo 查询结果
 	///@return 		参见x_error_type.h
-	virtual j_result_t EmunFileByTime(time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList) = 0;
+	virtual j_result_t EmunFileByTime(time_t beginTime, time_t endTime, j_vec_file_info_t &vecFileInfo) = 0;
 
 	///打开DVR录像点播流
 	///@param[out] 	pObj 构造对象的返回值

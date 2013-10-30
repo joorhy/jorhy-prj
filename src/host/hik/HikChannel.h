@@ -29,7 +29,7 @@ public:
 	virtual int OpenParser(J_Obj *&pObj);
 	virtual int CloseParser(J_Obj *pObj);
 	///J_RemoteVod
-	virtual int EmunFileByTime(time_t beginTime, time_t endTime, std::vector<J_FileInfo> &fileList);
+	virtual int EmunFileByTime(time_t beginTime, time_t endTime, j_vec_file_info_t &vecFileInfo);
 	virtual int OpenVodStream(J_Obj *&pObj);
 	virtual int CloseVodStream(J_Obj *pObj);
 

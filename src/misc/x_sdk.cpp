@@ -1,7 +1,7 @@
 #include "x_sdk.h"
 
 static const char *dev_type[] = 
-{ "joh", "hik", "sony", "aipstar", "aironix", "samsung", "dahua", "onvif", "hiksdk"};
+{ "joh", "hik", "sony", "aipstar", "aironix", "samsung", "dahua", "onvif", "hiksdk", "portb"};
 
 #define JSON_CLEAN_ALL() \
     if (!is_error(json_respose_obj) && json_respose_obj != NULL)\
@@ -185,6 +185,7 @@ j_result_t CXSdk::Login(j_int32_t nId, j_char_t *pUrl, ResourceMap &resInfo)
 				resourceInfo.chNum = JsonGetInt(json_channel_obj, "cha");
 				sprintf(resourceInfo.resid, "%s", JsonGetString(json_channel_obj, "resid"));
 				resourceInfo.streamType	= JsonGetInt(json_channel_obj, "ms");
+				resourceInfo.storeType = JsonGetInt(json_channel_obj, "store");
 				resInfo[resourceInfo.resid] = resourceInfo;
 			}
 		}
