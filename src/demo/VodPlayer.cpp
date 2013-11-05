@@ -6,26 +6,26 @@
 #include <wx/wx.h>
 #include <wx/statline.h>
 
-//必须继承wxApp 
+//卤脴脨毛录脤鲁脨wxApp 
 class MyApp : public wxApp 
 { 
 public: 
-	//入口函数
+	//脠毛驴脷潞炉脢媒
 	virtual bool OnInit();  
 }; 
 
-//创建MyApp实例的代码在这里面
+//麓麓陆篓MyApp脢碌脌媒碌脛麓煤脗毛脭脷脮芒脌茂脙忙
 IMPLEMENT_APP(MyApp) 
 DECLARE_APP(MyApp) 
 
-//必须继承wxFrame 
+//卤脴脨毛录脤鲁脨wxFrame 
 class CVodPlayer : public wxDialog
 { 
 public: 
 	CVodPlayer(const wxString& title);  
 	~CVodPlayer();
 private: 
-	//必须加这句，否则消息映射回报错
+	//卤脴脨毛录脫脮芒戮盲拢卢路帽脭貌脧没脧垄脫鲁脡盲禄脴卤篓麓铆
 	DECLARE_EVENT_TABLE() 
 	void OnMouseLeftDown(wxMouseEvent &event);
 	void OnPlay(wxMouseEvent& evnet);
@@ -57,17 +57,17 @@ private:
 
 bool MyApp::OnInit() 
 { 
-	//初始化配置参数
+	//鲁玫脢录禄炉脜盲脰脙虏脦脢媒
 	CXConfig::Init();
 
-	///加载模块
+	///录脫脭脴脛拢驴茅
 	CXLoadso loadSo;
 	if (loadSo.JoLoadSo() != J_OK)
 	{
 		J_OS::LOGINFO("main loadSo JoLoadSo error");
 		return 0;
 	}
-	//创建一个继承自wxFrame的窗口对象
+	//麓麓陆篓脪禄赂枚录脤鲁脨脳脭wxFrame碌脛麓掳驴脷露脭脧贸
 	CVodPlayer *dlg = new CVodPlayer(wxT("StreamPlayer")); 
 	dlg->Show(true); 
 
@@ -84,14 +84,14 @@ CVodPlayer::CVodPlayer(const wxString& title)
 , m_btnPlay(this, wxID_ANY, wxT("Play"))
 , m_btnStop(this, wxID_ANY, wxT("Stop"))
 , m_textUrl(this, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(550, 20))
-, m_urlDesc(this, wxID_ANY, wxT("播放地址:"))
+, m_urlDesc(this, wxID_ANY, wxT("鎾斁鍦板潃:"))
 , m_displayWindow(this, wxID_ANY)
 , m_displayForcus(NULL)
 {
 	m_displayWindow.GetHandle();
 	SetSize(wxSize(800, 800));
 	CentreOnScreen();
-	/* 添加、初始化窗口控件的地方*/ 
+	/* 脤铆录脫隆垄鲁玫脢录禄炉麓掳驴脷驴脴录镁碌脛碌脴路陆*/ 
 	m_ctrlSizer.AddSpacer(10);
 	m_urlDesc.SetSize(wxSize(50, 15));
 	m_ctrlSizer.Add(&m_urlDesc);
@@ -154,8 +154,8 @@ void CVodPlayer::Play()
 		char desUrl[256] = {0};
 		sprintf(desUrl, "jo_player://%d", (j_wnd_t)m_displayForcus->GetHandle());
 		j_int32_t streamId = -1;
-		//历史视频
-		streamId = m_playManager.OpenVod(m_textUrl.GetValue(), desUrl);
+		//脌煤脢路脢脫脝碌
+		streamId = m_playManager.OpenVod(m_textUrl.GetValue().To8BitData(), desUrl);
 		m_displayForcus->SetId(streamId);
 		m_playerMap[m_displayForcus] = streamId;
 	}
@@ -166,7 +166,7 @@ void CVodPlayer::Stop()
 	std::map<wxWindow *, j_int32_t>::iterator it = m_playerMap.find(m_displayForcus);
 	if (it != m_playerMap.end())
 	{
-		//历史视频
+		//脌煤脢路脢脫脝碌
 		m_playManager.CloseVod(m_displayForcus->GetId());
 		m_playerMap.erase(it);
 	}
@@ -177,6 +177,6 @@ void CVodPlayer::SetForcus(wxObject *window)
 	m_displayForcus = dynamic_cast<wxWindow *>(window);
 }
 BEGIN_EVENT_TABLE(CVodPlayer, wxDialog) 
-/* 添加消息映射的地方：例如菜单响应*/
+/* 脤铆录脫脧没脧垄脫鲁脡盲碌脛碌脴路陆拢潞脌媒脠莽虏脣碌楼脧矛脫娄*/
 //EVT_LEFT_DOWN(CVodPlayer::OnMouseLeftDown)
 END_EVENT_TABLE() 

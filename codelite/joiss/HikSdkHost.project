@@ -10,20 +10,22 @@
   <VirtualDirectory Name="src">
     <File Name="../../src/host/hiksdk/HikSdkAdapter.cpp"/>
     <File Name="../../src/host/hiksdk/HikSdkChannel.cpp"/>
-    <File Name="../../src/host/hiksdk/HikSdkParser.cpp"/>
     <File Name="../../src/host/hiksdk/HikSdkParser2.cpp"/>
     <File Name="../../src/host/hiksdk/HikSdkStream.cpp"/>
+    <File Name="../../src/host/hiksdk/HikSdkRemoteReader.cpp"/>
+    <File Name="../../src/host/hiksdk/HikSdkParser.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/host/hiksdk/HikSdkAdapter.h"/>
     <File Name="../../src/host/hiksdk/HikSdkChannel.h"/>
-    <File Name="../../src/host/hiksdk/HikSdkParser.h"/>
     <File Name="../../src/host/hiksdk/HikSdkParser2.h"/>
     <File Name="../../src/host/hiksdk/HikSdkParserDef.h"/>
     <File Name="../../src/host/hiksdk/HikSdkStream.h"/>
     <File Name="../../src/host/hiksdk/HikSdkType.h"/>
     <File Name="../../src/host/hiksdk/DataType.h"/>
     <File Name="../../src/host/hiksdk/HCNetSDK.h"/>
+    <File Name="../../src/host/hiksdk/HikSdkRemoteReader.h"/>
+    <File Name="../../src/host/hiksdk/HikSdkParser.h"/>
   </VirtualDirectory>
   <Settings Type="Dynamic Library">
     <GlobalSettings>

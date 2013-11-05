@@ -15,6 +15,7 @@ CJoChannel::CJoChannel(const char *pResid, J_Obj *pOwner, int nChannel, int nStr
 	m_resid = pResid;
 
 	m_recvSocket = NULL;
+	J_OS::LOGINFO("CJoChannel::CJoChannel(resid = %s, ch = %d)", pResid, nChannel);
 }
 
 CJoChannel::~CJoChannel()

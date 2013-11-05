@@ -63,6 +63,21 @@ const char *flag_end = "end=";
 
 	return J_PL_NO_ERROR;
 }*/
+#ifndef WIN32
+int strnicmp(const char *dst, const char *src, int count)
+{
+	int ch1, ch2;
+	do 
+	{
+		if (((ch1 = (unsigned char)(*(dst++))) >= 'A') &&(ch1 <='Z'))
+			ch1 += 0x20;
+		if (((ch2 = (unsigned char)(*(src++))) >= 'A') &&(ch2 <='Z'))
+			ch2 += 0x20;
+	} while (--count && ch1 && (ch1 == ch2));
+	
+	return (ch1 - ch2);
+}
+#endif
 
 j_result_t CJoParser::ParsePicture(char *psz_filename, int &outType)
 {

@@ -34,6 +34,7 @@ j_result_t CRealPlayObj::PlayMedia(j_wnd_t hWnd, j_int32_t nDevid)
 {
 	StartVideo(nDevid);
 	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->Play(hWnd);
+	
 	return J_OK;
 }
 
@@ -42,6 +43,12 @@ j_result_t CRealPlayObj::StopMedia(j_int32_t nDevid)
 	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->Stop();
 	StopVideo(nDevid);
 
+	return J_OK;
+}
+
+j_result_t CRealPlayObj::AspectRatio(j_int32_t nWidth, j_int32_t nHeight)
+{
+	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->AspectRatio(nWidth, nHeight);
 	return J_OK;
 }
 

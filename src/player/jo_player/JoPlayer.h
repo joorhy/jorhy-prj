@@ -21,6 +21,7 @@ public:
 	virtual j_result_t Play(j_wnd_t hWnd);
 	virtual j_result_t Stop();
 	virtual j_result_t InputData(j_char_t *pData, J_StreamHeader &streamHeader);
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight);
 
 private:
 	j_result_t Init();
@@ -64,6 +65,8 @@ private:
 	J_OS::CTLock m_lockerRend;
 	J_OS::CXSem m_semDec;
 	J_OS::CXSem m_semRend;
+	j_int32_t m_width;
+	j_int32_t m_height;
 };
 
 #endif //~__JOPLAYER_H_

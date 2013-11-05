@@ -5,8 +5,8 @@
 #include <ddraw.h>
 extern "C"
 {
-#include "libavcodec\avcodec.h"
-#include "libavcore\imgutils.h"
+#include "libavcodec/avcodec.h"
+#include "libavcore/imgutils.h"
 };
 
 class CJoRender : public J_Render
@@ -39,22 +39,18 @@ private:
 	j_result_t ShowPicture();
 	j_void_t Release();
 
-#ifdef WIN32
 	static LRESULT CALLBACK ControlProc(HWND,UINT,WPARAM,LPARAM);
-#endif
 
 private:
-	LPDIRECTDRAW7					m_pDD;
-	LPDIRECTDRAWCLIPPER		m_pcClipper;		//Clipper
-	LPDIRECTDRAWSURFACE7	m_pDDSPrimary;		//DirectDrawœ‘ æª∫≥ÂøÈ Primary surface
-	LPDIRECTDRAWSURFACE7	m_pSurface;
-
 	j_wnd_t m_hwnd;
 	J_VideoDecodeParam m_videoparm;
 	j_boolean_t m_bShow;
-#ifdef WIN32
+
+	LPDIRECTDRAW7					m_pDD;
+	LPDIRECTDRAWCLIPPER		m_pcClipper;		//Clipper
+	LPDIRECTDRAWSURFACE7	m_pDDSPrimary;		//DirectDraw√è√î√ä¬æ¬ª¬∫¬≥√•¬ø√© Primary surface
+	LPDIRECTDRAWSURFACE7	m_pSurface;
 	WNDPROC m_oldProc;
-#endif
 };
 
 #endif //~__JORENDER_H_

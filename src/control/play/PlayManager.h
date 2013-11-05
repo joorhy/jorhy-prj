@@ -16,6 +16,8 @@ struct J_PlayManagerInfo
 	j_char_t *player_type;
 	j_uint32_t dev_id;
 	j_wnd_t play_wnd;
+	j_int32_t width;
+	j_int32_t height;
 	j_uint64_t start_time;
 	j_uint64_t end_time;
 };
@@ -36,28 +38,28 @@ public:
 	~CPlayManager();
 
 public:
-	///初始化管理模块
-	///@return	参见j_errtype.h
+	///鲁玫脢录禄炉鹿脺脌铆脛拢驴茅
+	///@return	虏脦录没j_errtype.h
 	j_result_t Init();
-	///逆初始化管理模块
+	///脛忙鲁玫脢录禄炉鹿脺脌铆脛拢驴茅
 	///@return	void
 	void Deinit();
-	///打开视频流
-	///@param	 pUrl-源URL(joh://192.168.1.109:8002?resid=102&username=admin&passwd=admin&stream_type=0)
-	///@param	 pUrl-目的URL(jo_player://12345678)
-	///@return	 流编号,后续操作都基于这个编号, < 0表示失败
+	///麓貌驴陋脢脫脝碌脕梅
+	///@param	 pUrl-脭麓URL(joh://192.168.1.109:8002?resid=102&username=admin&passwd=admin&stream_type=0)
+	///@param	 pUrl-脛驴碌脛URL(jo_player://12345678?width=704&height=576)
+	///@return	 脕梅卤脿潞脜,潞贸脨酶虏脵脳梅露录禄霉脫脷脮芒赂枚卤脿潞脜, < 0卤铆脢戮脢搂掳脺
 	j_int32_t OpenStream(const j_char_t *pUrl, const j_char_t *pUrl2);
-	///关闭视频流
-	///@param	 streamHandle OpenStream的返回值
+	///鹿脴卤脮脢脫脝碌脕梅
+	///@param	 streamHandle OpenStream碌脛路碌禄脴脰碌
 	///@return	 void
 	void CloseStream(j_int32_t streamHandle);
-	///打开点播流
-	///@param	 pUrl-源URL(joh://192.168.1.109:8002?resid=102&username=admin&passwd=admin&start=0&end=0)
-	///@param	 pUrl-目的URL(jo_player://12345678)
-	///@return	 流编号,后续操作都基于这个编号, < 0表示失败
+	///麓貌驴陋碌茫虏楼脕梅
+	///@param	 pUrl-脭麓URL(joh://192.168.1.109:8002?resid=102&username=admin&passwd=admin&start=0&end=0)
+	///@param	 pUrl-脛驴碌脛URL(jo_player://12345678)
+	///@return	 脕梅卤脿潞脜,潞贸脨酶虏脵脳梅露录禄霉脫脷脮芒赂枚卤脿潞脜, < 0卤铆脢戮脢搂掳脺
 	j_int32_t OpenVod(const j_char_t *pUrl, const j_char_t *pUrl2);
-	///关闭点播流
-	///@param	 streamHandle OpenVod的返回值
+	///鹿脴卤脮碌茫虏楼脕梅
+	///@param	 streamHandle OpenVod碌脛路碌禄脴脰碌
 	///@return	 void
 	void CloseVod(j_int32_t streamHandle);
 

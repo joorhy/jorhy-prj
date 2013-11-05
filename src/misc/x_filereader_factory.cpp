@@ -52,13 +52,20 @@ J_FileReader *CFileReaderFactory::GetFileReader(j_socket_t nSocket, const char *
 	return dynamic_cast<J_FileReader *>(fileReader);
 }
 
-void CFileReaderFactory::DelFileReader(j_socket_t nSocket)
+void CFileReaderFactory::DelFileReader(j_socket_t nSocket, const char *pType, const char *pResid)
 {
 	TLock(m_lock);
 	FileReaderMap::iterator it = m_fileReaderMap.find(nSocket);
 	if (it != m_fileReaderMap.end())
 	{
-		delete it->second;
+		if (strcmp(pType, "remote") == 0)
+		{
+			JoAdapterManager->DelVodStream(nSocket, pResid);
+		}
+		else
+		{
+			delete it->second;
+		}
 		m_fileReaderMap.erase(it);
 	}
 	TUnlock(m_lock);

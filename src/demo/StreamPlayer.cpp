@@ -2,75 +2,25 @@
 #include "x_loadso.h"
 #include "x_config.h"
 #include "PlayManager.h"
+#include "StreamPlayer.h"
 
-#include <wx/wx.h>
-#include <wx/statline.h>
-
-//必须继承wxApp 
-class MyApp : public wxApp 
-{ 
-public: 
-	//入口函数
-	virtual bool OnInit();  
-}; 
-
-//创建MyApp实例的代码在这里面
+//麓麓陆篓MyApp脢碌脌媒碌脛麓煤脗毛脭脷脮芒脌茂脙忙
 IMPLEMENT_APP(MyApp) 
 DECLARE_APP(MyApp) 
 
-//必须继承wxFrame 
-class CStreamPlayer : public wxDialog
-{ 
-public: 
-	CStreamPlayer(const wxString& title);  
-	~CStreamPlayer();
-private: 
-	//必须加这句，否则消息映射回报错
-	DECLARE_EVENT_TABLE() 
-	void OnMouseLeftDown(wxMouseEvent &event);
-	void OnPlay(wxMouseEvent& evnet);
-	void OnStop(wxMouseEvent& evnet);
-
-public:
-	void Play();
-	void Stop();
-	void SetForcus(wxObject *window);
-	//wxObjectEventFunction
-
-private:
-	wxBoxSizer m_sizer;
-	wxBoxSizer m_displaySizer1;
-	wxBoxSizer m_displaySizer2;
-	wxBoxSizer m_displaySizer;
-	wxBoxSizer m_ctrlSizer;
-	wxButton m_btnPlay;
-	wxButton m_btnStop;
-	wxWindow m_displayWindow1;
-	wxWindow m_displayWindow2;
-	wxWindow m_displayWindow3;
-	wxWindow m_displayWindow4;
-	wxWindow *m_displayForcus;
-	wxStaticText m_urlDesc;
-	wxComboBox m_textUrl;
-
-	CPlayManager m_playManager;
-	j_int32_t m_streamId;
-	std::map<wxWindow *, j_int32_t> m_playerMap;
-}; 
-
 bool MyApp::OnInit() 
 { 
-	//初始化配置参数
+	//鲁玫脢录禄炉脜盲脰脙虏脦脢媒
 	CXConfig::Init();
 
-	///加载模块
+	///录脫脭脴脛拢驴茅
 	CXLoadso loadSo;
 	if (loadSo.JoLoadSo() != J_OK)
 	{
 		J_OS::LOGINFO("main loadSo JoLoadSo error");
 		return 0;
 	}
-	//创建一个继承自wxFrame的窗口对象
+	//麓麓陆篓脪禄赂枚录脤鲁脨脳脭wxFrame碌脛麓掳驴脷露脭脧贸
 	CStreamPlayer *dlg = new CStreamPlayer(wxT("StreamPlayer")); 
 	dlg->Show(true); 
 
@@ -87,56 +37,29 @@ CStreamPlayer::CStreamPlayer(const wxString& title)
 , m_btnPlay(this, wxID_ANY, wxT("Play"))
 , m_btnStop(this, wxID_ANY, wxT("Stop"))
 , m_textUrl(this, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(550, 20))
-, m_urlDesc(this, wxID_ANY, wxT("播放地址:"))
+, m_urlDesc(this, wxID_ANY, wxT("鎾斁鍦板潃:"))
 , m_displayWindow1(this, wxID_ANY)
 , m_displayWindow2(this, wxID_ANY)
 , m_displayWindow3(this, wxID_ANY)
 , m_displayWindow4(this, wxID_ANY)
 , m_displayForcus(NULL)
 {
-	//历史视频
+	//脌煤脢路脢脫脝碌
 	//m_streamType = 1;
 
 	m_displayWindow1.GetHandle();
-	SetSize(wxSize(805, 805));
+	SetSize(wxSize(602, 662));
 	CentreOnScreen();
-	/* 添加、初始化窗口控件的地方*/ 
-	m_ctrlSizer.AddSpacer(10);
-	m_urlDesc.SetSize(wxSize(50, 15));
-	m_ctrlSizer.Add(&m_urlDesc);
-	m_ctrlSizer.AddSpacer(10);
+	/* 脤铆录脫隆垄鲁玫脢录禄炉麓掳驴脷驴脴录镁碌脛碌脴路陆*/ 
 	m_textUrl.Append(wxT("joh://192.168.1.88:8002?resid=121&username=admin&passwd=12345&stream_type=0"));
 	m_textUrl.Append(wxT("joh://192.168.1.88:8002?resid=161&username=admin&passwd=12345&stream_type=0"));
 
 	m_textUrl.SetSelection(0);
-	m_ctrlSizer.Add(&m_textUrl);
-	m_ctrlSizer.AddSpacer(10);
-	m_ctrlSizer.Add(&m_btnPlay);
-	m_ctrlSizer.AddSpacer(10);
-	m_ctrlSizer.Add(&m_btnStop);
 
-	m_displayWindow1.SetSize(400, 300);
 	m_displayWindow1.SetBackgroundColour(wxColour(0, 0, 0));
-	m_displayWindow2.SetSize(400, 300);
 	m_displayWindow2.SetBackgroundColour(wxColour(0, 0, 0));
-	m_displayWindow3.SetSize(400, 300);
 	m_displayWindow3.SetBackgroundColour(wxColour(0, 0, 0));
-	m_displayWindow4.SetSize(400, 300);
 	m_displayWindow4.SetBackgroundColour(wxColour(0, 0, 0));
-	m_displaySizer1.Add(&m_displayWindow1);
-	m_displaySizer1.AddSpacer(5);
-	m_displaySizer1.Add(&m_displayWindow2);
-	m_displaySizer2.Add(&m_displayWindow3);
-	m_displaySizer2.AddSpacer(5);
-	m_displaySizer2.Add(&m_displayWindow4);
-	m_displaySizer.Add(&m_displaySizer1);
-	m_displaySizer.AddSpacer(5);
-	m_displaySizer.Add(&m_displaySizer2);
-
-	m_sizer.Add(&m_displaySizer);
-	m_sizer.AddSpacer(50);
-	m_sizer.Add(&m_ctrlSizer);
-	SetSizer(&m_sizer);
 	
 	m_playManager.Init();
 	m_btnPlay.Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CStreamPlayer::OnPlay));
@@ -145,7 +68,29 @@ CStreamPlayer::CStreamPlayer(const wxString& title)
 	m_displayWindow2.Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CStreamPlayer::OnMouseLeftDown));
 	m_displayWindow3.Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CStreamPlayer::OnMouseLeftDown));
 	m_displayWindow4.Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CStreamPlayer::OnMouseLeftDown));
-} 
+	
+	m_displayWindow1.Connect(wxEVT_SIZE, wxSizeEventHandler(CStreamPlayer::OnSize));
+	m_displayWindow2.Connect(wxEVT_SIZE, wxSizeEventHandler(CStreamPlayer::OnSize));
+	m_displayWindow3.Connect(wxEVT_SIZE, wxSizeEventHandler(CStreamPlayer::OnSize));
+	m_displayWindow4.Connect(wxEVT_SIZE, wxSizeEventHandler(CStreamPlayer::OnSize));
+
+	m_display1 = new wxPanel(&m_displayWindow1);
+	m_display1->SetSize(0, 0);
+	m_display1->SetBackgroundColour(wxColour(0, 0, 0));
+	m_display1->CenterOnParent();
+	m_display2 = new wxPanel(&m_displayWindow2);
+	m_display2->SetSize(0, 0);
+	m_display2->SetBackgroundColour(wxColour(0, 0, 0));
+	m_display2->CenterOnParent();
+	m_display3 = new wxPanel(&m_displayWindow3);
+	m_display3->SetSize(0, 0);
+	m_display3->SetBackgroundColour(wxColour(0, 0, 0));
+	m_display3->CenterOnParent();
+	m_display4 = new wxPanel(&m_displayWindow4);
+	m_display4->SetSize(0, 0);
+	m_display4->SetBackgroundColour(wxColour(0, 0, 0));
+	m_display4->CenterOnParent();
+ } 
 
 CStreamPlayer::~CStreamPlayer()
 {
@@ -174,15 +119,24 @@ void CStreamPlayer::OnMouseLeftDown(wxMouseEvent &event)
 	//fprintf(stderr, "CStreamPlayer::OnMouseLeftDown %d %d\n", &pStreamPlayer->m_displayWindow1, pStreamPlayer->m_displayWindow2.GetId());
 }
 
+void CStreamPlayer::OnSize(wxSizeEvent &event)
+{
+	CStreamPlayer *pStreamPlayer = (CStreamPlayer *)GetParent();
+	pStreamPlayer->ResizeWindow(event.GetEventObject());
+}
+
 void CStreamPlayer::Play()
 {
 	if (m_displayForcus != NULL && m_playerMap.find(m_displayForcus) == m_playerMap.end())
 	{
 		char desUrl[256] = {0};
-		sprintf(desUrl, "jo_player://%d", (j_wnd_t)m_displayForcus->GetHandle());
+		int width = 0;
+		int height = 0;
+		m_displayForcus->GetParent()->GetSize(&width, &height);
+		sprintf(desUrl, "jo_player://%d?width=%d&height=%d", (j_wnd_t)m_displayForcus->GetHandle(), width, height);
 		j_int32_t streamId = -1;
-		//实时视频
-		streamId = m_playManager.OpenStream(m_textUrl.GetValue(), desUrl);
+		//脢碌脢卤脢脫脝碌
+		streamId = m_playManager.OpenStream(m_textUrl.GetValue().To8BitData(), desUrl);
 		m_displayForcus->SetId(streamId);
 		m_playerMap[m_displayForcus] = streamId;
 	}
@@ -193,7 +147,7 @@ void CStreamPlayer::Stop()
 	std::map<wxWindow *, j_int32_t>::iterator it = m_playerMap.find(m_displayForcus);
 	if (it != m_playerMap.end())
 	{
-		//实时视频
+		//脢碌脢卤脢脫脝碌
 		m_playManager.CloseStream(m_displayForcus->GetId());
 		m_playerMap.erase(it);
 	}
@@ -201,9 +155,56 @@ void CStreamPlayer::Stop()
 
 void CStreamPlayer::SetForcus(wxObject *window)
 {
-	m_displayForcus = dynamic_cast<wxWindow *>(window);
+	wxWindow *p = dynamic_cast<wxWindow *>(window);
+	if (p == &m_displayWindow1)
+	{
+		m_displayForcus = m_display1;
+	}
+	else if (p == &m_displayWindow2)
+	{
+		m_displayForcus = m_display2;
+	}
+	else if (p == &m_displayWindow3)
+	{
+		m_displayForcus = m_display3;
+	}
+	else if (p == &m_displayWindow4)
+	{
+		m_displayForcus = m_display4;
+	}
 }
+
+void CStreamPlayer::ResizeWindow(wxObject *window)
+{
+	wxWindow *p = dynamic_cast<wxWindow *>(window);
+    int w = 300;
+    int h = 300;
+	if (p == &m_displayWindow1)
+	{
+		m_displayWindow1.SetSize(0, 0, w, h);
+		m_display1->CenterOnParent();
+	}
+	else if (p == &m_displayWindow2)
+	{
+		m_displayWindow2.SetSize(w + 2, 0, w, h);
+		m_display2->CenterOnParent();
+	}
+	else if (p == &m_displayWindow3)
+	{
+		m_displayWindow3.SetSize(0, h + 2, w, h);
+		m_display3->CenterOnParent();
+	}
+	else if (p == &m_displayWindow4)
+	{
+		m_displayWindow4.SetSize(w + 2, h + 2, w, h);
+		m_display4->CenterOnParent();
+	}
+	m_textUrl.SetSize(0, h * 2 + 10, 600, 10);
+	m_btnPlay.SetSize(125, h * 2 + 35, 50, 25);
+	m_btnStop.SetSize(427, h * 2 + 35, 50, 25);
+}
+
 BEGIN_EVENT_TABLE(CStreamPlayer, wxDialog) 
-/* 添加消息映射的地方：例如菜单响应*/
+/* 脤铆录脫脧没脧垄脫鲁脡盲碌脛碌脴路陆拢潞脌媒脠莽虏脣碌楼脧矛脫娄*/
 //EVT_LEFT_DOWN(CStreamPlayer::OnMouseLeftDown)
 END_EVENT_TABLE() 

@@ -469,6 +469,7 @@ struct J_PlayerObj : virtual public J_Obj
 	///处理媒体数据
 	///@return	 参见x_errtype.j
 	virtual j_result_t ProcessMedia() = 0;
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight) = 0;
 };
 
 struct J_Player : virtual public J_Obj
@@ -485,6 +486,8 @@ struct J_Player : virtual public J_Obj
 	///@param	 nLen 数据长度
 	///@return	 参见x_errtype.j
 	virtual j_result_t InputData(j_char_t *pData, J_StreamHeader &streamHeader) = 0;
+	
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight) = 0;
 };
 
 struct J_Decoder : virtual public J_Obj
@@ -509,6 +512,8 @@ struct J_Decoder : virtual public J_Obj
 	///释放解码器
 	///@return	 参见x_errtype.j
 	virtual j_result_t DeinitDecoder() = 0;
+	
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight) = 0;
 
 protected:
 	j_int32_t m_codeId;			//标志这个类的解码类型
@@ -532,6 +537,7 @@ struct J_Render : virtual public J_Obj
 	///@param	 displayParam 显示参数
 	///@return	 参见x_errtype.j
 	virtual j_result_t SetDisplayParam(const J_VideoDisplayParam &displayParam) = 0;
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight) = 0;
 };
 
 template <typename CBase>

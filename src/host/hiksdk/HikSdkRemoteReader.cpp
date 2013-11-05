@@ -2,7 +2,7 @@
 
 extern void CovertTime(const time_t &t, NET_DVR_TIME  &nvrTime);
 extern void CovertTime2(time_t &t, const NET_DVR_TIME  &nvrTime);
-#define RECV_SIZE (1024 * 1024)
+#define RECV_SIZE (2 * 1024 * 1024)
 CHikRemoteReader::CHikRemoteReader(J_Obj *pOwner, j_int32_t nChanne)
 {
 	m_pAdapter = dynamic_cast<CHikSdkAdapter *>(pOwner);
@@ -49,7 +49,9 @@ j_result_t CHikRemoteReader::SetTime(j_uint64_t s_time, j_uint64_t e_time)
 	NET_DVR_VOD_PARA vodInfo = {0};
 	vodInfo.dwSize = sizeof(NET_DVR_VOD_PARA);
 	CovertTime(s_time, vodInfo.struBeginTime);
-	CovertTime(s_time + 600, vodInfo.struEndTime);
+	CovertTime(e_time, vodInfo.struEndTime);
+	vodInfo.struIDInfo.dwSize = sizeof(NET_DVR_STREAM_INFO);
+	vodInfo.struIDInfo.dwChannel = m_nChannel;
 	vodInfo.hWnd = NULL;
 	m_hStream = NET_DVR_PlayBackByTime_V40(m_pAdapter->GetUserId(), &vodInfo);
 	if (m_hStream == -1)
@@ -58,6 +60,7 @@ j_result_t CHikRemoteReader::SetTime(j_uint64_t s_time, j_uint64_t e_time)
 		J_OS::LOGINFO("CHikRemoteReader::SetTime error, ret = %d", NET_DVR_GetLastError());
 		return J_STREAM_ERROR;
 	}
+	m_startTime = s_time * 1000;
 	NET_DVR_SetPlayDataCallBack_V40(m_hStream, CHikRemoteReader::VodDataCallback, this);
 	NET_DVR_PlayBackControl_V40(m_hStream, NET_DVR_PLAYSTART);
 
@@ -81,9 +84,14 @@ void CHikRemoteReader::OnRecvData(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 		J_StreamHeader streamHeader;
 		m_parser.InputData((const char *)pBuffer, dwBufSize);
 		j_result_t nResult = m_parser.GetOnePacket(m_pDataBuff, streamHeader);
-		if (nResult == J_OK)
+		while (nResult == J_OK)
 		{
+			//J_OS::LOGINFO("%d %d", streamHeader.dataLen, m_ringBuffer.GetIdleLength());
+			streamHeader.timeStamp = m_startTime;
+			m_startTime += 20;
 			m_ringBuffer.PushBuffer(m_pDataBuff, streamHeader);
+			nResult = m_parser.GetOnePacket(m_pDataBuff, streamHeader);
+			j_sleep(20);
 		}
 	}
 }

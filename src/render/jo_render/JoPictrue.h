@@ -1,11 +1,10 @@
 #ifndef __JOPICTURE_H_
 #define __JOPICTURE_H_
 #include "j_includes.h"
-extern "C"
-{
-#include "libavcodec\avcodec.h"
-#include "libavcore\imgutils.h"
-};
+extern "C"{
+#include "libavcodec/avcodec.h"
+#include "libavcore/imgutils.h"
+}
 
 class CJoPicture
 {

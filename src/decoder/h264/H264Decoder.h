@@ -2,10 +2,12 @@
 #define __H264DECODER_H_
 #include "j_includes.h"
 #include "x_module_manager_def.h"
-extern "C"
-{
-#include "libavcodec\avcodec.h"
-};
+extern "C"{
+	#include "libavcodec/avcodec.h"
+	#include "libavformat/avformat.h"
+	#include "libswscale/swscale.h"
+	#include "libavutil/imgutils.h"
+}
 
 class CH264Decoder : public J_Decoder
 {
@@ -26,6 +28,12 @@ public:
 	virtual j_result_t GetDecodeParam(J_VideoDecodeParam &decParam);
 	virtual j_result_t DecodeOneFrame(j_char_t *pInputData, j_int32_t nInputLen, j_char_t *pOutuptData, j_int32_t &nOutputLen);
 	virtual j_result_t DeinitDecoder();
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight)
+	{
+		m_width = nWidth;
+		m_height = nHeight;
+		return J_OK;
+	}
 
 private:
 	j_result_t InitDecodeParam(J_VideoDecodeParam &decParam);
@@ -40,6 +48,8 @@ private:
 	AVPacket m_Packet;
 	AVCodec *m_pCodec;
 	j_boolean_t m_bInit;
+	j_int32_t m_width;
+	j_int32_t m_height;
 };
 
 #endif //~__H264DECODER_H_

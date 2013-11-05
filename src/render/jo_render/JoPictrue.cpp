@@ -1,9 +1,9 @@
 #include "JoPictrue.h"
 #include "JoParser.h"
-#include "png.h"
+//#include "png.h"
 extern "C"
 {
-#include "libswscale\swscale.h"
+#include "libswscale/swscale.h"
 };
 
 j_result_t CJoPicture::SavePicture(J_VideoFormat &ft, const char *data ,J_VideoDecodeParam &vt, char *filename)
@@ -104,12 +104,13 @@ j_result_t CJoPicture::YUV2RGB32(AVPicture &src,AVPicture &dst,J_VideoDecodePara
 		dst.data, dst.linesize);
 
 	sws_freeContext(sws_ctx);
+	
 	return J_OK;
 }
 
 j_result_t CJoPicture::WritePNG(AVPicture &src,J_VideoDecodeParam &vt,char *filename)
 {
-	png_FILE_p fp			= NULL;
+	/*png_FILE_p fp			= NULL;
 	png_structp write_ptr	= NULL;
 	png_infop info_ptr		= NULL;
 	png_bytep *row_pointers = NULL;
@@ -142,7 +143,7 @@ j_result_t CJoPicture::WritePNG(AVPicture &src,J_VideoDecodeParam &vt,char *file
 	}
 	png_init_io(write_ptr, fp);
 
-	png_set_IHDR(write_ptr, info_ptr, vt.width, vt.height, 8,			//8bitλ���
+	png_set_IHDR(write_ptr, info_ptr, vt.width, vt.height, 8,			//8bitÎ»Éî¶È
 		PNG_COLOR_TYPE_RGB_ALPHA,PNG_INTERLACE_NONE, 
 		PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 	palette = (png_colorp)png_malloc(write_ptr, PNG_MAX_PALETTE_LENGTH * png_sizeof(png_color));
@@ -157,7 +158,7 @@ j_result_t CJoPicture::WritePNG(AVPicture &src,J_VideoDecodeParam &vt,char *file
 	png_write_image(write_ptr, row_pointers);
 	png_free(write_ptr, palette);
 	free(row_pointers);
-	fclose(fp);
+	fclose(fp);*/
 
 	return J_OK;
 }

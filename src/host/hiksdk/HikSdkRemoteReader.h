@@ -32,5 +32,6 @@ private:
 	CHikSdkParser2 m_parser;
 	char *m_pDataBuff;
 	CRingBuffer m_ringBuffer;
+	j_uint64_t m_startTime;
 };
 #endif//~__HikSdkRemoteReader_H_

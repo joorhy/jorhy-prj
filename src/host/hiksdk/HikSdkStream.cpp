@@ -8,7 +8,7 @@ const char PSM_HEAD[5] = { 0x00, 0x00, 0x01, 0xBC };
 const char VIDEO_HEAD[5] = { 0x00, 0x00, 0x01, 0xE0 };
 const char AUDIO_HEAD[5] = { 0x00, 0x00, 0x01, 0xC0 };
 static FILE *fp = NULL;
-#define RECV_SIZE (1024 * 1024)
+#define RECV_SIZE (2 * 1024 * 1024)
 CHikSdkStream::CHikSdkStream(std::string resid)
 : m_pDataBuff(NULL)
 {
@@ -62,7 +62,7 @@ void CHikSdkStream::OnRecvData(LONG lRealHandle, DWORD dwDataType, BYTE *pBuffer
 		J_StreamHeader streamHeader;
 		m_parser.InputData((const char *)pBuffer, dwBufSize);
 		j_result_t nResult = m_parser.GetOnePacket(m_pDataBuff, streamHeader);
-		if (nResult == J_OK)
+		while (nResult == J_OK)
 		{
 			TLock(m_vecLocker);
 			std::vector<CRingBuffer *>::iterator it = m_vecRingBuffer.begin();
@@ -71,17 +71,8 @@ void CHikSdkStream::OnRecvData(LONG lRealHandle, DWORD dwDataType, BYTE *pBuffer
 				//J_OS::LOGINFO("nDataLen > 0 socket = %d", m_nSocket);
 				(*it)->PushBuffer(m_pDataBuff, streamHeader);
 			}
-
 			TUnlock(m_vecLocker);
+			nResult = m_parser.GetOnePacket(m_pDataBuff, streamHeader);
 		}
-		/*static FILE *fp = NULL;
-		if (fp == NULL)
-			fp = fopen("test.hik", "wb+");
-		fwrite(pBuffer, 1, dwBufSize, fp);*/
-		/*for (int i=0; i<16; i++)
-			printf("%02X", pBuffer[i] & 0xFF);
-		printf("\n");*/
 	}
-	//else
-	//	printf("dwDataType=%d\n", dwDataType);
 }

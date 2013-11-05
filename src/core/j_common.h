@@ -334,7 +334,7 @@ struct J_AsioDataBase
 typedef HWND j_wnd_t;
 #define j_invalid_wnd NULL
 #else
-typedef Drawable j_wnd_t;
+typedef void * j_wnd_t;
 #define j_invalid_wnd 0
 #endif
 

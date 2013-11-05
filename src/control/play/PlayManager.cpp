@@ -81,10 +81,16 @@ j_int32_t CPlayManager::OpenStream(const j_char_t *pUrl, const j_char_t *pUrl2)
 	}
 	TUnlock(m_adapterLocker);
 
+	//J_OS::LOGINFO("11111");
 	TLock(m_streamLocker);
 	J_PlayStreamInfo streamInfo = {0};
+	//J_OS::LOGINFO("11112");
 	streamInfo.pPlayObj = new CRealPlayObj(m_nStreamId, info.player_type, info.stream_type, info.resid);
+	//J_OS::LOGINFO("11113");
+	streamInfo.pPlayObj->AspectRatio(info.width, info.height);
+	//J_OS::LOGINFO("11114");
 	streamInfo.pPlayObj->PlayMedia(info.play_wnd, info.dev_id);
+	//J_OS::LOGINFO("11115");
 	streamInfo.nDevid = info.dev_id;
 	streamInfo.bStart = true;
 	m_streamMap[m_nStreamId] = streamInfo;
@@ -194,7 +200,11 @@ j_boolean_t CPlayManager::ParserUrl(const j_char_t *pUrl, const j_char_t *pUrl2,
 	p = (char *)pUrl2;
 	if ((p = get_string(p, (char *)"://", &info.player_type)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_int(p, (char *)"\0", (int *)&info.play_wnd)) == NULL)
+	if ((p = get_int(p, (char *)"?width=", (int *)&info.play_wnd)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"&height=", (int *)&info.width)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"\0", (int *)&info.height)) == NULL)
 		goto parser_usr_error;
 
 	info.dev_id = m_nDevId++;
@@ -229,7 +239,11 @@ j_boolean_t CPlayManager::ParserUrl2(const j_char_t *pUrl, const j_char_t *pUrl2
 	p = (char *)pUrl2;
 	if ((p = get_string(p, (char *)"://", &info.player_type)) == NULL)
 		goto parser_usr_error;
-	if ((p = get_int(p, (char *)"\0", (int *)&info.play_wnd)) == NULL)
+	if ((p = get_int(p, (char *)"?width=", (int *)&info.play_wnd)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"&height=", (int *)&info.width)) == NULL)
+		goto parser_usr_error;
+	if ((p = get_int(p, (char *)"\0", (int *)&info.height)) == NULL)
 		goto parser_usr_error;
 
 	info.dev_id = m_nDevId++;
@@ -249,7 +263,9 @@ void CPlayManager::OnWork()
 		TLock(m_streamLocker);
 		if (m_streamMap.empty())
 		{
+			TUnlock(m_streamLocker);
 			j_sleep(10);
+			continue;
 		}
 		it = m_streamMap.begin();
 		for (;it != m_streamMap.end(); it++)

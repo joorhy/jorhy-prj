@@ -5,7 +5,7 @@
 
 BEGIN_EVENT_TABLE(CVideoWin, wxWindow)
     EVT_SIZE(CVideoWin::OnSize)
-	EVT_PAINT(CVideoWin::OnPaint)
+    EVT_PAINT(CVideoWin::OnPaint)
     EVT_RIGHT_DOWN(CVideoWin::OnRightDown)
     EVT_MENU(Menu_Window_Close, CVideoWin::OnWindowClose)
     EVT_LEFT_DOWN(CVideoWin::OnMouseLeftDown)

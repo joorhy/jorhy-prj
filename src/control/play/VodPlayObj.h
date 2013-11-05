@@ -13,9 +13,10 @@ public:
 	virtual j_result_t PlayVod(j_wnd_t hWnd, j_uint64_t nStart, j_uint64_t nEnd);
 	virtual j_result_t StopVod();
 	virtual j_result_t ProcessMedia();
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight);
 
 private:
-	//NVR回放视频
+	//NVR禄脴路脜脢脫脝碌
 	int OpenFile(j_uint64_t nStart, j_uint64_t nEnd);
 	int CloseFile();
 

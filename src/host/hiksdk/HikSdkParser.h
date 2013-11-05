@@ -27,13 +27,14 @@ private:
 
 private:
 	J_OS::RWLocker_t m_rwLocker;
-	char *m_pDataBuff;
-	int m_nDataSize;
 
 	HikStreamHead m_hikStreamHead;
 	char *m_pOutBuff;
+	bool m_bIsPrepared;
 	bool m_bIsComplate;
-	int m_nDataLen;
+	bool m_bPreComplate;
+	j_uint32_t m_nDataLen;
+	j_uint32_t m_nFrameLen;
 
 	//音频解码
 	unsigned int m_nSamples;
@@ -43,4 +44,5 @@ private:
 	unsigned long m_nOutputBytes;
 	j_uint32_t m_frameNum;
 };
+
 #endif //~__HIKSDKPARSER_H_

@@ -86,17 +86,18 @@ int CVodMediaObj::Clearn()
 {
 	CloseFile();
 
+	if (m_pReader)
+	{
+		JoFileReaderFactory->DelFileReader(m_nSocket, dynamic_cast<J_RequestFilter *>(m_pObj)->GetResourceType(), m_resid.c_str());
+		m_pReader = NULL;
+	}
+
 	if (m_pObj)
 	{
 		JoFilterFactory->DelFilter(m_nSocket);
 		m_pObj = NULL;
 	}
-	if (m_pReader)
-	{
-		JoFileReaderFactory->DelFileReader(m_nSocket);
-		m_pReader = NULL;
-	}
-
+	
 	J_OS::LOGINFO("CVodMediaObj::Clearn socket =  %d broken", m_nSocket.sock);
 	//delete this;
 
@@ -146,7 +147,7 @@ int CVodMediaObj::CloseFile()
 		return J_OK;
 
 	m_bStart = false;
-	JoFileReaderFactory->DelFileReader(m_nSocket);
+	JoFileReaderFactory->DelFileReader(m_nSocket,dynamic_cast<J_RequestFilter *>(m_pObj)->GetResourceType(), m_resid.c_str());
 	m_pHeader = NULL;
 
 	m_fileid.clear();

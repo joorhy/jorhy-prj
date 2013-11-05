@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo "----------Building project:[ ivs - Debug ]----------"
-	@$(MAKE) -f  "ivs.mk"
+	@echo "----------Building project:[ utils - Debug ]----------"
+	@$(MAKE) -f  "utils.mk"
 clean:
-	@echo "----------Cleaning project:[ ivs - Debug ]----------"
-	@$(MAKE) -f  "ivs.mk" clean
+	@echo "----------Cleaning project:[ utils - Debug ]----------"
+	@$(MAKE) -f  "utils.mk" clean

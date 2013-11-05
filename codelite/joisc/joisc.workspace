@@ -1,12 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="joisc" Database="./joisc.tags">
-  <Project Name="ivs" Path="ivs.project" Active="Yes"/>
+  <Project Name="core" Path="core.project" Active="No"/>
+  <Project Name="H264Decoder" Path="H264Decoder.project"/>
+  <Project Name="JoHost" Path="JoHost.project"/>
+  <Project Name="JoPlayer" Path="JoPlayer.project"/>
+  <Project Name="JoRender" Path="JoRender.project"/>
+  <Project Name="JorReader" Path="JorReader.project"/>
+  <Project Name="JosStream" Path="JosStream.project"/>
+  <Project Name="misc" Path="misc.project"/>
+  <Project Name="utils" Path="utils.project"/>
+  <Project Name="PlayManager" Path="PlayManager.project"/>
+  <Project Name="PlayerDemo" Path="PlayerDemo.project" Active="Yes"/>
+  <Project Name="VodPlayDemo" Path="VodPlayDemo.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="ivs" ConfigName="Debug"/>
+      <Project Name="core" ConfigName="Debug"/>
+      <Project Name="H264Decoder" ConfigName="Debug"/>
+      <Project Name="JoHost" ConfigName="Debug"/>
+      <Project Name="JoPlayer" ConfigName="Debug"/>
+      <Project Name="JoRender" ConfigName="Debug"/>
+      <Project Name="JorReader" ConfigName="Debug"/>
+      <Project Name="JosStream" ConfigName="Debug"/>
+      <Project Name="misc" ConfigName="Debug"/>
+      <Project Name="utils" ConfigName="Debug"/>
+      <Project Name="PlayManager" ConfigName="Debug"/>
+      <Project Name="PlayerDemo" ConfigName="Debug"/>
+      <Project Name="VodPlayDemo" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="ivs" ConfigName="Release"/>
+      <Project Name="core" ConfigName="Release"/>
+      <Project Name="H264Decoder" ConfigName="Release"/>
+      <Project Name="JoHost" ConfigName="Release"/>
+      <Project Name="JoPlayer" ConfigName="Release"/>
+      <Project Name="JoRender" ConfigName="Release"/>
+      <Project Name="JorReader" ConfigName="Release"/>
+      <Project Name="JosStream" ConfigName="Release"/>
+      <Project Name="misc" ConfigName="Release"/>
+      <Project Name="utils" ConfigName="Release"/>
+      <Project Name="PlayManager" ConfigName="Release"/>
+      <Project Name="PlayerDemo" ConfigName="Release"/>
+      <Project Name="VodPlayDemo" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

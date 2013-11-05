@@ -23,7 +23,7 @@ public:
 	int RegisterFileReader(const char *fileReaderType, J_MakeFileReaderFun pFun);
 
 	J_FileReader *GetFileReader(j_socket_t nSocket, const char *pType, const char *pResid);
-	void DelFileReader(j_socket_t nSocket);
+	void DelFileReader(j_socket_t nSocket, const char *pType, const char *pResid);
 
 private:
 	FileReaderRegistMap m_fileReaderRegistMap;

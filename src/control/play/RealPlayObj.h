@@ -14,9 +14,10 @@ public:
 	virtual j_result_t PlayMedia(j_wnd_t hWnd, j_int32_t nDevid);
 	virtual j_result_t StopMedia(j_int32_t nDevid);
 	virtual j_result_t ProcessMedia();
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight);
 
 private:
-	//ʵʱ��Ƶ
+	//ÊµÊ±ÊÓÆµ
 	j_result_t StartVideo(j_int32_t nDevid);
 	j_result_t StopVideo(j_int32_t nDevid);
 

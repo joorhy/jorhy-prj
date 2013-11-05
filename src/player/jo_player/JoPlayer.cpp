@@ -28,10 +28,12 @@ j_result_t CJoPlayer::Play(j_wnd_t hWnd)
 	{
 		m_decoder = JoDecoderFactory->GetDecoder(hWnd, "h264");
 		m_decoder->InidDecoder();
+		m_decoder->AspectRatio(m_width, m_height);
 	}
 	if (m_render == NULL)
 	{
 		m_render = JoRenderFactory->GetRender(hWnd, "live");
+		m_render->AspectRatio(m_width, m_height);
 		//m_render->InitRender(hWnd);
 	}
 
@@ -122,6 +124,17 @@ j_result_t CJoPlayer::InputData(j_char_t *pData, J_StreamHeader &streamHeader)
 	return J_OK;
 }
 
+j_result_t CJoPlayer::AspectRatio(j_int32_t nWidth, j_int32_t nHeight)
+{
+	m_width = nWidth;
+	m_height = nHeight;
+	if (m_decoder != NULL)
+		m_decoder->AspectRatio(nWidth, nHeight);
+	if (m_render != NULL)
+		m_render->AspectRatio(nWidth, nHeight);
+	return J_OK;
+}
+
 void CJoPlayer::OnDecode()
 {
 	j_char_t *pInputDataBuff = new j_char_t[RAW_DATA_BUFF_LEN];
@@ -147,11 +160,14 @@ void CJoPlayer::OnDecode()
 					if (!m_bInitRender)
 					{
 						m_decoder->GetDecodeParam(decParam);
+						//J_OS::LOGINFO("000 %d", m_render);
 						m_render->SetDisplayParam(decParam);
+						//J_OS::LOGINFO("001");
 						m_bInitRender = (m_render->InitRender(m_hwnd) == J_OK);
 					}
 					m_vBuffer->PushBuffer(pOutputDataBuff, streamHeader);
 				}
+				//J_OS::LOGINFO("002");
 			}
 		}
 		/*else

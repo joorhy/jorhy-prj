@@ -29,7 +29,7 @@ private:
 
 private:
 	j_boolean_t m_bStartup;
-	CHikSdkParser2 m_parser;
+	CHikSdkParser m_parser;
 	char *m_pDataBuff;
 	J_OS::TLocker_t m_locker;
 };

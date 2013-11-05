@@ -55,6 +55,12 @@ j_result_t CVodPlayObj::StopVod()
 	return J_OK;
 }
 
+j_result_t CVodPlayObj::AspectRatio(j_int32_t nWidth, j_int32_t nHeight)
+{
+	JoPlayerFactory->GetPlayer(m_nSocket, m_playerType.c_str())->AspectRatio(nWidth, nHeight);
+	return J_OK;
+}
+
 j_result_t CVodPlayObj::ProcessMedia()
 {
 	if (!m_bStart)
@@ -130,7 +136,7 @@ int CVodPlayObj::CloseFile()
 		return J_OK;
 
 	m_bStart = false;
-	JoFileReaderFactory->DelFileReader(m_nSocket);
+	JoFileReaderFactory->DelFileReader(m_nSocket, m_readerType.c_str(), m_resid.c_str());
 
 	m_fileid.clear();
 	J_OS::LOGINFO("CVodPlayObj::CloseFile socket =  %d CloseFile", m_nSocket.sock);
