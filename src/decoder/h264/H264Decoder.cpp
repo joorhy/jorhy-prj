@@ -164,40 +164,37 @@ j_int32_t CH264Decoder::CopyData(AVFrame *frame, j_char_t *pOutputData ,j_int32_
 		pOutputData += width;
 	}
 #else
-		int dst_linesize[4];
-		uint8_t *dst_data[4];
-		int dataLen = av_image_alloc(dst_data, dst_linesize,
+		int dataLen = av_image_alloc(m_dst_data, m_dst_linesize,
 							  m_width, m_height, AV_PIX_FMT_RGB24, 1);
 		
-		uint8_t *src_data[4];
-		int src_linesize[4];
-		int srcLen = av_image_alloc(src_data, src_linesize,
+		int srcLen = av_image_alloc(m_src_data, m_src_linesize,
 							 width, height, AV_PIX_FMT_YUV420P, 16);
 			
-		struct SwsContext *sws_ctx = NULL;
-		sws_ctx = sws_getCachedContext(sws_ctx,
+		m_sws_ctx = NULL;
+		m_sws_ctx = sws_getCachedContext(m_sws_ctx,
 					  width, height, AV_PIX_FMT_YUV420P,
 					  m_width, m_height,  AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
 				
 		for (int i=0; i<height; i++)
 		{
-			memcpy(src_data[0] + i * src_linesize[0], frame->data[0] + i * frame->linesize[0], src_linesize[0]);
+			memcpy(m_src_data[0] + i * m_src_linesize[0], frame->data[0] + i * frame->linesize[0], m_src_linesize[0]);
 		}
 		
 		for (int i=0; i<height/2; i++)
 		{
-			memcpy(src_data[1] + i * src_linesize[1], frame->data[1] + i * frame->linesize[1], src_linesize[1]);
-			memcpy(src_data[2] + i * src_linesize[2], frame->data[2] + i * frame->linesize[2], src_linesize[2]);
+			memcpy(m_src_data[1] + i * m_src_linesize[1], frame->data[1] + i * frame->linesize[1], m_src_linesize[1]);
+			memcpy(m_src_data[2] + i * m_src_linesize[2], frame->data[2] + i * frame->linesize[2], m_src_linesize[2]);
 		}
 		
-		sws_scale(sws_ctx, src_data, src_linesize,
-			  0, height, dst_data, dst_linesize);
+		sws_scale(m_sws_ctx, m_src_data, m_src_linesize,
+			  0, height, m_dst_data, m_dst_linesize);
 		
-		memcpy(pOutputData, (const char *)dst_data[0],dataLen);
+		memcpy(pOutputData, (const char *)m_dst_data[0],dataLen);
 		nOutputLen = dataLen;
 		len = dataLen;
-		av_freep(&dst_data[0]);
-		av_freep(&src_data[0]);
+		sws_freeContext(m_sws_ctx);
+		av_freep(&m_dst_data[0]);
+		av_freep(&m_src_data[0]);
 #endif
 
 	return len;

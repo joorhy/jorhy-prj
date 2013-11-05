@@ -10,6 +10,9 @@
   <VirtualDirectory Name="src">
     <File Name="../../src/demo/StreamPlayer.cpp"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="include">
+    <File Name="../../src/demo/StreamPlayer.h"/>
+  </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -21,12 +24,12 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cxxflags)" C_Options="-g;-O0;-Wall;$(shell wx-config --cxxflags)" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+      <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cxxflags);`pkg-config --cflags gtk+-2.0`" C_Options="-g;-O0;-Wall;$(shell wx-config --cxxflags)" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="../../src/core"/>
         <IncludePath Value="../../src/misc"/>
         <IncludePath Value="../../src/control/play"/>
       </Compiler>
-      <Linker Options="-Wl,-rpath,./,$(shell wx-config --libs)" Required="yes">
+      <Linker Options="-Wl,-rpath,./,$(shell wx-config --libs) `pkg-config --libs gtk+-2.0`" Required="yes">
         <LibraryPath Value="./Debug"/>
         <Library Value="PlayManager"/>
         <Library Value="misc"/>
@@ -103,7 +106,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="include">
-    <File Name="../../src/demo/StreamPlayer.h"/>
-  </VirtualDirectory>
 </CodeLite_Project>

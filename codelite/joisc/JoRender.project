@@ -30,13 +30,13 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g `pkg-config --cflags gtk+-2.0`" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+      <Compiler Options="" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="../../src/core"/>
         <IncludePath Value="../../src/misc"/>
         <IncludePath Value="../../src/utils"/>
         <IncludePath Value="../../include/linux/ffmpeg"/>
       </Compiler>
-      <Linker Options="`pkg-config --libs gtk+-2.0`" Required="yes">
+      <Linker Options="" Required="yes">
         <LibraryPath Value="../../libs/linux/ffmpeg"/>
         <Library Value="avcodec"/>
         <Library Value="swscale"/>

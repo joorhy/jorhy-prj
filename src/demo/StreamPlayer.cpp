@@ -3,6 +3,9 @@
 #include "x_config.h"
 #include "PlayManager.h"
 #include "StreamPlayer.h"
+#include <X11/Xlib.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 
 //´´½¨MyAppÊµÀýµÄ´úÂëÔÚÕâÀïÃæ
 IMPLEMENT_APP(MyApp) 
@@ -133,7 +136,8 @@ void CStreamPlayer::Play()
 		int width = 0;
 		int height = 0;
 		m_displayForcus->GetParent()->GetSize(&width, &height);
-		sprintf(desUrl, "jo_player://%d?width=%d&height=%d", (j_wnd_t)m_displayForcus->GetHandle(), width, height);
+		//GDK_WINDOW_XID(GTK_WIDGET(m_displayForcus->GetHandle())->window);
+		sprintf(desUrl, "jo_player://%d?width=%d&height=%d", (j_wnd_t)GDK_WINDOW_XID(GTK_WIDGET(m_displayForcus->GetHandle())->window), width, height);
 		j_int32_t streamId = -1;
 		//ÊµÊ±ÊÓÆµ
 		streamId = m_playManager.OpenStream(m_textUrl.GetValue().To8BitData(), desUrl);

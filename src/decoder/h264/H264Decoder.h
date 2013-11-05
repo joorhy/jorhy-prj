@@ -52,6 +52,14 @@ private:
 	j_boolean_t m_bInit;
 	j_int32_t m_width;
 	j_int32_t m_height;
+	
+#ifndef WIN32
+	int m_dst_linesize[4];
+	uint8_t *m_dst_data[4];
+	uint8_t *m_src_data[4];
+	int m_src_linesize[4];
+	struct SwsContext *m_sws_ctx;
+#endif
 };
 
 #endif //~__H264DECODER_H_

@@ -260,6 +260,7 @@ void CPlayManager::OnWork()
 	StreamMap::iterator it;
 	while (m_bStart)
 	{
+		j_sleep(1);
 		TLock(m_streamLocker);
 		if (m_streamMap.empty())
 		{

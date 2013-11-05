@@ -145,6 +145,7 @@ void CJoPlayer::OnDecode()
 	j_result_t nResult = J_OK;
 	while (m_bStart)
 	{
+		j_sleep(10);
 		m_lockerDec._Lock();
 		memset(&streamHeader, 0, sizeof(streamHeader));
 		nResult = m_rawBuffer->PopBuffer(pInputDataBuff, streamHeader);
