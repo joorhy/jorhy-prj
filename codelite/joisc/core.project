@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="core" InternalType="Library">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="../../src/core/x_file.cpp"/>
+    <File Name="../../src/core/x_http.cpp"/>
+    <File Name="../../src/core/x_loadso.cpp"/>
+    <File Name="../../src/core/x_lock.cpp"/>
+    <File Name="../../src/core/x_log.cpp"/>
+    <File Name="../../src/core/x_media_msg.cpp"/>
+    <File Name="../../src/core/x_mem_pool.cpp"/>
+    <File Name="../../src/core/x_msg_queue.cpp"/>
+    <File Name="../../src/core/x_ping.cpp"/>
+    <File Name="../../src/core/x_ringbuffer.cpp"/>
+    <File Name="../../src/core/x_socket.cpp"/>
+    <File Name="../../src/core/x_string.cpp"/>
+    <File Name="../../src/core/x_thread.cpp"/>
+    <File Name="../../src/core/x_thread_pool.cpp"/>
+    <File Name="../../src/core/x_time.cpp"/>
+    <File Name="../../src/core/x_timer.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="include">
+    <File Name="../../src/core/j_common.h"/>
+    <File Name="../../src/core/j_includes.h"/>
+    <File Name="../../src/core/j_module.h"/>
+    <File Name="../../src/core/j_obj.h"/>
+    <File Name="../../src/core/j_type.h"/>
+    <File Name="../../src/core/x_asio.h"/>
+    <File Name="../../src/core/x_convert.h"/>
+    <File Name="../../src/core/x_errtype.h"/>
+    <File Name="../../src/core/x_file.h"/>
+    <File Name="../../src/core/x_http.h"/>
+    <File Name="../../src/core/x_loadso.h"/>
+    <File Name="../../src/core/x_lock.h"/>
+    <File Name="../../src/core/x_log.h"/>
+    <File Name="../../src/core/x_media_msg.h"/>
+    <File Name="../../src/core/x_mem_pool.h"/>
+    <File Name="../../src/core/x_message.h"/>
+    <File Name="../../src/core/x_msg_def.h"/>
+    <File Name="../../src/core/x_msg_queue.h"/>
+    <File Name="../../src/core/x_msg_type.h"/>
+    <File Name="../../src/core/x_ping.h"/>
+    <File Name="../../src/core/x_ringbuffer.h"/>
+    <File Name="../../src/core/x_service.h"/>
+    <File Name="../../src/core/x_singleton.h"/>
+    <File Name="../../src/core/x_socket.h"/>
+    <File Name="../../src/core/x_string.h"/>
+    <File Name="../../src/core/x_thread.h"/>
+    <File Name="../../src/core/x_thread_pool.h"/>
+    <File Name="../../src/core/x_time.h"/>
+    <File Name="../../src/core/x_timer.h"/>
+    <File Name="../../src/core/x_asio.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>
