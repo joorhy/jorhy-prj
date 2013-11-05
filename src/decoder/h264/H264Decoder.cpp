@@ -18,7 +18,7 @@ j_result_t CH264Decoder::InidDecoder()
 {
 	J_OS::LOGINFO("CH264Decoder::InidDecoder");
 #if LIBAVCODEC_VERSION_MAJOR < 54
-	//avcodec_init();
+	avcodec_init();
 #endif
 	avcodec_register_all();
 #ifdef _DEBUG
@@ -26,15 +26,24 @@ j_result_t CH264Decoder::InidDecoder()
 #endif
 	av_lockmgr_register(lockmgr);
 	av_init_packet(&m_Packet);
+#ifdef WIN32
+	m_pCodec	= avcodec_find_decoder(CODEC_ID_H264);
+	m_pContext	= avcodec_alloc_context();
+#else
 	m_pCodec	= avcodec_find_decoder(AV_CODEC_ID_H264);
 	m_pContext	= avcodec_alloc_context3(m_pCodec);
+#endif
 	if(!m_pCodec || !m_pContext)
 		return J_DECODER_INIT_ERROR;
 
 	if(m_pCodec->capabilities & CODEC_CAP_TRUNCATED)
 		m_pContext->flags|= CODEC_FLAG_TRUNCATED;  /*we do not send complete frames */
 
+#ifdef WIN32
+	if(avcodec_open(m_pContext,m_pCodec) < 0)
+#else
 	if(avcodec_open2(m_pContext,m_pCodec, NULL) < 0)
+#endif
 		return J_DECODER_INIT_ERROR;
 	
 	m_pPicture	= avcodec_alloc_frame();

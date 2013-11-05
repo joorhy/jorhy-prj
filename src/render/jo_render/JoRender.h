@@ -27,6 +27,12 @@ public:
 	virtual j_result_t DisplayFrame(j_char_t *pData, j_int32_t nLen);
 	virtual j_result_t DeinitRender();
 	virtual j_result_t SetDisplayParam(const J_VideoDisplayParam &displayParam);
+	virtual j_result_t AspectRatio(j_int32_t nWidth, j_int32_t nHeight)
+	{
+		m_width = nWidth;
+		m_height = nHeight;
+		return J_OK;
+	}
 
 private:
 	j_result_t OpenDDraw();
@@ -51,6 +57,9 @@ private:
 	LPDIRECTDRAWSURFACE7	m_pDDSPrimary;		//DirectDrawÏÔÊ¾»º³å¿é Primary surface
 	LPDIRECTDRAWSURFACE7	m_pSurface;
 	WNDPROC m_oldProc;
+
+	j_int32_t m_width;
+	j_int32_t m_height;
 };
 
 #endif //~__JORENDER_H_

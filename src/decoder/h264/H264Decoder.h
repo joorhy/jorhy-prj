@@ -6,7 +6,9 @@ extern "C"{
 	#include "libavcodec/avcodec.h"
 	#include "libavformat/avformat.h"
 	#include "libswscale/swscale.h"
+#ifndef WIN32 
 	#include "libavutil/imgutils.h"
+#endif
 }
 
 class CH264Decoder : public J_Decoder

@@ -44,6 +44,7 @@ private:
 	wxWindow m_displayWindow2;
 	wxWindow m_displayWindow3;
 	wxWindow m_displayWindow4;
+
 	wxPanel *m_display1;
 	wxPanel *m_display2;
 	wxPanel *m_display3;
