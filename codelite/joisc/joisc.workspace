@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="joisc" Database="./joisc.tags">
   <Project Name="core" Path="core.project" Active="No"/>
-  <Project Name="H264Decoder" Path="H264Decoder.project"/>
-  <Project Name="JoHost" Path="JoHost.project"/>
+  <Project Name="H264Decoder" Path="H264Decoder.project" Active="No"/>
+  <Project Name="JoHost" Path="JoHost.project" Active="No"/>
   <Project Name="JoPlayer" Path="JoPlayer.project"/>
   <Project Name="JoRender" Path="JoRender.project"/>
   <Project Name="JorReader" Path="JorReader.project"/>
@@ -12,6 +12,7 @@
   <Project Name="PlayManager" Path="PlayManager.project"/>
   <Project Name="PlayerDemo" Path="PlayerDemo.project" Active="Yes"/>
   <Project Name="VodPlayDemo" Path="VodPlayDemo.project" Active="No"/>
+  <Project Name="GtkDemo" Path="GtkDemo.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="ivs" ConfigName="Debug"/>
@@ -27,6 +28,7 @@
       <Project Name="PlayManager" ConfigName="Debug"/>
       <Project Name="PlayerDemo" ConfigName="Debug"/>
       <Project Name="VodPlayDemo" ConfigName="Debug"/>
+      <Project Name="GtkDemo" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="ivs" ConfigName="Release"/>
@@ -42,6 +44,7 @@
       <Project Name="PlayManager" ConfigName="Release"/>
       <Project Name="PlayerDemo" ConfigName="Release"/>
       <Project Name="VodPlayDemo" ConfigName="Release"/>
+      <Project Name="GtkDemo" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

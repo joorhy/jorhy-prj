@@ -24,6 +24,7 @@
     <File Name="../../src/core/x_thread_pool.cpp"/>
     <File Name="../../src/core/x_time.cpp"/>
     <File Name="../../src/core/x_timer.cpp"/>
+    <File Name="../../src/core/x_asio.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="../../src/core/j_common.h"/>
@@ -55,10 +56,7 @@
     <File Name="../../src/core/x_thread_pool.h"/>
     <File Name="../../src/core/x_time.h"/>
     <File Name="../../src/core/x_timer.h"/>
-    <File Name="../../src/core/x_asio.cpp"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -144,4 +142,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

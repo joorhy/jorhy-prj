@@ -47,11 +47,6 @@ CPlayManager::~CPlayManager()
 
 j_result_t CPlayManager::Init()
 {
-	/*if (m_loadSo.JoLoadSo() != J_OK)
-	{
-		J_OS::LOGINFO("CPlayManager::Init loadSo JoLoadSo error");
-		return J_UNKNOW;
-	}*/
 	m_bStart = true;
 	j_thread_parm parm = {0};
 	parm.entry = CPlayManager::WorkThread;
@@ -64,7 +59,6 @@ j_result_t CPlayManager::Init()
 void CPlayManager::Deinit()
 {
 	m_bStart = false;
-	//m_loadSo.JoUnloadSo();
 }
 
 j_int32_t CPlayManager::OpenStream(const j_char_t *pUrl, const j_char_t *pUrl2)
@@ -81,16 +75,11 @@ j_int32_t CPlayManager::OpenStream(const j_char_t *pUrl, const j_char_t *pUrl2)
 	}
 	TUnlock(m_adapterLocker);
 
-	//J_OS::LOGINFO("11111");
 	TLock(m_streamLocker);
 	J_PlayStreamInfo streamInfo = {0};
-	//J_OS::LOGINFO("11112");
 	streamInfo.pPlayObj = new CRealPlayObj(m_nStreamId, info.player_type, info.stream_type, info.resid);
-	//J_OS::LOGINFO("11113");
 	streamInfo.pPlayObj->AspectRatio(info.width, info.height);
-	//J_OS::LOGINFO("11114");
 	streamInfo.pPlayObj->PlayMedia(info.play_wnd, info.dev_id);
-	//J_OS::LOGINFO("11115");
 	streamInfo.nDevid = info.dev_id;
 	streamInfo.bStart = true;
 	m_streamMap[m_nStreamId] = streamInfo;
@@ -265,7 +254,6 @@ void CPlayManager::OnWork()
 		if (m_streamMap.empty())
 		{
 			TUnlock(m_streamLocker);
-			j_sleep(10);
 			continue;
 		}
 		it = m_streamMap.begin();

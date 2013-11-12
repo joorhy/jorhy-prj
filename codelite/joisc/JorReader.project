@@ -15,8 +15,6 @@
     <File Name="../../src/files/jo_remote/JorFileHelper.h"/>
     <File Name="../../src/files/jo_remote/JorFileReader.h"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -104,4 +102,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

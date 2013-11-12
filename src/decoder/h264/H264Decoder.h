@@ -54,8 +54,10 @@ private:
 	j_int32_t m_height;
 	
 #ifndef WIN32
+	int m_dataLen;
 	int m_dst_linesize[4];
 	uint8_t *m_dst_data[4];
+	int m_srcLen;
 	uint8_t *m_src_data[4];
 	int m_src_linesize[4];
 	struct SwsContext *m_sws_ctx;

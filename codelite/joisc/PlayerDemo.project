@@ -13,6 +13,8 @@
   <VirtualDirectory Name="include">
     <File Name="../../src/demo/StreamPlayer.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="">

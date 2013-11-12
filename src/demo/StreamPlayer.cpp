@@ -128,15 +128,59 @@ void CStreamPlayer::OnSize(wxSizeEvent &event)
 	pStreamPlayer->ResizeWindow(event.GetEventObject());
 }
 
+GtkWidget *g_widget = NULL;
+
+void mbg()
+{
+	GdkColor color;
+	gdk_color_parse("red", &color);
+	gdk_window_set_background(g_widget->window, &color);
+}
+
 void CStreamPlayer::Play()
 {
+	//GdkWindow *g_win1 = GTK_WIDGET(m_displayWindow1.GetHandle())->window;
+	//GdkWindow *g_win1 = GTK_WIDGET(m_displayForcus->GetHandle())->window;
+	//Drawable win = GDK_WINDOW_XID(GTK_WIDGET(m_displayWindow1.GetHandle())->window);
+	//GtkWidget *widget = gtk_plug_new(win);
+	//unsigned int id = m_displayWindow1.GetId();
+	//Display *dis = GDK_WINDOW_XDISPLAY(g_win1);//XOpenDisplay(NULL);
+	//Display *dis2 = XOpenDisplay(NULL);
+	//XMapWindow(dis2, win);
+	//gdk_init(0, NULL);
+	//GdkDisplay *g_dis = gdk_x11_lookup_xdisplay(dis);//gdk_display_open(NULL);
+	//GdkWindow *g_win = gdk_window_lookup(win);//gdk_window_foreign_new_for_display(dis, win);
+	//GtkWidget *widget = gtk_widget_new(GTK_TYPE_ENTRY, NULL);
+	//gtk_widget_set_window(widget, g_win1);
+	//GtkWidget *widget = GTK_WIDGET(m_displayWindow1.GetHandle());
+	//gtk_init(0, NULL);
+	//g_widget = GTK_WIDGET(m_displayWindow1.GetHandle());
+	//gtk_signal_connect(GTK_OBJECT(g_widget), "event", GTK_SIGNAL_FUNC(mbg), (gpointer)g_widget);
+	//gtk_main();
+	//GtkStyle *style = gtk_widget_get_style(widget);
+	//GtkWidget *fixed = gtk_fixed_new();
+	//gtk_container_add(GTK_CONTAINER(widget), fixed);
+	//gtk_widget_show(fixed);
+	//GdkGC *gc = gdk_gc_new(widget->window);
+	//GdkColor color;
+	//gdk_color_parse("red", &color);
+	//gdk_window_set_background(widget->window, &color);
+	//gdk_set_foreground(gc, &color);
+	//gdk_draw_line(widget->window, gc, 0, 0, 200, 200);
+	/*while (1)
+	{
+		GdkColor color;
+		gdk_color_parse("red", &color);
+		gtk_widget_modify_bg(widget, GTK_STATE_ACTIVE, &color);
+		sleep(1);
+	}*/
+		
 	if (m_displayForcus != NULL && m_playerMap.find(m_displayForcus) == m_playerMap.end())
 	{
 		char desUrl[256] = {0};
 		int width = 0;
 		int height = 0;
 		m_displayForcus->GetParent()->GetSize(&width, &height);
-		//GDK_WINDOW_XID(GTK_WIDGET(m_displayForcus->GetHandle())->window);
 		sprintf(desUrl, "jo_player://%d?width=%d&height=%d", (j_wnd_t)GDK_WINDOW_XID(GTK_WIDGET(m_displayForcus->GetHandle())->window), width, height);
 		j_int32_t streamId = -1;
 		//ÊµÊ±ÊÓÆµ

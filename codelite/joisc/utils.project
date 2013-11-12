@@ -117,8 +117,6 @@
     <File Name="../../src/utils/tinyxml/tinyxmlerror.cpp"/>
     <File Name="../../src/utils/tinyxml/tinyxmlparser.cpp"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -204,4 +202,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

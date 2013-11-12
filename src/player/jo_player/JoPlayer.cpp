@@ -145,7 +145,6 @@ void CJoPlayer::OnDecode()
 	j_result_t nResult = J_OK;
 	while (m_bStart)
 	{
-		j_sleep(10);
 		m_lockerDec._Lock();
 		memset(&streamHeader, 0, sizeof(streamHeader));
 		nResult = m_rawBuffer->PopBuffer(pInputDataBuff, streamHeader);
@@ -161,21 +160,19 @@ void CJoPlayer::OnDecode()
 					if (!m_bInitRender)
 					{
 						m_decoder->GetDecodeParam(decParam);
-						//J_OS::LOGINFO("000 %d", m_render);
 						m_render->SetDisplayParam(decParam);
-						//J_OS::LOGINFO("001");
 						m_bInitRender = (m_render->InitRender(m_hwnd) == J_OK);
 					}
 					m_vBuffer->PushBuffer(pOutputDataBuff, streamHeader);
 				}
-				//J_OS::LOGINFO("002");
 			}
 		}
-		/*else
+		else
 		{
 			m_lockerDec._Unlock();
+			j_sleep(10);
 			continue;
-		}*/
+		}
 		m_lockerDec._Unlock();
 	}
 	delete pInputDataBuff;
@@ -197,11 +194,12 @@ void CJoPlayer::OnRend()
 		{
 			nResult = m_render->DisplayFrame(pDataBuff, streamHeader.dataLen);
 		}
-		/*else
+		else
 		{
 			m_lockerRend._Unlock();
+			j_sleep(10);
 			continue;
-		}*/
+		}
 		m_lockerRend._Unlock();
 	}
 	delete pDataBuff;

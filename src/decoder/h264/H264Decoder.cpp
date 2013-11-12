@@ -7,6 +7,7 @@ JO_IMPLEMENT_INTERFACE(Decoder, "h264", CH264Decoder::Maker)
 CH264Decoder::CH264Decoder()
 {
 	m_bInit = false;
+	m_sws_ctx = NULL;
 }
 
 CH264Decoder::~CH264Decoder()
@@ -164,17 +165,19 @@ j_int32_t CH264Decoder::CopyData(AVFrame *frame, j_char_t *pOutputData ,j_int32_
 		pOutputData += width;
 	}
 #else
-		int dataLen = av_image_alloc(m_dst_data, m_dst_linesize,
-							  m_width, m_height, AV_PIX_FMT_RGB24, 1);
-		
-		int srcLen = av_image_alloc(m_src_data, m_src_linesize,
-							 width, height, AV_PIX_FMT_YUV420P, 16);
+		if (m_sws_ctx == NULL)
+		{
+			m_dataLen = av_image_alloc(m_dst_data, m_dst_linesize,
+								  m_width, m_height, AV_PIX_FMT_RGB24, 1);
 			
-		m_sws_ctx = NULL;
-		m_sws_ctx = sws_getCachedContext(m_sws_ctx,
-					  width, height, AV_PIX_FMT_YUV420P,
-					  m_width, m_height,  AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+			m_srcLen = av_image_alloc(m_src_data, m_src_linesize,
+								 width, height, AV_PIX_FMT_YUV420P, 16);
 				
+			m_sws_ctx = NULL;
+			m_sws_ctx = sws_getCachedContext(m_sws_ctx,
+						  width, height, AV_PIX_FMT_YUV420P,
+						  m_width, m_height,  AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+		}	
 		for (int i=0; i<height; i++)
 		{
 			memcpy(m_src_data[0] + i * m_src_linesize[0], frame->data[0] + i * frame->linesize[0], m_src_linesize[0]);
@@ -189,12 +192,12 @@ j_int32_t CH264Decoder::CopyData(AVFrame *frame, j_char_t *pOutputData ,j_int32_
 		sws_scale(m_sws_ctx, m_src_data, m_src_linesize,
 			  0, height, m_dst_data, m_dst_linesize);
 		
-		memcpy(pOutputData, (const char *)m_dst_data[0],dataLen);
-		nOutputLen = dataLen;
-		len = dataLen;
-		sws_freeContext(m_sws_ctx);
-		av_freep(&m_dst_data[0]);
-		av_freep(&m_src_data[0]);
+		memcpy(pOutputData, (const char *)m_dst_data[0], m_dataLen);
+		nOutputLen = m_dataLen;
+		len = m_dataLen;
+		//sws_freeContext(m_sws_ctx);
+		//av_freep(&m_dst_data[0]);
+		//av_freep(&m_src_data[0]);
 #endif
 
 	return len;
