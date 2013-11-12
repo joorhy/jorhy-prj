@@ -1,12 +1,26 @@
-#ifndef __X_RD_ASIO_H_
-#define __X_RD_ASIO_H_
+/** 
+*  Copyright (c) 2013, xx科技有限公司 
+*  All rights reserved. 
+* 
+*  @file				x_asio_win.h 
+*  @author		Jorhy(joorhy@gmail.com) 
+*  @date			2013/09/18 10:43 
+*/  
+#ifndef __X_ASIO_H_
+#define __X_ASIO_H_
 #include "j_includes.h"
 #include "j_type.h"
-#include "x_singleton.h"
 #include "x_lock.h"
 #include "x_socket.h"
 #include "x_thread.h"
-/////
+
+/** 
+*  @author      Jorhy(joorhy@gmail.com) 
+*  @date         2013/09/18 10:46 
+*  @class        CXAsio 
+*  @brief        异步IO
+*  @note        无 
+*/  
 class JO_API CXAsio
 {
 public:
@@ -53,15 +67,10 @@ private:
 	AsioUserMap m_userMap;
 	j_socket_t m_listenSocket;
 	J_AsioDataBase *m_listenAsioData;
-	typedef std::map<j_socket_t, std::queue<J_AsioDataBase *> >AsioDataMap;
-	AsioDataMap m_readMap;
-	AsioDataMap m_writeMap;
 
 	CJoThread m_workThread;
 	J_OS::CTLock m_user_locker;
 	J_OS::CTLock m_listen_locker;
-	J_OS::CTLock m_read_locker;
-	J_OS::CTLock m_write_locker;
 
 	j_boolean_t m_bStarted;
 #ifdef WIN32
@@ -77,4 +86,4 @@ private:
 
 JO_DECLARE_SINGLETON(XAsio)
 
-#endif //~__X_RD_ASIO_H_
+#endif //~__X_ASIO_H_
