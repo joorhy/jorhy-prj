@@ -113,7 +113,10 @@ BOOL CPlCtrl::SetLayout(char *pJsUrl)
 BOOL CPlCtrl::SetPath(char *js_path)
 {
 	if (PlJsonParser::Instance()->ParserPath(js_path, m_layoutInfo))
+	{
+		PlManager::Instance()->SetPath(m_layoutInfo.imgPath, m_layoutInfo.mediaPath);
 		return TRUE;
+	}
 
 	return FALSE;
 }
@@ -219,20 +222,6 @@ BOOL CPlCtrl::VodStreamJump(char *js_time)
 	PlJsonParser::Instance()->ParserDrag(js_time, playInfo);
 
 	return PlManager::Instance()->VodStreamJump(GetFocusWnd(), playInfo);
-}
-
-BOOL CPlCtrl::GetPath(char *psz_dest,UINT nType)
-{
-	if(nType == IMAGEPATH)
-	{
-		strncpy(psz_dest, m_layoutInfo.imgPath, PATH_LENGTH);
-	}
-	else if(nType == VIDEOPATH)
-	{
-		strncpy(psz_dest, m_layoutInfo.mediaPath, PATH_LENGTH);
-	}
-
-	return TRUE;
 }
 
 BOOL CPlCtrl::SetLayout()

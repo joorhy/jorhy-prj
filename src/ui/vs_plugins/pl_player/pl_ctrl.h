@@ -37,7 +37,6 @@ public:
 	void FullScreen();
 	HWND GetFocusWnd();
 	BOOL RegisterCallBack(NpnNotifyFunc funcAddr, void *pUser);
-	BOOL GetPath(char *psz_dest, UINT nType);
 
 private:
 	HWND m_hParent;

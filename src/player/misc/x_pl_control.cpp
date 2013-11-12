@@ -218,11 +218,12 @@ J_PL_RESULT J_PlControl::Snapshot(char *path_name)
 J_PL_RESULT J_PlControl::ToggelRecord(char *path_name)
 {
 	J_PL_RESULT br;
-	CXPlRecord record;
-	br = record.Start(path_name);
+	if (m_tansfm)
+		br = m_tansfm->ToggelRecord(path_name);
 	if(br != J_PL_NO_ERROR)
 		return br;
 
+	j_pl_warn("ToggelRecord location=%s\n",path_name);
 	return J_PL_NO_ERROR;
 }
 

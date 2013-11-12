@@ -173,6 +173,10 @@ BOOL JoPlayer::Capture(char *path)
 
 BOOL JoPlayer::Record(char *path)
 {
+	if(m_player)
+	{
+		m_player->ToggelRecord(path);
+	}
 	return TRUE;
 }
 

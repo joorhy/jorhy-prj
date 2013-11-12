@@ -11,6 +11,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np_pl_misc", "np_pl_misc.vcproj", "{EA19CC81-B10D-4716-B9BC-3B9E7C2B0D04}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jo_player", "jo_player.vcproj", "{951DE09F-A3A6-4025-9F06-F562583BB971}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A7B27D71-017E-417B-8D4F-F2C484D2C3F6} = {A7B27D71-017E-417B-8D4F-F2C484D2C3F6}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pl_core", "pl_core.vcproj", "{1F20A2BD-1B12-491F-A579-79886B472ACF}"
 EndProject

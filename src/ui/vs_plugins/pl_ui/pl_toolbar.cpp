@@ -255,9 +255,7 @@ void CPlToolBar::EnableSound()
 
 void CPlToolBar::Capture()
 {
-	//char path[PATH_LENGTH] = {0};
-	//CPlCtrl::CreateInstance(m_hParent)->GetPath(path, IMAGEPATH);
-	//PlManager::Instance()->Capture(m_hPlWnd, path);
+	PlManager::Instance()->Capture(m_hPlWnd);
 }
 
 /************************************************************************/
@@ -270,9 +268,7 @@ void CPlToolBar::Speak()
 
 void CPlToolBar::Record()
 {
-	/*char path[PATH_LENGTH] = {0};
-	CPlCtrl::CreateInstance(m_hParent)->GetPath(path,VIDEOPATH);
-	if(PlManager::Instance()->Record(m_hPlWnd, path))
+	if(PlManager::Instance()->Record(m_hPlWnd))
 	{
 		m_pPlayParm->bRecoder = !m_pPlayParm->bRecoder;
 		if(m_pPlayParm->bRecoder)
@@ -287,7 +283,7 @@ void CPlToolBar::Record()
 		}
 		m_bnRecord->ChangePng(m_pPlayParm->bRecoder);
 		PlManager::Instance()->SetOsdText(m_hPlWnd, 2, "Â¼Ïñ");
-	}*/
+	}
 }
 
 /************************************************************************/

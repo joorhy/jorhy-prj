@@ -21,10 +21,13 @@ CXPlTransform::CXPlTransform(j_pl_transform_t &t,void *control)
 	m_abuffer		= NULL;
 	m_abufferEX		= NULL;
 	m_cpuInfo.Init();
+
+	m_recorder = NULL;
 }
 
 CXPlTransform::~CXPlTransform(void)
 {
+	CXPlRecord::ReleaseInstance(&m_recorder);
 	CXPlAudioDecode::ReleaseInstance(&m_aDecoder);
 	J_PlVideoDecode::ReleaseInstance(&m_vDecoder);
 
@@ -157,8 +160,8 @@ J_PL_RESULT CXPlTransform::VideoLoopPush()
 	J_PlControl *ctl = reinterpret_cast<J_PlControl*>(m_control);
 	bool bFirst = true;
 	bool bNeedDec = true;
-	bool bNeedIframe = false;
 	bool bIsIFrame = false;
+	bool bNeedIframe =false;
 	char *srcData = new char[MAX_VIDEO_FRAME_SIZE];
 	char *dstData = new char[MAX_VIDEO_FRAME_SIZE];
 	int dstlen = 0;
@@ -186,6 +189,9 @@ J_PL_RESULT CXPlTransform::VideoLoopPush()
 			{
 				if(format.type != DECODE_AUDIO)
 				{	
+					if (m_recorder)
+						m_recorder->InputData(srcData,format.size,format.type,format.timestamp);
+
 					if(ConsiderVDecoder(format, bNeedDec, bNeedIframe, bIsIFrame))
 					{
 						if (bIsIFrame)
@@ -428,6 +434,22 @@ J_PL_RESULT CXPlTransform::AudioLoopPull()
 J_PL_RESULT CXPlTransform::SetDirection(bool bFront)
 {
 	m_vbuffer->Flush();
+	return J_PL_NO_ERROR;
+}
+
+J_PL_RESULT CXPlTransform::ToggelRecord(char *path_name)
+{
+	if (m_recorder == NULL)
+	{
+		m_recorder = CXPlRecord::CreateInstance(RECORD_TS);
+		if (m_recorder != NULL)
+			m_recorder->Start(path_name);
+	}
+	else
+	{
+		m_recorder->Stop();
+		CXPlRecord::ReleaseInstance(&m_recorder);
+	}
 	return J_PL_NO_ERROR;
 }
 

@@ -376,6 +376,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\player\output\x_pl_record_ts.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\player\include\x_pl_record_ts.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\player\output\x_pl_render.cpp"
 				>
 			</File>

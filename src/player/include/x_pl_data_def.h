@@ -34,6 +34,11 @@ enum codec_id_e
 	CODE_AAC,
 };
 
+enum record_id_e
+{
+	RECORD_TS = 0,
+};
+
 
 /* Append new items at the end ONLY. */
 enum demux_id_e

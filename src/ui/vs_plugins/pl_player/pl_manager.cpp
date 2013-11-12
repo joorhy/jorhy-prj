@@ -4,6 +4,7 @@
 #include "pl_reconn.h"
 #include "pl_json_parser.h"
 #include "x_pl_log.h"
+#include <direct.h>
 
 /*******************ÀàÊµÏÖ*****************************/
 PlManager::PlManager()
@@ -12,6 +13,8 @@ PlManager::PlManager()
 	m_nVodEndTime	= 0;
 	m_pFuncCallBk		= NULL;
 	m_nPlayNum		= 0;
+	strncpy(m_strImgPath, "C:\\Capture", PATH_LENGTH);
+	strncpy(m_strVodPath, "C:\\Record", PATH_LENGTH);
 	//m_playerMap.clear();
 }
 
@@ -112,7 +115,7 @@ void PlManager::CreateMrl(const PL_PlayInfo &playInfo)
 	strcat((char *)playInfo.pUrl, tmpInfo);
 }
 
-BOOL PlManager::Capture(HWND hWnd, char *pPath)
+BOOL PlManager::Capture(HWND hWnd)
 {
 	m_locker.Lock();
 	BOOL bRet = FALSE;
@@ -124,17 +127,17 @@ BOOL PlManager::Capture(HWND hWnd, char *pPath)
 		tm_locatime = localtime(&t_locatime);
 		char locatime[256]	= {0};
 		char path_name[512] = {0};
-		sprintf(locatime,"\\RonYaoCapture-%d-%d-%d-%d-%d-%d.png",
+		sprintf(locatime,"\\RonYaoCapture-%04d-%02d-%02d-%02d-%02d-%02d.png",
 			tm_locatime->tm_year+1990,
 			tm_locatime->tm_mon+1,
 			tm_locatime->tm_mday,
 			tm_locatime->tm_hour,
 			tm_locatime->tm_min,
 			tm_locatime->tm_sec);
-		strcat(path_name, pPath);
+		mkdir(m_strImgPath);
+		strcat(path_name, m_strImgPath);
 		strcat(path_name, locatime);
 		bRet = it->second.pPlayer->Capture(path_name);
-		
 	}
 	m_locker.Unlock();
 	return bRet;
@@ -153,14 +156,29 @@ BOOL PlManager::SetSpeed(HWND hWnd, BOOL bSpeedUp)
 	return bRet;
 }
 
-BOOL PlManager::Record(HWND hWnd, char *pPath)
+BOOL PlManager::Record(HWND hWnd)
 {
 	m_locker.Lock();
 	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
-		bRet = it->second.pPlayer->Record(pPath);
+		time_t t_locatime = time(NULL);
+		tm *tm_locatime; 
+		tm_locatime = localtime(&t_locatime);
+		char locatime[256]	= {0};
+		char path_name[512] = {0};
+		sprintf(locatime,"\\RonYaoCapture-%04d-%02d-%02d-%02d-%02d-%02d.ts",
+			tm_locatime->tm_year+1990,
+			tm_locatime->tm_mon+1,
+			tm_locatime->tm_mday,
+			tm_locatime->tm_hour,
+			tm_locatime->tm_min,
+			tm_locatime->tm_sec);
+		mkdir(m_strVodPath);
+		strcat(path_name, m_strVodPath);
+		strcat(path_name, locatime);
+		bRet = it->second.pPlayer->Record(path_name);
 	}
 	m_locker.Unlock();
 	return bRet;
@@ -474,6 +492,15 @@ BOOL PlManager::IsPaused(HWND hWnd)
 	}
 	m_locker.Unlock();
 	return bRet;
+}
+
+BOOL PlManager::SetPath(const char *pImgPath, const char *pVodPath)
+{
+	memset(m_strImgPath, 0, sizeof(m_strImgPath));
+	memset(m_strVodPath, 0, sizeof(m_strVodPath));
+	strncpy(m_strImgPath, pImgPath, PATH_LENGTH);
+	strncpy(m_strVodPath, pVodPath, PATH_LENGTH);
+	return TRUE;
 }
 
 void PlManager::AspectRatio(HWND hWnd, int width,int height)

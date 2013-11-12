@@ -20,9 +20,9 @@ public:
 public:
 	BOOL	Play(HWND hWnd, const PL_PlayInfo &playInfo);			//网页调用 播放
 	void		Stop(HWND hWnd);											//停止播放
-	BOOL	Capture(HWND hWnd, char *pPath);								//抓图
+	BOOL	Capture(HWND hWnd);								//抓图
 	BOOL	SetSpeed(HWND hWnd, BOOL bSpeedUp);					//TRUE=快进，FALSE=快退
-	BOOL	Record(HWND hWnd, char *pPath);								//录像
+	BOOL	Record(HWND hWnd);								//录像
 	void		Pause(HWND hWnd);													//暂停
 	void		PlayOneByOne(HWND hWnd);										//单帧播放
 	int		GetVolume(HWND hWnd);											//获得音量大小
@@ -34,6 +34,7 @@ public:
 	BOOL	RePlay(HWND hWnd);																			//重连调用
 	BOOL	SetOsdText(HWND hWnd, int stime,char *osdtext);								//osd文本设置
 	BOOL	IsPaused(HWND hWnd);
+	BOOL	SetPath(const char *pImgPath, const char *pVodPath);
 
 	void		VodCallBack(HWND hWnd);											//历史播放时间条回调
 	BOOL	RegisterCallBack(NpnNotifyFunc funcAddr);
@@ -54,4 +55,6 @@ private:
 	int64_t		m_nLastTime;									//历史播放时间条回调函数时间值
 	int			m_nPlayNum;									//目前有几个窗口在播放
 	int			m_nVodEndTime;
+	char			m_strImgPath[512];
+	char			m_strVodPath[512];
 };

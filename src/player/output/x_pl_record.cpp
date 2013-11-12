@@ -1,40 +1,38 @@
 #include "x_pl_record.h"
-#include "x_pl_log.h"
-#include "x_pl_error.h"
-#include "x_pl_thread.h"
-#include "x_pl_avi_struct.h"
-#include <stdio.h>
+#include "x_pl_record_ts.h"
 
-CXPlRecord::CXPlRecord()
+CXPlRecord::CXPlRecord(int nId)
 {
+	m_recodeID = nId;
 }
 
 CXPlRecord::~CXPlRecord()
 {
-	Stop();
+
 }
 
-J_PL_RESULT CXPlRecord::Start(char *filename)
+CXPlRecord *CXPlRecord::CreateInstance(int nType)
 {
-	J_PL_RESULT br;
-	
-	/*br = Init(filename);
-	if(br != J_PL_NO_ERROR)
-		return br;*/
+	CXPlRecord *pInstance = NULL;
+	switch(nType)
+	{
+	case RECORD_TS: 
+		pInstance = new CXPlRecordTs(nType);
+		break;
+	}
 
-	//j_pl_thread_t parm;
-	//parm.data = this;
-	//parm.priority = 0; 
-
-	//parm.entry= CXPlRecord::Thread;
-	//br = m_vThread.Create(parm);
-	//if(br != J_PL_NO_ERROR)
-	//	return br;
-
-	return br;
+	return pInstance;
 }
 
-J_PL_RESULT CXPlRecord::Stop()
+void CXPlRecord::ReleaseInstance(CXPlRecord **pInstance)
 {
-	return J_PL_NO_ERROR;
+	if(!pInstance || !(*pInstance))
+		return;
+	switch((*pInstance)->m_recodeID)
+	{
+	case RECORD_TS:
+		delete (CXPlRecordTs*)(*pInstance);
+		*pInstance = NULL;
+		return;
+	}
 }

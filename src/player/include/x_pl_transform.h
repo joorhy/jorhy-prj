@@ -5,6 +5,7 @@
 #include "x_pl_audio_decode.h"
 #include "x_pl_video_decode.h"
 #include "x_pl_render.h"
+#include "x_pl_record.h"
 #include "x_pl_cpu_useage.h"
 
 class CXPlTransform : public J_PlBase
@@ -16,6 +17,7 @@ public:
 	J_PL_RESULT Run();			//创建A/V两个解码线程
 	J_PL_RESULT SwitchBuffer();
 	J_PL_RESULT SetDirection(bool bFront);
+	J_PL_RESULT ToggelRecord(char *path_name);
 	J_PL_BOOL ConsiderVDecoder(j_pl_decode_t format, bool &bNeedDec, bool &bNeedIframe, bool &bIsIFrame);		//实时
 
 protected:
@@ -32,6 +34,8 @@ protected:
 	friend class CXPlRender;
 
 private:
+	//record stuff
+	CXPlRecord *m_recorder;
 	//audio stuff
 	J_PlThread		m_aThread;
 	CXPlAudioDecode	*m_aDecoder;
