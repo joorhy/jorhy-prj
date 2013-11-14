@@ -1,0 +1,9 @@
+; active_plugin.def : Declares the module parameters.
+
+LIBRARY      "active_plugin.OCX"
+
+EXPORTS
+	DllCanUnloadNow     PRIVATE
+	DllGetClassObject   PRIVATE
+	DllRegisterServer   PRIVATE
+	DllUnregisterServer PRIVATE

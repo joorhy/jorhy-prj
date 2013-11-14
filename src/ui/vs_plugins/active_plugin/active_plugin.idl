@@ -1,0 +1,51 @@
+// active_plugin.idl : type library source for ActiveX Control project.
+
+// This file will be processed by the MIDL compiler tool to
+// produce the type library (active_plugin.tlb) that will become a resource in
+// active_plugin.ocx.
+
+#include <olectl.h>
+#include <idispids.h>
+
+[ uuid(BFB3815B-C1D5-4E82-9C1F-CF58330B4217), version(1.0),
+  helpfile("active_plugin.hlp"),
+  helpstring("active_plugin ActiveX Control module"),
+  control ]
+library active_pluginLib
+{
+	importlib(STDOLE_TLB);
+
+	//  Primary dispatch interface for Cactive_pluginCtrl
+
+	[ uuid(EE693F3B-1B36-422B-A118-A64AC2FA0CF2),
+	  helpstring("Dispatch interface for active_plugin Control")]
+	dispinterface _Dactive_plugin
+	{
+		properties:
+		methods:
+			[id(1)] BSTR Plugin_Interface(LONG l, BSTR p);
+	};
+
+	//  Event dispatch interface for Cactive_pluginCtrl
+
+	[ uuid(97F111A3-770F-4A79-A2B4-464988846AC3),
+	  helpstring("Event interface for active_plugin Control") ]
+	dispinterface _Dactive_pluginEvents
+	{
+		properties:
+			//  Event interface has no properties
+
+		methods:
+	};
+
+	//  Class information for Cactive_pluginCtrl
+
+	[ uuid(50D171AE-0536-4FB6-BB9D-6C7EDDF0206B),
+	  helpstring("active_plugin Control"), control ]
+	coclass active_plugin
+	{
+		[default] dispinterface _Dactive_plugin;
+		[default, source] dispinterface _Dactive_pluginEvents;
+	};
+
+};
