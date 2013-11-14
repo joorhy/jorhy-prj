@@ -60,6 +60,9 @@
 ///异步IO  Singleton对象
 #define JoXAsio \
 	JO_INSTANSE(XAsio)
+///UDP异步IO Singleton对象
+#define JoXUdpAsio \
+	JO_INSTANSE(XUdpAsio)
 ///线程池 Singleton对象
 #define JoThreadPool \
 	JO_INSTANSE(ThreadPool)
@@ -249,12 +252,12 @@ struct J_AsioDataBase
 	{
 		j_char_t *buf;				///< 接收数据缓冲区
 		j_int32_t bufLen;			///< 接收数据缓冲区字节数
-		j_boolean_t whole;			///< TRUE-等到全部数据接收完才算成功, FALSE-接收到数据立即成功
+		j_boolean_t whole;		///< TRUE-等到全部数据接收完才算成功, FALSE-接收到数据立即成功
 		j_boolean_t shared;		///< 
 		j_char_t until_buf[16];
 
 		j_boolean_t peerClosed;		///< TRUE-对端已经关闭, FALSE-没有
-		j_int32_t finishedLen;		///< 已经接收的数据字节数
+		j_int32_t finishedLen;			///< 已经接收的数据字节数
 	};
 
 	struct J_IoReceiveFrom
@@ -284,8 +287,8 @@ struct J_AsioDataBase
 	struct J_IoSendTo
 	{
 		struct sockaddr_in receiver;	///< 接收者的服务器IP地址和端口
-		const j_char_t *buf;			///< 发送数据缓冲区
-		j_int32_t bufLen;				///< 发送数据缓冲区字节数
+		const j_char_t *buf;				///< 发送数据缓冲区
+		j_int32_t bufLen;					///< 发送数据缓冲区字节数
 
 		j_int32_t finishedLen;			///< 已经发送的数据字节数
 	};
@@ -296,7 +299,7 @@ struct J_AsioDataBase
 #if defined(WIN32)
 		const j_char_t *req;		///< 请求缓冲区
 		j_uint32_t reqLen;			///< 请求缓冲区字节数
-		j_char_t *reply;			///< 应答缓冲区
+		j_char_t *reply;				///< 应答缓冲区
 		j_uint32_t replyLen; 		///< 应答缓冲区字节数
 
 		j_uint32_t finishedLen; 	///< 实际应答的字节数
@@ -315,8 +318,8 @@ struct J_AsioDataBase
 	typedef void (*JoFIoCallback)(J_AsioDataBase& ioData, j_result_t ret);
 
 	j_asio_handle ioHandle;		///异步Io句柄
-	J_Obj *ioUser;				///< 异步Io使用者
-	J_IoCall ioCall;			/// 执行的异步Io调用
+	J_Obj *ioUser;						///< 异步Io使用者
+	J_IoCall ioCall;						/// 执行的异步Io调用
 	union
 	{
 		J_IoAccept ioAccept;

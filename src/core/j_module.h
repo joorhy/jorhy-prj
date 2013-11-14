@@ -399,7 +399,7 @@ struct J_AsioUser : virtual public J_Obj
 	///连接事件完成(用于网络IO)
 	///@param[in]	asioData IO数据集
 	///@param[in]	错误码,见x_error_type.h	
-	virtual j_result_t OnAccept(const J_AsioDataBase *pAsioData, j_result_t nRet) = 0;
+	virtual j_result_t OnAccept(const J_AsioDataBase *pAsioData, j_result_t nRet) { return J_OK; };
 
 	///读事件完成
 	///@param[in]	asioData IO数据集
@@ -413,7 +413,7 @@ struct J_AsioUser : virtual public J_Obj
 
 	///断线事件完成(用于网络IO)
 	///@param[in]	错误码,见x_error_type.h
-	virtual j_result_t OnBroken(const J_AsioDataBase *pAsioData, j_result_t nRet) = 0;
+	virtual j_result_t OnBroken(const J_AsioDataBase *pAsioData, j_result_t nRet) { return J_OK; };
 };
 
 struct J_CommandParser : virtual public J_Obj

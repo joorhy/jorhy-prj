@@ -26,6 +26,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pl_player", "pl_player.vcpr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utils", "utils.vcproj", "{A7B27D71-017E-417B-8D4F-F2C484D2C3F6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "active_plugin", "active_plugin.vcproj", "{28282C17-10B0-431B-8FAB-AC1B66E6F5F7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A7B27D71-017E-417B-8D4F-F2C484D2C3F6} = {A7B27D71-017E-417B-8D4F-F2C484D2C3F6}
+		{EB8A148B-D436-4A7D-8668-1EFD3ECEFEF3} = {EB8A148B-D436-4A7D-8668-1EFD3ECEFEF3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -56,6 +62,10 @@ Global
 		{A7B27D71-017E-417B-8D4F-F2C484D2C3F6}.Debug|Win32.Build.0 = Debug|Win32
 		{A7B27D71-017E-417B-8D4F-F2C484D2C3F6}.Release|Win32.ActiveCfg = Release|Win32
 		{A7B27D71-017E-417B-8D4F-F2C484D2C3F6}.Release|Win32.Build.0 = Release|Win32
+		{28282C17-10B0-431B-8FAB-AC1B66E6F5F7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{28282C17-10B0-431B-8FAB-AC1B66E6F5F7}.Debug|Win32.Build.0 = Debug|Win32
+		{28282C17-10B0-431B-8FAB-AC1B66E6F5F7}.Release|Win32.ActiveCfg = Release|Win32
+		{28282C17-10B0-431B-8FAB-AC1B66E6F5F7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
