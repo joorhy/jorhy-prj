@@ -19,6 +19,9 @@ public:
 	virtual void DoPropExchange(CPropExchange* pPX);
 	virtual void OnResetState();
 
+public:
+	LRESULT OnCallBack(WPARAM wParam, LPARAM lParam);
+
 // Implementation
 protected:
 	~Cactive_pluginCtrl();
@@ -40,13 +43,16 @@ protected:
 // Dispatch and event IDs
 public:
 	enum {
-		dispidPlugin_Interface = 1L
+		dispidResgisterFunction = 2L,
+		dispidPlugin_Interface = 1L,
 	};
 
 protected:
 	BSTR Plugin_Interface(LONG l, BSTR p);
+	LONG ResgisterFunction(LPDISPATCH fun, LONG l);
 
 private:
+	void DefaultInvoke(UINT nType, int args[],UINT argCount);
 	BSTR SetWorkModel(char *js_workmodel);
 	BSTR Play(char * js_playInfo);
 	BSTR ChangeLayout(char * js_layout);
@@ -58,7 +64,14 @@ private:
 	BSTR SleepPlayer(bool bSleep);
 	BSTR SetRetValue(char *psz_ret);
 
+	static void OnEvent(void *pUser,UINT nType, int args[],UINT argCount);
+
 private:
 	VOID *m_pl_ctrl;
+	CComDispatchDriver m_CallBkPtz;
+	CComDispatchDriver m_CallBkState;
+	CComDispatchDriver m_CallBkVod;
+	long volatile m_bCbReturn;
+	DWORD m_lastInvokeTime;	
 };
 

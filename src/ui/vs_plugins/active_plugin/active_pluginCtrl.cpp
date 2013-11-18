@@ -13,12 +13,13 @@
 
 IMPLEMENT_DYNCREATE(Cactive_pluginCtrl, COleControl)
 
-
+#define WM_CALLBACKEVENT WM_USER+100
 
 // Message map
 
 BEGIN_MESSAGE_MAP(Cactive_pluginCtrl, COleControl)
 	ON_OLEVERB(AFX_IDS_VERB_PROPERTIES, OnProperties)
+	ON_MESSAGE(WM_CALLBACKEVENT, OnCallBack)
 END_MESSAGE_MAP()
 
 
@@ -27,6 +28,7 @@ END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(Cactive_pluginCtrl, COleControl)
 	DISP_FUNCTION_ID(Cactive_pluginCtrl, "Plugin_Interface", dispidPlugin_Interface, Plugin_Interface, VT_BSTR, VTS_I4 VTS_BSTR)
+	DISP_FUNCTION_ID(Cactive_pluginCtrl, "ResgisterFunction", dispidResgisterFunction, ResgisterFunction, VT_I4, VTS_DISPATCH VTS_I4)
 END_DISPATCH_MAP()
 
 
@@ -115,6 +117,8 @@ Cactive_pluginCtrl::Cactive_pluginCtrl()
 	InitializeIIDs(&IID_Dactive_plugin, &IID_Dactive_pluginEvents);
 	// TODO: Initialize your control's instance data here.
 	m_pl_ctrl = new CPlCtrl();
+	m_bCbReturn = 0;
+	m_lastInvokeTime = 0;
 }
 
 // Cactive_pluginCtrl::~Cactive_pluginCtrl - Destructor
@@ -158,7 +162,11 @@ void Cactive_pluginCtrl::OnResetState()
 	// TODO: Reset any other control state here.
 }
 
-
+LRESULT Cactive_pluginCtrl::OnCallBack(WPARAM wParam, LPARAM lParam)
+{
+	DefaultInvoke(((int *)lParam)[0], (int *)lParam, (UINT)wParam);
+	return TRUE;
+}
 
 // Cactive_pluginCtrl message handlers
 BSTR Cactive_pluginCtrl::Plugin_Interface(LONG l, BSTR p)
@@ -166,9 +174,129 @@ BSTR Cactive_pluginCtrl::Plugin_Interface(LONG l, BSTR p)
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
 	// TODO: Add your dispatch handler code here
-	CString  strmac;
-	strmac="12345123451234512345";
-	return strmac.AllocSysString();
+	int cmd	= l;
+	BSTR pRet = NULL;
+	if (m_bCbReturn > 0 || (GetTickCount() - m_lastInvokeTime < 2000 && (cmd == 21/* || cmd == 11*/)) )
+	{
+		pRet = SetRetValue("{\"rst\":5}");
+		return pRet;
+	}
+	m_bCbReturn = 1;
+	if (cmd == 21/* || cmd == 11*/)
+		m_lastInvokeTime = GetTickCount();
+
+	char *js_parm	= (char *)p;
+	switch(cmd)
+	{
+	case 1:		//设置工作模式和布局
+		pRet = SetWorkModel(js_parm);
+		break;
+	case 2:		//改变布局
+		pRet = ChangeLayout(js_parm);
+		break;
+	case 5:		//改变存储路径
+		pRet = ChangePath(js_parm);
+		break;
+	case 21:	//打开历史流
+		pRet = Play(js_parm);
+		break;
+	case 23:	//历史流跳转
+		pRet = VodPlayJump(js_parm);
+		break;
+	case 11:	//播放实时视频
+		pRet = Play(js_parm);
+		break;
+	case 3:		//得到当前焦点播放窗口参数
+		pRet = GetWndParm(FOCUS_WINDOW);
+		break;
+	case 4:		//得到所有窗口播放参数列表
+		pRet = GetWndParm(ALL_WINDOW);
+		break;
+	case 12:	//关闭所有播放
+		pRet = StopAllPlay();
+		break;
+	case 22:	//关闭所有历史流
+		pRet = StopAllPlay();
+		break;
+	case 30:	//播放器sleep
+		//pRet = SleepPlayer((bool)NPVARIANT_TO_BOOLEAN(args[1]));
+		break;
+	default:
+		break;
+	}
+	m_bCbReturn = 0;
+	return pRet;
+}
+
+LONG Cactive_pluginCtrl::ResgisterFunction(LPDISPATCH fun, LONG l)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	// TODO: Add your dispatch handler code here
+	switch(l)
+	{
+	case CALLBACK_PTZCTL:
+		m_CallBkPtz	= fun;
+		break;
+	case CALLBACK_ONSTATE:
+		MessageBox("xxxx");
+		m_CallBkState = fun;
+		break;
+	case CALLBACK_ONVOD:
+		MessageBox("vvvv");
+		m_CallBkVod = fun;
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
+
+void Cactive_pluginCtrl::DefaultInvoke(UINT nType, int *args,UINT argCount)
+{
+	switch(nType)
+	{
+	case CALLBACK_PTZCTL:
+		{
+			if(args[2]  <= 0 || m_CallBkPtz == NULL) 
+				return;
+
+			VARIANT varArg[3] = {0};
+			varArg[0].vt = VT_INT;
+			varArg[0].intVal = args[3];
+			varArg[1].vt = VT_BSTR;
+			varArg[1].bstrVal = CString((char *)args[2]).AllocSysString();
+			varArg[2].vt = VT_INT;
+			varArg[2].intVal = args[1];
+			m_CallBkPtz.InvokeN((DISPID)DISPID_VALUE, varArg, argCount - 1);
+			break;
+		}
+	case CALLBACK_ONSTATE:
+		{
+			if(args[2] <= 0 || m_CallBkState == NULL) 
+				return;
+
+			VARIANT varArg[2];
+			varArg[0].vt = VT_UINT;
+			varArg[0].uintVal = args[1];
+			varArg[1].vt = VT_BSTR;
+			varArg[1].bstrVal = CString((char *)args[2]).AllocSysString();
+			m_CallBkState.InvokeN((DISPID)DISPID_VALUE, varArg, argCount - 1);
+			break;
+		}
+	case CALLBACK_ONVOD:
+		{
+			if (m_CallBkVod == NULL)
+				return;
+
+			VARIANT varArg[1];
+			varArg[0].vt = VT_UINT;
+			varArg[0].uintVal = args[1];
+			m_CallBkVod.InvokeN((DISPID)DISPID_VALUE, varArg, argCount - 1);
+			break;
+		}
+	default:
+		break;
+	}
 }
 
 BSTR Cactive_pluginCtrl::SetWorkModel(char * js_workmodel)
@@ -185,7 +313,7 @@ BSTR Cactive_pluginCtrl::SetWorkModel(char * js_workmodel)
 BSTR Cactive_pluginCtrl::Play(char *js_playInfo)
 {
 	BSTR pRet = NULL;
-	//((CPlCtrl *)m_pl_ctrl)->RegisterCallBack(OnEvent, this);
+	((CPlCtrl *)m_pl_ctrl)->RegisterCallBack(OnEvent, this);
 	if (((CPlCtrl *)m_pl_ctrl)->Play(js_playInfo))
 		pRet = SetRetValue("{\"rst\":0}");
 	else	
@@ -264,4 +392,19 @@ BSTR Cactive_pluginCtrl::SetRetValue(char *psz_ret)
 {
 	CString  strmac(psz_ret);
 	return strmac.AllocSysString();
+}
+
+void Cactive_pluginCtrl::OnEvent(void *pUser,UINT nType, int *args,UINT argCount)
+{
+	Cactive_pluginCtrl *pThis = (Cactive_pluginCtrl *)pUser;
+	if(pThis)
+	{
+		/*static FILE *fp = NULL;
+		if (fp == NULL)
+			fp = fopen("F://dddd.txt", "wb+");
+		fprintf(fp, "%d,%d", args[0], argCount);
+		fflush(fp);*/
+
+		::SendMessage(pThis->m_hWnd, WM_CALLBACKEVENT, (WPARAM)argCount, (LPARAM)args);
+	}
 }

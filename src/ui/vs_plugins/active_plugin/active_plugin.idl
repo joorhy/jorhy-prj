@@ -24,6 +24,7 @@ library active_pluginLib
 		properties:
 		methods:
 			[id(1)] BSTR Plugin_Interface(LONG l, BSTR p);
+			[id(2)] LONG ResgisterFunction(LPDISPATCH fun, LONG l);
 	};
 
 	//  Event dispatch interface for Cactive_pluginCtrl

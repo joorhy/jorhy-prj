@@ -15,7 +15,7 @@ j_result_t CNodeManager::OnRead(const J_AsioDataBase *pAsioData, j_result_t nRet
 	J_OS::LOGINFO("%d", pAsioData->ioReceiveFrom.finishedLen);
 	J_AsioDataBase *pDataBase = (J_AsioDataBase *)pAsioData;
 	pDataBase->ioReceiveFrom.finishedLen = 0;
-	pDataBase->ioReceiveFrom.bufLen = 15000;
+	pDataBase->ioReceiveFrom.bufLen = 540;
 
 	pDataBase->ioUser = this;
 	pDataBase->ioCall = J_AsioDataBase::j_recvfrom_e;
