@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "joirs", "joirs.vcproj", "{68BD5793-7B2F-440B-B8EA-B3348AAED19C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{82F9D85D-0D36-4BD8-A794-E8139BF84A37} = {82F9D85D-0D36-4BD8-A794-E8139BF84A37}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "core.vcproj", "{82F9D85D-0D36-4BD8-A794-E8139BF84A37}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68BD5793-7B2F-440B-B8EA-B3348AAED19C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{68BD5793-7B2F-440B-B8EA-B3348AAED19C}.Debug|Win32.Build.0 = Debug|Win32
+		{68BD5793-7B2F-440B-B8EA-B3348AAED19C}.Release|Win32.ActiveCfg = Release|Win32
+		{68BD5793-7B2F-440B-B8EA-B3348AAED19C}.Release|Win32.Build.0 = Release|Win32
+		{82F9D85D-0D36-4BD8-A794-E8139BF84A37}.Debug|Win32.ActiveCfg = Debug|Win32
+		{82F9D85D-0D36-4BD8-A794-E8139BF84A37}.Debug|Win32.Build.0 = Debug|Win32
+		{82F9D85D-0D36-4BD8-A794-E8139BF84A37}.Release|Win32.ActiveCfg = Release|Win32
+		{82F9D85D-0D36-4BD8-A794-E8139BF84A37}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
