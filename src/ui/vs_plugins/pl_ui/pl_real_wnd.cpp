@@ -172,7 +172,7 @@ BOOL CPlRealWnd::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	}
 	SetCursor(hc);
 
-	return CPlWnd::OnSetCursor(pWnd, nHitTest, message);
+	return TRUE;//CPlWnd::OnSetCursor(pWnd, nHitTest, message);
 }
 
 void CPlRealWnd::OnMouseMove(UINT nFlags, CPoint point)
