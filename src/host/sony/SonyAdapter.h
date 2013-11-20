@@ -22,6 +22,7 @@ class CSonyAdapter : public J_BaseAdapter<CSonyAdapterBase>
 
     public:
         ///J_VideoAdapter
+		j_result_t GetDevInfo(J_DeviceInfo &info) { return J_OK; }
         virtual J_DevStatus GetStatus() const;
         virtual int Broken();
         virtual int MakeChannel(const char *pResid, J_Obj *&pObj, J_Obj *pOwner, int nChannel, int nStream, int nMode);

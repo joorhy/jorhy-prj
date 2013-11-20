@@ -20,44 +20,39 @@
   <Project Name="JorReader" Path="JorReader.project"/>
   <Project Name="PlayManager" Path="PlayManager.project"/>
   <Project Name="HikSdkHost" Path="HikSdkHost.project" Active="No"/>
+  <Project Name="AipstarHost" Path="AipstarHost.project" Active="No"/>
+  <Project Name="SamsungHost" Path="SamsungHost.project" Active="No"/>
+  <Project Name="SonyHost" Path="SonyHost.project" Active="No"/>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Project Name="joiss" ConfigName="Debug"/>
-      <Project Name="core" ConfigName="Debug"/>
       <Project Name="utils" ConfigName="Debug"/>
-      <Project Name="HikHost" ConfigName="Debug"/>
-      <Project Name="JoissManager" ConfigName="Debug"/>
-      <Project Name="RecordManager" ConfigName="Debug"/>
       <Project Name="StreamManager" ConfigName="Debug"/>
-      <Project Name="LocalConfig" ConfigName="Debug"/>
-      <Project Name="MCConfig" ConfigName="Debug"/>
-      <Project Name="joiss" ConfigName="Debug"/>
-      <Project Name="AipstarHost" ConfigName="Debug"/>
-      <Project Name="AironixHost" ConfigName="Debug"/>
-      <Project Name="joiss" ConfigName="Debug"/>
-      <Project Name="JoissManager" ConfigName="Debug"/>
-      <Project Name="core" ConfigName="Debug"/>
-      <Project Name="HikHost" ConfigName="Debug"/>
-      <Project Name="LocalConfig" ConfigName="Debug"/>
-      <Project Name="MCConfig" ConfigName="Debug"/>
-      <Project Name="misc" ConfigName="Debug"/>
-      <Project Name="RecordManager" ConfigName="Debug"/>
-      <Project Name="SamsungHost" ConfigName="Debug"/>
       <Project Name="SonyHost" ConfigName="Debug"/>
-      <Project Name="StreamManager" ConfigName="Debug"/>
-      <Project Name="utils" ConfigName="Debug"/>
-      <Project Name="HttpRequest" ConfigName="Debug"/>
-      <Project Name="JofsReader" ConfigName="Debug"/>
-      <Project Name="JospRequest" ConfigName="Debug"/>
-      <Project Name="JosStream" ConfigName="Debug"/>
-      <Project Name="JospControl" ConfigName="Debug"/>
-      <Project Name="MCControl" ConfigName="Debug"/>
-      <Project Name="JoHost" ConfigName="Debug"/>
-      <Project Name="JorReader" ConfigName="Debug"/>
+      <Project Name="SamsungHost" ConfigName="Debug"/>
+      <Project Name="RecordManager" ConfigName="Debug"/>
       <Project Name="PlayManager" ConfigName="Debug"/>
+      <Project Name="misc" ConfigName="Debug"/>
+      <Project Name="MCControl" ConfigName="Debug"/>
+      <Project Name="MCConfig" ConfigName="Debug"/>
+      <Project Name="LocalConfig" ConfigName="Debug"/>
+      <Project Name="JosStream" ConfigName="Debug"/>
+      <Project Name="JospRequest" ConfigName="Debug"/>
+      <Project Name="JospControl" ConfigName="Debug"/>
+      <Project Name="JorReader" ConfigName="Debug"/>
+      <Project Name="JoissManager" ConfigName="Debug"/>
+      <Project Name="joiss" ConfigName="Debug"/>
+      <Project Name="JoHost" ConfigName="Debug"/>
+      <Project Name="JofsReader" ConfigName="Debug"/>
+      <Project Name="HttpRequest" ConfigName="Debug"/>
       <Project Name="HikSdkHost" ConfigName="Debug"/>
+      <Project Name="HikHost" ConfigName="Debug"/>
+      <Project Name="core" ConfigName="Debug"/>
+      <Project Name="AipstarHost" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="yes">
+    <WorkspaceConfiguration Name="Release" Selected="no">
       <Project Name="joiss" ConfigName="Release"/>
       <Project Name="core" ConfigName="Release"/>
       <Project Name="utils" ConfigName="Release"/>
@@ -92,6 +87,9 @@
       <Project Name="JorReader" ConfigName="Release"/>
       <Project Name="PlayManager" ConfigName="Release"/>
       <Project Name="HikSdkHost" ConfigName="Release"/>
+      <Project Name="AipstarHost" ConfigName="Release"/>
+      <Project Name="SamsungHost" ConfigName="Release"/>
+      <Project Name="SonyHost" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
