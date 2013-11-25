@@ -8,6 +8,7 @@ CXPlRecordTs::CXPlRecordTs(int nID)
 : CXPlRecord(nID)
 {
 	m_pFile = NULL;
+	m_bReady = false;
 }
 
 CXPlRecordTs::~CXPlRecordTs()
@@ -18,13 +19,14 @@ CXPlRecordTs::~CXPlRecordTs()
 J_PL_RESULT CXPlRecordTs::Start(char *filename)
 {
 	m_pFile = fopen(filename, "wb+");
-	n_bNeedIframe = true;
+	m_bNeedIframe = true;
 	m_nPATCounter = 0;
 	m_nPMTCounter = 0;
 	m_nPCRCounter = 0;
 	m_nVideoCounter = 0;
 	m_nAudioCounter = 0;
 	m_nFrameNum = 0;
+	m_bReady = true;
 
 	return J_PL_NO_ERROR;
 }
@@ -32,9 +34,9 @@ J_PL_RESULT CXPlRecordTs::Start(char *filename)
 J_PL_RESULT CXPlRecordTs::InputData(char *IN_buf,int In_len, int nType, long long timeStamp)
 {
 	if (nType == DECODE_I_FRAME)
-		n_bNeedIframe = false;
+		m_bNeedIframe = false;
 
-	if (m_pFile && !n_bNeedIframe)
+	if (m_bReady && !m_bNeedIframe)
 	{
 		int i_offset_in = 0;
 		int i_data_len = In_len;		//总数据长度

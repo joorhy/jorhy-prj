@@ -133,14 +133,16 @@ Cactive_pluginCtrl::~Cactive_pluginCtrl()
 }
 
 // Cactive_pluginCtrl::OnDraw - Drawing function
-//void Cactive_pluginCtrl::OnDraw(
-//			CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid)
-//{
-//	if (!pdc)
-//		return;
-//
-//	// TODO: Replace the following code with your own drawing code.
-//}
+void Cactive_pluginCtrl::OnDraw(
+			CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid)
+{
+	if (!pdc)
+		return;
+
+	// TODO: Replace the following code with your own drawing code.
+	//Invalidate(TRUE);
+	ChangeLayout(NULL);
+}
 
 // Cactive_pluginCtrl::DoPropExchange - Persistence support
 void Cactive_pluginCtrl::DoPropExchange(CPropExchange* pPX)

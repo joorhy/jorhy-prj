@@ -71,6 +71,7 @@ BOOL CPlCtrl::InitDisPlay(HWND hParent, char* pJsUrl)
 	if (!PlJsonParser::Instance()->ParserLayout(pJsUrl, m_layoutInfo))
 		return FALSE;
 
+	PlManager::Instance()->SetPath(m_layoutInfo.imgPath, m_layoutInfo.mediaPath);
 	m_hParent = hParent;
 	CreateWindows(m_layoutInfo);
 	m_layoutInfo.bInit = TRUE;
@@ -96,8 +97,15 @@ int CPlCtrl::CalcWndNum(const PL_LayoutInfo &layoutInfo)
 BOOL CPlCtrl::SetLayout(char *pJsUrl)
 {
 	PL_LayoutInfo layoutInfo;
-	if (!PlJsonParser::Instance()->ParserLayout2(pJsUrl, layoutInfo))
-		return FALSE;
+	if (pJsUrl != NULL )
+	{
+		if (!PlJsonParser::Instance()->ParserLayout2(pJsUrl, layoutInfo))
+			return FALSE;
+	}
+	else
+	{
+		layoutInfo = m_layoutInfo;
+	}
 	
 	CreateWindows(layoutInfo);
 	if(SetLayout(layoutInfo))

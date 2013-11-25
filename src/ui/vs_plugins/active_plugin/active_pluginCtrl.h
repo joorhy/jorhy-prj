@@ -15,7 +15,7 @@ public:
 
 // Overrides
 public:
-	//virtual void OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
+	virtual void OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
 	virtual void DoPropExchange(CPropExchange* pPX);
 	virtual void OnResetState();
 

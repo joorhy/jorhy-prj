@@ -30,7 +30,8 @@ private:
 
 private:
 	FILE *m_pFile;
-	bool n_bNeedIframe;
+	bool m_bNeedIframe;
+	bool m_bReady;
 
 	int m_nPATCounter;
 	int m_nPMTCounter;

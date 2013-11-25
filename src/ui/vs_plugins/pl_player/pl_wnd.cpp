@@ -168,7 +168,7 @@ void CPlWnd::SetFullModel(UINT nType)
 
 void CPlWnd::OnSize(UINT nType, int cx, int cy)
 {
-	CWnd::OnSize(nType, cx, cy);
+	//CWnd::OnSize(nType, cx, cy);
 	if(!m_Tool) 
 		return;
 	//dynamic_cast<CWnd *>(m_Tool)->
@@ -194,7 +194,7 @@ void CPlWnd::OnSize(UINT nType, int cx, int cy)
 		PlManager::Instance()->AspectRatio(m_hWnd);		//¿≠…Ï
 	}
 
-	//Invalidate(TRUE);
+	Invalidate(TRUE);
 }
 
 void CPlWnd::ShowAllWindowEpt(HWND hWnd,int nCmdShow)

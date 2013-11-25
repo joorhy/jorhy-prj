@@ -5,6 +5,7 @@
 #include "pl_json_parser.h"
 #include "x_pl_log.h"
 #include <direct.h>
+#include <io.h>
 
 /*******************¿‡ µœ÷*****************************/
 PlManager::PlManager()
@@ -496,10 +497,17 @@ BOOL PlManager::IsPaused(HWND hWnd)
 
 BOOL PlManager::SetPath(const char *pImgPath, const char *pVodPath)
 {
-	memset(m_strImgPath, 0, sizeof(m_strImgPath));
-	memset(m_strVodPath, 0, sizeof(m_strVodPath));
-	strncpy(m_strImgPath, pImgPath, PATH_LENGTH);
-	strncpy(m_strVodPath, pVodPath, PATH_LENGTH);
+	if (_access(pImgPath, 6) == 0)
+	{
+		memset(m_strImgPath, 0, sizeof(m_strImgPath));
+		strncpy(m_strImgPath, pImgPath, PATH_LENGTH);
+	}
+	if (_access(m_strVodPath, 6) == 0)
+	{
+		memset(m_strVodPath, 0, sizeof(m_strVodPath));
+		strncpy(m_strVodPath, pVodPath, PATH_LENGTH);
+	}
+
 	return TRUE;
 }
 
