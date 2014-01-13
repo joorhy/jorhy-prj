@@ -64,4 +64,6 @@
 #define J_ERROR_SURFACE_BLT			-50
 #define J_ERROR_LIBPNG						-51
 
+#define J_PROTOCOL_CONSULT			-52
+
 #endif //~__X_ERROR_TYPE_H_

@@ -23,7 +23,7 @@ CTsMux::~CTsMux()
 
 }
 
-int CTsMux::Init()
+j_result_t CTsMux::Init()
 {
 	return J_OK;
 }
@@ -33,7 +33,7 @@ void CTsMux::Deinit()
 
 }
 
-int CTsMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata)
+j_result_t CTsMux::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata)
 {
 	int i_offset_out = 0;
 	int i_offset_in = 0;

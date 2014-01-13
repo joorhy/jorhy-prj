@@ -139,6 +139,7 @@ void Cactive_pluginCtrl::OnDraw(
 	if (!pdc)
 		return;
 
+	// printf("%d %d %d %d\n", rcBounds.bottom, rcBounds.top, rcBounds.Width(), rcBounds.Height());
 	// TODO: Replace the following code with your own drawing code.
 	//Invalidate(TRUE);
 	ChangeLayout(NULL);
@@ -240,11 +241,9 @@ LONG Cactive_pluginCtrl::ResgisterFunction(LPDISPATCH fun, LONG l)
 		m_CallBkPtz	= fun;
 		break;
 	case CALLBACK_ONSTATE:
-		MessageBox("xxxx");
 		m_CallBkState = fun;
 		break;
 	case CALLBACK_ONVOD:
-		MessageBox("vvvv");
 		m_CallBkVod = fun;
 		break;
 	default:
@@ -291,8 +290,8 @@ void Cactive_pluginCtrl::DefaultInvoke(UINT nType, int *args,UINT argCount)
 				return;
 
 			VARIANT varArg[1];
-			varArg[0].vt = VT_UINT;
-			varArg[0].uintVal = args[1];
+			varArg[0].vt = VT_I8;
+			varArg[0].llVal = args[1];
 			m_CallBkVod.InvokeN((DISPID)DISPID_VALUE, varArg, argCount - 1);
 			break;
 		}
@@ -327,8 +326,11 @@ BSTR Cactive_pluginCtrl::Play(char *js_playInfo)
 BSTR Cactive_pluginCtrl::ChangeLayout(char *js_layout)
 {
 	BSTR pRet = NULL;
-	if (((CPlCtrl *)m_pl_ctrl)->SetLayout(js_layout))
-		pRet = SetRetValue("{\"rst\":0}");
+	if (m_pl_ctrl != NULL)
+	{
+		if (((CPlCtrl *)m_pl_ctrl)->SetLayout(js_layout))
+			pRet = SetRetValue("{\"rst\":0}");
+	}
 
 	return pRet;
 }
@@ -406,7 +408,6 @@ void Cactive_pluginCtrl::OnEvent(void *pUser,UINT nType, int *args,UINT argCount
 			fp = fopen("F://dddd.txt", "wb+");
 		fprintf(fp, "%d,%d", args[0], argCount);
 		fflush(fp);*/
-
 		::SendMessage(pThis->m_hWnd, WM_CALLBACKEVENT, (WPARAM)argCount, (LPARAM)args);
 	}
 }

@@ -192,8 +192,14 @@ void PlManager::Stop(HWND hWnd)
 	if (it != m_playerMap.end() && it->second.bPlay)
 	{
 		SendMessage(hWnd, WM_OWN_ERASEBKGROUND,TRUE,0);
+		if (it->second.pReconnWnd)
+		{
+			PostMessage(it->second.pReconnWnd->m_hWnd,WM_OWN_STOP_WAIT,0,0);
+			it->second.pReconnWnd = NULL;
+		}
 		it->second.pPlayer->Stop();
 		CPlFactory::Instance()->DelPlayer(hWnd);
+		it->second.pPlayer = NULL;
 		it->second.bPlay = FALSE;
 
 		m_nPlayNum--;
@@ -206,6 +212,7 @@ void PlManager::Stop(HWND hWnd)
 
 			NotifyNpn(hWnd, CALLBACK_ONSTATE, args, sizeof(args)/sizeof(int));
 		}
+		//m_playerMap.erase(it);
 	}
 	m_locker.Unlock();
 	return;
@@ -288,7 +295,7 @@ void PlManager::VodCallBack(HWND hWnd)
 			//m_locker.Unlock();
 			return;
 		}
-		args[0] = (int)&it->second.dwPlayTime;
+		args[0] = (int)it->second.dwPlayTime;
 		++it->second.dwPlayTime;
 		NotifyNpn(hWnd, CALLBACK_ONVOD, args, sizeof(args)/sizeof(int));
 	}
@@ -366,16 +373,16 @@ BOOL PlManager::VodStreamJump(HWND hWnd, const PL_PlayInfo &playInfo)
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
 	{
+		PL_PlayInfo playInfoOld = it->second.playInfo;
 		Stop(hWnd);
-		if (playInfo.nStartTime > it->second.playInfo.nEndTime)		//超出结束时间就停止
+		if (playInfo.nStartTime > playInfoOld.nEndTime)		//超出结束时间就停止
 		{
 			PostMessage(hWnd, WM_MEDIA_END_REACHED, 0, 0);
 			return FALSE;
 		}
 
-		it->second.playInfo.nStartTime = playInfo.nStartTime;
-		it->second.dwPlayTime = playInfo.nStartTime;
-		return Play(hWnd, it->second.playInfo);
+		playInfoOld.nStartTime = playInfo.nStartTime;
+		return Play(hWnd, playInfoOld);
 	}
 	return TRUE;
 	/*m_locker.Lock();
@@ -414,7 +421,10 @@ BOOL PlManager::RePlay(HWND hWnd)
 	BOOL bRet = FALSE;
 	PlayerMap::iterator it = m_playerMap.find(hWnd);
 	if (it != m_playerMap.end())
-		bRet = it->second.pPlayer->RePlay();
+	{
+		if (it->second.pPlayer != NULL)
+			bRet = it->second.pPlayer->RePlay();
+	}
 
 	m_locker.Unlock();
 	return bRet;

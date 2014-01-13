@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../src/core"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="../../src/core;&quot;C:\Program Files\WinPcap\WpdPack\Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;HAVE_REMOTE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,7 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="wpcap.lib Packet.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\WinPcap\WpdPack\Lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

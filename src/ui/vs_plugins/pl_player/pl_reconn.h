@@ -51,6 +51,7 @@ private:
 	BOOL m_bRun;
 public:
 	afx_msg LRESULT StartWait(WPARAM wParam,LPARAM lParam);
+	afx_msg LRESULT StopWait(WPARAM wParam,LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

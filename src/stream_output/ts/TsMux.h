@@ -24,9 +24,9 @@ public:
 	}
 
 public:
-	virtual int Init();
+	virtual j_result_t Init();
 	virtual void Deinit();
-	virtual int Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0);
+	virtual j_result_t Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen, void *pExtdata = 0);
 
 private:
 	int MakePESHead(char *pHead, int nDataLen, j_uint64_t timeStamp, j_boolean_t isAudio = false);

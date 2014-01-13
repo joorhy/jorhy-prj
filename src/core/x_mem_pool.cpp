@@ -37,31 +37,46 @@ j_void_t CXMemPool::Destroy()
 
 j_void_t *CXMemPool::Alloc(j_uint32_t nSize)
 {
+	TLock(m_locker);
 	J_MEM_NODE *pNode = FindFreeNode(nSize);
+	void *pRetVal = NULL;
 	if (pNode != NULL)
 	{
-		DeleteFreeList(pNode, nSize);
-		pNode->size = nSize;
-		pNode->prev = NULL;
-		pNode->next = NULL;
-		AddBusyList(pNode);
-		return pNode->p;
+		J_MEM_NODE *pFreeNode = SplitMem(&pNode, nSize);
+		DeleteList(&m_pFreeList, pNode);
+		AddList(&m_pFreeList, pFreeNode);
+		AddList(&m_pBusyList, pNode);
+		pRetVal = pNode->p;
 	}
-	return NULL;
+	TUnlock(m_locker);
+
+	return pRetVal;
 }
 
 j_void_t CXMemPool::Free(j_void_t *p)
 {
+	if (p == NULL)
+		return;
 
+	TLock(m_locker);
+	J_MEM_NODE *pNode = FindBusyNode(p);
+	if (pNode != NULL)
+	{
+		DeleteList(&m_pBusyList, pNode);
+		AddList(&m_pFreeList, pNode);
+		MergerMem();
+	}
+	TUnlock(m_locker);
 }
 
 J_MEM_NODE *CXMemPool::FindBusyNode(j_void_t *p)
 {
 	J_MEM_NODE *pNode = m_pBusyList;
-	for (; pNode != NULL; pNode = pNode->next)
+	while (pNode != NULL)
 	{
 		if (pNode->p == p)
 			return pNode;
+		pNode = pNode->next;
 	}
 	return NULL;
 }
@@ -69,122 +84,105 @@ J_MEM_NODE *CXMemPool::FindBusyNode(j_void_t *p)
 J_MEM_NODE *CXMemPool::FindFreeNode(j_uint32_t nSize)
 {
 	J_MEM_NODE *pNode = m_pFreeList;
-	for (; pNode != NULL; pNode = pNode->next)
+	while (pNode != NULL)
 	{
-		if (pNode->size >= nSize)
+		if (pNode->size > (nSize + sizeof(J_MEM_NODE)))
 			return pNode;
+		pNode = pNode->next;
 	}
 	return NULL;
 }
 
-void CXMemPool::AddFreeList(J_MEM_NODE *pNode)
+void CXMemPool::AddList(J_MEM_NODE **pList, J_MEM_NODE *pNode)
 {
-	if (m_pFreeList == NULL)
-		m_pBusyList = pNode;
+	if (*pList == NULL)
+		*pList = pNode;
 	else
 	{
-		J_MEM_NODE *pNodeFree = m_pFreeList;
-		for (; pNodeFree != NULL; pNodeFree = pNodeFree->next)
+		J_MEM_NODE *pNodeFree = *pList;
+		while (pNodeFree != NULL)
 		{
+			//前端插入
 			if (pNodeFree->prev == NULL && pNode->p < pNodeFree->p)
 			{
-				m_pBusyList = pNode;
+				*pList = pNode;
 				pNode->prev = pNodeFree->prev;
 				pNode->next = pNodeFree;
+				pNodeFree->prev = *pList;
+				break;
 			}
+			//后端插入
 			else if (pNodeFree->next == NULL && pNode->p > pNodeFree->p)
 			{
 				pNode->next = pNodeFree->next;
 				pNodeFree->next = pNode;
+				pNode->prev = pNodeFree;
+				break;
 			}
+			//中间插入
 			else if (pNode->p > pNodeFree->p && pNode->p < pNodeFree->next->p)
 			{
 				pNode->prev = pNodeFree;
 				pNode->next = pNodeFree->next;
 				pNodeFree->next->prev = pNode;
 				pNodeFree->next = pNode;
+				break;
 			}
+			pNodeFree = pNodeFree->next;
 		}
 	}
-	MergerMem();
 }
 
-void CXMemPool::DeleteFreeList(J_MEM_NODE *pNode, j_uint32_t nSize)
+void CXMemPool::DeleteList(J_MEM_NODE **pList, J_MEM_NODE *pNode)
 {
-	if (pNode->size == nSize)
+	J_MEM_NODE *pNodeFree = *pList;
+	while (pNodeFree != NULL)
 	{
-		if (pNode->prev != NULL)
-			pNode->prev->next = pNode->next;
-		else
-			m_pFreeList = pNode->next; 
-	}
-	else
-	{
-		J_MEM_NODE *pFreeNew = (J_MEM_NODE *)(pNode->p + nSize);
-		pFreeNew->prev = NULL;
-		pFreeNew->next = NULL;
-		pFreeNew->size = pNode->size - nSize - sizeof(J_MEM_NODE);
-		pFreeNew->p = (pNode->p + nSize + sizeof(J_MEM_NODE));
-
-		if (pNode->prev != NULL)
-			pNode->prev->next = pFreeNew;
-		else
-			m_pFreeList = pFreeNew;
-
-		pFreeNew->prev = pNode->prev;
-		pFreeNew->next = pNode->next;
-	}
-}
-
-void CXMemPool::AddBusyList(J_MEM_NODE *pNode)
-{
-	if (m_pBusyList == NULL)
-		m_pBusyList = pNode;
-	else
-	{
-		J_MEM_NODE *pNodeBusy = m_pBusyList;
-		for (; pNodeBusy != NULL; pNodeBusy = pNodeBusy->next)
+		if (pNodeFree->p == pNode->p)
 		{
-			if (pNodeBusy->prev == NULL && pNode->p < pNodeBusy->p)
+			//前端删除
+			if (pNodeFree == *pList)
 			{
-				m_pBusyList = pNode;
-				pNode->prev = pNodeBusy->prev;
-				pNode->next = pNodeBusy;
+				*pList = pNodeFree->next;
+				break;
 			}
-			else if (pNodeBusy->next == NULL && pNode->p > pNodeBusy->p)
+			//后端删除
+			else if (pNodeFree->next == NULL)
 			{
-				pNode->next = pNodeBusy->next;
-				pNodeBusy->next = pNode;
+				pNodeFree->prev->next = NULL;
+				break;
 			}
-			else if (pNode->p > pNodeBusy->p && pNode->p < pNodeBusy->next->p)
+			//中间删除
+			else
 			{
-				pNode->prev = pNodeBusy;
-				pNode->next = pNodeBusy->next;
-				pNodeBusy->next->prev = pNode;
-				pNodeBusy->next = pNode;
+				pNodeFree->prev->next = pNodeFree->next;
+				pNodeFree->next->prev = pNodeFree->prev;
+				break;
 			}
 		}
+		pNodeFree = pNodeFree->next;
 	}
 }
 
-void CXMemPool::DeleteBusyList(J_MEM_NODE *pNode)
+J_MEM_NODE *CXMemPool::SplitMem(J_MEM_NODE **pNode, j_int32_t nSize)
 {
-	J_MEM_NODE *pNodeBusy = m_pBusyList;
-	for (; pNodeBusy != NULL; pNodeBusy = pNodeBusy->next)
+	J_MEM_NODE *pNodeFree = NULL;
+	if ((*pNode)->size > nSize + sizeof(J_MEM_NODE))
 	{
-		if (pNodeBusy->p == pNode->p)
-		{
-			pNodeBusy->prev->next = pNodeBusy->next;
-			pNodeBusy->next->prev = pNodeBusy->prev;
-			return;
-		}
+		pNodeFree = (J_MEM_NODE *)((*pNode)->p + nSize);
+		pNodeFree->size = (*pNode)->size - nSize - sizeof(J_MEM_NODE);
+		pNodeFree->p =  (*pNode)->p + nSize + sizeof(J_MEM_NODE);
+		pNodeFree->prev = NULL;
+		pNodeFree->next = NULL;
+		(*pNode)->size = nSize;
 	}
+	return pNodeFree;
 }
 
 void CXMemPool::MergerMem()
 {
 	J_MEM_NODE *pNode = m_pFreeList;
-	for (; pNode != NULL; )
+	while (pNode != NULL)
 	{
 		if (pNode->next != NULL)
 		{
@@ -192,9 +190,11 @@ void CXMemPool::MergerMem()
 			{
 				pNode->size = pNode->size + sizeof(J_MEM_NODE) + pNode->next->size;
 				pNode->next = pNode->next->next;
+				if (pNode->next != NULL)
+					pNode->next->prev = pNode;
+				continue;
 			}
-			else
-				pNode = pNode->next;
 		}
+		pNode = pNode->next;
 	}
 }

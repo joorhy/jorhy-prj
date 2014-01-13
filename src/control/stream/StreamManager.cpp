@@ -42,7 +42,7 @@ j_result_t CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 	m_asio.AddUser(nSocket, this);
 	J_AsioDataBase *pDataBase = new J_AsioDataBase;
 	memset(pDataBase, 0, sizeof(J_AsioDataBase));
-	pDataBase->ioRead.buf = new j_char_t[1024];
+	pDataBase->ioRead.buf = new j_char_t[2048];
 	pDataBase->ioRead.finishedLen = 0;
 	if (m_serviceType == "http")
 	{
@@ -52,6 +52,11 @@ j_result_t CStreamManager::OnAccept(const J_AsioDataBase *pAsioData, int nRet)
 	else if(m_serviceType == "josp")
 	{
 		pDataBase->ioRead.bufLen = sizeof(J_CtrlHead);
+		pDataBase->ioRead.whole = true;
+	}
+	else if (m_serviceType == "rtmp")
+	{
+		pDataBase->ioRead.bufLen = 1537;
 		pDataBase->ioRead.whole = true;
 	}
 	pDataBase->ioUser = this;
@@ -112,14 +117,49 @@ j_result_t CStreamManager::OnWrite(const J_AsioDataBase *pAsioData, int nRet)
 	}
 	else
 	{
-		J_OS::LOGINFO("CStreamManager::OnWrite No Client");
+		if (m_serviceType == "rtmp")
+		{
+			J_AsioDataBase *pDataBase = new J_AsioDataBase;
+			memset(pDataBase, 0, sizeof(J_AsioDataBase));
+			pDataBase->ioRead.buf = new j_char_t[2048];
+			pDataBase->ioRead.finishedLen = 0;
+			J_RequestFilter *protocolFilter = JoFilterFactory->GetFilter(pAsioData->ioHandle, m_serviceType.c_str());
+			if (protocolFilter == NULL)
+			{
+				return J_PARAM_ERROR;
+			}
+			protocolFilter->Complete(*pDataBase);	
+			pDataBase->ioUser = this;
+			if (pDataBase->ioCall == J_AsioDataBase::j_write_e)
+			{
+				m_asio.Write(pAsioData->ioHandle, pDataBase);
+			}
+			else
+			{
+				pDataBase->ioRead.whole = true;
+				pDataBase->ioCall = J_AsioDataBase::j_read_e;
+
+				ClientInfo info;
+				info.pAsioData = pDataBase;
+				info.pObj = NULL;
+				m_clientMap[pAsioData->ioHandle] = info;
+				pDataBase->ioRead.shared = false;
+				m_asio.Read(pAsioData->ioHandle, pDataBase);
+				nResult = J_OK;
+				delete pAsioData;
+			}
+		}
+		else
+		{
+			J_OS::LOGINFO("CStreamManager::OnWrite No Client");
+		}
 	}
 	return nResult;
 }
 
 j_result_t CStreamManager::OnBroken(const J_AsioDataBase *pAsioData, int nRet)
 {
-	J_OS::LOGINFO("OnBroken");
+	J_OS::LOGINFO("CStreamManager::OnBroken");
 	ClientMap::iterator it = m_clientMap.find(pAsioData->ioHandle);
 	if (it == m_clientMap.end())
 		return J_UNKNOW;
@@ -153,7 +193,7 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 	{
 		nRet = ProcessCommand(pAsioData, protocolFilter, pClient);
 	}
-	else
+	else if (nRet == J_NOT_COMPLATE)
 	{
 		ClientMap::iterator it = m_clientMap.find(pAsioData->ioHandle);
 		if (it == m_clientMap.end())
@@ -163,6 +203,22 @@ int CStreamManager::ParserRequest(const J_AsioDataBase *pAsioData, J_MediaObj *p
 		((J_AsioDataBase *)pAsioData)->ioRead.shared = false;
 		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
 		nRet = J_OK;
+	}
+	else if (nRet == J_PROTOCOL_CONSULT)
+	{
+		ClientMap::iterator it = m_clientMap.find(pAsioData->ioHandle);
+		if (it == m_clientMap.end())
+			return nRet;
+
+		((J_AsioDataBase *)pAsioData)->ioRead.finishedLen = 0;
+		((J_AsioDataBase *)pAsioData)->ioRead.shared = false;
+		protocolFilter->Complete(*(J_AsioDataBase *)pAsioData);
+		m_asio.Read(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
+	}
+	else
+	{	
+		protocolFilter->Complete(*(J_AsioDataBase *)pAsioData);
+		m_asio.Write(pAsioData->ioHandle, (J_AsioDataBase *)pAsioData);
 	}
 
 	return nRet;

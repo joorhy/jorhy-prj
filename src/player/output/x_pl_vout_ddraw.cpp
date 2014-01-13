@@ -92,7 +92,10 @@ J_PL_RESULT CXPlVoutDDraw::OpenDisplay()
 	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 	hr = IDirectDraw7_CreateSurface(m_pDD,&ddsd,&m_pDDSPrimary,NULL);
 	if (hr != DD_OK)
+	{
+		j_pl_info("CXPlVoutDDraw::OpenDisplay PRIMARYSURFACE\n");
 		return J_PL_ERROR_PRIMARY_SURFACE;
+	}
 
 	return J_PL_NO_ERROR;
 }
@@ -117,9 +120,9 @@ J_PL_RESULT CXPlVoutDDraw::CreateSurface(j_pl_video_out_t &t)
 	ddsd.ddpfPixelFormat.dwSize		= sizeof(ddsd.ddpfPixelFormat);
 	ddsd.ddpfPixelFormat.dwFlags	= DDPF_FOURCC;
 	ddsd.ddpfPixelFormat.dwFourCC	= t.FourCCType;
-
+ 
 	hr = IDirectDraw7_CreateSurface(m_pDD,&ddsd,&m_pSurface,NULL);
-	if(hr == DDERR_OUTOFVIDEOMEMORY || hr == DDERR_INVALIDPIXELFORMAT)
+	if(hr == DDERR_OUTOFVIDEOMEMORY || hr == DDERR_INVALIDPIXELFORMAT || hr == DDERR_UNSUPPORTEDFORMAT)
 	{
 		ddsd.dwFlags				= DDSD_HEIGHT | DDSD_WIDTH | DDSD_CAPS;
 		ddsd.ddsCaps.dwCaps	= DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
@@ -128,6 +131,15 @@ J_PL_RESULT CXPlVoutDDraw::CreateSurface(j_pl_video_out_t &t)
 		hr = IDirectDraw7_CreateSurface(m_pDD,&ddsd,&m_pSurface,NULL);
 		t.FourCCType = J_PL_CODEC_RGB32;
 		j_pl_info("CXPlVoutDDraw::CreateSurface RGBA Mode\n");
+	}
+	else if (hr == DDERR_NODIRECTDRAWHW)
+	{
+		ddsd.dwFlags				= DDSD_HEIGHT | DDSD_WIDTH | DDSD_CAPS;
+		ddsd.ddsCaps.dwCaps	= DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
+		//ddsd.ddpfPixelFormat.dwFlags		= DDPF_RGB | DDPF_PALETTEINDEXED8;
+		//ddsd.ddpfPixelFormat.dwYUVBitCount	= 8;
+		hr = IDirectDraw7_CreateSurface(m_pDD,&ddsd,&m_pSurface,NULL);
+		j_pl_info("CXPlVoutDDraw::CreateSurface IE9 Mode\n");
 	}
 	if (hr != DD_OK)
 	{

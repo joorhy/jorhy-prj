@@ -96,11 +96,12 @@ enum ButtonStatus
 #define WM_MOUSE_EVENT_NOTIFY			WM_USER+2
 #define WM_MOUSE_EVENT_NOTIFY_SUCCESS	0xFF
 #define WM_PARENTCHANGE					WM_USER+3
-#define WM_OWN_ERASEBKGROUND			WM_USER+4
+#define WM_OWN_ERASEBKGROUND		WM_USER+4
 #define WM_MEDIA_END_REACHED			WM_USER+5
 #define WM_OWN_SETFOCUS					WM_USER+6
-#define WM_OWN_KILLFOCUS				WM_USER+7
+#define WM_OWN_KILLFOCUS					WM_USER+7
 #define WM_OWN_START_WAIT				WM_USER+8			//wParam point to user
+#define WM_OWN_STOP_WAIT				WM_USER+9	
 
 //custom protocol
 #define PROTO_HTTP	"http://"

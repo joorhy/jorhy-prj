@@ -8,6 +8,7 @@
 #include "pl_factory_wnd.h"
 #include "pl_json_parser.h"
 #include "runner_log.h"
+#include "pl_ctrl.h"
 
 // CPlayWnd
 IMPLEMENT_DYNAMIC(CPlWnd, CWnd)
@@ -87,12 +88,14 @@ void CPlWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 			m_FullWnd->onFullScreen(this->m_hWnd);
 			ShowAllWindowEpt(this->m_hWnd,SW_SHOWNOACTIVATE);
 			m_bFullScreen = FALSE;
+			CPlCtrl::m_bFullScreen = false;
 		}
 		else
 		{
 			m_FullWnd->onFullScreen(this->m_hWnd);
 			ShowAllWindowEpt(this->m_hWnd,SW_HIDE);
 			m_bFullScreen = TRUE;
+			CPlCtrl::m_bFullScreen = true;
 		}
 	}
 	SendMessage(WM_OWN_SETFOCUS);

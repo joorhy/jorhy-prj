@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0500 */
-/* at Mon Nov 18 10:26:56 2013
+/* at Fri Dec 27 15:52:54 2013
  */
 /* Compiler settings for ..\..\src\ui\vs_plugins\active_plugin\active_plugin.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)

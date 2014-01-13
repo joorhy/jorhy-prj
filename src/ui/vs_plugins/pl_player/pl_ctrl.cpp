@@ -43,6 +43,8 @@ using namespace std;
 //	PlManager::Destroy();
 //}
 
+bool CPlCtrl::m_bFullScreen = false;
+
 CPlCtrl::CPlCtrl(void)
 {
 	m_hParent	= NULL;
@@ -97,24 +99,38 @@ int CPlCtrl::CalcWndNum(const PL_LayoutInfo &layoutInfo)
 BOOL CPlCtrl::SetLayout(char *pJsUrl)
 {
 	PL_LayoutInfo layoutInfo;
-	if (pJsUrl != NULL )
+	if (pJsUrl != NULL)
 	{
 		if (!PlJsonParser::Instance()->ParserLayout2(pJsUrl, layoutInfo))
 			return FALSE;
+
+		CreateWindows(layoutInfo);
+		if(SetLayout(layoutInfo))
+		{
+			m_layoutInfo.nLayout = layoutInfo.nLayout;
+			m_layoutInfo.nWindows = layoutInfo.nWindows;
+			m_layoutInfo.nMax = layoutInfo.nMax;
+			return TRUE;
+		}
 	}
 	else
 	{
 		layoutInfo = m_layoutInfo;
+		if (!m_bFullScreen)
+		{
+			CreateWindows(layoutInfo);
+			if(SetLayout(layoutInfo))
+			{
+				m_layoutInfo.nLayout = layoutInfo.nLayout;
+				m_layoutInfo.nWindows = layoutInfo.nWindows;
+				m_layoutInfo.nMax = layoutInfo.nMax;
+				return TRUE;
+			}
+		}
 	}
+
 	
-	CreateWindows(layoutInfo);
-	if(SetLayout(layoutInfo))
-	{
-		m_layoutInfo.nLayout = layoutInfo.nLayout;
-		m_layoutInfo.nWindows = layoutInfo.nWindows;
-		m_layoutInfo.nMax = layoutInfo.nMax;
-		return TRUE;
-	}
+
 	return FALSE;
 }
 

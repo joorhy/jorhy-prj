@@ -22,6 +22,8 @@ public:
 	CPlCtrl(void);
 	~CPlCtrl(void);
 
+	static bool m_bFullScreen;
+
 public:
 	BOOL	InitDisPlay(HWND hParent,char* js_workMode);
 	BOOL	SetLayout(char *js_Layout);

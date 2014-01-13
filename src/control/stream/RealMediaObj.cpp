@@ -96,7 +96,7 @@ int CRealMediaObj::OnWriteData(J_AsioDataBase &asioData)
 				{
 					m_lastFrameTime = m_streamHeader.timeStamp;
 					if (m_streamHeader.frameType == jo_video_i_frame ||
-						((m_streamHeader.frameType == jo_video_p_frame) && (m_streamHeader.frameNum == ++m_lastFrameNum)))
+						((m_streamHeader.frameType == jo_video_p_frame) /*&& (m_streamHeader.frameNum == ++m_lastFrameNum)*/))
 					{
 						if (m_streamHeader.frameType == jo_video_i_frame)
 							m_lastFrameNum = m_streamHeader.frameNum;

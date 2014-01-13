@@ -30,7 +30,7 @@ CHttpFilter::~CHttpFilter()
 		JoMuxFactory->DelMux(this);
 }
 
-int CHttpFilter::Parser(J_AsioDataBase &asioData)
+j_result_t CHttpFilter::Parser(J_AsioDataBase &asioData)
 {
 	memcpy(m_read_buff + m_read_len, asioData.ioRead.buf, asioData.ioRead.finishedLen);
 	if (strstr(m_read_buff, http_end) == NULL)
@@ -92,7 +92,7 @@ int CHttpFilter::Parser(J_AsioDataBase &asioData)
 	return J_OK;
 }
 
-const char *CHttpFilter::GetResourceType()
+const j_char_t *CHttpFilter::GetResourceType()
 {
 	if (strstr(m_strResid, ".") != NULL)
 		return "jorf";
@@ -106,12 +106,12 @@ const char *CHttpFilter::GetResourceType()
 	return "jofs";
 }
 
-int CHttpFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen)
+j_result_t CHttpFilter::Convert(const char *pInputData, J_StreamHeader &streamHeader, char *pOutputData, int &nOutLen)
 {
 	return m_muxFilter->Convert((const char *)pInputData, streamHeader, pOutputData, nOutLen, (void *)&RATE);
 }
 
-int CHttpFilter::Complete(J_AsioDataBase &asioData)
+j_result_t CHttpFilter::Complete(J_AsioDataBase &asioData)
 {
 	asioData.ioWrite.buf = res_buff;
 	asioData.ioWrite.bufLen = strlen(res_buff);

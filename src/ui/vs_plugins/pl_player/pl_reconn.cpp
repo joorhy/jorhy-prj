@@ -52,6 +52,7 @@ BEGIN_MESSAGE_MAP(CReconnWindow, CDialog)
 	ON_WM_PAINT()
 	ON_WM_SIZE()
 	ON_MESSAGE(WM_OWN_START_WAIT,CReconnWindow::StartWait)
+	ON_MESSAGE(WM_OWN_STOP_WAIT,CReconnWindow::StopWait)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
@@ -59,19 +60,30 @@ END_MESSAGE_MAP()
 // CWaitStatus message handlers
 LRESULT CReconnWindow::StartWait(WPARAM wParam,LPARAM lParam)
 {
-	m_pPlWnd = (HWND)wParam;
-	CenterWindow(CWnd::FromHandle(m_pPlWnd));
-	CRect rect;
-	CWnd::FromHandle(m_pPlWnd)->GetWindowRect(rect);
+	if (!m_bRun)
+	{
+		m_pPlWnd = (HWND)wParam;
+		CenterWindow(CWnd::FromHandle(m_pPlWnd));
+		CRect rect;
+		CWnd::FromHandle(m_pPlWnd)->GetWindowRect(rect);
 
-	//SetWindowPos(CWnd::FromHandle(m_hWnd),0,0,rect.Width(),rect.Height(),SWP_NOMOVE);
-	SetWindowPos(CWnd::FromHandle(HWND_TOP),1,1,rect.Width()-2,rect.Height()-2,SWP_NOMOVE);
-	if (::IsWindowVisible(m_pPlWnd))
-		ShowWindow(SW_SHOW);
-	m_bRun = TRUE;
-	_beginthread(CReconnWindow::WorkThread, 0, this);
-	_beginthread(CReconnWindow::ReconnectThread, 0, this);
+		//SetWindowPos(CWnd::FromHandle(m_hWnd),0,0,rect.Width(),rect.Height(),SWP_NOMOVE);
+		SetWindowPos(CWnd::FromHandle(HWND_TOP),1,1,rect.Width()-2,rect.Height()-2,SWP_NOMOVE);
+		if (::IsWindowVisible(m_pPlWnd))
+			ShowWindow(SW_SHOW);
+		m_bRun = TRUE;
+		_beginthread(CReconnWindow::WorkThread, 0, this);
+		_beginthread(CReconnWindow::ReconnectThread, 0, this);
+	}
 
+	return TRUE;
+}
+
+LRESULT CReconnWindow::StopWait(WPARAM wParam,LPARAM lParam)
+{
+	m_bRun = FALSE;
+	Sleep(3000);
+	//CDialog::OnOK();
 	return TRUE;
 }
 

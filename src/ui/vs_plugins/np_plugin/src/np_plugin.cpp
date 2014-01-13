@@ -193,7 +193,7 @@ void CNPPlugin::DefaultInvoke(UINT nType, int args[],UINT argCount)
 		{
 			NPVariant NPN_args[2];
 			INT32_TO_NPVARIANT(	args[0],	NPN_args[0]);
-			INT32_TO_NPVARIANT(	*(int64_t*)args[1], NPN_args[1]);
+			INT32_TO_NPVARIANT(	args[1], NPN_args[1]);
 			pScriptablePluginObj->InvokeDefault(NPN_args, argCount, &result);
 			break;
 		}

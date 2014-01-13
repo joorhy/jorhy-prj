@@ -121,6 +121,7 @@ void JoPlayer::Stop()
 {
 	if(m_player)
 	{
+		m_player->SetEndCBK(NULL,this);
 		m_player->Stop();
 	}
 }

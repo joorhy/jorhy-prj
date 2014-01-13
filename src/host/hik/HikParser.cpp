@@ -78,7 +78,7 @@ int CHikParser::Init(int nDataType)
 	if (m_pAudioCache == NULL)
 		m_pAudioCache = new short int[1024 * 10];
 
-	//初始化G.722.1解码库
+	/*//初始化G.722.1解码库
 	mlt_based_coder_init();
 
 	//初始化AAC编码库
@@ -93,7 +93,7 @@ int CHikParser::Init(int nDataType)
 	pAacConfig->bandWidth = 0;
 	pAacConfig->inputFormat = FAAC_INPUT_16BIT;
 	faacEncSetConfiguration(m_aacHandle, pAacConfig);
-	//delete pAacConfig;
+	//delete pAacConfig;*/
 
 	return J_OK;
 }
@@ -300,19 +300,19 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 					if (i_pack_length - HIK_PACK_LEN > 80)
 						J_OS::LOGINFO("i_pack_length - HIK_PACK_LEN == %d", i_pack_length - HIK_PACK_LEN);
 
-					short int out_words[MAX_BITS_PER_FRAME / 16];
+					/*short int out_words[MAX_BITS_PER_FRAME / 16];
 					memcpy(out_words, m_pDataBuff + HIK_PACK_LEN, i_pack_length - HIK_PACK_LEN);
 					G722_1_1C_Float_decoder(m_pAudioCache + m_nSamples, out_words, 16000, 7000);
 					m_nSamples += 320;
 					G722_1_1C_Float_decoder(m_pAudioCache + m_nSamples, out_words + 20, 16000, 7000);
-					m_nSamples += 320;
+					m_nSamples += 320;*/
 
 					m_nDataSize -= i_pack_length;
 					memmove(m_pDataBuff, m_pDataBuff + i_pack_length, m_nDataSize);
 
 					if (m_nSamples >= m_nInputSamples)
 					{
-						if ((void *)faacEncEncode == NULL)
+						/*if ((void *)faacEncEncode == NULL)
 							break;
 
 						if ((nAACLen = faacEncEncode(m_aacHandle, (int32_t *)m_pAudioCache, m_nInputSamples, aacOutBuff + nAACLen, m_nOutputBytes)) > 0)
@@ -322,7 +322,7 @@ int CHikParser::GetOnePacket(char *pData, J_StreamHeader &streamHeader)
 
 							m_nSamples -= m_nInputSamples;
 							memmove(m_pAudioCache, m_pAudioCache + m_nInputSamples, m_nInputSamples * 2);
-						}
+						}*/
 					}
 				}
 				break;
